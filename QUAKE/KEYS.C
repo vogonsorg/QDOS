@@ -46,6 +46,7 @@ int		keyshift[256];		// key to map to if shift held down in console
 int		key_repeats[256];	// if > 1, it is autorepeating
 qboolean	keydown[256];
 cvar_t  cl_unbindall_protection = {"cl_unbindall_protection","1",false}; // FS: unbindall protection
+extern char *Sort_Possible_Cmds (char *partial); // FS
 
 typedef struct
 {
@@ -160,6 +161,7 @@ Interactive line editing and console scrollback
 void Key_Console (int key)
 {
 	char	*cmd;
+	extern	cvar_t	console_old_complete;
 	
 	if (key == K_ENTER)
 	{
@@ -187,9 +189,16 @@ void Key_Console (int key)
 
 	if (key == K_TAB)
 	{	// command completion
+		if(!console_old_complete.value)
+		{
+			cmd = Sort_Possible_Cmds(key_lines[edit_line]+1);
+		}
+		else
+		{
 		cmd = Cmd_CompleteCommand (key_lines[edit_line]+1);
 		if (!cmd)
 			cmd = Cvar_CompleteVariable (key_lines[edit_line]+1);
+		}
 		if (cmd)
 		{
 			Q_strcpy (key_lines[edit_line]+1, cmd);

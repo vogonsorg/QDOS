@@ -35,6 +35,11 @@ void S_Update_();
 void S_StopAllSounds(qboolean clear);
 void S_StopAllSoundsC(void);
 void S_RestartBGM (void); // FS
+void S_ChangeCD (void); // FS
+#ifndef _WINDOWS
+extern void GUS_ClearDMA(void); // FS
+extern int havegus; // FS
+#endif
 
 // =======================================================================
 // Internal sound data & structures
@@ -194,6 +199,7 @@ void S_Init (void)
 	Cmd_AddCommand("soundlist", S_SoundList);
 	Cmd_AddCommand("soundinfo", S_SoundInfo_f);
 	Cmd_AddCommand("restartbgm", S_RestartBGM); // FS
+	Cmd_AddCommand("s_changewavcd", S_ChangeCD); // FS
 
 	Cvar_RegisterVariable(&nosound);
 	Cvar_RegisterVariable(&volume);
@@ -578,6 +584,21 @@ void S_StopAllSoundsC (void)
 {
 	S_StopAllSounds (true);
 }
+void S_ChangeCD (void) // FS
+{
+        if(Cmd_Argc() != 2)
+        {
+                Con_Printf("usage: s_changewavcd <track number>\n");
+                return;
+        }
+        if (Q_atoi(Cmd_Argv(1)) <= 1)
+        {
+                Con_Printf("Invalid track number!\n");
+                return;
+        }
+        cl.cdtrack = Q_atoi(Cmd_Argv(1));
+        S_RestartBGM();
+}
 
 void S_RestartBGM (void)
 {
@@ -639,6 +660,14 @@ void S_ClearBuffer (void)
 	{
 		Q_memset(shm->buffer, clear, shm->samples * shm->samplebits/8);
 	}
+#ifndef _WINDOWS
+		if(havegus)
+		{
+			Con_DPrintf("Clearing GUS DMA Buffer!\n");
+         GUS_ClearDMA();
+		}
+      Con_DPrintf("Cleared buffer!\n"); // FS: Hjalp me GUS
+#endif
 }
 
 
@@ -1000,6 +1029,14 @@ void S_MusicPlay(int cdtrack)
 
 	sfx_t   *sfx;
 
+        if(cdtrack <= 1)
+        {
+                if (developer.value > 1)
+                {
+                        Con_Warning("CD Track is invalid!\n");
+                }
+                return;
+        }
 	Con_DPrintf("Attempting to play music track %i\n", cdtrack);
 	Q_strcpy(name, "cdtracks/track");
 	sprintf(buffer2,"%d",cdtrack);

@@ -43,6 +43,7 @@ cvar_t	m_forward = {"m_forward","1", true};
 cvar_t	m_side = {"m_side","0.8", true};
 cvar_t  show_time = {"show_time","0", true}; // FS: Show time
 cvar_t  show_uptime = {"show_uptime","0", true}; // FS: Show uptime
+cvar_t	console_old_complete = {"console_old_complete", "0", true}; // FS
 
 client_static_t	cls;
 client_state_t cl;
@@ -712,6 +713,7 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&m_yaw);
 	Cvar_RegisterVariable (&m_forward);
 	Cvar_RegisterVariable (&m_side);
+	Cvar_RegisterVariable (&console_old_complete); // FS
 
 	Cmd_AddCommand ("entities", CL_PrintEntities_f);
 	Cmd_AddCommand ("disconnect", CL_Disconnect_f);

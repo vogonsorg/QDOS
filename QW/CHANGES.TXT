@@ -8,6 +8,9 @@ Additional code from sezero, taniwha, spoike, LordHavoc,
 
 * Added FTE extensions for 256 packet entities, double models 1,
   double models 2, and spawn static 2.
+* Tab completion with console commands will show all possible cmds, aliases,
+  and cvars.  Denoted with [C], [A], and [V] respectively.
+  This behavior can be disabled with console_old_complete 1.
 * Fixed S_KHZ goof-up with GUS MAX/GUS PnP cards.
 * Gravis UltraSound stuttering during map transitions, etc. fixed.
 * Load music from WAV.  **THIS IS STILL EXPERIMENTAL!**

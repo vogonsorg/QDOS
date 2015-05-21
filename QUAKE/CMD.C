@@ -19,11 +19,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // cmd.c -- Quake script command processing module
 
+#include <ctype.h>
 #include "quakedef.h"
 
 void Cmd_ForwardToServer (void);
 
-#define	MAX_ALIAS_NAME	32
+#define MAX_ALIAS_NAME  64 // FS: Was 32
 
 #define CMDLINE_LENGTH 256 //johnfitz -- mirrored in common.c
 
@@ -42,6 +43,8 @@ int *trashspot;
 qboolean	cmd_wait;
 
 cvar_t  cl_warncmd = {"cl_warncmd", "0", false}; // FS: from QW
+char *Sort_Possible_Cmds (char *partial);
+qboolean	Sort_Possible_Strtolower (char *partial, char *complete); // FS
 
 //=============================================================================
 
@@ -676,16 +679,26 @@ char *Cmd_CompleteCommand (char *partial)
 {
 	cmd_function_t	*cmd;
 	int				len;
+	cmdalias_t		*a;
 	
 	len = Q_strlen(partial);
 	
 	if (!len)
 		return NULL;
 		
+	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
+		if (!strcmp (partial,cmd->name))
+			return cmd->name;
+	for (a=cmd_alias ; a ; a=a->next)
+		if (!strcmp (partial, a->name))
+			return a->name;
 // check functions
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
-		if (!Q_strncmp (partial,cmd->name, len))
+		if (!strncmp (partial,cmd->name, len))
 			return cmd->name;
+	for (a=cmd_alias ; a ; a=a->next)
+		if (!strncmp (partial, a->name, len))
+			return a->name;
 
 	return NULL;
 }
@@ -793,4 +806,111 @@ int Cmd_CheckParm (char *parm)
 			return i;
 			
 	return 0;
+}
+#define RETRY_INITIAL	0
+#define RETRY_ONCE		1
+#define RETRY_MULTIPLE	2
+char *Sort_Possible_Cmds (char *partial)
+{
+	cmd_function_t	*cmd;
+	cvar_t			*cvar; // FS
+	int				len;
+	cmdalias_t		*a;
+	int	foundExactCount = 0; // FS
+	int foundPartialCount = 0; // FS
+	int retryPartialFlag = RETRY_INITIAL; // FS
+	len = Q_strlen(partial);
+	if (!len)
+		return NULL;
+	foundExactCount = 0;
+	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
+	{
+		if (!Q_strcmp (partial,cmd->name))
+		{
+			foundExactCount++;
+			return cmd->name;
+		}
+	}
+	for (a=cmd_alias ; a ; a=a->next)
+	{
+		if (!Q_strcmp (partial, a->name))
+		{
+			foundExactCount++;
+			return a->name;
+		}
+	}
+	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
+	{
+		if (!Q_strcmp (partial,cvar->name))
+		{
+			foundExactCount++;
+			return cvar->name;
+		}
+	}
+retryPartial:
+	foundPartialCount = 0;
+	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
+	{
+		if (Sort_Possible_Strtolower(partial, cmd->name))
+		{
+			foundPartialCount++;
+			if(retryPartialFlag == RETRY_MULTIPLE)
+				Con_Printf("  %s [C]\n", cmd->name);
+			else if (retryPartialFlag == RETRY_ONCE)
+				return cmd->name;
+		}
+	}
+	for (a=cmd_alias ; a ; a=a->next)
+	{
+		if (Sort_Possible_Strtolower(partial, a->name))
+		{
+			foundPartialCount++;
+			if(retryPartialFlag == RETRY_MULTIPLE)
+				Con_Printf("  %s [A]\n", a->name);
+			else if (retryPartialFlag == RETRY_ONCE)
+				return a->name;
+		}
+	}
+	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
+	{
+		if (Sort_Possible_Strtolower(partial, cvar->name))
+		{
+			foundPartialCount++;
+			if(retryPartialFlag == RETRY_MULTIPLE)
+				Con_Printf("  %s [V]\n", cvar->name);
+			else if (retryPartialFlag == RETRY_ONCE)
+				return cvar->name;
+		}
+	}
+	if(foundPartialCount == 1)
+	{
+		retryPartialFlag = RETRY_ONCE;
+		goto retryPartial;
+	}
+	else if (foundPartialCount == 0)
+	{
+		return NULL;
+	}
+	else if (retryPartialFlag == RETRY_INITIAL)
+	{
+		retryPartialFlag = RETRY_MULTIPLE;
+		Con_Printf("Listing matches for '%s'...\n", partial);
+		goto retryPartial;
+	}
+	else if (foundExactCount+foundPartialCount > 0)
+		Con_Printf("Found %i matches.\n", foundExactCount+foundPartialCount);
+	return NULL;
+}
+qboolean	Sort_Possible_Strtolower (char *partial, char *complete)
+{
+	int partialLength = 0;
+	int x = 0;
+	partialLength = strlen(partial);
+	while(x < partialLength)
+	{
+		if(tolower(partial[x]) != tolower(complete[x]))
+			return false;
+		x++;
+	}
+	return true;
 }

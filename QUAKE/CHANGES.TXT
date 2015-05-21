@@ -6,6 +6,13 @@ Additional code from sezero, taniwha, spoike, LordHavoc,
    QuakeForge, FitzQuake, Quakespasm, Darkplaces and more.
 ---------------------------------------------------------
 
+* Tab completion with console commands will show all possible cmds, aliases,
+  and cvars.  Denoted with [C], [A], and [V] respectively.
+  This behavior can be disabled with console_old_complete 1.
+* Fixed S_KHZ goof-up with GUS MAX/GUS PnP cards.
+* Gravis UltraSound stuttering during map transitions, etc. fixed.
+* TYPE command.  Use this as a notepad.  Useful for reading CFGs in game
+  and map readmes.
 * Warpspasm will now play the music without the 3D spatializing effect.
 * Load music from WAV.  **THIS IS STILL EXPERIMENTAL!**
   If you plan to use this, it MUST be 44khz/16bit *MONO* and you must

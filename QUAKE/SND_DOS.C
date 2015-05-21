@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "dosisms.h"
 
 int BLASTER_GetDMAPos(void);
+void S_StopAllSoundsC (void); // FS: Proto this for GUS Clear Buffer Fix
 
 /*
 ===============================================================================
@@ -33,6 +34,7 @@ GUS SUPPORT
 qboolean GUS_Init (void);
 int GUS_GetDMAPos (void);
 void GUS_Shutdown (void);
+int   havegus = 0; // FS
 
 
 /*
@@ -579,6 +581,7 @@ void snd_restart_f (void) // FS: SND_RESTART
 	Con_Printf("\nSound Restarting\n");
 	Cache_Flush();
 	SNDDMA_Init();
+	S_StopAllSoundsC(); // FS: For GUS Buffer Clear Fix
 	Con_Printf ("Sound sampling rate: %i\n", shm->speed);
 }
 
@@ -602,15 +605,17 @@ Returns true and fills in the "shm" structure with information for the mixer.
 */
 qboolean SNDDMA_Init(void)
 {
-		if (!host_initialized)
-		{
-		  Cmd_AddCommand ("snd_restart", snd_restart_f); // FS
-		  Cmd_AddCommand ("snd_shutdown", snd_shutdown_f); // FS
-		}
+	if (!host_initialized)
+	{
+		Cmd_AddCommand ("snd_restart", snd_restart_f); // FS
+	Cmd_AddCommand ("snd_shutdown", snd_shutdown_f); // FS
+	}
 	if (GUS_Init ())
 	{
-		  Con_DPrintf("GUS_Init\n");
+		Con_DPrintf("GUS_Init\n");
 		dmacard = dma_gus;
+		havegus = 1; // FS
+		S_StopAllSoundsC(); // FS: For GUS Buffer Clear Fix
 		return true;
 	}
 	if (BLASTER_Init ())

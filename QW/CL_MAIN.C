@@ -139,6 +139,7 @@ cvar_t   host_speeds = {"host_speeds","0"};        // set for running times
 cvar_t  show_fps = {"show_fps","0", true}; // FS                   // set for running times
 cvar_t  show_time = {"show_time","0", true}; // FS: Show time
 cvar_t  show_uptime = {"show_uptime", "0", true}; // FS: Show uptime
+cvar_t	console_old_complete = {"console_old_complete", "0", true}; // FS
 cvar_t   developer = {"developer","0"};
 
 int         fps_count;
@@ -1207,6 +1208,7 @@ void CL_Init (void)
    Cvar_RegisterVariable (&show_fps);
    Cvar_RegisterVariable (&show_time); // FS: Show Time
    Cvar_RegisterVariable (&show_uptime); // FS: Show uptime
+   Cvar_RegisterVariable (&console_old_complete); // FS
    Cvar_RegisterVariable (&net_broadcast_chat); // FS: Broadcast Chat notifications
    Cvar_RegisterVariable (&host_speeds);
    Cvar_RegisterVariable (&developer);

@@ -848,6 +848,10 @@ static qboolean GUS_GetGUSData(void)
 		SetGf18(SET_VOLUME_START,5);
 		SetGf18(SET_VOLUME_END,251);
 		SetGf116(SET_VOLUME,5<<8);
+		SetGf18(ADLIB_TIMER1,0);
+		SetGf116(ADLIB_TIMER1,0);
+		SetGf18(ADLIB_TIMER2,0xFF);
+		SetGf116(ADLIB_TIMER2,0xFF);		
 	}
 
 	// Clear any pending IRQ's

@@ -67,6 +67,7 @@ static int current_field_buffer=0;
 
 static struct section_buffer section_buffers[NUM_SECTION_BUFFERS];
 static struct field_buffer field_buffers[NUM_FIELD_BUFFERS];
+byte	extVoices,extCodecVoices; // FS: GUS clicking sounds during map transitions and pauseing fix
 //***************************************************************************
 // Internal routines
 //***************************************************************************
@@ -845,6 +846,10 @@ static qboolean GUS_GetGUSData(void)
 		SetGf18(SET_VOLUME_START,5);
 		SetGf18(SET_VOLUME_END,251);
 		SetGf116(SET_VOLUME,5<<8);
+		SetGf18(ADLIB_TIMER1,0);
+		SetGf116(ADLIB_TIMER1,0);
+		SetGf18(ADLIB_TIMER2,0xFF);
+		SetGf116(ADLIB_TIMER2,0xFF);		
 	}
 
 	// Clear any pending IRQ's
@@ -1093,24 +1098,24 @@ qboolean GUS_Init(void)
 	{
 		// do 11khz sampling rate unless command line parameter wants different
 		shm->speed = 11025;
-		FSVal = 0x03;
+		FSVal = extCodecVoices = 0x03; // FS: Added extCodecVoices
 		rc = COM_CheckParm("-sspeed");
 
-		if (s_khz.value > 19292) // FS: S_KHZ
+		if (s_khz.value > 11024) // FS: S_KHZ
 		{
 			shm->speed = s_khz.value;
 
 			// Make sure rate not too high
-			if (shm->speed>44100)
-				shm->speed=44100;
+			if (shm->speed>48000)
+				shm->speed=48000;
 
 			// Adjust speed to match one of the possible GF1 rates
-			for (Gf1Rate=Gf1Rates;Gf1Rate->Rate!=0;Gf1Rate++)
+			for (CodecRate=CodecRates;CodecRate->Rate!=0;CodecRate++)
 			{
-				if (shm->speed <= Gf1Rate->Rate)
+				if (shm->speed <= CodecRate->Rate)
 				{
-					shm->speed=Gf1Rate->Rate;
-					Voices=Gf1Rate->Voices;
+					shm->speed=CodecRate->Rate;
+					FSVal=extCodecVoices=CodecRate->FSVal; // FS: Added extCodecVoices
 					break;
 				}
 			}
@@ -1130,7 +1135,7 @@ qboolean GUS_Init(void)
 				if (shm->speed <= CodecRate->Rate)
 				{
 					shm->speed=CodecRate->Rate;
-					FSVal=CodecRate->FSVal;
+					FSVal=extCodecVoices=CodecRate->FSVal; // FS: Added extCodecVoices
 					break;
 				}
 			}
@@ -1171,7 +1176,7 @@ qboolean GUS_Init(void)
 	{
 		// do 19khz sampling rate unless command line parameter wants different
 					 shm->speed = 19293;
-					 Voices=32;
+		Voices=extVoices=32; // FS: Added extVoices
 		rc = COM_CheckParm("-sspeed");
 
 					 if (s_khz.value > 19292) // FS: S_KHZ
@@ -1188,7 +1193,7 @@ qboolean GUS_Init(void)
 				if (shm->speed <= Gf1Rate->Rate)
 				{
 					shm->speed=Gf1Rate->Rate;
-					Voices=Gf1Rate->Voices;
+					Voices=extVoices=Gf1Rate->Voices; // FS: Added extVoices
 					break;
 				}
 			}
@@ -1208,7 +1213,7 @@ qboolean GUS_Init(void)
 				if (shm->speed <= Gf1Rate->Rate)
 				{
 					shm->speed=Gf1Rate->Rate;
-					Voices=Gf1Rate->Voices;
+					Voices=extVoices=Gf1Rate->Voices; // FS: Added extVoices
 					break;
 				}
 			}
@@ -1337,4 +1342,48 @@ void GUS_Shutdown (void)
 
 	dos_freememory (dma_dosadr);
 	dma_dosadr = NULL; // sezero
+}
+void GUS_ClearDMA (void) // FS: This stops the constant clicking sound during map loads and pause screens
+{
+	memset(dma_buffer, 0, BUFFER_SIZE);
+	shm->soundalive = true;
+	shm->splitbuffer = false;
+	shm->samplepos = 0;
+	shm->submission_chunk = 1;
+	shm->buffer = (unsigned char *) dma_buffer;
+	shm->samples = BUFFER_SIZE/(shm->samplebits/8);
+	if (HaveCodec) // FS: GUS MAX, AMD InterWave/GUS PnP
+	{
+		dos_outportb(CodecRegisterSelect,CODEC_INTERFACE_CONFIG);
+		dos_outportb(CodecData,0x01);
+	}
+	else // FS: GUS "Classic", ACE, or compatible OEM CLONE
+	{
+		dos_outportb(Gf1PageRegister,0);
+		SetGf18(SET_CONTROL,0x03);
+		dos_outportb(Gf1PageRegister,1);
+		SetGf18(SET_CONTROL,0x03);
+		Gf1Delay();
+		dos_outportb(Gf1PageRegister,0);
+		SetGf18(SET_CONTROL,0x03);
+		dos_outportb(Gf1PageRegister,1);
+		SetGf18(SET_CONTROL,0x03);
+		SetGf18(DMA_CONTROL,0x00);
+		GetGf18(DMA_CONTROL);
+	}
+	GUS_StartDMA(DmaChannel,dma_buffer,BUFFER_SIZE);
+	if (HaveCodec) // FS: GUS MAX, AMD InterWave/GUS PnP
+	{
+		GUS_StartCODEC(BUFFER_SIZE,extCodecVoices);
+	}
+	else // FS: GUS "Classic", ACE, or compatible OEM CLONE
+	{
+		SetGf116(SET_DMA_ADDRESS,0x0000);
+		if (DmaChannel<=3)
+			SetGf18(DMA_CONTROL,0x41);
+		else
+			SetGf18(DMA_CONTROL,0x45);
+		GUS_StartGf1(BUFFER_SIZE,extVoices);
+	}
+        Con_DPrintf("Cleared GUS DMA Buffer!\n");
 }
