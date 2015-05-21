@@ -415,6 +415,10 @@ void CL_SendCmd (void)
 	if (cls.demoplayback)
 		return; // sendcmds come from the demo
 
+#ifdef FTE_PEXT_CHUNKEDDOWNLOADS
+	CL_SendChunkDownloadReq();
+#endif
+
 	// save this command off for prediction
 	i = cls.netchan.outgoing_sequence & UPDATE_MASK;
 	cmd = &cl.frames[i].cmd;
@@ -497,6 +501,46 @@ void CL_SendCmd (void)
 }
 
 
+void CL_SendClientCommand(qboolean reliable, char *format, ...) // FS: From JQuake/EZQ/etc
+{
+	va_list		argptr;
+//	char		string[2048];
+	static dstring_t *string; // FS: New school dstrings
+	int length = 0;
+
+	if (cls.demoplayback)
+		return;	// no point.
+
+	if(!string)
+		string = dstring_new();
+
+	va_start (argptr, format);
+	dvsprintf(string, format, argptr);
+//	vsnprintf (string, sizeof(string), format, argptr);
+	va_end (argptr);
+
+	if (reliable)
+	{
+		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
+		MSG_WriteString (&cls.netchan.message, string->str);
+	}
+	else
+	{
+		sizebuf_t	buf;
+		byte data[128];
+
+		buf.data = data;
+		buf.cursize = 0;
+
+		length = strlen(string->str);
+		// FS: FIXME
+		MSG_WriteByte (&buf, clc_stringcmd);
+		MSG_WriteString (&buf, string->str);
+		Netchan_Transmit(&cls.netchan, buf.cursize, buf.data);
+//		MSG_WriteByte (&cls.cmdmsg, clc_stringcmd);
+//		MSG_WriteString (&cls.cmdmsg, string);
+	}
+}
 
 /*
 ============

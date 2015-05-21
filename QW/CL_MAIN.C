@@ -508,50 +508,47 @@ This is also called on Host_Error, so it shouldn't cause any errors
 */
 void CL_Disconnect (void)
 {
-   byte  final[10];
+	byte  final[10];
 
-   connect_time = -1;
+	connect_time = -1;
 
 #ifdef _WIN32
 	SetWindowText (mainwindow, "QWDOS: disconnected");
 #endif
 
 // stop sounds (especially looping!)
-   S_StopAllSounds (true);
+	S_StopAllSounds (true);
    
 // if running a local server, shut it down
-   if (cls.demoplayback)
-      CL_StopPlayback ();
-   else if (cls.state != ca_disconnected)
-   {
-      if (cls.demorecording)
-         CL_Stop_f ();
+	if (cls.demoplayback)
+	CL_StopPlayback ();
+	else if (cls.state != ca_disconnected)
+	{
+		if (cls.demorecording)
+		CL_Stop_f ();
 
-      final[0] = clc_stringcmd;
-      strcpy (final+1, "drop");
-      Netchan_Transmit (&cls.netchan, 6, final);
-      Netchan_Transmit (&cls.netchan, 6, final);
-      Netchan_Transmit (&cls.netchan, 6, final);
+		final[0] = clc_stringcmd;
+		strcpy (final+1, "drop");
+		Netchan_Transmit (&cls.netchan, 6, final);
+		Netchan_Transmit (&cls.netchan, 6, final);
+		Netchan_Transmit (&cls.netchan, 6, final);
 
-      cls.state = ca_disconnected;
+		cls.state = ca_disconnected;
 
-      cls.demoplayback = cls.demorecording = cls.timedemo = false;
-   }
-   Cam_Reset();
+		cls.demoplayback = cls.demorecording = cls.timedemo = false;
+	}
+	Cam_Reset();
 
-   if (cls.download) {
-      fclose(cls.download);
-      cls.download = NULL;
-   }
+	CL_FinishDownload(false);
 
-   CL_StopUpload();
-   key_dest = 0; // FS: hack so main menu still works after disconnect
-   cl.intermission = 0; // FS: Baker fix
+	CL_StopUpload();
+	key_dest = 0; // FS: hack so main menu still works after disconnect
+	cl.intermission = 0; // FS: Baker fix
 }
 
 void CL_Disconnect_f (void)
 {
-   CL_Disconnect ();
+	CL_Disconnect ();
 }
 
 /*
@@ -1376,6 +1373,9 @@ void Host_Error (const char *error, ...)
    static dstring_t       *string; // FS: New school dstring
    static qboolean inerror = false;
    
+   if(!string)
+	   string = dstring_new();
+
    if (inerror)
       Sys_Error ("Host_Error: recursively entered");
    inerror = true;

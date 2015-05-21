@@ -55,12 +55,13 @@ interface from being ambiguous.
 
 typedef struct cvar_s
 {
-        char    *name;
-        char    *string;
+	char    *name;
+	char    *string;
 	qboolean archive;		// set to true to cause it to be saved to vars.rc
 	qboolean info;			// added to serverinfo or userinfo when changed
 	float	value;
-        struct cvar_s *next;
+	int     integer;			// FS: may be set in Cvar_Set(), Cvar_Register(), Cvar_Create()
+	struct cvar_s *next;
 } cvar_t;
 
 void 	Cvar_RegisterVariable (cvar_t *variable);

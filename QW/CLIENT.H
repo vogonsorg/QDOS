@@ -187,6 +187,8 @@ typedef struct
         int                      downloadnumber;
 	dltype_t	downloadtype;
 	int			downloadpercent;
+	int			downloadrate; // FS
+	double		downloadstarttime; // FS
 #ifdef FTE_PEXT_CHUNKEDDOWNLOADS
 	enum {DL_NONE = 0, DL_QW, DL_QWCHUNKS} downloadmethod;
 #else
@@ -447,6 +449,8 @@ qboolean CL_IsUploading(void);
 void CL_NextUpload(void);
 void CL_StartUpload (byte *data, int size);
 void CL_StopUpload(void);
+void CL_RequestNextDownload (void); // FS
+void CL_ParseDownload (void); // FS
 
 #ifdef FTE_PEXT_CHUNKEDDOWNLOADS
 

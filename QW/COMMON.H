@@ -117,7 +117,7 @@ extern  float   (*LittleFloat) (float l);
 #define FTE_PEXT_FLOATCOORDS		0x00008000	//supports floating point origins.
 #define FTE_PEXT_SPAWNSTATIC2		0x00400000	//Sends an entity delta instead of a baseline.
 #define FTE_PEXT_256PACKETENTITIES	0x01000000	//Client can recieve 256 packet entities.
-//#define FTE_PEXT_CHUNKEDDOWNLOADS	0x20000000	//alternate file download method. Hopefully it'll give quadroupled download speed, especially on higher pings.
+#define FTE_PEXT_CHUNKEDDOWNLOADS	0x20000000	//alternate file download method. Hopefully it'll give quadroupled download speed, especially on higher pings.
 
 #endif
 
@@ -153,6 +153,7 @@ void MSG_WriteCoord (sizebuf_t *sb, float f);
 void MSG_WriteAngle (sizebuf_t *sb, float f);
 void MSG_WriteAngle16 (sizebuf_t *sb, float f);
 void MSG_WriteDeltaUsercmd (sizebuf_t *sb, struct usercmd_s *from, struct usercmd_s *cmd);
+void MSG_ReadData (void *data, int len); // FS
 
 extern  int                     msg_readcount;
 extern  qboolean        msg_badread;            // set if a read goes beyond end of message

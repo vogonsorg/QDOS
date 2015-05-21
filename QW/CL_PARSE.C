@@ -295,6 +295,290 @@ void Sound_NextDownload (void)
 	MSG_WriteString (&cls.netchan.message, va(modellist_name, cl.servercount, 0));
 }
 
+void CL_FinishDownload(qboolean rename_files)
+{
+	dstring_t       *oldn;
+	dstring_t       *newn;
+	int	r;
+
+	if (cls.download)
+		fclose (cls.download);
+
+	//
+	// if we fail of some kind, do not rename files
+	//
+
+	if(rename_files)
+	{
+		oldn = dstring_new();
+		newn = dstring_new();
+		// rename the temp file to it's final name
+		if (strcmp(cls.downloadtempname->str, cls.downloadname->str))
+		{
+			if (strncmp(cls.downloadtempname->str,"skins/",6))
+			{
+				dsprintf (oldn, "%s/%s", com_gamedir, cls.downloadtempname->str);
+				dsprintf (newn, "%s/%s", com_gamedir, cls.downloadname->str);
+			}
+			else
+			{
+				dsprintf (oldn, "qw/%s", cls.downloadtempname->str);
+				dsprintf (newn, "qw/%s", cls.downloadname->str);
+			}
+			Con_DPrintf("oldn: %s\n", oldn->str);
+			Con_DPrintf("newn: %s\n", newn->str);
+			r = rename (oldn->str, newn->str);
+			if (r)
+				Con_Printf ("failed to rename. r: %i\n", r); // FS
+		}
+		dstring_delete(oldn);
+		dstring_delete(newn);
+	}
+	cls.download = NULL;
+	cls.downloadpercent = 0;
+	cls.downloadmethod = DL_NONE;
+
+	// VFS-FIXME: D-Kure: Surely there is somewhere better for this in fs.c
+//	filesystemchanged = true;
+
+	// get another file if needed
+
+	if (cls.state != ca_disconnected)
+		CL_RequestNextDownload ();
+}
+
+#ifdef FTE_PEXT_CHUNKEDDOWNLOADS
+
+//
+// FTE's chunked download
+//
+
+#define MAXBLOCKS 1024	// Must be power of 2
+#define DLBLOCKSIZE 1024
+
+int chunked_download_number = 0; // Never reset, bumped up.
+
+int downloadsize;
+int receivedbytes;
+int recievedblock[MAXBLOCKS];
+int firstblock;
+int blockcycle;
+
+int CL_RequestADownloadChunk(void)
+{
+	int i;
+	int b;
+
+	if (cls.downloadmethod != DL_QWCHUNKS) // Paranoia!
+		Host_Error("download not initiated\n");
+
+	for (i = 0; i < MAXBLOCKS; i++)
+	{
+		blockcycle++;
+
+		b = ((blockcycle) & (MAXBLOCKS-1)) + firstblock;
+
+		if (!recievedblock[b&(MAXBLOCKS-1)]) // Don't ask for ones we've already got.
+		{
+			if (b >= (downloadsize+DLBLOCKSIZE-1)/DLBLOCKSIZE)	// Don't ask for blocks that are over the size of the file.
+				continue;
+			return b;
+		}
+	}
+
+	return -1;
+}
+
+void CL_SendChunkDownloadReq(void)
+{
+	extern cvar_t cl_chunksperframe;
+	int i, j, chunks = bound(1, cl_chunksperframe.integer, 5);
+
+	for (j = 0; j < chunks; j++)
+	{
+		if (cls.downloadmethod != DL_QWCHUNKS)
+			return;
+
+		// Ugly workaround 
+		if(strstr(Info_ValueForKey(cl.serverinfo, "*version"), "MVDSV") == NULL)
+		{
+			j = chunks;
+		}
+		i = CL_RequestADownloadChunk();
+		// i < 0 mean client complete download, let server know
+		// qqshka: download percent optional, server does't really require it, that my extension, hope does't fuck up something
+		CL_SendClientCommand(i < 0 ? true : false, "nextdl %d %d %d", i, cls.downloadpercent, chunked_download_number);
+
+		if (i < 0)
+			CL_FinishDownload(true); // this also request next dl
+	}
+}
+
+void CL_Parse_OOB_ChunkedDownload(void)
+{
+	int j;
+
+	for ( j = 0; j < sizeof("\\chunk")-1; j++ )
+		MSG_ReadByte ();
+
+	//
+	// qqshka: well, this is evil.
+	// In case of when one file completed download and next started
+	// here may be some packets which travel via network,
+	// so we got packets from different file, that mean we may assemble wrong data,
+	// need somehow discard such packets, i have no idea how, so adding at least this check.
+	//
+
+	if (chunked_download_number != MSG_ReadLong ())
+	{
+		Con_DPrintf("Dropping OOB chunked message, out of sequence\n");
+		return;
+	}
+
+	if (MSG_ReadByte() != svc_download)
+	{
+		Con_DPrintf("Something wrong in OOB message and chunked download\n");
+		return;
+	}
+
+	CL_ParseDownload ();
+}
+
+void CL_ParseChunkedDownload(void)
+{
+	char *svname;
+	int totalsize;
+	int chunknum;
+	char data[DLBLOCKSIZE];
+	double tm;
+
+	chunknum = MSG_ReadLong();
+	if (chunknum < 0)
+	{
+		totalsize = MSG_ReadLong();
+		svname    = MSG_ReadString();
+
+		if (cls.download) 
+		{ 
+			// Ensure FILE is closed
+			if (totalsize != -3) // -3 = dl stopped, so this known issue, do not warn
+				Con_Printf ("cls.download shouldn't have been set\n");
+
+			fclose (cls.download);
+			cls.download = NULL;
+		}
+
+		if (cls.demoplayback)
+			return;
+
+		if (totalsize < 0)
+		{
+			switch (totalsize)
+			{
+				case -3: Con_DPrintf("Server cancel downloading file %s\n", svname);			break;
+				case -2: Con_Printf("Server permissions deny downloading file %s\n", svname);	break;
+				default: Con_Printf("Couldn't find file %s on the server\n", svname);			break;
+			}
+
+			CL_FinishDownload(false); // this also request next dl
+			return;
+		}
+
+		if (cls.downloadmethod == DL_QWCHUNKS)
+			Host_Error("Received second download - \"%s\"\n", svname);
+
+// FIXME: damn, fixme!!!!!
+//		if (strcasecmp(cls.downloadname, svname))
+//			Host_Error("Server sent the wrong download - \"%s\" instead of \"%s\"\n", svname, cls.downloadname);
+
+		// Start the new download
+		if (!cls.download)
+		{
+			char    *name; // taniwha
+			if (strncmp(cls.downloadtempname->str,"skins/",6))
+				name = va("%s/%s", com_gamedir, cls.downloadtempname->str);
+			else
+				name = va("qw/%s", cls.downloadtempname->str);
+                
+			COM_CreatePath (name);
+			Con_Printf("Creating path: %s\n", name);
+
+			if ( !(cls.download = fopen (name, "wb")) ) 
+			{
+				Con_Printf ("Failed to open %s\n", name);
+				CL_FinishDownload(false); // This also requests next dl.
+				return;
+			}
+		}
+
+		cls.downloadmethod  = DL_QWCHUNKS;
+		cls.downloadpercent = 0;
+
+		chunked_download_number++;
+
+		downloadsize        = totalsize;
+
+		firstblock    = 0;
+		receivedbytes = 0;
+		blockcycle    = -1;	//so it requests 0 first. :)
+		memset(recievedblock, 0, sizeof(recievedblock));
+		return;
+	}
+
+	MSG_ReadData(data, DLBLOCKSIZE);
+
+	if (!cls.download) 
+	{ 
+		return;
+	}
+
+	if (cls.downloadmethod != DL_QWCHUNKS)
+		Host_Error("cls.downloadmethod != DL_QWCHUNKS\n");
+
+	if (cls.demoplayback)
+	{	
+		// Err, yeah, when playing demos we don't actually pay any attention to this.
+		return;
+	}
+
+	if (chunknum < firstblock)
+	{
+		return;
+	}
+
+	if (chunknum - firstblock >= MAXBLOCKS)
+	{
+		return;
+	}
+
+	if (recievedblock[chunknum&(MAXBLOCKS-1)])
+	{
+		return;
+	}
+
+	receivedbytes += DLBLOCKSIZE;
+	recievedblock[chunknum&(MAXBLOCKS-1)] = true;
+
+	while(recievedblock[firstblock&(MAXBLOCKS-1)])
+	{
+		recievedblock[firstblock&(MAXBLOCKS-1)] = false;
+		firstblock++;
+	}
+
+	fseek(cls.download, chunknum * DLBLOCKSIZE, SEEK_SET);
+	if (downloadsize - chunknum * DLBLOCKSIZE < DLBLOCKSIZE)	//final block is actually meant to be smaller than we recieve.
+		fwrite(data, 1, downloadsize - chunknum * DLBLOCKSIZE, cls.download);
+	else
+		fwrite(data, 1, DLBLOCKSIZE, cls.download);
+
+	cls.downloadpercent = receivedbytes/(float)downloadsize*100;
+
+	tm = Sys_DoubleTime() - cls.downloadstarttime; // how long we dl-ing
+	cls.downloadrate = (tm ? receivedbytes / 1024 / tm : 0); // some average dl speed in KB/s
+}
+
+#endif // FTE_PEXT_CHUNKEDDOWNLOADS
+
 
 /*
 ======================
@@ -332,10 +616,17 @@ A download message has been received from the server
 void CL_ParseDownload (void)
 {
 	int		size, percent;
-        //byte    name[1024];
-        int              r;
+	//byte    name[1024];
+	int              r;
 
 
+#ifdef FTE_PEXT_CHUNKEDDOWNLOADS
+	if (cls.fteprotocolextensions & FTE_PEXT_CHUNKEDDOWNLOADS)
+	{
+		CL_ParseChunkedDownload();
+		return;
+	}
+#endif // PFTE_PEXT_CHUNKEDDOWNLOADS
 
 	// read the data
 	size = MSG_ReadShort ();
@@ -364,11 +655,11 @@ void CL_ParseDownload (void)
 	if (!cls.download)
 	{
 
-                char    *name; // taniwha
-                if (strncmp(cls.downloadtempname->str,"skins/",6))
-                        name = va("%s/%s", com_gamedir, cls.downloadtempname->str);
-                else
-                        name = va("qw/%s", cls.downloadtempname->str);
+		char    *name; // taniwha
+		if (strncmp(cls.downloadtempname->str,"skins/",6))
+			name = va("%s/%s", com_gamedir, cls.downloadtempname->str);
+		else
+			name = va("qw/%s", cls.downloadtempname->str);
                 
 		COM_CreatePath (name);
 
@@ -376,14 +667,14 @@ void CL_ParseDownload (void)
 		if (!cls.download)
 		{
 			msg_readcount += size;
-                        Con_Printf ("Failed to open %s\n", cls.downloadtempname->str);
+			Con_Printf ("Failed to open %s\n", cls.downloadtempname->str);
 			CL_RequestNextDownload ();
 			return;
 		}
 	}
 
 
-        fwrite (net_message.data + msg_readcount, 1, size, cls.download);
+	fwrite (net_message.data + msg_readcount, 1, size, cls.download);
 	msg_readcount += size;
 
 	if (percent != 100)
@@ -395,34 +686,38 @@ void CL_ParseDownload (void)
 	}
 	else
 	{
-                //char    oldn[MAX_OSPATH];
-                //char    newn[MAX_OSPATH];
-                dstring_t       *oldn;
-                dstring_t       *newn;
+		//char    oldn[MAX_OSPATH];
+		//char    newn[MAX_OSPATH];
+		dstring_t       *oldn;
+		dstring_t       *newn;
 
-                oldn = dstring_new();
-                newn = dstring_new();
+		oldn = dstring_new();
+		newn = dstring_new();
 
 		fclose (cls.download);
 
 		// rename the temp file to it's final name
-                if (strcmp(cls.downloadtempname->str, cls.downloadname->str)) {
-                        if (strncmp(cls.downloadtempname->str,"skins/",6)) {
-                                dsprintf (oldn, "%s/%s", com_gamedir, cls.downloadtempname->str);
-                                dsprintf (newn, "%s/%s", com_gamedir, cls.downloadname->str);
-			} else {
-                                dsprintf (oldn, "qw/%s", cls.downloadtempname->str);
-                                dsprintf (newn, "qw/%s", cls.downloadname->str);
+		if (strcmp(cls.downloadtempname->str, cls.downloadname->str))
+		{
+			if (strncmp(cls.downloadtempname->str,"skins/",6))
+			{
+			dsprintf (oldn, "%s/%s", com_gamedir, cls.downloadtempname->str);
+			dsprintf (newn, "%s/%s", com_gamedir, cls.downloadname->str);
 			}
-                        Con_DPrintf("oldn: %s\n", oldn->str);
-                        Con_DPrintf("newn: %s\n", newn->str);
-                        r = rename (oldn->str, newn->str);
+			else
+			{
+				dsprintf (oldn, "qw/%s", cls.downloadtempname->str);
+				dsprintf (newn, "qw/%s", cls.downloadname->str);
+			}
+			Con_DPrintf("oldn: %s\n", oldn->str);
+			Con_DPrintf("newn: %s\n", newn->str);
+			r = rename (oldn->str, newn->str);
 			if (r)
-                                Con_Printf ("failed to rename. r: %i\n", r); // FS
+				Con_Printf ("failed to rename. r: %i\n", r); // FS
 		}
-                dstring_delete(oldn);
-                dstring_delete(newn);
-                cls.download = NULL;
+		dstring_delete(oldn);
+		dstring_delete(newn);
+		cls.download = NULL;
 		cls.downloadpercent = 0;
 
 		// get another file if needed
