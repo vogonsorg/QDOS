@@ -1,0 +1,62 @@
+QuakeWorld v2.40 for DOS with WATTCP Stack
+Original Concept and WATTCP import coding by NeoZeed
+Coding by [HCI]Mara'akate
+
+Additional code from sezero, taniwha, spoike, LordHavoc, 
+   QuakeForge, Fitzquake, Quakespasm, Darkplaces and more.
+---------------------------------------------------------
+
+Table of Contents
+
+1 - Introduction
+2 - Installation
+3 - Known Bugs
+4 - Final Thoughts
+
+
+1 - Introduction
+---------------------------------------------------------
+
+Why code for DOS in 2012 you ask?  Pretty much the same reason anybody
+   is coding Quake ports these days... for fun and to learn some programming.
+   This is my first serious project as far as programming goes and I have
+   learned a lot.  As each day goes by, QDOS and QWDOS grow more and more in
+   their complexity with new features and bug fixes.  I also love knowing
+   all that is sitting between you and Quake is a packet driver, a mouse
+   driver and pure DOS. =)
+
+2 - Installation
+---------------------------------------------------------
+
+1) Extract to your Quake directory
+2) Load your Packet Driver and Mouse Driver.
+3) Run QW.EXE
+4) Frag on!
+
+3 - Known Bugs
+---------------------------------------------------------
+
+* Warpspasm does not play properly and will crash on level 2 or higher.
+   This is an engine limitation and I have to rewrite parts of the BSP
+   handling.
+* Gravis Ultrasound cards may not be initialized properly.  You can start
+   ULTRAMID -Q.  Then run, ULTRAMID -F -Q.  This will initialize your card.
+   For a batch script that handles this issue please see:
+    http://dk.toastednet.org/QDOS/GUSFIX.ZIP
+* PCX Skin Loader is buggy.  Thanks to non-standard sizes and other silliness
+   prevalent in the Quake community some newer skins can cause the client
+   to bomb with Skin_Cache related tracebacks.  Any easy way to avoid this
+   is by using NOSKINS 1 in your console.  HOWEVER(!), some of the cache
+   corrutpion problems may have been rectified.  I've personally been able
+   to leave the client run for 1000 minutes with no crashes.
+
+4 - Final Thoughts
+---------------------------------------------------------
+
+I highly recommend visiting the Utilities section of
+http://dk.toastednet.org/QDOS and using UNIRV and FASTVID to greatly
+increase the video speed in Quake under pure DOS.  DOSLFN will also
+help avoid file renaming conflicts with long file names.
+
+
+Questions?  Comments?  Email me emoaddict15@gmail.com

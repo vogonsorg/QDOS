@@ -1,0 +1,3 @@
+@echo off
+del QDOS.7Z
+7za a QDOS.7Z "CHANGELOG.TXT" "QDOS.EXE" "CWSDPMI.EXE" "README.QD"

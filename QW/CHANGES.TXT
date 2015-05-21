@@ -1,0 +1,114 @@
+QuakeWorld v2.40 for DOS with WATTCP Stack
+Original Concept and WATTCP import coding by NeoZeed
+Coding by [HCI]Mara'akate
+
+Additional code from sezero, taniwha, spoike, LordHavoc, 
+   QuakeForge, Fitzquake, Quakespasm, Darkplaces and more.
+---------------------------------------------------------
+
+* Added FTE extensions for 256 packet entities, double models 1,
+  double models 2, and spawn static 2.
+* Fixed S_KHZ goof-up with GUS MAX/GUS PnP cards.
+* Gravis UltraSound stuttering during map transitions, etc. fixed.
+* Load music from WAV.  **THIS IS STILL EXPERIMENTAL!**
+  If you plan to use this, it MUST be 44khz/16bit *MONO* and you must
+  have at least 128MB RAM allocated via -mem or -heapsize!
+  Stereo cuts off at 1:35'ish mark.  I have not figured out why.
+  Files go into sound/cdtracks/trackX.wav where X is track number.
+  Currently porting S_RawSamples from Quake 2 to allow streaming 
+  without a huge memory allocation and should fix the stereo issue.
+* Rare bug involving playdemo and connection state
+  read more at: http://forums.inside3d.com/viewtopic.php?f=12&t=4944
+* Added S,M,O,H,Q shortcuts on Main Menu.  Thought I ported
+  this over from QDOS, but I guess I forgot!
+* Hack so changing SPECTATOR CVAR will cause a reconnect.
+* Maximum FPS of 240.  Must use CL_MAXFPS to enable.
+* Firing your weapon will return you from AFK.
+* Fixed a serious bug with the CHAT CVAR which could
+  make you unable to shoot.
+* Fixed some potential userinfo spamming with AFK mode.
+* SETINFO CHAT is also a CVAR.
+* TIMESTAMP.  Set to 1 for military time, 2 for 12hr AM/PM format.
+* SHOW_PING.  Set to 1 to show your ping on screen.
+* Fixed some maps bombing relating to MAX_PHYSENT overflow.  The limit has
+  been raised from 32 -> 96 and there is now a check in place so it cannot
+  go over this amount.  Yeah, yeah.  Had to cheat and 'port' QWDOS to
+  Windows so I could debug the issue.
+* NET_BROADCAST_CHAT.  Disable chat broadcasting.
+* Chat buffer upto 32 lines.  Thanks to taniwha for smarter code.
+* CTRL+C to send disconnect from console.
+* CTRL+R to send reconnect from console.
+* CTRL+Q for instant quit.
+* Fixed a skin bug related to magic number crap.
+* Any new CVAR menu options have been moved to Extended Options Menu.
+* CL_UNBINDALL_PROTECTION.  This is enabled by default and is not saved
+   in your CONFIG.CFG.  This protects you from accidentally typing in
+   UNBINDALL or having a server doing this.  However, the UNBINDALL from
+   DEFAULT.CFG will be parsed.
+* SHOW_UPTIME.
+* IN_FREELOOK.  Cvar for freelook/mouselook.
+* Fixed so TOGGLEMENU works after a DISCONNECT.
+* Fixed Sys_DoubleTime, which in turn fixed SHOW_FPS.
+* SHOW_TIME.  Set to 1 for military time, 2 for 12hr AM/PM format.
+   Thanks to Taniwha for some bits of code.
+* CL_ALLOWNEWMAP.  This will allow you to play version 30 maps.  It is highly
+   unsupported.  But, I'd like to hear your results!
+* SKINS cmd while disconnected won't bomb.  Thanks to Taniwha for QF hint.
+* Preliminary support for dstring from QF port.
+* Autorepeating keys.
+* Fixed rare overflow bug with center prints if the video height was
+   200.  Huge thanks to Taniwha!
+* Fixed a rare, nasty bug in CL_TENT.C (thanks Taniwha).
+* S_KHZ -- Allows you to change the sound speed.  It will be saved in your
+   config.cfg.  You must do a SND_RESTART.  This will be read from your
+   CONFIG.CFG on startup.
+* Mouse sensitivity slider goes up to 50.
+* -safevga.  This will override your vid_mode (including any in CFGs) to start
+   at 320x200.  -safe will also add this.
+* "QUIT!" command.  Allows you to quit immediately with no confirmation.
+* You can press enter on the quit screen to default pressing 'y'.
+* Warning about potential sound corruption (and how to fix it) if a GUS is
+   detected.
+* Menu options for V_CONTENTBLEND, NET_SHOWCHAT, and NET_SHOWCHATGFX.
+   These cvars will also be saved to your config.cfg.
+* When a user is typing they will glow and a rotating Quad Damage will be
+   above their head.  There are varying luminosity offsets depending if the
+   user is typing, afk, or afk and typing.  The Quad Damaga will spin faster
+   depending on the state as well.  (Huge thanks to Spoike for QD MDL Code!)
+* -nogus to disable checking ULTRASND environment variable (useful if you have
+   two sound cards and want to use your SB16 instead)
+* -nocd -- a little faster to type than -nocdaudio ;)
+* JOY_RECALIBRATE allows you recalibrate your joystick any time in quake.
+* Fixed it so you can do "MAKE CLEAN"
+* 2GB fix from Hexen 2: HoT port
+* VESA ini corruption fix from Hexen 2: HoT port
+* Added /V_CONTENTBLEND 0/1 cvar.  Finally, gl_polyblend comes to DOS!
+* /NET_SHOWCHAT 1 to have it tell you if someone else is typing! (Server must
+   support setinfo chat reporting)
+* Raised MAX_EFRAGS 500 -> 2048
+* /MEMCLEAR command to force CL_ClearState() (must be used disconnected)
+* "QuakeWorld DOS vx.xx-xxxx" reported as *ver
+* /AFK command to send out AFK to EZQ clients
+* SND_RESTART -- Restarts the audio stack.
+* -noclear to disable memory clearing.  If you start getting random
+   crashes while playing try not using this.  If it still happens then
+   it's probably some non-standard map.
+* Raised MAX_MAP_MODELS 256->1024
+* Raised MAX_PACKET_ENTITIES 64->600
+* Raised MAX_MOD_KNOWN 256->2048
+* setinfo chat reporting for EZQ clients
+* CD_AUDIO.C no longer has "press any key to continue" for MSCDEX errors
+* Surface Cache size is shown in console again like NQ
+* Raised SURFCACHE_SIZE_AT_320_200 default from 600->4096 -- Should be able
+   to set d_picmip 0 and avoid seeing the RAM icon (for most maps!).
+* Raised MAX_INFO_STRING 196->512
+* -zone to default to 1024 for newer servers
+* CD_AUDIO.C fixed for DOS compile
+* Raised MAX_LBM_HEIGHT 200->480 -- Fixes skin size errors
+* Raised MAX_SERVERINFO_STRING 512->2048 -- Fixes Mod_PointLeaf errors (Thanks
+   Spoike)
+* Raised MAX_SOUNDS and MAX_MODELS 256->1024 -- Load larger maps
+* Mod_LoadAliasGroup: interval<=0 error workaround -- Fixes on connect error
+   (Thanks Spoike)
+* Sys_FloatTime->Sys_DoubleTime -- Fixes many errors related to timing.
+   640x400 and above now playable! (Thanks LordHavoc)

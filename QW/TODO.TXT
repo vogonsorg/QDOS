@@ -1,0 +1,14 @@
+* Find out what is crashing 1600x1200 when you jump into the water.
+* Redo PCX Loader
+* Finish up dstring
+* Fix GUS Initialization
+* MP3/OGG (up in the air if I really want this)
+* AddCommand after host has been initialized
+* In-game browser
+* Connect to IRC
+* Finish up S_RawSamples so Stereo Music WAV can work
+
+* <s>Fix SND_RESTART bug</s> - Done!  Thanks sezero
+* <s>Implement dstring.c</s> - Done!  Thanks taniwha
+* <s>S_KHZ</s> - Done!
+* <s>Fix FPS Counter</s> - Done!

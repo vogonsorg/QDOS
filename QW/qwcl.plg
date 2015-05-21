@@ -1,0 +1,27 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: qwcl - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\Frank\LOCALS~1\Temp\RSP98B.tmp" with contents
+[
+/nologo /G5 /ML /Gm /GX /ZI /Od /I "dxsdk\sdk\inc" /I "scitech\include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FR".\Debug/" /Fp".\Debug/qwcl.pch" /YX /Fo".\Debug/" /Fd".\Debug/" /FD /c 
+"F:\PROJ\QW\common.c"
+]
+Creating command line "cl.exe @C:\DOCUME~1\Frank\LOCALS~1\Temp\RSP98B.tmp" 
+<h3>Output Window</h3>
+Compiling...
+common.c
+f:\proj\qw\common.c(415) : warning C4761: integral size mismatch in argument; conversion supplied
+f:\proj\qw\common.c(417) : warning C4761: integral size mismatch in argument; conversion supplied
+
+
+
+<h3>Results</h3>
+common.obj - 0 error(s), 2 warning(s)
+</pre>
+</body>
+</html>

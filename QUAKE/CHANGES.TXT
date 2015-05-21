@@ -1,0 +1,133 @@
+Quake v1.09 for DOS with WATTCP Stack
+Original Concept and WATTCP import coding by NeoZeed
+Coding by [HCI]Mara'akate
+
+Additional code from sezero, taniwha, spoike, LordHavoc, 
+   QuakeForge, FitzQuake, Quakespasm, Darkplaces and more.
+---------------------------------------------------------
+
+* Warpspasm will now play the music without the 3D spatializing effect.
+* Load music from WAV.  **THIS IS STILL EXPERIMENTAL!**
+  If you plan to use this, it MUST be 44khz/16bit *MONO* and you must
+  have at least 128MB RAM allocated via -mem or -heapsize!
+  Stereo cuts off at 1:35'ish mark.  I have not figured out why.
+  Files go into sound/cdtracks/trackX.wav where X is track number.
+  Currently porting S_RawSamples from Quake 2 to allow streaming 
+  without a huge memory allocation and should fix the stereo issue.
+* Now compressed with UPX -9 for sneakernet dudes.
+* MAX_DATAGRAM reduced from 32000 to 8000.  Causing IPX issues.
+  If this breaks support connecting to Fitz servers let me know.
+* SV_LOADENTFILES warns you if an ENT file is loaded.
+* Fixed SV_LOADENTFILES to only load from the gamedir.
+* Rare bug involving playdemo and connection state
+  read more at: http://forums.inside3d.com/viewtopic.php?f=12&t=4944
+* SV_DUMPENTITIES.  Dump entities of current map into your /maps gamedir.
+* SV_LOADENTFILES.  Defaults to 1.  Allows use of external ent files.
+  Coded adapted from MVDSV.
+* TIMESTAMP.  Set to 1 for military time, 2 for 12hr AM/PM format.
+* Various FitzQuake imports including: Dynamic game directory loading,
+  Cmdlist, Unalias, and probably a few others I can't remember.
+* Nehahra Menus work properly.
+* "-quoth", "-warp", and "-nehahra" paramater support.
+* PF_TRACETOSS QC support.  For Nehahra, but other mods may be
+  using this.  Thanks to LordHavoc for his code and advice.
+* Menu shortcut keys.
+  - 's', 'm', 'o', 'h', and 'q' at the main menu.
+  - 'e' and 'v' at the options menu.
+* BSP Version 28 (Quake Pre-Release) support.  Thanks to Engoo port guy.
+* Flashlight command.  Bind a key to FLASHLIGHT.
+* Partial Nehahra support.  Explosions effects are parsed, but do not
+  have any special effects.
+* Warpspasm support!!
+* MAX_EDICTS for use with Fitzquake Protocol.
+* Fitzquake Protocol (v666) support!
+* Chat buffer upto 32 lines.  Thanks to taniwha for smarter code.
+* CTRL+C to send disconnect from console.
+* CTRL+Q for Instant Quit.
+* Hack to hide the 'Unknown command: "init"' from runeq and other
+   servers.
+* Any new CVAR menu options have been moved to Extended Options Menu.
+* CL_WARNCMD.  From QW.  Set to 0 to disable Unknown Command warnings.
+* CL_UNBINDALL_PROTECTION.  This is enabled by default and is not saved
+   in your CONFIG.CFG.  This protects you from accidentally typing in
+   UNBINDALL or having a server doing this.  However, the UNBINDALL from
+   DEFAULT.CFG will be parsed.
+* SHOW_UPTIME.  Set to 1 for server time, 2 for total time you've wasted
+   playing quake this sesion =).
+* IN_FREELOOK.  Cvar for freelook/mouselook.
+* SHOW_TIME.  Set to 1 for military time, 2 for 12hr AM/PM format.
+   Thanks to Taniwha for some bits of code.
+* Preliminary support for dstring from QF port.
+* Fixed rare overflow bug with center prints if the video height was
+   200.  Huge thanks to Taniwha!
+* Support for connect IP:PORT.  It must be in this format.  I plan to
+   add support for "connect IP PORT" as well.
+* S_KHZ -- Allows you to change the sound speed.  It will be saved in your
+   config.cfg.  You must do a SND_RESTART.  This will be read from your
+   CONFIG.CFG on startup.
+* K_END and K_HOME now function in console (thanks Taniwha for the hints).
+* Autorepeating keys.
+* SHOW_FPS -- Part of this is from Quakespasm port and some from QW.
+   The CVAR is saved in your config.cfg and it is a menu option.
+* SND_SHUTDOWN.
+* MENU_ADDRESSBOOK -- It does work, but you need to set your own ADR0-ADR9.
+   I plan to add an edit sub-menu and merge this into the TCP/IP menu.
+* Pressing PGUP on console shows the "^ ^ ^ ^ ^" like QW does.
+* Fixed a rare, nasty bug in CL_TENT.C (thanks Taniwha).
+* CVARLIST from Quakespasm port.
+* Mouse sensitivity slider goes up to 50.
+* -safevga.  This will override your vid_mode (including any in CFGs) to start
+   at 320x200.  -safe will also add this.
+* "QUIT!" command.  Allows you to quit immediately with no confirmation.
+* You can press enter on the quit screen to default pressing 'y'.
+* All drivers now coexist peacefully (BW, MP, Serial, and IPX).  Huge thanks
+   to Ozkan Sezer (sezero) of Hammer of Thyrion port for making this happen!
+   Can't thank this guy enough for all his wonderful help!
+* You can play QDOS without a packet driver.  Thanks to Ozkan Sezer (sezero)
+   of Hammer of Thyrion port for the fix.  I hope to have all drivers
+   coexisting peacefully (bw, mp, serial, and ipx) with WATT32 so you can
+   load this on Win9X and still play online.
+* CL_NODEMOS.  This will allow you to disable the startup demos.  It is
+   stored in your config.cfg and there is a menu option for it.  You can
+   also use -nodemo.
+* CL_FULLPITCH and PQ_FULLPITCH support.  As far as I can tell, most servers
+   have disabled it anyways.  It's best to add this to your autoexec.cfg as
+   most servers will force it to become 0 if they don't want you using it
+   for obvious cheating concerns.  There is also a menu value for this.
+* Warning about potential sound corruption (and how to fix it) if a GUS is
+   detected.
+* F_Version reply support.  Confuse everyone during a game!
+* Menu option for V_CONTENTBLEND.  This cvar will also be saved to your
+   config.cfg.
+* -nogus to disable checking ULTRASND environment variable (useful if you have
+   two sound cards and one to use your SB16 instead).
+* -nocd -- a little faster to type than -nocdaudio ;)
+* JOY_RECALIBRATE allows you recalibrate your joystick any time in quake.
+* Fixed it so you can do "MAKE CLEAN" and spits out qdos.exe
+   instead of quake.exe.
+* If -mem <value> is not defined it will default to 32MB (just like QW)
+   instead of allocating all available RAM.
+* 2GB fix from Hexen 2: HoT port.
+* VESA ini corruption fix from Hexen 2: HoT port.
+* Raised MAX_EFRAGS from 640->2048.
+* Added V_CONTENTBLEND 0/1 cvar.  Finally, gl_polyblend comes to DOS!
+* SND_RESTART -- Restarts the audio stack.
+* -noclear to disable memory clearing.  If you start getting random
+   crashes while playing try not using this.  If it still happens then
+   it's probably some non-standard map.
+* FOV > 90 Hack.
+* Raised some limits for edicts, sound, etc. (Referenced from Darkplaces).
+* -zone to default to 1024 for newer servers.
+* Raised SURFCACHE_SIZE_AT_320_200 default from 600->4096 -- Should be able
+   to set d_picmip 0 and avoid seeing the RAM icon (for most maps!).
+* CD_AUDIO.C no longer has "press any key to continue" for MSCDEX errors.
+
+QIP Fixes (http://www.inside3d.com/qip/home.shtml):
+* Cache_Alloc: already allocated Fix.
+* Coop not cleared when selecting SP through menu Fix.
+* MOVETYPE_PUSH error with non bsp models Fix.
+* SV_MAXVELOCITY Fix.
+* Win9X/Fast PC timing Fix.
+* Input is initialized before video (i.e. Joystick) Fix.
+* Win9X false amount of allocated memory Fix.
+* SB without BLASTER GPF Fix.
