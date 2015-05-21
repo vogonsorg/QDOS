@@ -1,0 +1,15 @@
+# ignore all make dependency files
+*.d
+*.o
+bin/
+# ignore all the windows binaries - they shouldn't be committed! 
+Debug/
+Release/
+*.ncb
+*.opt
+*.plg
+*.suo
+*.user
+*.aps
+*.clw
+out.txt
