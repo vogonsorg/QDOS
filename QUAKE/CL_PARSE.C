@@ -320,7 +320,7 @@ void CL_ParseServerInfo (void)
 	char	model_precache[MAX_MODELS][MAX_QPATH];
 	char	sound_precache[MAX_SOUNDS][MAX_QPATH];
 	
-	Con_DPrintf ("Serverinfo packet received.\n");
+	Con_DPrintf (DEVELOPER_MSG_NET, "Serverinfo packet received.\n");
 //
 // wipe the client_state_t struct
 //

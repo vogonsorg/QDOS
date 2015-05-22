@@ -132,7 +132,7 @@ void Host_EndGame (const char *message, ...)
    va_start (argptr,message);
    dvsprintf (string,message,argptr);
    va_end (argptr);
-   Con_DPrintf ("Host_EndGame: %s\n",string->str);
+   Con_DPrintf (DEVELOPER_MSG_NET, "Host_EndGame: %s\n",string->str);
    
    if (sv.active)
       Host_ShutdownServer (false);
@@ -160,35 +160,35 @@ void Host_Error (const char *error, ...)
    va_list     argptr;
 //   char     string[1024];
 	static dstring_t *string; // FS: New school dstring
-   static   qboolean inerror = false;
+	static   qboolean inerror = false;
 
-   if (!string)
-	   string = dstring_new();
+	if (!string)
+		string = dstring_new();
    
-   if (inerror)
-      Sys_Error ("Host_Error: recursively entered");
-   inerror = true;
+	if (inerror)
+		Sys_Error ("Host_Error: recursively entered");
+	inerror = true;
    
-   SCR_EndLoadingPlaque ();      // reenable screen updates
+	SCR_EndLoadingPlaque ();      // reenable screen updates
 
-   va_start (argptr,error);
-   dvsprintf (string,error,argptr);
-   va_end (argptr);
-   Con_Printf ("Host_Error: %s\n",string->str);
+	va_start (argptr,error);
+	dvsprintf (string,error,argptr);
+	va_end (argptr);
+	Con_Printf ("Host_Error: %s\n",string->str);
    
-   if (sv.active)
-      Host_ShutdownServer (false);
+	if (sv.active)
+		Host_ShutdownServer (false);
 
-   if (cls.state == ca_dedicated)
-      Sys_Error ("Host_Error: %s\n",string->str); // dedicated servers exit
+	if (cls.state == ca_dedicated)
+		Sys_Error ("Host_Error: %s\n",string->str); // dedicated servers exit
 
 	CL_Disconnect ();
 	cls.demonum = -1;
 	cl.intermission = 0; //johnfitz -- for errors during intermissions (changelevel with no map found, etc.)
 
-   inerror = false;
+	inerror = false;
 
-   longjmp (host_abortserver, 1);
+	longjmp (host_abortserver, 1);
 }
 
 /*
@@ -548,7 +548,7 @@ not reinitialize anything.
 */
 void Host_ClearMemory (void)
 {
-   Con_DPrintf ("Clearing memory\n");
+   Con_DPrintf (DEVELOPER_MSG_MEM, "Clearing memory\n");
    D_FlushCaches ();
    Mod_ClearAll ();
    if (host_hunklevel)

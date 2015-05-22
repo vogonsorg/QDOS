@@ -24,7 +24,6 @@ Additional code from sezero, taniwha, spoike, LordHavoc,
   * DEVELOPER_MSG_ENTITY - Entity msgs				// 16384
   * DEVELOPER_MSG_SAVE - Save/Restore msgs			// 32768
   * DEVELOPER_MSG_VERBOSE - Extremely verbose msgs		// 65536
-
 * Added FTE extensions for 256 packet entities, double models 1,
   double models 2, spawn static 2, and chunked downloads.
 * Tab completion with console commands will show all possible cmds, aliases,

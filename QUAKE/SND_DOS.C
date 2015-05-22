@@ -612,7 +612,7 @@ qboolean SNDDMA_Init(void)
 	}
 	if (GUS_Init ())
 	{
-		Con_DPrintf("GUS_Init\n");
+		Con_DPrintf(DEVELOPER_MSG_SOUND, "GUS_Init\n");
 		dmacard = dma_gus;
 		havegus = 1; // FS
 		S_StopAllSoundsC(); // FS: For GUS Buffer Clear Fix
@@ -620,7 +620,7 @@ qboolean SNDDMA_Init(void)
 	}
 	if (BLASTER_Init ())
 	{
-		  Con_DPrintf("BLASTER_Init\n");
+		  Con_DPrintf(DEVELOPER_MSG_SOUND, "BLASTER_Init\n");
 		dmacard = dma_blaster;
 		return true;
 	}

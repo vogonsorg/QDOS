@@ -778,7 +778,7 @@ qboolean	ED_ParseEpair (void *base, ddef_t *key, char *s)
 		{
 			//johnfitz -- HACK -- suppress error becuase fog/sky fields might not be mentioned in defs.qc
 			if (strncmp(s, "sky", 3) && strcmp(s, "fog"))
-				Con_DPrintf ("Can't find field %s\n", s);
+				Con_DPrintf(DEVELOPER_MSG_PROGS, "Can't find field %s\n", s);
 			return false;
 		}
 		*(int *)d = G_INT(def->ofs);
@@ -882,7 +882,7 @@ if (!strcmp(com_token, "light"))
 		{
 			//johnfitz -- HACK -- suppress error becuase fog/sky/alpha fields might not be mentioned in defs.qc
 			if (strncmp(keyname, "sky", 3) && strcmp(keyname, "fog") && strcmp(keyname, "alpha"))
-				Con_DPrintf ("\"%s\" is not a field\n", keyname); //johnfitz -- was Con_Printf
+				Con_DPrintf(DEVELOPER_MSG_PROGS, "\"%s\" is not a field\n", keyname); //johnfitz -- was Con_Printf
 			continue;
 		}
 
@@ -990,7 +990,7 @@ void ED_LoadFromFile (char *data)
 		PR_ExecuteProgram (func - pr_functions);
 	}	
 
-	Con_DPrintf ("%i entities inhibited\n", inhibit);
+	Con_DPrintf(DEVELOPER_MSG_PROGS, "%i entities inhibited\n", inhibit);
 }
 
 
@@ -1012,7 +1012,7 @@ void PR_LoadProgs (void)
 	progs = (dprograms_t *)COM_LoadHunkFile ("progs.dat");
 	if (!progs)
 		Sys_Error ("PR_LoadProgs: couldn't load progs.dat");
-	Con_DPrintf ("Programs occupy %iK.\n", com_filesize/1024);
+	Con_DPrintf(DEVELOPER_MSG_PROGS, "Programs occupy %iK.\n", com_filesize/1024);
 
 	for (i=0 ; i<com_filesize ; i++)
 		CRC_ProcessByte (&pr_crc, ((byte *)progs)[i]);

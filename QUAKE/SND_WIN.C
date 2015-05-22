@@ -690,7 +690,7 @@ void SNDDMA_Submit(void)
 	{
 		if ( snd_completed == snd_sent )
 		{
-			Con_DPrintf ("Sound overrun\n");
+			Con_DPrintf (DEVELOPER_MSG_SOUND, "Sound overrun\n");
 			break;
 		}
 

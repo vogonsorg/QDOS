@@ -663,10 +663,10 @@ void S_ClearBuffer (void)
 #ifndef _WINDOWS
 		if(havegus)
 		{
-			Con_DPrintf("Clearing GUS DMA Buffer!\n");
+			Con_DPrintf(DEVELOPER_MSG_SOUND, "Clearing GUS DMA Buffer!\n");
          GUS_ClearDMA();
 		}
-      Con_DPrintf("Cleared buffer!\n"); // FS: Hjalp me GUS
+      Con_DPrintf(DEVELOPER_MSG_SOUND, "Cleared GUS DMA buffer!\n"); // FS: Hjalp me GUS
 #endif
 }
 
@@ -686,7 +686,7 @@ void S_StaticSound (sfx_t *sfx, vec3_t origin, float vol, float attenuation)
 
 	if (total_channels == MAX_CHANNELS)
 	{
-		Con_DPrintf ("total_channels == MAX_CHANNELS\n"); // FS: Now DPrintf
+		Con_DPrintf (DEVELOPER_MSG_SOUND, "total_channels == MAX_CHANNELS\n"); // FS: Now DPrintf
 		return;
 	}
 
@@ -1029,15 +1029,15 @@ void S_MusicPlay(int cdtrack)
 
 	sfx_t   *sfx;
 
-        if(cdtrack <= 1)
-        {
-                if (developer.value > 1)
-                {
-                        Con_Warning("CD Track is invalid!\n");
-                }
-                return;
-        }
-	Con_DPrintf("Attempting to play music track %i\n", cdtrack);
+	if(cdtrack <= 1)
+	{
+		if (developer.value > 1)
+		{
+			Con_Warning("CD Track is invalid!\n");
+		}
+		return;
+	}
+	Con_DPrintf(DEVELOPER_MSG_SOUND, "Attempting to play music track %i\n", cdtrack);
 	Q_strcpy(name, "cdtracks/track");
 	sprintf(buffer2,"%d",cdtrack);
 	Q_strcat(name,buffer2);
@@ -1144,7 +1144,7 @@ void S_MusicSound (char *sfx, vec3_t origin, float vol, float attenuation)
 
 	if (total_channels == MAX_CHANNELS)
 	{
-		Con_DPrintf ("total_channels == MAX_CHANNELS\n"); // FS: Now DPrintf
+		Con_DPrintf (DEVELOPER_MSG_SOUND, "total_channels == MAX_CHANNELS\n"); // FS: Now DPrintf
 		return;
 	}
 

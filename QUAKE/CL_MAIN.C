@@ -126,7 +126,7 @@ void CL_Disconnect (void)
 		if (cls.demorecording)
 			CL_Stop_f ();
 
-		Con_DPrintf ("Sending clc_disconnect\n");
+		Con_DPrintf (DEVELOPER_MSG_NET, "Sending clc_disconnect\n");
 		SZ_Clear (&cls.message);
 		MSG_WriteByte (&cls.message, clc_disconnect);
 		NET_SendUnreliableMessage (cls.netcon, &cls.message);
@@ -170,7 +170,7 @@ void CL_EstablishConnection (char *host)
 	cls.netcon = NET_Connect (host);
 	if (!cls.netcon)
 		Host_Error ("CL_Connect: connect failed\n");
-	Con_DPrintf ("CL_EstablishConnection: connected to %s\n", host);
+	Con_DPrintf (DEVELOPER_MSG_NET, "CL_EstablishConnection: connected to %s\n", host);
 	
 	cls.demonum = -1;		 // not in the demo loop now
 	cls.state = ca_connected;
@@ -188,7 +188,7 @@ void CL_SignonReply (void)
 {
 	char  str[8192];
 
-	Con_DPrintf ("CL_SignonReply: %i\n", cls.signon);
+	Con_DPrintf (DEVELOPER_MSG_NET, "CL_SignonReply: %i\n", cls.signon);
 
 	switch (cls.signon)
 	{
@@ -243,7 +243,7 @@ void CL_NextDemo (void)
 		if (!cls.demos[cls.demonum][0])
 		{
 			if (!cl_demos.value || nostartupdemos == 1) // FS: Disable startup demos
-				Con_DPrintf("Startup demos disabled.");
+				Con_DPrintf(DEVELOPER_MSG_STANDARD, "Startup demos disabled.");
 			else  Con_Printf ("No demos listed with startdemos\n");
 			cls.demonum = -1;
 			return;
@@ -649,7 +649,7 @@ void CL_SendCmd (void)
 	
 	if (!NET_CanSendMessage (cls.netcon))
 	{
-		Con_DPrintf ("CL_WriteToServer: can't send\n");
+		Con_DPrintf (DEVELOPER_MSG_NET, "CL_WriteToServer: can't send\n");
 		return;
 	}
 

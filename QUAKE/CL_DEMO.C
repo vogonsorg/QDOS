@@ -272,9 +272,9 @@ void CL_PlayDemo_f (void)
 	int c;
 	qboolean neg = false;
 
-        name = dstring_new();
+	name = dstring_new();
 
-        if (cmd_source != src_command)
+	if (cmd_source != src_command)
 	{
 		dstring_delete(name);
 		return;
@@ -283,8 +283,8 @@ void CL_PlayDemo_f (void)
 	if (Cmd_Argc() != 2)
 	{
 		Con_Printf ("play <demoname> : plays a demo\n");
-                dstring_delete(name);
-                return;
+		dstring_delete(name);
+	return;
 	}
 
 //

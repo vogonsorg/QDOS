@@ -294,7 +294,7 @@ int IPX_Init(void)
 	if ((net_controlsocket = IPX_OpenSocket (0)) == -1)
 	{
 		dos_freememory(lowmem_buffer);
-		Con_DPrintf ("IPX_Init: Unable to open control socket\n");
+		Con_DPrintf (DEVELOPER_MSG_NET, "IPX_Init: Unable to open control socket\n");
 		return -1;
 	}
 
@@ -361,17 +361,17 @@ int IPX_OpenSocket(int port)
 	__dpmi_simulate_real_mode_procedure_retf((__dpmi_regs *)&regs);
 	if (regs.h.al == 0xfe)
 	{
-		Con_DPrintf("IPX_OpenSocket: all sockets in use\n");
+		Con_DPrintf(DEVELOPER_MSG_NET, "IPX_OpenSocket: all sockets in use\n");
 		return -1;
 	}
 	if (regs.h.al == 0xff)
 	{
-		Con_DPrintf("IPX_OpenSocket: socket already open\n");
+		Con_DPrintf(DEVELOPER_MSG_NET, "IPX_OpenSocket: socket already open\n");
 		return -1;
 	}
 	if (regs.h.al != 0)
 	{
-		Con_DPrintf("IPX_OpenSocket: error %02x\n", regs.h.al);
+		Con_DPrintf(DEVELOPER_MSG_NET, "IPX_OpenSocket: error %02x\n", regs.h.al);
 		return -1;
 	}
 	socket = regs.x.dx;

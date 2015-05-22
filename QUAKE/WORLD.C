@@ -315,7 +315,7 @@ void SV_TouchLinks ( edict_t *ent, areanode_t *node )
 		//johnfitz -- the PR_ExecuteProgram above can alter the linked edicts -- fix from tyrquake 
 		if (next != l->next && l->next)
 		{
-			Con_DPrintf ("SV_TouchLinks: next != l->next\n"); // FS: Dprintf
+			Con_DPrintf (DEVELOPER_MSG_ENTITY, "SV_TouchLinks: next != l->next\n"); // FS: Dprintf
 			next = l->next;
 		}
 		//johnfitz
@@ -685,7 +685,7 @@ qboolean SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec
 		{
 			trace->fraction = midf;
 			VectorCopy (mid, trace->endpos);
-			Con_DPrintf ("backup past 0\n");
+			Con_DPrintf (DEVELOPER_MSG_NET, "backup past 0\n");
 			return false;
 		}
 		midf = p1f + (p2f - p1f)*frac;

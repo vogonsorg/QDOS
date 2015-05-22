@@ -151,7 +151,7 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 
 	if (info.channels != 1)
 	{
-		Con_DPrintf ("%s is a stereo sample\n",s->name); // FS: Testing
+		Con_DPrintf (DEVELOPER_MSG_SOUND, "%s is a stereo sample\n",s->name); // FS: Testing
 	}
 
 	stepscale = (float)info.rate / shm->speed;	
@@ -190,7 +190,7 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 	info = GetWavinfo (s->name, data, com_filesize);
 	if (info.channels != 1)
 	{
-		Con_DPrintf ("%s is a stereo sample\n",s->name); // FS: Testing
+		Con_DPrintf (DEVELOPER_MSG_SOUND, "%s is a stereo sample\n",s->name); // FS: Testing
 	}
 
 	stepscale = (float)info.rate / shm->speed;	

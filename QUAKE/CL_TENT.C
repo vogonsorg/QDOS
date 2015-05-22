@@ -96,8 +96,7 @@ void CL_ParseBeam (model_t *m)
 			return;
 		}
 	}
-	if (developer.value > 1) // FS: verbose
-		Con_DPrintf ("beam list overflow!\n");
+	Con_DPrintf (DEVELOPER_MSG_NET, "beam list overflow!\n");
 }
 
 /*
@@ -254,7 +253,7 @@ void CL_ParseTEnt (void)
 		color[0] = MSG_ReadCoord();
 		color[1] = MSG_ReadCoord ();
 		color[2] = MSG_ReadCoord ();
-		Con_DPrintf("Not implemented!\n"); // FS: For Nehahra
+		Con_DPrintf(DEVELOPER_MSG_VERBOSE, "Not implemented!\n"); // FS: For Nehahra
 		break;
 	case TE_LIGHTNING4NEH:
 		pos[0] = MSG_ReadCoord ();
@@ -262,7 +261,7 @@ void CL_ParseTEnt (void)
 		pos[2] = MSG_ReadCoord ();
 		break;
 	default:
-                Sys_Error ("CL_ParseTEnt: bad type %i\n", type);
+		Sys_Error ("CL_ParseTEnt: bad type %i\n", type);
         }
 }
 

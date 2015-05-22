@@ -262,6 +262,7 @@ void PR_RunError (const char *error, ...)
 {
 	va_list		argptr;
     static dstring_t    *string; // FS: New school dstring
+
     if (!string)
         string = dstring_new();
 

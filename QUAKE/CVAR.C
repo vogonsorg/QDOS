@@ -189,14 +189,14 @@ void Cvar_SetValue (char *var_name, float value)
 	
 	sprintf (val, "%f",value);
 */ // FS: New school dstring
-        dstring_t *val;
-        val = dstring_new ();
+	dstring_t *val;
+	val = dstring_new ();
 	if (value == (int)value) // FS: Weird zeros fix from QIP
 		dsprintf(val, "%d", (int)value);
 	else
-        	dsprintf(val, "%f",value); 
-        Cvar_Set (var_name, val->str);
-        dstring_delete (val);
+		dsprintf(val, "%f",value); 
+	Cvar_Set (var_name, val->str);
+	dstring_delete (val);
 }
 
 

@@ -548,13 +548,13 @@ static int CheckStatus (ComPort *p)
 		if (p->lineStatus & (LSR_OVERRUN_ERROR | LSR_PARITY_ERROR | LSR_FRAMING_ERROR | LSR_BREAK_DETECT))
 		{
 			if (p->lineStatus & LSR_OVERRUN_ERROR)
-				Con_DPrintf ("Serial overrun error\n");
+				Con_DPrintf(DEVELOPER_MSG_NET, "Serial overrun error\n");
 			if (p->lineStatus & LSR_PARITY_ERROR)
-				Con_DPrintf ("Serial parity error\n");
+				Con_DPrintf(DEVELOPER_MSG_NET, "Serial parity error\n");
 			if (p->lineStatus & LSR_FRAMING_ERROR)
-				Con_DPrintf ("Serial framing error\n");
+				Con_DPrintf(DEVELOPER_MSG_NET, "Serial framing error\n");
 			if (p->lineStatus & LSR_BREAK_DETECT)
-				Con_DPrintf ("Serial break detect\n");
+				Con_DPrintf(DEVELOPER_MSG_NET, "Serial break detect\n");
 			ret = ERR_TTY_LINE_STATUS;
 		}
 

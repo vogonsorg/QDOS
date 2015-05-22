@@ -163,14 +163,14 @@ static int ProcessInQueue(SerialLine *p)
 				{
 					p->currState = STATE_READY;
 					p->lengthFound = 0;
-					Con_DPrintf("Serial: premature EOM\n");
+					Con_DPrintf(DEVELOPER_MSG_NET, "Serial: premature EOM\n");
 					continue;
 				}
 
 				switch (p->mtype)
 				{
 					case MTYPE_RELIABLE:
-						Con_DPrintf("Serial: sending ack %u\n", p->sequence);
+						Con_DPrintf(DEVELOPER_MSG_NET, "Serial: sending ack %u\n", p->sequence);
 						Serial_SendACK (p, p->sequence);
 						if (p->sequence == p->sock->receiveSequence)
 						{
@@ -178,7 +178,7 @@ static int ProcessInQueue(SerialLine *p)
 							p->sock->receiveMessageLength += p->lengthFound;
 						}
 						else
-							Con_DPrintf("Serial: reliable out of order; got %u wanted %u\n", p->sequence, p->sock->receiveSequence);
+							Con_DPrintf(DEVELOPER_MSG_NET, "Serial: reliable out of order; got %u wanted %u\n", p->sequence, p->sock->receiveSequence);
 						break;
 
 					case MTYPE_UNRELIABLE:
@@ -187,14 +187,14 @@ static int ProcessInQueue(SerialLine *p)
 						break;
 
 					case MTYPE_ACK:
-						Con_DPrintf("Serial: got ack %u\n", p->sequence);
+						Con_DPrintf(DEVELOPER_MSG_NET, "Serial: got ack %u\n", p->sequence);
 						if (p->sequence == p->sock->sendSequence)
 						{
 							p->sock->sendSequence = (p->sock->sendSequence + 1) & 0xff;
 							p->sock->canSend = true;
 						}
 						else
-							Con_DPrintf("Serial: ack out of order; got %u wanted %u\n",p->sequence, p->sock->sendSequence);
+							Con_DPrintf(DEVELOPER_MSG_NET, "Serial: ack out of order; got %u wanted %u\n",p->sequence, p->sock->sendSequence);
 						break;
 
 					case MTYPE_CONTROL:
@@ -211,7 +211,7 @@ static int ProcessInQueue(SerialLine *p)
 			if (b != ESCAPE_COMMAND)
 			{
 				p->currState = STATE_ABORT;
-				Con_DPrintf("Serial: Bad escape sequence\n");
+				Con_DPrintf(DEVELOPER_MSG_NET, "Serial: Bad escape sequence\n");
 				continue;
 			}
 
@@ -224,12 +224,12 @@ static int ProcessInQueue(SerialLine *p)
 //DEBUG
 		if (p->sock->receiveMessageLength + p->lengthFound > NET_MAXMESSAGE)
 		{
-			Con_DPrintf("Serial blew out receive buffer: %u\n", p->sock->receiveMessageLength + p->lengthFound);
+			Con_DPrintf(DEVELOPER_MSG_NET, "Serial blew out receive buffer: %u\n", p->sock->receiveMessageLength + p->lengthFound);
 			p->currState = STATE_ABORT;
 		}
 		if (p->sock->receiveMessageLength + p->lengthFound == NET_MAXMESSAGE)
 		{
-			Con_DPrintf("Serial hit receive buffer limit: %u\n", p->sock->receiveMessageLength + p->lengthFound);
+			Con_DPrintf(DEVELOPER_MSG_NET, "Serial hit receive buffer limit: %u\n", p->sock->receiveMessageLength + p->lengthFound);
 			p->currState = STATE_ABORT;
 		}
 //end DEBUG
@@ -244,7 +244,7 @@ static int ProcessInQueue(SerialLine *p)
 					if ((b & MTYPE_CLIENT) != 0)
 					{
 						p->currState = STATE_ABORT;
-						Con_DPrintf("Serial: client got own message\n");
+						Con_DPrintf(DEVELOPER_MSG_NET, "Serial: client got own message\n");
 						break;
 					}
 				}
@@ -253,7 +253,7 @@ static int ProcessInQueue(SerialLine *p)
 					if ((b & MTYPE_CLIENT) == 0)
 					{
 						p->currState = STATE_ABORT;
-						Con_DPrintf("Serial: server got own message\n");
+						Con_DPrintf(DEVELOPER_MSG_NET, "Serial: server got own message\n");
 						break;
 					}
 					b &= 0x7f;
@@ -291,12 +291,12 @@ static int ProcessInQueue(SerialLine *p)
 				if (p->mtype == MTYPE_RELIABLE && p->lengthStated > MAX_MSGLEN)
 				{
 					p->currState = STATE_ABORT;
-					Con_DPrintf("Serial: bad reliable message length %u\n", p->lengthStated);
+					Con_DPrintf(DEVELOPER_MSG_NET, "Serial: bad reliable message length %u\n", p->lengthStated);
 				}
 				else if (p->mtype == MTYPE_UNRELIABLE && p->lengthStated > MAX_DATAGRAM)
 				{
 					p->currState = STATE_ABORT;
-					Con_DPrintf("Serial: bad unreliable message length %u\n", p->lengthStated);
+					Con_DPrintf(DEVELOPER_MSG_NET, "Serial: bad unreliable message length %u\n", p->lengthStated);
 				}
 				else
 				{
@@ -335,13 +335,13 @@ static int ProcessInQueue(SerialLine *p)
 				else
 				{
 					p->currState = STATE_ABORT;
-					Con_DPrintf("Serial: Bad crc\n");
+					Con_DPrintf(DEVELOPER_MSG_NET, "Serial: Bad crc\n");
 				}
 				break;
 
 			case STATE_EOM:
 				p->currState = STATE_ABORT;
-				Con_DPrintf("Serial: Bad message format\n");
+				Con_DPrintf(DEVELOPER_MSG_NET, "Serial: Bad message format\n");
 				break;
 
 			case STATE_ABORT:
@@ -492,7 +492,7 @@ static void ReSendMessage (qsocket_t *sock)
 {
 	sizebuf_t       temp;
 
-	Con_DPrintf("Serial: re-sending reliable\n");
+	Con_DPrintf(DEVELOPER_MSG_NET, "Serial: re-sending reliable\n");
 	temp.data = sock->sendMessage;
 	temp.maxsize = sock->sendMessageLength;
 	temp.cursize = sock->sendMessageLength;

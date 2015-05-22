@@ -920,7 +920,7 @@ PF_dprint
 */
 void PF_dprint (void)
 {
-	Con_DPrintf ("%s",PF_VarString(0));
+	Con_DPrintf (DEVELOPER_MSG_PROGS, "%s",PF_VarString(0));
 }
 
 char	pr_string_temp[128];

@@ -910,38 +910,38 @@ User command to connect to server
 void Host_Connect_f (void)
 {
 	char	name[MAX_QPATH];
-        int     defaultport = 26000; // FS: -O2 Warning
+	int     defaultport = 26000; // FS: -O2 Warning
 
-        cls.demonum = -1;		// stop demo loop in case this fails
+	cls.demonum = -1;		// stop demo loop in case this fails
 	if (cls.demoplayback)
 	{
 		CL_StopPlayback ();
 		CL_Disconnect ();
 	}
 
-        strcpy (name, Cmd_Argv(3)); // FS: Port Parsing
-        Con_DPrintf("Port: %s\n", name);
-        Con_DPrintf("Defaultport: %i\n", defaultport);
-        Con_DPrintf("Net_hostport: %i\n", net_hostport);
-        Con_DPrintf("DefaultNet: %i\n", DEFAULTnet_hostport);
+	strcpy (name, Cmd_Argv(3)); // FS: Port Parsing
+	Con_DPrintf(DEVELOPER_MSG_NET, "Port: %s\n", name);
+	Con_DPrintf(DEVELOPER_MSG_NET, "Defaultport: %i\n", defaultport);
+	Con_DPrintf(DEVELOPER_MSG_NET, "Net_hostport: %i\n", net_hostport);
+	Con_DPrintf(DEVELOPER_MSG_NET, "DefaultNet: %i\n", DEFAULTnet_hostport);
 
-        if(!strcmp(name, ""))
-        {
-                Con_DPrintf("No port argv passed.  Defaulting %i.\n", DEFAULTnet_hostport); // FS
-                net_hostport = DEFAULTnet_hostport;        
-        }
-        else
-        {
-                net_hostport = Q_atoi(name);
-        }
-        defaultport = net_hostport;
+	if(!strcmp(name, ""))
+	{
+		Con_DPrintf(DEVELOPER_MSG_NET, "No port argv passed.  Defaulting %i.\n", DEFAULTnet_hostport); // FS
+		net_hostport = DEFAULTnet_hostport;        
+	}
+	else
+	{
+		net_hostport = Q_atoi(name);
+	}
+	defaultport = net_hostport;
 
-        strcpy (name, Cmd_Argv(1));
-        Con_DPrintf("Srvr: %s\n", name);
+	strcpy (name, Cmd_Argv(1));
+	Con_DPrintf(DEVELOPER_MSG_NET, "Srvr: %s\n", name);
 
-        CL_EstablishConnection (name);
-        Host_Reconnect_f ();
-        Cbuf_AddText(va("port \"%i\"\n", DEFAULTnet_hostport));
+	CL_EstablishConnection (name);
+	Host_Reconnect_f ();
+	Cbuf_AddText(va("port \"%i\"\n", DEFAULTnet_hostport));
 }
 
 

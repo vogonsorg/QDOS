@@ -677,7 +677,7 @@ void IN_MouseMove (usercmd_t *cmd)
 	}
 
 //if (mx ||  my)
-//	Con_DPrintf("mx=%d, my=%d\n", mx, my);
+//	Con_DPrintf(DEVELOPER_MSG_IO, "mx=%d, my=%d\n", mx, my);
 
 	if (m_filter.value)
 	{

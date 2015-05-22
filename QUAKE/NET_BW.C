@@ -353,7 +353,7 @@ int BW_Init(void)
 	if ((net_controlsocket = BW_OpenSocket (0)) == -1)
 	{
 		dos_freememory(lowmem_buffer);
-		Con_DPrintf ("BW_Init unable to open control socket; disabled\n");
+		Con_DPrintf (DEVELOPER_MSG_NET, "BW_Init unable to open control socket; disabled\n");
 		return -1;
 	}
 

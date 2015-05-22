@@ -265,12 +265,12 @@ void Cmd_Exec_f (void)
 	}
 
 	mark = Hunk_LowMark ();
-        if(!strncmp(Cmd_Argv(1),"default.cfg",11)) // FS: unbindall protection gross hack shit
-        {
-                Con_DPrintf ("default.cfg gross hack shit\n");
-                cl_unbindall_protection.value = 0; // FS: disable the warning if it's default.cfg
-        }
-        f = (char *)COM_LoadHunkFile (Cmd_Argv(1));
+	if(!strncmp(Cmd_Argv(1),"default.cfg",11)) // FS: unbindall protection gross hack shit
+	{
+		Con_DPrintf (DEVELOPER_MSG_VERBOSE, "default.cfg gross hack shit\n");
+		cl_unbindall_protection.value = 0; // FS: disable the warning if it's default.cfg
+	}
+	f = (char *)COM_LoadHunkFile (Cmd_Argv(1));
 	if (!f)
 	{
 		Con_Printf ("couldn't exec %s\n",Cmd_Argv(1));
@@ -744,13 +744,13 @@ void	Cmd_ExecuteString (char *text, cmd_source_t src)
 	}
 	
 // check cvars
-        if (!Cvar_Command () && (cl_warncmd.value || developer.value)) // FS: from QW
-        {
-                if(!strncmp(Cmd_Argv(0), "init", 4))
-                        Con_DPrintf("Unknown Command init hack for some servers\n");
-                else
-                        Con_Printf ("Unknown command \"%s\"\n", Cmd_Argv(0));
-        } 
+	if (!Cvar_Command () && (cl_warncmd.value || developer.value)) // FS: from QW
+	{
+		if(!strncmp(Cmd_Argv(0), "init", 4))
+			Con_DPrintf(DEVELOPER_MSG_VERBOSE, "Unknown Command init hack for some servers\n");
+		else
+		Con_Printf ("Unknown command \"%s\"\n", Cmd_Argv(0));
+	} 
 }
 
 
