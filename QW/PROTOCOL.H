@@ -288,10 +288,10 @@ typedef struct
 	int		flags;			// nolerp, etc
 	vec3_t	origin;
 	vec3_t	angles;
-	unsigned short             modelindex; // FS: fitzquake shit
-	unsigned short             frame;
-	unsigned char             colormap;
-	int            skinnum;
+	int		modelindex; // FS: fitzquake shit
+	unsigned short	frame;
+	unsigned char	colormap;
+	int		skinnum;
 	int		effects;
 } entity_state_t;
 
