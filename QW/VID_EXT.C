@@ -209,10 +209,10 @@ void VID_SetVESAPalette (viddef_t *lvid, vmode_t *pcurrentmode,
 	dos_int86(0x10);
 
 	if (regs.x.ax != 0x4f)
-        {
-        	VGA_SetPalette(lvid, pcurrentmode, jpal);
-                Con_DPrintf ("Unable to load VESA palette\nUsing fallback.");
-        }
+	{
+		VGA_SetPalette(lvid, pcurrentmode, jpal);
+		Con_DPrintf (DEVELOPER_MSG_VIDEO, "Unable to load VESA palette\nUsing fallback.");
+	}
         //QEMU's SVGA BIOS kind of screws this up so as a fallback...
 //        Sys_Error ("Unable to load VESA palette\n");
 }

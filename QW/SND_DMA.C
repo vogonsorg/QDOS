@@ -661,12 +661,12 @@ void S_ClearBuffer (void)
 		Q_memset(shm->buffer, clear, shm->samples * shm->samplebits/8);
 	}
 #ifndef _WINDOWS
-		if(havegus)
-		{
-			Con_DPrintf("Clearing GUS DMA Buffer!\n");
-			GUS_ClearDMA();
-		}
-        Con_DPrintf("Cleared buffer!\n"); // FS: Hjalp me GUS
+	if(havegus)
+	{
+		Con_DPrintf(DEVELOPER_MSG_SOUND, "Clearing GUS DMA Buffer!\n");
+		GUS_ClearDMA();
+	}
+	Con_DPrintf(DEVELOPER_MSG_SOUND, "Cleared GUS DMA buffer!\n"); // FS: Hjalp me GUS
 #endif
 }
 
@@ -686,7 +686,7 @@ void S_StaticSound (sfx_t *sfx, vec3_t origin, float vol, float attenuation)
 
 	if (total_channels == MAX_CHANNELS)
 	{
-		Con_DPrintf ("total_channels == MAX_CHANNELS\n"); // FS: Now DPrintf
+		Con_DPrintf (DEVELOPER_MSG_SOUND, "total_channels == MAX_CHANNELS\n"); // FS: Now DPrintf
 		return;
 	}
 
@@ -1015,14 +1015,14 @@ void S_MusicPlay(int cdtrack)
                 return;
         }
 
-	Con_DPrintf("Attempting to play music track %i\n", cdtrack);
+	Con_DPrintf(DEVELOPER_MSG_SOUND, "Attempting to play music track %i\n", cdtrack);
 	Q_strcpy(name, "cdtracks/track");
 	sprintf(buffer2,"%d",cdtrack);
 	Q_strcat(name,buffer2);
 	Q_strcat(name, ".wav");
 	sfx = S_FindName(name);
 
-        sfx->isCDtrack = 1;
+	sfx->isCDtrack = 1;
 	S_StartSound (hash++, -1, sfx, vec3_origin, 2, 0);
 }
 

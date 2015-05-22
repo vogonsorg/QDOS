@@ -264,7 +264,7 @@ void FlushEntityPacket (void)
    int         word;
    entity_state_t olde, newe;
 
-   Con_DPrintf ("FlushEntityPacket\n");
+   Con_DPrintf(DEVELOPER_MSG_ENTITY, "FlushEntityPacket\n");
 
    memset (&olde, 0, sizeof(olde));
 
@@ -316,7 +316,7 @@ void CL_ParsePacketEntities (qboolean delta)
       oldpacket = cl.frames[newpacket].delta_sequence;
 
       if ( (from&UPDATE_MASK) != (oldpacket&UPDATE_MASK) )
-         Con_DPrintf ("WARNING: from mismatch\n");
+         Con_DPrintf(DEVELOPER_MSG_ENTITY, "WARNING: from mismatch\n");
    }
    else
       oldpacket = -1;
@@ -432,7 +432,7 @@ void CL_ParsePacketEntities (qboolean delta)
             if (full)
             {
                cl.validsequence = 0;
-                                        Con_DPrintf ("WARNING: U_REMOVE on full update\n"); // FS: Changed to a dprintf
+                                        Con_DPrintf(DEVELOPER_MSG_ENTITY, "WARNING: U_REMOVE on full update\n"); // FS: Changed to a dprintf
                FlushEntityPacket ();
                return;
             }
@@ -968,7 +968,7 @@ void CL_LinkPlayers (void)
       if (msec <= 0 || (!cl_predict_players.value && !cl_predict_players2.value))
       {
          VectorCopy (state->origin, ent->origin);
-//Con_DPrintf ("nopredict\n");
+//			Con_DPrintf(DEVELOPER_MSG_VERBOSE, "nopredict\n");
       }
       else
       {
@@ -976,7 +976,7 @@ void CL_LinkPlayers (void)
          if (msec > 255)
             msec = 255;
          state->command.msec = msec;
-//Con_DPrintf ("predict: %i\n", msec);
+//			Con_DPrintf(DEVELOPER_MSG_VERBOSE, "predict: %i\n", msec);
 
          oldphysent = pmove.numphysent;
          CL_SetSolidPlayers (j);
@@ -1121,7 +1121,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
             !dopred)
          {
             VectorCopy (state->origin, pplayer->origin);
-   //Con_DPrintf ("nopredict\n");
+   //Con_DPrintf(DEVELOPER_MSG_VERBOSE, "nopredict\n");
          }
          else
          {
@@ -1129,7 +1129,7 @@ void CL_SetUpPlayerPrediction(qboolean dopred)
             if (msec > 255)
                msec = 255;
             state->command.msec = msec;
-   //Con_DPrintf ("predict: %i\n", msec);
+   //Con_DPrintf(DEVELOPER_MSG_VERBOSE, "predict: %i\n", msec);
 
             CL_PredictUsercmd (state, &exact, &state->command, false);
             VectorCopy (exact.origin, pplayer->origin);

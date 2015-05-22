@@ -590,11 +590,11 @@ void IN_ExternalMove (usercmd_t *cmd)
 	extern_control->sidemove = cmd->sidemove;
 	extern_control->upmove = cmd->upmove;
 
-Con_DPrintf("IN:  y:%f p:%f r:%f f:%f s:%f u:%f\n", extern_control->viewangles[YAW], extern_control->viewangles[PITCH], extern_control->viewangles[ROLL], extern_control->forwardmove, extern_control->sidemove, extern_control->upmove);
+	Con_DPrintf(DEVELOPER_MSG_IO, "IN:  y:%f p:%f r:%f f:%f s:%f u:%f\n", extern_control->viewangles[YAW], extern_control->viewangles[PITCH], extern_control->viewangles[ROLL], extern_control->forwardmove, extern_control->sidemove, extern_control->upmove);
 
 	dos_int86(extern_control->interruptVector);
 
-Con_DPrintf("OUT: y:%f p:%f r:%f f:%f s:%f u:%f\n", extern_control->viewangles[YAW], extern_control->viewangles[PITCH], extern_control->viewangles[ROLL], extern_control->forwardmove, extern_control->sidemove, extern_control->upmove);
+	Con_DPrintf(DEVELOPER_MSG_IO, "OUT: y:%f p:%f r:%f f:%f s:%f u:%f\n", extern_control->viewangles[YAW], extern_control->viewangles[PITCH], extern_control->viewangles[ROLL], extern_control->forwardmove, extern_control->sidemove, extern_control->upmove);
 
 	cl.viewangles[YAW] = extern_control->viewangles[YAW];
 	cl.viewangles[PITCH] = extern_control->viewangles[PITCH];

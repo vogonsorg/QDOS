@@ -361,7 +361,7 @@ void CL_FinishMove (usercmd_t *cmd)
 	{
 		if (afk == 2 || chat.value > 1)
 		{
-			Con_DPrintf("Hjalp!\n");
+			Con_DPrintf(DEVELOPER_MSG_VERBOSE, "Hjalp!\n");
 			Cmd_ChatInfo(0);
 		}
 

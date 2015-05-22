@@ -244,7 +244,7 @@ mspriteframe_t *R_GetSpriteframe (msprite_t *psprite)
 
 	if ((frame >= psprite->numframes) || (frame < 0))
 	{
-		Con_DPrintf ("R_DrawSprite: no such frame %d\n", frame);
+		Con_DPrintf (DEVELOPER_MSG_VIDEO, "R_DrawSprite: no such frame %d\n", frame);
 		frame = 0;
 	}
 

@@ -311,7 +311,7 @@ void CL_SendConnectPacket (
 		// FS: FIXME USE DSTRING
 //		snprintf(tmp, sizeof(tmp), "0x%x 0x%x\n", PROTOCOL_VERSION_FTE, cls.fteprotocolextensions);
 		sprintf(tmp, "0x%x 0x%x\n", PROTOCOL_VERSION_FTE, cls.fteprotocolextensions);
-		Con_DPrintf("0x%x is fte protocol ver and 0x%x is fteprotocolextensions\n", PROTOCOL_VERSION_FTE, cls.fteprotocolextensions);
+		Con_DPrintf(DEVELOPER_MSG_NET, "0x%x is fte protocol ver and 0x%x is fteprotocolextensions\n", PROTOCOL_VERSION_FTE, cls.fteprotocolextensions);
 //		strlcat(data, tmp, sizeof(data));
 		strcat(data->str, tmp);
 	}
@@ -471,7 +471,7 @@ void CL_ClearState (void)
 
    S_StopAllSounds (true);
 
-   Con_DPrintf ("Clearing memory\n");
+   Con_DPrintf (DEVELOPER_MSG_MEM, "Clearing memory\n");
    D_FlushCaches ();
    Mod_ClearAll ();
    if (host_hunklevel)  // FIXME: check this...
@@ -912,7 +912,7 @@ void CL_ConnectionlessPacket (void)
    c = MSG_ReadByte ();
    if (!cls.demoplayback)
       Con_Printf ("%s: ", NET_AdrToString (net_from));
-// Con_DPrintf ("%s", net_message.data + 5);
+// Con_DPrintf (DEVELOPER_MSG_NET, "%s", net_message.data + 5);
    if (c == S2C_CONNECTION)
    {
       Con_Printf ("connection\n");
@@ -1054,51 +1054,49 @@ CL_ReadPackets
 void CL_ReadPackets (void)
 {
 // while (NET_GetPacket ())
-   while (CL_GetMessage())
-   {
-      //
-      // remote command packet
-      //
-      if (*(int *)net_message.data == -1)
-      {
-         CL_ConnectionlessPacket ();
-         continue;
-      }
+	while (CL_GetMessage())
+	{
+		//
+		// remote command packet
+		//
+		if (*(int *)net_message.data == -1)
+		{
+			CL_ConnectionlessPacket ();
+			continue;
+		}
 
-      if (net_message.cursize < 8)
-      {
-         Con_Printf ("%s: Runt packet\n",NET_AdrToString(net_from));
-         continue;
-      }
+		if (net_message.cursize < 8)
+		{
+			Con_Printf ("%s: Runt packet\n",NET_AdrToString(net_from));
+			continue;
+		}
 
-      //
-      // packet from server
-      //
-      if (!cls.demoplayback && 
-         !NET_CompareAdr (net_from, cls.netchan.remote_address))
-      {
-         Con_DPrintf ("%s:sequenced packet without connection\n"
-            ,NET_AdrToString(net_from));
-         continue;
-      }
-      if (!Netchan_Process(&cls.netchan))
-         continue;      // wasn't accepted for some reason
-      CL_ParseServerMessage ();
+		//
+		// packet from server
+		//
+		if (!cls.demoplayback && !NET_CompareAdr (net_from, cls.netchan.remote_address))
+		{
+			Con_DPrintf (DEVELOPER_MSG_NET, "%s:sequenced packet without connection\n" ,NET_AdrToString(net_from));
+			continue;
+		}
+		if (!Netchan_Process(&cls.netchan))
+			continue;      // wasn't accepted for some reason
+		CL_ParseServerMessage ();
 
-//    if (cls.demoplayback && cls.state >= ca_active && !CL_DemoBehind())
-//       return;
-   }
+//		if (cls.demoplayback && cls.state >= ca_active && !CL_DemoBehind())
+//			return;
+	}
 
-   //
-   // check timeout
-   //
-   if (cls.state >= ca_connected
-    && realtime - cls.netchan.last_received > cl_timeout.value)
-   {
-      Con_Printf ("\nServer connection timed out.\n");
-      CL_Disconnect ();
-      return;
-   }
+	//
+	// check timeout
+	//
+	if (cls.state >= ca_connected
+	&& realtime - cls.netchan.last_received > cl_timeout.value)
+	{
+		Con_Printf ("\nServer connection timed out.\n");
+		CL_Disconnect ();
+		return;
+	}
    
 }
 

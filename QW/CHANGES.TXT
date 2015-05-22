@@ -6,8 +6,27 @@ Additional code from sezero, taniwha, spoike, LordHavoc,
    QuakeForge, Fitzquake, Quakespasm, Darkplaces and more.
 ---------------------------------------------------------
 
+* DEVELOPER values are now set with flags.  Setting to Developer 1 will still
+  show all types of developer printfs, EXCEPT extreme verbose stuff (which was
+  normally commented out in the code).  These flags are set just like dmflags
+  in Quake 2. I.e. adding the values for the ones you want.
+  A few flags are currently unused, hence the jump in numbers.
+
+  Available values:
+  * DEVELOPER_MSG_STANDARD - Standard msgs			// 2
+  * DEVELOPER_MSG_SOUND - Sound msgs				// 4
+  * DEVELOPER_MSG_NET - Network msgs				// 8
+  * DEVELOPER_MSG_IO - File IO msgs				// 16
+  * DEVELOPER_MSG_VIDEO - Graphics renderer msgs		// 32
+  * DEVELOPER_MSG_CD - CD Player msgs				// 64
+  * DEVELOPER_MSG_MEM - Memory management msgs			// 128
+  * DEVELOPER_MSG_PHYSICS - Physics msgs			// 2048
+  * DEVELOPER_MSG_ENTITY - Entity msgs				// 16384
+  * DEVELOPER_MSG_SAVE - Save/Restore msgs			// 32768
+  * DEVELOPER_MSG_VERBOSE - Extremely verbose msgs		// 65536
+
 * Added FTE extensions for 256 packet entities, double models 1,
-  double models 2, and spawn static 2.
+  double models 2, spawn static 2, and chunked downloads.
 * Tab completion with console commands will show all possible cmds, aliases,
   and cvars.  Denoted with [C], [A], and [V] respectively.
   This behavior can be disabled with console_old_complete 1.

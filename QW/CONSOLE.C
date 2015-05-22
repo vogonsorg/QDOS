@@ -495,7 +495,7 @@ void Con_Warning (const char *fmt, ...)
 {
 	va_list		argptr;
 //	char		msg[MAXPRINTMSG];
-	static dstring_t *msg;
+	static dstring_t *msg; // FS: new school dstring
 
 	if (!msg)
 		msg = dstring_new();
@@ -515,22 +515,32 @@ Con_DPrintf
 A Con_Printf that only shows up if the "developer" cvar is set
 ================
 */
-void Con_DPrintf (const char *fmt, ...)
+void Con_DPrintf (unsigned long developerFlags, const char *fmt, ...)
 {
 	va_list		argptr;
-        //char            msg[MAXPRINTMSG];
-        static dstring_t        *msg; // FS: new school dstring 
-        if(!msg)
-                msg = dstring_new();
+	//char            msg[MAXPRINTMSG];
+	static dstring_t        *msg; // FS: new school dstring
+	unsigned long	devValue = 0; // FS
 
-        if (!developer.value)
+	if(!msg)
+		msg = dstring_new();
+
+	if (!developer.value)
 		return;			// don't confuse non-developers with techie stuff...
 
+	devValue = (unsigned long)developer.value;
+	
+	if (developer.value == 1)
+		devValue = 65534;
+
+	if (!(devValue & developerFlags))
+		return;
+
 	va_start (argptr,fmt);
-        dvsprintf (msg,fmt,argptr);
+	dvsprintf (msg,fmt,argptr);
 	va_end (argptr);
 	
-        Con_Printf ("%s", msg->str);
+	Con_Printf ("%s", msg->str);
 }
 
 /*

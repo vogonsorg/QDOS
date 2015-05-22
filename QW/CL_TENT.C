@@ -154,7 +154,7 @@ void CL_ParseBeam (model_t *m)
 		}
 	}
 	if (developer.value > 1) // FS: verbose
-		Con_DPrintf ("beam list overflow!\n");
+		Con_DPrintf (DEVELOPER_MSG_NET, "beam list overflow!\n");
 }
 
 /*

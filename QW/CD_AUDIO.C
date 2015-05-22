@@ -308,7 +308,7 @@ static int CDAudio_GetAudioTrackInfo(byte track, int *start)
 
 	if (cdRequest->status & STATUS_ERROR_BIT)
 	{
-		Con_DPrintf("CDAudio_GetAudioTrackInfo %04x\n", cdRequest->status &     0xffff);
+		Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio_GetAudioTrackInfo %04x\n", cdRequest->status &     0xffff);
 		return -1;
 	}
 
@@ -344,7 +344,7 @@ static int CDAudio_GetAudioDiskInfo(void)
 
 	if (cdRequest->status & STATUS_ERROR_BIT)
 	{
-		Con_DPrintf("CDAudio_GetAudioDiskInfo %04x\n", cdRequest->status &      0xffff);
+		Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio_GetAudioDiskInfo %04x\n", cdRequest->status &      0xffff);
 		return -1;
 	}
 
@@ -497,7 +497,7 @@ void CDAudio_Play(byte track, qboolean looping)
 
 	if (track < cd.lowTrack || track > cd.highTrack)
 	{
-		Con_DPrintf("CDAudio_Play: Bad track number %u.\n", track);
+		Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio_Play: Bad track number %u.\n", track);
 		return;
 	}
 
@@ -505,7 +505,7 @@ void CDAudio_Play(byte track, qboolean looping)
 
 	if (cd.track[track].isData)
 	{
-		Con_DPrintf("CDAudio_Play: Can not play data.\n");
+		Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio_Play: Can not play data.\n");
 		return;
 	}
 
@@ -526,7 +526,7 @@ void CDAudio_Play(byte track, qboolean looping)
 
 	if (cdRequest->status & STATUS_ERROR_BIT)
 	{
-		Con_DPrintf("CDAudio_Play: track %u failed\n", track);
+		Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio_Play: track %u failed\n", track);
 		cd.valid = false;
 		playing = false;
 		return;
@@ -721,7 +721,7 @@ void CDAudio_Update(void)
 		ret = CDAudio_MediaChange();
 		if (ret == MEDIA_CHANGED)
 		{
-			Con_DPrintf("CDAudio: media changed\n");
+			Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio: media changed\n");
 			playing = false;
 			wasPlaying = false;
 			cd.valid = false;
@@ -793,7 +793,7 @@ int CDAudio_Init(void)
                return -1; // FS: Just warn me, no need for the press any key shit.
 	}
 	if (regs.x.bx > 1)
-		Con_DPrintf("CDAudio_Init: First CD-ROM drive will be used\n");
+		Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio_Init: First CD-ROM drive will be used\n");
 	cdrom = regs.x.cx;
 
 	regs.x.ax = 0x150c;
@@ -806,7 +806,7 @@ int CDAudio_Init(void)
 			"required for music. See README.TXT\n"
 			"for help.\n"
 			);                      
-		Con_DPrintf("CDAudio_Init: MSCDEX version 2.00 or later required.\n");
+		Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio_Init: MSCDEX version 2.00 or later required.\n");
 		return -1;
 	}
 
@@ -814,7 +814,7 @@ int CDAudio_Init(void)
 ) + sizeof(union readInfo_u));
 	if (memory == NULL)
 	{
-		Con_DPrintf("CDAudio_Init: Unable to allocate low memory.\n");
+		Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio_Init: Unable to allocate low memory.\n");
 		return -1;
 	}
 

@@ -289,13 +289,13 @@ void Cmd_Exec_f (void)
 
 	// FIXME: is this safe freeing the hunk here???
 	mark = Hunk_LowMark ();
-        if(!strncmp(Cmd_Argv(1),"default.cfg",11)) // FS: unbindall protection gross hack shit
-        {
-                Con_DPrintf ("default.cfg gross hack shit\n");
-                cl_unbindall_protection.value = 0; // FS: disable the warning if it's default.cfg
-        }
-        f = (char *)COM_LoadHunkFile (Cmd_Argv(1));
-        if (!f)
+	if(!strncmp(Cmd_Argv(1),"default.cfg",11)) // FS: unbindall protection gross hack shit
+	{
+		Con_DPrintf (DEVELOPER_MSG_VERBOSE, "default.cfg gross hack shit\n");
+		cl_unbindall_protection.value = 0; // FS: disable the warning if it's default.cfg
+	}
+	f = (char *)COM_LoadHunkFile (Cmd_Argv(1));
+	if (!f)
 	{
 		Con_Printf ("couldn't exec %s\n",Cmd_Argv(1));
 		return;

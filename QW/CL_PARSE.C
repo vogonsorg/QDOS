@@ -47,7 +47,7 @@ char *svc_strings[] =
 	"svc_damage",			// [byte] impact [byte] blood [vec3] from
 	
 	"svc_spawnstatic",
-	"OBSOLETE svc_spawnbinary",
+	"svc_fte_spawnstatic2", // FS: FTE extensions
 	"svc_spawnbaseline",
 	
 	"svc_temp_entity",		// <variable>
@@ -75,7 +75,7 @@ char *svc_strings[] =
 	"svc_download",
 	"svc_playerinfo",
 	"svc_nails",
-	"svc_choke",
+	"svc_chokecount",
 	"svc_modellist",
 	"svc_soundlist",
 	"svc_packetentities",
@@ -85,19 +85,19 @@ char *svc_strings[] =
 
 	"svc_setinfo",
 	"svc_serverinfo",
-	"svc_updatepl",
+	"svc_updatepl", // FS: 53
 	"NEW PROTOCOL",
 	"NEW PROTOCOL",
 	"NEW PROTOCOL",
 	"NEW PROTOCOL",
 	"NEW PROTOCOL",
 	"NEW PROTOCOL",
+	"svc_fte_modellistshort", // FS: 60 -- FTE extensions
 	"NEW PROTOCOL",
 	"NEW PROTOCOL",
 	"NEW PROTOCOL",
 	"NEW PROTOCOL",
-	"NEW PROTOCOL",
-	"NEW PROTOCOL",
+	"svc_fte_spawnbaseline2", // FS: 66 -- FTE extensions
 	"NEW PROTOCOL"
 };
 
@@ -352,8 +352,8 @@ void CL_FinishDownload(qboolean rename_files)
 				dsprintf (oldn, "qw/%s", cls.downloadtempname->str);
 				dsprintf (newn, "qw/%s", cls.downloadname->str);
 			}
-			Con_DPrintf("oldn: %s\n", oldn->str);
-			Con_DPrintf("newn: %s\n", newn->str);
+			Con_DPrintf(DEVELOPER_MSG_IO, "oldn: %s\n", oldn->str);
+			Con_DPrintf(DEVELOPER_MSG_IO, "newn: %s\n", newn->str);
 			r = rename (oldn->str, newn->str);
 			if (r)
 				Con_Printf ("failed to rename. r: %i\n", r); // FS
@@ -459,13 +459,13 @@ void CL_Parse_OOB_ChunkedDownload(void)
 
 	if (chunked_download_number != MSG_ReadLong ())
 	{
-		Con_DPrintf("Dropping OOB chunked message, out of sequence\n");
+		Con_DPrintf(DEVELOPER_MSG_NET, "Dropping OOB chunked message, out of sequence\n");
 		return;
 	}
 
 	if (MSG_ReadByte() != svc_download)
 	{
-		Con_DPrintf("Something wrong in OOB message and chunked download\n");
+		Con_DPrintf(DEVELOPER_MSG_NET, "Something wrong in OOB message and chunked download\n");
 		return;
 	}
 
@@ -503,7 +503,7 @@ void CL_ParseChunkedDownload(void)
 		{
 			switch (totalsize)
 			{
-				case -3: Con_DPrintf("Server cancel downloading file %s\n", svname);			break;
+				case -3: Con_DPrintf(DEVELOPER_MSG_NET, "Server cancel downloading file %s\n", svname);			break;
 				case -2: Con_Printf("Server permissions deny downloading file %s\n", svname);	break;
 				default: Con_Printf("Couldn't find file %s on the server\n", svname);			break;
 			}
@@ -617,7 +617,7 @@ void CL_RequestNextDownload (void)
 		break;
 	case dl_none:
 	default:
-		Con_DPrintf("Unknown download type.\n");
+		Con_DPrintf(DEVELOPER_MSG_NET, "Unknown download type.\n");
 	}
 }
 
@@ -719,7 +719,7 @@ void CL_NextUpload(void)
 	MSG_WriteByte (&cls.netchan.message, percent);
 	SZ_Write (&cls.netchan.message, buffer, r);
 
-Con_DPrintf ("UPLOAD: %6d: %d written\n", upload_pos - r, r);
+	Con_DPrintf (DEVELOPER_MSG_NET, "UPLOAD: %6d: %d written\n", upload_pos - r, r);
 
 	if (upload_pos != upload_size)
 		return;
@@ -740,7 +740,7 @@ void CL_StartUpload (byte *data, int size)
 	if (upload_data)
 		free(upload_data);
 
-Con_DPrintf("Upload starting of %d...\n", size);
+Con_DPrintf(DEVELOPER_MSG_NET, "Upload starting of %d...\n", size);
 
 	upload_data = malloc(size);
 	memcpy(upload_data, data, size);
@@ -786,7 +786,7 @@ void CL_ParseServerData (void)
 	extern	char	gamedirfile[MAX_OSPATH];
 	int protover;
 	
-	Con_DPrintf ("Serverdata packet received.\n");
+	Con_DPrintf (DEVELOPER_MSG_NET, "Serverdata packet received.\n");
 //
 // wipe the client_state_t struct
 //
@@ -803,7 +803,7 @@ void CL_ParseServerData (void)
 		if (protover == PROTOCOL_VERSION_FTE)
 		{
 			cls.fteprotocolextensions =  MSG_ReadLong();
-			Con_DPrintf ("Using FTE extensions 0x%x\n", cls.fteprotocolextensions);
+			Con_DPrintf (DEVELOPER_MSG_NET, "Using FTE extensions 0x%x\n", cls.fteprotocolextensions);
 			continue;
 		}
 		if (protover == PROTOCOL_VERSION) //this ends the version info
@@ -1326,7 +1326,7 @@ void CL_SetInfo (void)
 		}
 	}
 
-	Con_DPrintf("SETINFO %s: %s=%s\n", player->name, key, value);
+	Con_DPrintf(DEVELOPER_MSG_NET, "SETINFO %s: %s=%s\n", player->name, key, value);
 
 	Info_SetValueForKey (player->userinfo, key, value, MAX_INFO_STRING);
 
@@ -1370,7 +1370,7 @@ void CL_ServerInfo (void)
 	strncpy (value, MSG_ReadString(), sizeof(value) - 1);
 	key[sizeof(value) - 1] = 0;
 
-	Con_DPrintf("SERVERINFO: %s=%s\n", key, value);
+	Con_DPrintf(DEVELOPER_MSG_NET, "SERVERINFO: %s=%s\n", key, value);
 
 	Info_SetValueForKey (cl.serverinfo, key, value, MAX_SERVERINFO_STRING);
 }
@@ -1490,7 +1490,7 @@ void CL_ParseServerMessage (void)
 		switch (cmd)
 		{
 		default:
-                        Host_EndGame ("CL_ParseServerMessage: Illegible server message %d", cmd);
+			Host_EndGame ("CL_ParseServerMessage: Illegible server message %d", cmd);
 			break;
 			
 		case svc_nop:
@@ -1506,24 +1506,26 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_print:
-                        i = MSG_ReadByte ();
-                        if (i == PRINT_CHAT)
+			i = MSG_ReadByte ();
+			if (i == PRINT_CHAT)
 			{
 				S_LocalSound ("misc/talk.wav");
 				con_ormask = 128;
 			}
-                        fversion = MSG_ReadString();
-                        if (!strncmp(fversion, "Downloading: ", 13)) // FS: MVDSV XE hack
-                        {
-                                Con_DPrintf("%s", fversion);
-                                con_ormask = 0;
-                                break;
-                        }
-                        Con_Printf("%s", fversion); // FS: F_Version Reply
-                        fversion = strchr(fversion, ':');
-                        if (fversion && !strcmp(fversion, ": f_version\n"))
-                                Cbuf_AddText (va("say QuakeWorld DOS with WATTCP v%4.2f.  Built %s at %s.\n", VERSION, date, time));
-                        con_ormask = 0;
+			fversion = MSG_ReadString();
+			if (!strncmp(fversion, "Downloading: ", 13)) // FS: MVDSV XE hack
+			{
+				Con_DPrintf(DEVELOPER_MSG_NET, "%s", fversion);
+				con_ormask = 0;
+				break;
+			}
+			Con_Printf("%s", fversion); // FS: F_Version Reply
+			fversion = strchr(fversion, ':');
+			if (fversion && !strcmp(fversion, ": f_version\n"))
+			{
+				Cbuf_AddText (va("say QuakeWorld DOS with WATTCP v%4.2f.  Built %s at %s.\n", VERSION, date, time));
+			}
+			con_ormask = 0;
 			break;
 			
 		case svc_centerprint:
@@ -1536,16 +1538,15 @@ void CL_ParseServerMessage (void)
 			
 		case svc_stufftext:
 			s = MSG_ReadString ();
-			Con_DPrintf ("stufftext: %s\n", s);
+			Con_DPrintf (DEVELOPER_MSG_NET, "stufftext: %s\n", s);
                         
-                        if(!strncmp(s, "fov ", 4) || !strncmp(s, "_snd_mixahead ", 14)) // FS: gross FOV hack
-                        {
-                                Con_DPrintf ("CVAR stufftext hack for %s\n", s);
-                                break;
-                        }
-
-                        Cbuf_AddText (s);
-                        break;
+			if(!strncmp(s, "fov ", 4) || !strncmp(s, "_snd_mixahead ", 14)) // FS: gross FOV hack
+			{
+				Con_DPrintf (DEVELOPER_MSG_VERBOSE, "CVAR stufftext hack for %s\n", s);
+				break;
+			}
+			Cbuf_AddText (s);
+			break;
 			
 		case svc_damage:
 			V_ParseDamage ();
@@ -1663,11 +1664,11 @@ void CL_ParseServerMessage (void)
 			// FS: Change to allow BGM via WAV
 			cl.cdtrack = MSG_ReadByte ();
 			if(s_usewavbgm.value) // FS
-                        {
-                                S_StopAllSounds(true); // FS
-                        	S_MusicPlay((byte)cl.cdtrack);
-                        }
-                        else
+			{
+				S_StopAllSounds(true); // FS
+				S_MusicPlay((byte)cl.cdtrack);
+			}
+			else
 				CDAudio_Play ((byte)cl.cdtrack, true);
 			break;
 
