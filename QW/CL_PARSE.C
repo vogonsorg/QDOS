@@ -295,6 +295,33 @@ void Sound_NextDownload (void)
 	MSG_WriteString (&cls.netchan.message, va(modellist_name, cl.servercount, 0));
 }
 
+qboolean CL_CreateDownload(int size, qboolean extended)
+{
+//	char    *name; // taniwha
+	dstring_t *name;
+
+	name = dstring_new();
+
+	if (strncmp(cls.downloadtempname->str,"skins/",6))
+		dsprintf(name, "%s/%s", com_gamedir, cls.downloadtempname->str);
+	else
+		dsprintf(name, "qw/%s", cls.downloadtempname->str);
+
+	COM_CreatePath (name->str);
+
+	cls.download = fopen (name->str, "wb");
+	if (!cls.download)
+	{
+		if(!extended)
+			msg_readcount += size;
+		Con_Printf ("Failed to open %s\n", cls.downloadtempname->str);
+		CL_FinishDownload(false);
+		dstring_delete(name);
+		return false;
+	}
+	dstring_delete(name);
+	return true;
+}
 void CL_FinishDownload(qboolean rename_files)
 {
 	dstring_t       *oldn;
@@ -334,6 +361,7 @@ void CL_FinishDownload(qboolean rename_files)
 		dstring_delete(oldn);
 		dstring_delete(newn);
 	}
+
 	cls.download = NULL;
 	cls.downloadpercent = 0;
 	cls.downloadmethod = DL_NONE;
@@ -494,21 +522,8 @@ void CL_ParseChunkedDownload(void)
 		// Start the new download
 		if (!cls.download)
 		{
-			char    *name; // taniwha
-			if (strncmp(cls.downloadtempname->str,"skins/",6))
-				name = va("%s/%s", com_gamedir, cls.downloadtempname->str);
-			else
-				name = va("qw/%s", cls.downloadtempname->str);
-                
-			COM_CreatePath (name);
-			Con_Printf("Creating path: %s\n", name);
-
-			if ( !(cls.download = fopen (name, "wb")) ) 
-			{
-				Con_Printf ("Failed to open %s\n", name);
-				CL_FinishDownload(false); // This also requests next dl.
+			if(!CL_CreateDownload(0, true))
 				return;
-			}
 		}
 
 		cls.downloadmethod  = DL_QWCHUNKS;
@@ -617,7 +632,7 @@ void CL_ParseDownload (void)
 {
 	int		size, percent;
 	//byte    name[1024];
-	int              r;
+	//int              r;
 
 
 #ifdef FTE_PEXT_CHUNKEDDOWNLOADS
@@ -654,26 +669,11 @@ void CL_ParseDownload (void)
 	// open the file if not opened yet
 	if (!cls.download)
 	{
-
-		char    *name; // taniwha
-		if (strncmp(cls.downloadtempname->str,"skins/",6))
-			name = va("%s/%s", com_gamedir, cls.downloadtempname->str);
-		else
-			name = va("qw/%s", cls.downloadtempname->str);
-                
-		COM_CreatePath (name);
-
-		cls.download = fopen (name, "wb");
-		if (!cls.download)
-		{
-			msg_readcount += size;
-			Con_Printf ("Failed to open %s\n", cls.downloadtempname->str);
-			CL_RequestNextDownload ();
+		if(!CL_CreateDownload(size, false)) // FS
 			return;
-		}
 	}
 
-
+	cls.downloadmethod  = DL_QW;
 	fwrite (net_message.data + msg_readcount, 1, size, cls.download);
 	msg_readcount += size;
 
@@ -686,43 +686,7 @@ void CL_ParseDownload (void)
 	}
 	else
 	{
-		//char    oldn[MAX_OSPATH];
-		//char    newn[MAX_OSPATH];
-		dstring_t       *oldn;
-		dstring_t       *newn;
-
-		oldn = dstring_new();
-		newn = dstring_new();
-
-		fclose (cls.download);
-
-		// rename the temp file to it's final name
-		if (strcmp(cls.downloadtempname->str, cls.downloadname->str))
-		{
-			if (strncmp(cls.downloadtempname->str,"skins/",6))
-			{
-			dsprintf (oldn, "%s/%s", com_gamedir, cls.downloadtempname->str);
-			dsprintf (newn, "%s/%s", com_gamedir, cls.downloadname->str);
-			}
-			else
-			{
-				dsprintf (oldn, "qw/%s", cls.downloadtempname->str);
-				dsprintf (newn, "qw/%s", cls.downloadname->str);
-			}
-			Con_DPrintf("oldn: %s\n", oldn->str);
-			Con_DPrintf("newn: %s\n", newn->str);
-			r = rename (oldn->str, newn->str);
-			if (r)
-				Con_Printf ("failed to rename. r: %i\n", r); // FS
-		}
-		dstring_delete(oldn);
-		dstring_delete(newn);
-		cls.download = NULL;
-		cls.downloadpercent = 0;
-
-		// get another file if needed
-
-		CL_RequestNextDownload ();
+		CL_FinishDownload(true);
 	}
 }
 

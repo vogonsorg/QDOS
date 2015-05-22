@@ -64,7 +64,7 @@ cvar_t   cl_predict_players2 = {"cl_predict_players2", "1"};
 cvar_t   cl_solid_players = {"cl_solid_players", "1"};
 
 cvar_t  localid = {"localid", ""};
-cvar_t net_broadcast_chat = {"net_broadcast_chat", "1", true}; // FS: let user decide
+cvar_t	net_broadcast_chat = {"net_broadcast_chat", "1", true}; // FS: let user decide
 
 static qboolean allowremotecmd = true;
 
@@ -135,12 +135,12 @@ byte     *host_colormap;
 
 netadr_t master_adr;          // address of the master server
 
-cvar_t   host_speeds = {"host_speeds","0"};        // set for running times
+cvar_t	host_speeds = {"host_speeds","0"};        // set for running times
 cvar_t  show_fps = {"show_fps","0", true}; // FS                   // set for running times
 cvar_t  show_time = {"show_time","0", true}; // FS: Show time
 cvar_t  show_uptime = {"show_uptime", "0", true}; // FS: Show uptime
 cvar_t	console_old_complete = {"console_old_complete", "0", true}; // FS
-cvar_t   developer = {"developer","0"};
+cvar_t	developer = {"developer","0"};
 
 int         fps_count;
 int bFlashlight = 0; // FS: Flashlight
@@ -174,20 +174,20 @@ CL_Quit_f
 */
 void CL_Quit_f (void)
 {
-   if (1 /* key_dest != key_console */ /* && cls.state != ca_dedicated */)
-   {
-      M_Menu_Quit_f ();
-      return;
-   }
-   CL_Disconnect ();
-   Sys_Quit ();
+	if (1 /* key_dest != key_console */ /* && cls.state != ca_dedicated */)
+	{
+		M_Menu_Quit_f ();
+		return;
+	}
+	CL_Disconnect ();
+	Sys_Quit ();
 }
 
 void CL_Fast_Quit_f (void)
 {
-        CL_Disconnect ();
-        Host_Shutdown();
-        exit(0);
+	CL_Disconnect ();
+	Host_Shutdown();
+	exit(0);
 }
 
 
@@ -198,8 +198,8 @@ CL_Version_f
 */
 void CL_Version_f (void)
 {
-   Con_Printf ("Version %4.2f\n", VERSION);
-   Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
+	Con_Printf ("Version %4.2f\n", VERSION);
+	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
 }
 
 #ifdef PROTOCOL_VERSION_FTE
@@ -258,17 +258,17 @@ void CL_SendConnectPacket (
 #endif
 )
 {
-   netadr_t adr;
-        //char    data[2048]; // FS: New school dstring
-        dstring_t *data;
-        double t1, t2;
+	netadr_t adr;
+	//char    data[2048]; // FS: New school dstring
+	dstring_t *data;
+	double t1, t2;
 
 // JACK: Fixed bug where DNS lookups would cause two connects real fast
 //       Now, adds lookup time to the connect time.
 //     Should I add it to realtime instead?!?!
 
-   if (cls.state != ca_disconnected)
-      return;
+	if (cls.state != ca_disconnected)
+		return;
 
 #ifdef PROTOCOL_VERSION_FTE
 	cls.fteprotocolextensions  = (ftepext & CL_SupportedFTEExtensions());
@@ -276,33 +276,33 @@ void CL_SendConnectPacket (
 
    t1 = Sys_DoubleTime ();
 
-        if (!NET_StringToAdr (cls.servername->str, &adr))
-   {
-      Con_Printf ("Bad server address\n");
-      connect_time = -1;
-      return;
-   }
+	if (!NET_StringToAdr (cls.servername->str, &adr))
+	{
+		Con_Printf ("Bad server address\n");
+		connect_time = -1;
+		return;
+	}
 
-   if (!NET_IsClientLegal(&adr))
-   {
-      Con_Printf ("Illegal server address\n");
-      connect_time = -1;
-      return;
-   }
+	if (!NET_IsClientLegal(&adr))
+	{
+		Con_Printf ("Illegal server address\n");
+		connect_time = -1;
+		return;
+	}
 
-   if (adr.port == 0)
-      adr.port = BigShort (27500);
-   t2 = Sys_DoubleTime ();
+	if (adr.port == 0)
+		adr.port = BigShort (27500);
+	t2 = Sys_DoubleTime ();
 
-   connect_time = realtime+t2-t1;   // for retransmit requests
+	connect_time = realtime+t2-t1;   // for retransmit requests
 
-   cls.qport = Cvar_VariableValue("qport");
+	cls.qport = Cvar_VariableValue("qport");
 
-   Info_SetValueForStarKey (cls.userinfo, "*ip", NET_AdrToString(adr), MAX_INFO_STRING);
+	Info_SetValueForStarKey (cls.userinfo, "*ip", NET_AdrToString(adr), MAX_INFO_STRING);
 
-        Con_Printf ("Connecting to %s...\n", cls.servername->str);
-        data = dstring_new();
-        dsprintf(data, "%c%c%c%cconnect %i %i %i \"%s\"\n",
+	Con_Printf ("Connecting to %s...\n", cls.servername->str);
+	data = dstring_new();
+	dsprintf(data, "%c%c%c%cconnect %i %i %i \"%s\"\n",
                 255, 255, 255, 255,     PROTOCOL_VERSION, cls.qport, cls.challenge, cls.userinfo);
 #ifdef PROTOCOL_VERSION_FTE
 	if (cls.fteprotocolextensions) 
@@ -316,8 +316,8 @@ void CL_SendConnectPacket (
 		strcat(data->str, tmp);
 	}
 #endif // PROTOCOL_VERSION_FTE 
-        NET_SendPacket (strlen(data->str), data->str, adr);
-        dstring_delete(data);
+	NET_SendPacket (strlen(data->str), data->str, adr);
+	dstring_delete(data);
 }
 
 /*
@@ -362,11 +362,11 @@ void CL_CheckForResend (void)
 
    connect_time = realtime+t2-t1;   // for retransmit requests
 
-        Con_Printf ("Connecting to %s...\n", cls.servername->str);
-        data = dstring_new();
-        dsprintf(data, "%c%c%c%cgetchallenge\n", 255, 255, 255, 255);
-        NET_SendPacket (strlen(data->str), data->str, adr);
-        dstring_delete(data);
+	Con_Printf ("Connecting to %s...\n", cls.servername->str);
+	data = dstring_new();
+	dsprintf(data, "%c%c%c%cgetchallenge\n", 255, 255, 255, 255);
+	NET_SendPacket (strlen(data->str), data->str, adr);
+	dstring_delete(data);
 }
 
 void CL_BeginServerConnect(void)
@@ -521,7 +521,7 @@ void CL_Disconnect (void)
    
 // if running a local server, shut it down
 	if (cls.demoplayback)
-	CL_StopPlayback ();
+		CL_StopPlayback ();
 	else if (cls.state != ca_disconnected)
 	{
 		if (cls.demorecording)
@@ -1338,25 +1338,24 @@ Call this to drop to a console without exiting the qwcl
 */
 void Host_EndGame (const char *message, ...)
 {
-   // FS: New school dstring
-   va_list      argptr;
-   //char            string[1024];
-   static dstring_t *string;
+	va_list      argptr;
+	//char            string[1024];
+	static dstring_t *string; // FS: New school dstring
 
-   if (!string)
-      string = dstring_new ();
+	if (!string)
+		string = dstring_new ();
 
-   va_start (argptr, message);
-   dvsprintf (string, message, argptr);
-   va_end (argptr);
+	va_start (argptr, message);
+	dvsprintf (string, message, argptr);
+	va_end (argptr);
 
-   Con_Printf ("\n===========================\n");
-   Con_Printf ("Host_EndGame: %s\n",string->str);
-   Con_Printf ("===========================\n\n");
+	Con_Printf ("\n===========================\n");
+	Con_Printf ("Host_EndGame: %s\n",string->str);
+	Con_Printf ("===========================\n\n");
    
-   CL_Disconnect ();
+	CL_Disconnect ();
 
-   longjmp (host_abort, 1);
+	longjmp (host_abort, 1);
 }
 
 /*
@@ -1368,30 +1367,30 @@ This shuts down the client and exits qwcl
 */
 void Host_Error (const char *error, ...)
 {
-   va_list     argptr;
-   //char            string[1024];
-   static dstring_t       *string; // FS: New school dstring
-   static qboolean inerror = false;
+	va_list     argptr;
+	//char            string[1024];
+	static dstring_t       *string; // FS: New school dstring
+	static qboolean inerror = false;
    
-   if(!string)
-	   string = dstring_new();
+	if(!string)
+		string = dstring_new();
 
-   if (inerror)
-      Sys_Error ("Host_Error: recursively entered");
-   inerror = true;
+	if (inerror)
+		Sys_Error ("Host_Error: recursively entered");
+	inerror = true;
    
-   va_start (argptr,error);
-   dvsprintf (string,error,argptr);
-   va_end (argptr);
-   Con_Printf ("Host_Error: %s\n",string->str);
+	va_start (argptr,error);
+	dvsprintf (string,error,argptr);
+	va_end (argptr);
+	Con_Printf ("Host_Error: %s\n",string->str);
    
-   CL_Disconnect ();
-   cls.demonum = -1;
+	CL_Disconnect ();
+	cls.demonum = -1;
 
-   inerror = false;
+	inerror = false;
 
 // FIXME
-   Sys_Error ("Host_Error: %s\n",string->str);
+	Sys_Error ("Host_Error: %s\n",string->str);
 }
 
 
@@ -1440,6 +1439,7 @@ void Host_Frame (float time)
    static double     time3 = 0;
    int         pass1, pass2, pass3;
    float fps;
+
    if (setjmp (host_abort) )
       return;        // something bad happened, or the server disconnected
 
@@ -1653,23 +1653,23 @@ to run quit through here before the final handoff to the sys code.
 */
 void Host_Shutdown(void)
 {
-   static qboolean isdown = false;
+	static qboolean isdown = false;
    
-   if (isdown)
-   {
-      printf ("recursive shutdown\n");
-      return;
-   }
-   isdown = true;
+	if (isdown)
+	{
+		printf ("recursive shutdown\n");
+		return;
+	}
+	isdown = true;
 
-   Host_WriteConfiguration (); 
+	Host_WriteConfiguration (); 
       
-   CDAudio_Shutdown ();
-   NET_Shutdown ();
-   S_Shutdown();
-   IN_Shutdown ();
-   if (host_basepal)
-      VID_Shutdown();
+	CDAudio_Shutdown ();
+	NET_Shutdown ();
+	S_Shutdown();
+	IN_Shutdown ();
+	if (host_basepal)
+		VID_Shutdown();
 }
 
 void CL_Flashlight_f (void) // FS: Flashlight

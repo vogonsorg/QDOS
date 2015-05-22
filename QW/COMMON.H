@@ -265,3 +265,4 @@ byte    COM_BlockSequenceCheckByte (byte *base, int length, int sequence, unsign
 byte    COM_BlockSequenceCRCByte (byte *base, int length, int sequence);
 
 int build_number( void );
+void CompleteCommand (void); // FS

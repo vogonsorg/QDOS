@@ -705,15 +705,15 @@ play [demoname]
 */
 void CL_PlayDemo_f (void)
 {
-//        char    name[256];
-        dstring_t *name; // FS: new school dstring
-        name = dstring_new();
+//	char    name[256];
+	dstring_t *name; // FS: new school dstring
+	name = dstring_new();
 
 	if (Cmd_Argc() != 2)
 	{
 		Con_Printf ("play <demoname> : plays a demo\n");
-                dstring_delete(name);
-                return;
+		dstring_delete(name);
+		return;
 	}
 
 //
@@ -735,7 +735,7 @@ void CL_PlayDemo_f (void)
 	{
     	Con_Printf ("ERROR: couldn't open %s.\n", name->str); // FS: let's know what it is
 		cls.demonum = -1;		// stop demo loop
-        dstring_delete(name);
+		dstring_delete(name);
 		return;
 	}
 
@@ -743,7 +743,7 @@ void CL_PlayDemo_f (void)
 	cls.state = ca_demostart;
 	Netchan_Setup (&cls.netchan, net_from, 0);
 	realtime = 0;
-        dstring_delete(name);
+	dstring_delete(name);
 }
 
 /*

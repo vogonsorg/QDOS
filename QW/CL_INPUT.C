@@ -504,19 +504,15 @@ void CL_SendCmd (void)
 void CL_SendClientCommand(qboolean reliable, char *format, ...) // FS: From JQuake/EZQ/etc
 {
 	va_list		argptr;
-//	char		string[2048];
-	static dstring_t *string; // FS: New school dstrings
-	int length = 0;
+	dstring_t	*string; // FS: New school dstrings
 
 	if (cls.demoplayback)
 		return;	// no point.
 
-	if(!string)
-		string = dstring_new();
+	string = dstring_new();
 
 	va_start (argptr, format);
 	dvsprintf(string, format, argptr);
-//	vsnprintf (string, sizeof(string), format, argptr);
 	va_end (argptr);
 
 	if (reliable)
@@ -527,19 +523,20 @@ void CL_SendClientCommand(qboolean reliable, char *format, ...) // FS: From JQua
 	else
 	{
 		sizebuf_t	buf;
-		byte data[128];
+		byte data[MAX_MSGLEN];
+
+		memset(&buf, 0, sizeof(buf));
 
 		buf.data = data;
 		buf.cursize = 0;
+		buf.maxsize = sizeof(data);
 
-		length = strlen(string->str);
-		// FS: FIXME
 		MSG_WriteByte (&buf, clc_stringcmd);
 		MSG_WriteString (&buf, string->str);
 		Netchan_Transmit(&cls.netchan, buf.cursize, buf.data);
-//		MSG_WriteByte (&cls.cmdmsg, clc_stringcmd);
-//		MSG_WriteString (&cls.cmdmsg, string);
+		SZ_Clear(&buf);
 	}
+	dstring_delete(string);
 }
 
 /*

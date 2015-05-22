@@ -233,7 +233,7 @@ byte	*Skin_Cache (skin_t *skin)
 	}
 
 	skin->failedload = false;
-	dstring_delete(name); // FS
+	dstring_delete(name);
 	return out;
 }
 

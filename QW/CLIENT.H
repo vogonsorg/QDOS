@@ -451,6 +451,7 @@ void CL_StartUpload (byte *data, int size);
 void CL_StopUpload(void);
 void CL_RequestNextDownload (void); // FS
 void CL_ParseDownload (void); // FS
+void CL_FinishDownload(qboolean rename_files); // FS
 
 #ifdef FTE_PEXT_CHUNKEDDOWNLOADS
 

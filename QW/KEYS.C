@@ -208,7 +208,7 @@ Interactive line editing and console scrollback
 void Key_Console (int key)
 {
 #ifdef _WIN32
-	char	*cmd, *s;
+//	char	*cmd, *s;
 	int		i;
 	HANDLE	th;
 	char	*clipText, *textCopied;
@@ -266,7 +266,7 @@ extern	cvar_t	console_old_complete;
 	{	// command completion
 		if(!console_old_complete.value) // FS
 		{
-			cmd = Sort_Possible_Cmds(key_lines[edit_line]+1);
+			Sort_Possible_Cmds(key_lines[edit_line]+1);
 		}
 		else
 		{
@@ -351,12 +351,16 @@ extern	cvar_t	console_old_complete;
 	}
 	
 #ifdef _WIN32
-	if ((key=='V' || key=='v') && GetKeyState(VK_CONTROL)<0) {
-		if (OpenClipboard(NULL)) {
+	if ((key=='V' || key=='v') && GetKeyState(VK_CONTROL)<0)
+	{
+		if (OpenClipboard(NULL))
+		{
 			th = GetClipboardData(CF_TEXT);
-			if (th) {
+			if (th)
+			{
 				clipText = GlobalLock(th);
-				if (clipText) {
+				if (clipText)
+				{
 					textCopied = malloc(GlobalSize(th)+1);
 					strcpy(textCopied, clipText);
 	/* Substitutes a NULL for every token */strtok(textCopied, "\n\r\b");
