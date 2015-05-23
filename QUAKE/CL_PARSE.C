@@ -31,19 +31,22 @@ strlcpy(char *dst, const char *src, size_t siz)
 	register size_t n = siz;
 
 	/* Copy as many bytes as will fit */
-	if (n != 0 && --n != 0) {
-		do {
+	if (n != 0 && --n != 0)
+	{
+		do
+		{
 			if ((*d++ = *s++) == 0)
 				break;
-		} while (--n != 0);
+		}
+		while (--n != 0);
 	}
 
 	/* Not enough room in dst, add NUL and traverse rest of src */
-	if (n == 0) {
+	if (n == 0)
+	{
 		if (siz != 0)
 			*d = '\0';		/* NUL-terminate dst */
-		while (*s++)
-			;
+		while (*s++);
 	}
 
 	return(s - src - 1);	/* count does not include NUL */
@@ -328,13 +331,14 @@ void CL_ParseServerInfo (void)
 
 // parse protocol version number
 	i = MSG_ReadLong ();
-	//johnfitz -- support multiple protocols
-	if (i != PROTOCOL_NETQUAKE && i != PROTOCOL_FITZQUAKE) {
+// johnfitz -- support multiple protocols
+	if (i != PROTOCOL_NETQUAKE && i != PROTOCOL_FITZQUAKE)
+	{
 		Con_Printf ("\n"); //becuase there's no newline after serverinfo print
 		Host_Error ("Server returned version %i, not %i or %i\n", i, PROTOCOL_NETQUAKE, PROTOCOL_FITZQUAKE);
 	}
 	cl.protocol = i;
-	//johnfitz
+// johnfitz
 
 // parse maxclients
 	cl.maxclients = MSG_ReadByte ();
@@ -356,7 +360,7 @@ void CL_ParseServerInfo (void)
 	Con_Printf ("\n%s\n", Con_Quakebar(40)); //johnfitz
 	Con_Printf ("%c%s\n", 2, str);
 
-//johnfitz -- tell user which protocol this is
+// johnfitz -- tell user which protocol this is
 	Con_Printf ("Using protocol %i\n", i);
 
 // first we go through and touch all of the precache data that still
@@ -380,10 +384,10 @@ void CL_ParseServerInfo (void)
 		Mod_TouchModel (str);
 	}
 
-	//johnfitz -- check for excessive models
+// johnfitz -- check for excessive models
 	if (nummodels >= 256)
 		Con_Warning ("%i models exceeds standard limit of 256.\n", nummodels);
-	//johnfitz
+// johnfitz
 
 // precache sounds
 	memset (cl.sound_precache, 0, sizeof(cl.sound_precache));
@@ -1017,301 +1021,303 @@ void CL_ParseServerMessage (void)
 	// other commands
 		switch (cmd)
 		{
-		default:
-			Host_Error ("Illegible server message, previous was %s\n", svc_strings[lastcmd]); //johnfitz -- added svc_strings[lastcmd]
-			break;
+			default:
+				Host_Error ("Illegible server message, previous was %s\n", svc_strings[lastcmd]); //johnfitz -- added svc_strings[lastcmd]
+				break;
 			
-		case svc_nop:
-//			Con_Printf ("svc_nop\n");
-			break;
+			case svc_nop:
+//				Con_Printf ("svc_nop\n");
+				break;
 			
-		case svc_time:
-			cl.mtime[1] = cl.mtime[0];
-			cl.mtime[0] = MSG_ReadFloat ();			
-			break;
+			case svc_time:
+				cl.mtime[1] = cl.mtime[0];
+				cl.mtime[0] = MSG_ReadFloat ();
+				break;
 			
-		case svc_clientdata:
-			CL_ParseClientdata (); //johnfitz -- removed bits parameter, we will read this inside CL_ParseClientdata()
-			break;
+			case svc_clientdata:
+				CL_ParseClientdata (); //johnfitz -- removed bits parameter, we will read this inside CL_ParseClientdata()
+				break;
 		
-		case svc_version:
-			i = MSG_ReadLong ();
-			//johnfitz -- support multiple protocols
-			if (i != PROTOCOL_NETQUAKE && i != PROTOCOL_FITZQUAKE)
-				Host_Error ("Server returned version %i, not %i or %i\n", i, PROTOCOL_NETQUAKE, PROTOCOL_FITZQUAKE);
-			cl.protocol = i;
-			//johnfitz
-			break;
+			case svc_version:
+				i = MSG_ReadLong ();
+				//johnfitz -- support multiple protocols
+				if (i != PROTOCOL_NETQUAKE && i != PROTOCOL_FITZQUAKE)
+					Host_Error ("Server returned version %i, not %i or %i\n", i, PROTOCOL_NETQUAKE, PROTOCOL_FITZQUAKE);
+				cl.protocol = i;
+				//johnfitz
+				break;
 			
-		case svc_disconnect:
-			Host_EndGame ("Server disconnected\n");
+			case svc_disconnect:
+				Host_EndGame ("Server disconnected\n");
 
-		case svc_print:
-			fversion = MSG_ReadString();
-			Con_Printf ("%s", fversion); // FS: F_Version Reply
+			case svc_print:
+				fversion = MSG_ReadString();
+				Con_Printf ("%s", fversion); // FS: F_Version Reply
 
-			fversion = strchr(fversion, ':');
-			if (fversion && !strcmp(fversion, ": f_version\n"))
-			{
-				Cbuf_AddText (va("say Quake DOS with WATTCP v%4.2f.\n", VERSION)); // FS: Print version
-			}
-			break;
-			
-		case svc_centerprint:
-			//johnfitz -- log centerprints to console
-			str = MSG_ReadString ();
-			SCR_CenterPrint (str);
-			Con_LogCenterPrint (str);
-			//johnfitz
-			break;
-			
-		case svc_stufftext:
-			Cbuf_AddText (MSG_ReadString ());
-			break;
-			
-		case svc_damage:
-			V_ParseDamage ();
-			break;
-			
-		case svc_serverinfo:
-			CL_ParseServerInfo ();
-			vid.recalc_refdef = true;	// leave intermission full screen
-			break;
-			
-		case svc_setangle:
-			for (i=0 ; i<3 ; i++)
-				cl.viewangles[i] = MSG_ReadAngle ();
-			break;
-			
-		case svc_setview:
-			cl.viewentity = MSG_ReadShort ();
-			break;
-					
-		case svc_lightstyle:
-			i = MSG_ReadByte ();
-			if (i >= MAX_LIGHTSTYLES)
-				Sys_Error ("svc_lightstyle > MAX_LIGHTSTYLES");
-			Q_strcpy (cl_lightstyle[i].map,  MSG_ReadString());
-			cl_lightstyle[i].length = Q_strlen(cl_lightstyle[i].map);
-			//johnfitz -- save extra info
-			if (cl_lightstyle[i].length)
-			{
-				total = 0;
-				cl_lightstyle[i].peak = 'a';
-				for (j=0; j<cl_lightstyle[i].length; j++)
+				fversion = strchr(fversion, ':');
+				if (fversion && !strcmp(fversion, ": f_version\n"))
 				{
-					total += cl_lightstyle[i].map[j] - 'a';
-					cl_lightstyle[i].peak = MAX(cl_lightstyle[i].peak, cl_lightstyle[i].map[j]);
+					Cbuf_AddText (va("say Quake DOS with WATTCP v%4.2f.\n", VERSION)); // FS: Print version
 				}
-				cl_lightstyle[i].average = total / cl_lightstyle[i].length + 'a';
-			}
-			else
-				cl_lightstyle[i].average = cl_lightstyle[i].peak = 'm';
-			//johnfitz
-			break;
+				break;
 			
-		case svc_sound:
-			CL_ParseStartSoundPacket();
-			break;
+			case svc_centerprint:
+				//johnfitz -- log centerprints to console
+				str = MSG_ReadString ();
+				SCR_CenterPrint (str);
+				Con_LogCenterPrint (str);
+				//johnfitz
+				break;
 			
-		case svc_stopsound:
-			i = MSG_ReadShort();
-			S_StopSound(i>>3, i&7);
-			break;
-		
-		case svc_updatename:
-			Sbar_Changed ();
-			i = MSG_ReadByte ();
-			if (i >= cl.maxclients)
-				Host_Error ("CL_ParseServerMessage: svc_updatename > MAX_SCOREBOARD");
-			strcpy (cl.scores[i].name, MSG_ReadString ());
-			break;
+			case svc_stufftext:
+				Cbuf_AddText (MSG_ReadString ());
+				break;
 			
-		case svc_updatefrags:
-			Sbar_Changed ();
-			i = MSG_ReadByte ();
-			if (i >= cl.maxclients)
-				Host_Error ("CL_ParseServerMessage: svc_updatefrags > MAX_SCOREBOARD");
-			cl.scores[i].frags = MSG_ReadShort ();
-			break;			
-
-		case svc_updatecolors:
-			Sbar_Changed ();
-			i = MSG_ReadByte ();
-			if (i >= cl.maxclients)
-				Host_Error ("CL_ParseServerMessage: svc_updatecolors > MAX_SCOREBOARD");
-			cl.scores[i].colors = MSG_ReadByte ();
-			CL_NewTranslation (i);
-			break;
+			case svc_damage:
+				V_ParseDamage ();
+				break;
 			
-		case svc_particle:
-			R_ParseParticleEffect ();
-			break;
-
-		case svc_spawnbaseline:
-			i = MSG_ReadShort ();
-			// must use CL_EntityNum() to force cl.num_entities up
-			CL_ParseBaseline (CL_EntityNum(i), 1); // johnfitz -- added second parameter
-			break;
-		case svc_spawnstatic:
-			CL_ParseStatic (1); //johnfitz -- added parameter
-			break;
-
-		case svc_temp_entity:
-			CL_ParseTEnt ();
-			break;
-
-		case svc_setpause:
-			{
-				cl.paused = MSG_ReadByte ();
-
-				if (cl.paused)
+			case svc_serverinfo:
+				CL_ParseServerInfo ();
+				vid.recalc_refdef = true;	// leave intermission full screen
+				break;
+			
+			case svc_setangle:
+				for (i=0 ; i<3 ; i++)
+					cl.viewangles[i] = MSG_ReadAngle ();
+				break;
+			
+			case svc_setview:
+				cl.viewentity = MSG_ReadShort ();
+				break;
+					
+			case svc_lightstyle:
+				i = MSG_ReadByte ();
+				if (i >= MAX_LIGHTSTYLES)
+					Sys_Error ("svc_lightstyle > MAX_LIGHTSTYLES");
+				Q_strcpy (cl_lightstyle[i].map,  MSG_ReadString());
+				cl_lightstyle[i].length = Q_strlen(cl_lightstyle[i].map);
+				//johnfitz -- save extra info
+				if (cl_lightstyle[i].length)
 				{
-					CDAudio_Pause ();
+					total = 0;
+					cl_lightstyle[i].peak = 'a';
+					for (j=0; j<cl_lightstyle[i].length; j++)
+					{
+						total += cl_lightstyle[i].map[j] - 'a';
+						cl_lightstyle[i].peak = MAX(cl_lightstyle[i].peak, cl_lightstyle[i].map[j]);
+					}
+					cl_lightstyle[i].average = total / cl_lightstyle[i].length + 'a';
+				}
+				else
+					cl_lightstyle[i].average = cl_lightstyle[i].peak = 'm';
+				//johnfitz
+				break;
+			
+			case svc_sound:
+				CL_ParseStartSoundPacket();
+				break;
+			
+			case svc_stopsound:
+				i = MSG_ReadShort();
+				S_StopSound(i>>3, i&7);
+				break;
+		
+			case svc_updatename:
+				Sbar_Changed ();
+				i = MSG_ReadByte ();
+				if (i >= cl.maxclients)
+					Host_Error ("CL_ParseServerMessage: svc_updatename > MAX_SCOREBOARD");
+				strcpy (cl.scores[i].name, MSG_ReadString ());
+				break;
+			
+			case svc_updatefrags:
+				Sbar_Changed ();
+				i = MSG_ReadByte ();
+				if (i >= cl.maxclients)
+					Host_Error ("CL_ParseServerMessage: svc_updatefrags > MAX_SCOREBOARD");
+				cl.scores[i].frags = MSG_ReadShort ();
+				break;
+
+			case svc_updatecolors:
+				Sbar_Changed ();
+				i = MSG_ReadByte ();
+				if (i >= cl.maxclients)
+					Host_Error ("CL_ParseServerMessage: svc_updatecolors > MAX_SCOREBOARD");
+				cl.scores[i].colors = MSG_ReadByte ();
+				CL_NewTranslation (i);
+				break;
+			
+			case svc_particle:
+				R_ParseParticleEffect ();
+				break;
+
+			case svc_spawnbaseline:
+				i = MSG_ReadShort ();
+				// must use CL_EntityNum() to force cl.num_entities up
+				CL_ParseBaseline (CL_EntityNum(i), 1); // johnfitz -- added second parameter
+				break;
+
+			case svc_spawnstatic:
+				CL_ParseStatic (1); //johnfitz -- added parameter
+				break;
+
+			case svc_temp_entity:
+				CL_ParseTEnt ();
+				break;
+
+			case svc_setpause:
+				{
+					cl.paused = MSG_ReadByte ();
+
+					if (cl.paused)
+					{
+						CDAudio_Pause ();
+					}
+					else
+					{
+						CDAudio_Resume ();
+					}
+				}
+				break;
+
+			case svc_signonnum:
+				i = MSG_ReadByte ();
+				if (i <= cls.signon)
+					Host_Error ("Received signon %i when at %i", i, cls.signon);
+				cls.signon = i;
+				//johnfitz -- if signonnum==2, signon packet has been fully parsed, so check for excessive static ents and efrags
+				if (i == 2)
+				{
+					if (cl.num_statics > 128)
+						Con_Warning ("%i static entities exceeds standard limit of 128.\n", cl.num_statics);
+//					R_CheckEfrags ();
+				}
+				//johnfitz
+				CL_SignonReply ();
+				break;
+
+			case svc_killedmonster:
+				cl.stats[STAT_MONSTERS]++;
+				break;
+
+			case svc_foundsecret:
+				cl.stats[STAT_SECRETS]++;
+				break;
+
+			case svc_updatestat:
+				i = MSG_ReadByte ();
+				if (i < 0 || i >= MAX_CL_STATS)
+					Sys_Error ("svc_updatestat: %i is invalid", i);
+				cl.stats[i] = MSG_ReadLong ();;
+				break;
+			
+			case svc_spawnstaticsound:
+				CL_ParseStaticSound (1); //johnfitz -- added parameter
+				break;
+
+			case svc_cdtrack:
+				// FS: Change to allow BGM via WAV
+				cl.cdtrack = MSG_ReadByte ();
+				cl.looptrack = MSG_ReadByte ();
+
+				if ( (cls.demoplayback || cls.demorecording) && (cls.forcetrack != -1) )
+				{
+					if(s_usewavbgm.value) // FS
+					{
+						S_StopAllSounds(true);
+						S_MusicPlay((byte)cls.forcetrack);
+					}
+					else
+					{
+						CDAudio_Play ((byte)cls.forcetrack, true);
+					}
 				}
 				else
 				{
-					CDAudio_Resume ();
+					if(s_usewavbgm.value) // FS
+					{
+						S_StopAllSounds(true);
+						S_MusicPlay((byte)cl.cdtrack);
+					}
+					else
+					{
+						CDAudio_Play ((byte)cl.cdtrack, true);
+					}
 				}
-			}
-			break;
-			
-		case svc_signonnum:
-			i = MSG_ReadByte ();
-			if (i <= cls.signon)
-				Host_Error ("Received signon %i when at %i", i, cls.signon);
-			cls.signon = i;
-			//johnfitz -- if signonnum==2, signon packet has been fully parsed, so check for excessive static ents and efrags
-			if (i == 2)
-			{
-				if (cl.num_statics > 128)
-					Con_Warning ("%i static entities exceeds standard limit of 128.\n", cl.num_statics);
-//				R_CheckEfrags ();
-			}
+				break;
+
+			case svc_intermission:
+				cl.intermission = 1;
+				cl.completed_time = cl.time;
+				vid.recalc_refdef = true;	// go to full screen
+				break;
+
+			case svc_finale:
+				cl.intermission = 2;
+				cl.completed_time = cl.time;
+				vid.recalc_refdef = true;	// go to full screen
+				//johnfitz -- log centerprints to console
+				str = MSG_ReadString ();
+				SCR_CenterPrint (str);
+				Con_LogCenterPrint (str);
+				//johnfitz
+				break;
+
+			case svc_cutscene:
+				cl.intermission = 3;
+				cl.completed_time = cl.time;
+				vid.recalc_refdef = true;	// go to full screen
+				//johnfitz -- log centerprints to console
+				str = MSG_ReadString ();
+				SCR_CenterPrint (str);
+				Con_LogCenterPrint (str);
+				//johnfitz
+				break;
+
+			case svc_sellscreen:
+				Cmd_ExecuteString ("help", src_command);
+				break;
+
+			//johnfitz -- new svc types
+			case svc_showlmp: // FS: Nehahra
+//				i = MSG_ReadShort();
+//				i = MSG_ReadShort();
+				SHOWLMP_Decodeshow();
+				break; // FS: Nehahra
+
+			case svc_hidelmp:
+				str = MSG_ReadString();
+				break;
+
+			case svc_skybox:
+				Sky_LoadSkyBox (MSG_ReadString());
+				break;
+
+			case svc_bf:
+				Cmd_ExecuteString ("bf", src_command);
+				break;
+
+			case svc_fog:
+				Fog_ParseServerMessage ();
+				break;
+
+			case svc_spawnbaseline2: //PROTOCOL_FITZQUAKE
+				i = MSG_ReadShort ();
+				// must use CL_EntityNum() to force cl.num_entities up
+				CL_ParseBaseline (CL_EntityNum(i), 2);
+				break;
+
+			case svc_spawnstatic2: //PROTOCOL_FITZQUAKE
+				CL_ParseStatic (2);
+				break;
+
+			case svc_spawnstaticsound2: //PROTOCOL_FITZQUAKE
+				CL_ParseStaticSound (2);
+				break;
 			//johnfitz
-			CL_SignonReply ();
-			break;
-
-		case svc_killedmonster:
-			cl.stats[STAT_MONSTERS]++;
-			break;
-
-		case svc_foundsecret:
-			cl.stats[STAT_SECRETS]++;
-			break;
-
-		case svc_updatestat:
-			i = MSG_ReadByte ();
-			if (i < 0 || i >= MAX_CL_STATS)
-				Sys_Error ("svc_updatestat: %i is invalid", i);
-			cl.stats[i] = MSG_ReadLong ();;
-			break;
-			
-		case svc_spawnstaticsound:
-			CL_ParseStaticSound (1); //johnfitz -- added parameter
-			break;
-
-		case svc_cdtrack:
-			// FS: Change to allow BGM via WAV
-			cl.cdtrack = MSG_ReadByte ();
-			cl.looptrack = MSG_ReadByte ();
-
-			if ( (cls.demoplayback || cls.demorecording) && (cls.forcetrack != -1) )
-			{
-				if(s_usewavbgm.value) // FS
-                                {
-                                        S_StopAllSounds(true);
-                                	S_MusicPlay((byte)cls.forcetrack);
-                                }
-                                else
-                                {
-                                	CDAudio_Play ((byte)cls.forcetrack, true);
-                                }
-                        }
-			else
-			{
-				if(s_usewavbgm.value) // FS
-                                {
-                                        S_StopAllSounds(true);
-                                	S_MusicPlay((byte)cl.cdtrack);
-                                }
-                                else
-                                {
-                                	CDAudio_Play ((byte)cl.cdtrack, true);
-                                }
-                        }
-			break;
-
-		case svc_intermission:
-			cl.intermission = 1;
-			cl.completed_time = cl.time;
-			vid.recalc_refdef = true;	// go to full screen
-			break;
-
-		case svc_finale:
-			cl.intermission = 2;
-			cl.completed_time = cl.time;
-			vid.recalc_refdef = true;	// go to full screen
-			//johnfitz -- log centerprints to console
-			str = MSG_ReadString ();
-			SCR_CenterPrint (str);
-			Con_LogCenterPrint (str);
-			//johnfitz
-			break;
-
-		case svc_cutscene:
-			cl.intermission = 3;
-			cl.completed_time = cl.time;
-			vid.recalc_refdef = true;	// go to full screen
-			//johnfitz -- log centerprints to console
-			str = MSG_ReadString ();
-			SCR_CenterPrint (str);
-			Con_LogCenterPrint (str);
-			//johnfitz
-			break;
-
-		case svc_sellscreen:
-			Cmd_ExecuteString ("help", src_command);
-			break;
-
-		//johnfitz -- new svc types
-		case svc_showlmp: // FS: Nehahra
-//			i = MSG_ReadShort();
-//			i = MSG_ReadShort();
-			SHOWLMP_Decodeshow();
-			break; // FS: Nehahra
-		case svc_hidelmp:
-			str = MSG_ReadString();
-			break;
-		case svc_skybox:
-			Sky_LoadSkyBox (MSG_ReadString());
-			break;
-
-		case svc_bf:
-			Cmd_ExecuteString ("bf", src_command);
-			break;
-
-		case svc_fog:
-			Fog_ParseServerMessage ();
-			break;
-
-		case svc_spawnbaseline2: //PROTOCOL_FITZQUAKE
-			i = MSG_ReadShort ();
-			// must use CL_EntityNum() to force cl.num_entities up
-			CL_ParseBaseline (CL_EntityNum(i), 2);
-			break;
-
-		case svc_spawnstatic2: //PROTOCOL_FITZQUAKE
-			CL_ParseStatic (2);
-			break;
-
-		case svc_spawnstaticsound2: //PROTOCOL_FITZQUAKE
-			CL_ParseStaticSound (2);
-			break;
-		//johnfitz
 		}
 
 		lastcmd = cmd; //johnfitz
 	}
 }
-

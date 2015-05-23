@@ -96,8 +96,8 @@ void SCR_CenterPrint (char *str)
 // count the number of lines for centering
 	scr_center_lines = 1;
 
-        str = scr_centerstring; // Taniwha: CAx overflow
-        while (*str)
+	str = scr_centerstring; // Taniwha: CAx overflow
+	while (*str)
 	{
 		if (*str == '\n')
 			scr_center_lines++;
@@ -168,7 +168,8 @@ void SCR_DrawCenterString (void)
 		if (!*start)
 			break;
 		start++;		// skip the \n
-	} while (1);
+	}
+	while (1);
 }
 
 void SCR_CheckDrawCenterString (void)
@@ -196,19 +197,19 @@ CalcFov
 */
 float CalcFov (float fov_x, float width, float height)
 {
-        float   a;
-        float   x;
+	float   a;
+	float   x;
 
-        if (fov_x < 1 || fov_x > 179)
-                Sys_Error ("Bad fov: %f", fov_x);
+	if (fov_x < 1 || fov_x > 179)
+		Sys_Error ("Bad fov: %f", fov_x);
 
-        x = width/tan(fov_x/360*M_PI);
+	x = width/tan(fov_x/360*M_PI);
 
-        a = atan (height/x);
+	a = atan (height/x);
 
-        a = a*360/M_PI;
+	a = a*360/M_PI;
 
-        return a;
+	return a;
 }
 
 /*
@@ -288,9 +289,10 @@ Keybinding command
 */
 void SCR_SizeUp_f (void)
 {
-	if (scr_viewsize.value < 120) {
-	Cvar_SetValue ("viewsize",scr_viewsize.value+10);
-	vid.recalc_refdef = 1;
+	if (scr_viewsize.value < 120)
+	{
+		Cvar_SetValue ("viewsize",scr_viewsize.value+10);
+		vid.recalc_refdef = 1;
 	}
 }
 
@@ -798,7 +800,8 @@ void SCR_DrawNotifyString (void)
 		if (!*start)
 			break;
 		start++;		// skip the \n
-	} while (1);
+	}
+	while (1);
 }
 
 /*
@@ -828,7 +831,8 @@ int SCR_ModalMessage (char *text)
 	{
 		key_count = -1;		// wait for a key down and up
 		Sys_SendKeyEvents ();
-	} while (key_lastpress != 'y' && key_lastpress != 'n' && key_lastpress != K_ESCAPE);
+	}
+	while (key_lastpress != 'y' && key_lastpress != 'n' && key_lastpress != K_ESCAPE);
 
 	scr_fullupdate = 0;
 	SCR_UpdateScreen ();
