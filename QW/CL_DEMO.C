@@ -153,10 +153,12 @@ qboolean CL_GetDemoMessage (void)
 	demotime = LittleFloat(demotime);
 
 // decide if it is time to grab the next message		
-	if (cls.timedemo) {
+	if (cls.timedemo)
+	{
 		if (cls.td_lastframe < 0)
 			cls.td_lastframe = demotime;
-		else if (demotime > cls.td_lastframe) {
+		else if (demotime > cls.td_lastframe)
+		{
 			cls.td_lastframe = demotime;
 			// rewind back to time
 			fseek(cls.demofile, ftell(cls.demofile) - sizeof(demotime),
@@ -168,21 +170,27 @@ qboolean CL_GetDemoMessage (void)
 			cls.td_startframe = host_framecount;
 		}
 		realtime = demotime; // warp
-	} else if (!cl.paused && cls.state >= ca_onserver) {	// allways grab until fully connected
-		if (realtime + 1.0 < demotime) {
+	}
+	else if (!cl.paused && cls.state >= ca_onserver)
+	{	// allways grab until fully connected
+		if (realtime + 1.0 < demotime)
+		{
 			// too far back
 			realtime = demotime - 1.0;
 			// rewind back to time
 			fseek(cls.demofile, ftell(cls.demofile) - sizeof(demotime),
 					SEEK_SET);
 			return 0;
-		} else if (realtime < demotime) {
+		}
+		else if (realtime < demotime)
+		{
 			// rewind back to time
 			fseek(cls.demofile, ftell(cls.demofile) - sizeof(demotime),
 					SEEK_SET);
 			return 0;		// don't need another message yet
 		}
-	} else
+	}
+	else
 		realtime = demotime; // we're warping
 
 	if (cls.state < ca_demostart)

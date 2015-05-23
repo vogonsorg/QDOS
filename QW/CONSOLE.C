@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-int             afk; // FS: AFK for EZQ
+int			afk; // FS: AFK for EZQ
 int			con_ormask;
 console_t	con_main;
 console_t	con_chat;
@@ -281,7 +281,7 @@ void Con_afk_f (void)  // FS: AFK for EZQ
 
 void Con_MemClear_f (void)
 {
-        CL_ClearState(); // FS: Force clear state
+	CL_ClearState(); // FS: Force clear state
 }
 
 /*
@@ -308,11 +308,11 @@ void Con_Init (void)
 
 	Cmd_AddCommand ("toggleconsole", Con_ToggleConsole_f);
 	Cmd_AddCommand ("togglechat", Con_ToggleChat_f);
-        Cmd_AddCommand ("afk", Con_afk_f); // FS
+	Cmd_AddCommand ("afk", Con_afk_f); // FS
 	Cmd_AddCommand ("messagemode", Con_MessageMode_f);
 	Cmd_AddCommand ("messagemode2", Con_MessageMode2_f);
 	Cmd_AddCommand ("clear", Con_Clear_f);
-        Cmd_AddCommand ("memclear", Con_MemClear_f); // FS
+	Cmd_AddCommand ("memclear", Con_MemClear_f); // FS
 
 	con_initialized = true;
 }
@@ -418,19 +418,18 @@ Handles cursor positioning, line wrapping, etc
 ================
 */
 #define	MAXPRINTMSG	4096
-// FIXME: make a buffer size safe vsprintf?
 void Con_Printf (const char *fmt, ...)
 {
 	va_list		argptr;
 
-        static dstring_t *msg; // FS: New school dstring
-        static qboolean	inupdate;
+	static dstring_t *msg; // FS: New school dstring
+	static qboolean	inupdate;
         
-        if (!msg)
-                msg = dstring_new ();
+	if (!msg)
+	msg = dstring_new ();
         
-        va_start (argptr,fmt);
-        dvsprintf (msg,fmt,argptr);
+	va_start (argptr,fmt);
+	dvsprintf (msg,fmt,argptr);
 	va_end (argptr);
 
 	/* FS: Timestamp code */
@@ -460,18 +459,18 @@ void Con_Printf (const char *fmt, ...)
 	}
 	
 // also echo to debugging console
-        Sys_Printf("%s",msg->str); // also echo to debugging console
-        //Sys_Printf(msg);
+	Sys_Printf("%s",msg->str); // also echo to debugging console
+	//Sys_Printf(msg);
 // log all messages to file
 	if (con_debuglog)
-                Sys_DebugLog(va("%s/qconsole.log",com_gamedir), "%s", msg->str);
+		Sys_DebugLog(va("%s/qconsole.log",com_gamedir), "%s", msg->str);
 		
 	if (!con_initialized)
 		return;
 		
 // write it to the scrollable buffer
-        Con_Print (msg->str);
-        //Con_Print (msg);
+	Con_Print (msg->str);
+	//Con_Print (msg);
 // update the screen immediately if the console is displayed
 	if (cls.state != ca_active)
 	{
@@ -781,21 +780,24 @@ void Con_DrawConsole (int lines)
 
 	// draw the download bar
 	// figure out width
-	if (cls.download) {
-                if ((text = strrchr(cls.downloadname->str, '/')) != NULL)
-			text++;
+	if (cls.download)
+	{
+		if ((text = strrchr(cls.downloadname->str, '/')) != NULL)
+				text++;
 		else
-                        text = cls.downloadname->str;
+			text = cls.downloadname->str;
 
 		x = con_linewidth - ((con_linewidth * 7) / 40);
 		y = x - strlen(text) - 8;
 		i = con_linewidth/3;
-		if (strlen(text) > i) {
+		if (strlen(text) > i)
+		{
 			y = x - i - 11;
 			strncpy(dlbar, text, i);
 			dlbar[i] = 0;
 			strcat(dlbar, "...");
-		} else
+		}
+		else
 			strcpy(dlbar, text);
 		strcat(dlbar, ": ");
 		i = strlen(dlbar);
@@ -873,18 +875,19 @@ Okay to call even when the screen can't be updated
 void Con_SafePrintf (const char *fmt, ...)
 {
 	va_list		argptr;
-        //char            msg[1024];
+	//char            msg[1024];
 	int			temp;
-        static dstring_t        *msg;  // FS: New school dstring
-        if(!msg)
-                msg = dstring_new();
+	static dstring_t        *msg;  // FS: New school dstring
+
+	if(!msg)
+		msg = dstring_new();
+
 	va_start (argptr,fmt);
-        dvsprintf (msg,fmt,argptr);
+	dvsprintf (msg,fmt,argptr);
 	va_end (argptr);
 	
 	temp = scr_disabled_for_loading;
 	scr_disabled_for_loading = true;
-        Con_Printf ("%s", msg->str);
+	Con_Printf ("%s", msg->str);
 	scr_disabled_for_loading = temp;
 }
-

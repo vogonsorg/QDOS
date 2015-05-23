@@ -624,10 +624,13 @@ void SCR_SetUpToDrawConsole (void)
 		scr_con_current = scr_conlines;
 	}
 	else if (key_dest == key_console)
+	{
 		scr_conlines = vid.height/2;	// half screen
+	}
 	else
+	{
 		scr_conlines = 0;				// none visible
-	
+	}
 	if (scr_conlines < scr_con_current)
 	{
 		scr_con_current -= scr_conspeed.value*host_frametime;
@@ -1197,11 +1200,13 @@ void SCR_UpdateScreen (void)
 		SCR_DrawTurtle ();
 		SCR_DrawPause ();
 		SCR_CheckDrawCenterString ();
-		SCR_DrawUptime (); // FS: show uptime
-		SCR_DrawTime (); // FS: show time
-		SCR_DrawFPS ();
-		SCR_DrawPing (); // FS: show ping
-
+		if (scr_con_current != vid.height) // FS: Don't draw this if the console is in fullscreen
+		{
+			SCR_DrawUptime (); // FS: show uptime
+			SCR_DrawTime (); // FS: show time
+			SCR_DrawFPS (); // FS: Show FPS
+			SCR_DrawPing (); // FS: show ping
+		}
 		Sbar_Draw ();
 		SCR_DrawConsole ();	
 		M_Draw ();

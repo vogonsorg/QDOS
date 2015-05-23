@@ -1194,20 +1194,20 @@ Made up of: clients, packet_entities, nails, and tents
 */
 void CL_EmitEntities (void)
 {
-   if (cls.state != ca_active)
-      return;
-   if (!cl.validsequence)
-      return;
+	if (cls.state != ca_active)
+		return;
+	if (!cl.validsequence)
+		return;
 
-   cl_oldnumvisedicts = cl_numvisedicts;
-   cl_oldvisedicts = cl_visedicts_list[(cls.netchan.incoming_sequence-1)&1];
-   cl_visedicts = cl_visedicts_list[cls.netchan.incoming_sequence&1];
+	cl_oldnumvisedicts = cl_numvisedicts;
+	cl_oldvisedicts = cl_visedicts_list[(cls.netchan.incoming_sequence-1)&1];
+	cl_visedicts = cl_visedicts_list[cls.netchan.incoming_sequence&1];
 
-   cl_numvisedicts = 0;
+	cl_numvisedicts = 0;
 
-   CL_LinkPlayers ();
-   CL_LinkPacketEntities ();
-   CL_LinkProjectiles ();
-        CL_UpdateTEnts ();
+	CL_LinkPlayers ();
+	CL_LinkPacketEntities ();
+	CL_LinkProjectiles ();
+	CL_UpdateTEnts ();
 }
 

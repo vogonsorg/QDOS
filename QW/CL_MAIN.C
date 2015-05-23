@@ -1470,8 +1470,11 @@ void Host_Frame (float time)
    else
       fps = bound(30, cl_maxfps.intvalue, 72);//max(30.0, min(rate.value/80.0, 72.0));
 
-	if ((!cls.timedemo && !cls.download) && realtime - oldrealtime < 1.0/fps) // FS: Don't lock framerate 
+	if (!cls.timedemo && realtime - oldrealtime < 1.0/fps)
+	{
 		return;        // framerate is too high
+	}
+
 
    host_frametime = realtime - oldrealtime;
    oldrealtime = realtime;
@@ -1492,9 +1495,11 @@ void Host_Frame (float time)
 
    // send intentions now
    // resend a connection request if necessary
-   if (cls.state == ca_disconnected) {
+   if (cls.state == ca_disconnected)
+   {
       CL_CheckForResend ();
-   } else
+   }
+   else
       CL_SendCmd ();
 
    // Set up prediction for other players
