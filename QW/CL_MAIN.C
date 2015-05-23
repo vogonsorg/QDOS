@@ -1560,8 +1560,8 @@ void Host_Frame (float time)
 
 static void simple_crypt(char *buf, int len)
 {
-   while (len--)
-      *buf++ ^= 0xff;
+	while (len--)
+		*buf++ ^= 0xff;
 }
 
 void Host_FixupModelNames(void)
