@@ -1057,7 +1057,10 @@ void CL_ParseServerMessage (void)
 				fversion = strchr(fversion, ':');
 				if (fversion && !strcmp(fversion, ": f_version\n"))
 				{
-					Cbuf_AddText (va("say Quake DOS with WATTCP v%4.2f.\n", VERSION)); // FS: Print version
+					dstring_t *fversionStr = dstring_new();
+					Com_sprintf(fversionStr, "say Quake DOS with WATTCP v%4.2f.\n", VERSION);
+					Cbuf_AddText (fversionStr->str); // FS: Print version
+					dstring_delete(fversionStr);
 				}
 				break;
 			

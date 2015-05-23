@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // comndef.h  -- general definitions
 
+#include "dstring.h"
+
 #if !defined BYTE_DEFINED
 typedef unsigned char 		byte;
 #define BYTE_DEFINED 1
@@ -187,3 +189,4 @@ extern	struct cvar_s	registered;
 
 extern qboolean         standard_quake, rogue, hipnotic;
 extern int              nehahra, extended_mod; // FS: nehahra
+void Com_sprintf(dstring_t *dst, const char *fmt, ...); // FS

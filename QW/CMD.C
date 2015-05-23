@@ -765,21 +765,24 @@ char *Sort_Possible_Cmds (char *partial)
 {
 	cmd_function_t	*cmd;
 	cvar_t			*cvar; // FS
-	int				len;
 	cmdalias_t		*a;
 	int	foundExactCount = 0; // FS
 	int foundPartialCount = 0; // FS
 	int retryPartialFlag = RETRY_INITIAL; // FS
 
-	len = Q_strlen(partial);
-	if (!len)
+	if (!partial || partial[0] == 0)
 		return NULL;
+
+	if (*partial == '\\' || *partial == '/')
+		partial++;
+
 	foundExactCount = 0;
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
 	{
 		if (!Q_strcmp (partial,cmd->name))
 		{
 			foundExactCount++;
+			CompleteCommand();
 			return cmd->name;
 		}
 	}
@@ -788,6 +791,7 @@ char *Sort_Possible_Cmds (char *partial)
 		if (!Q_strcmp (partial, a->name))
 		{
 			foundExactCount++;
+			CompleteCommand();
 			return a->name;
 		}
 	}
@@ -796,9 +800,11 @@ char *Sort_Possible_Cmds (char *partial)
 		if (!Q_strcmp (partial,cvar->name))
 		{
 			foundExactCount++;
+			CompleteCommand();
 			return cvar->name;
 		}
 	}
+
 retryPartial:
 	foundPartialCount = 0;
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)

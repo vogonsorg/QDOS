@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // comndef.h  -- general definitions
 
+#include "dstring.h"
+
 #ifdef _MSC_VER // FS: VS6
 	#define __attribute__(x)
 #endif
@@ -269,3 +271,4 @@ byte    COM_BlockSequenceCRCByte (byte *base, int length, int sequence);
 
 int build_number( void );
 void CompleteCommand (void); // FS
+void Com_sprintf(dstring_t *dst, const char *fmt, ...); // FS

@@ -20,13 +20,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // client.h
 #include "dstring.h"
 
-extern cvar_t show_fps; // FS: why was this not global?
-extern int bFlashlight; // FS: Flashlight
 typedef struct
 {
-        char            name[16];
-        //struct dstring_s *name; // FS: Dstring
-        qboolean	failedload;		// the name isn't a valid skin
+	char            name[16];
+	//struct dstring_s *name; // FS: Dstring
+	qboolean	failedload;		// the name isn't a valid skin
 	cache_user_t	cache;
 } skin_t;
 
@@ -138,7 +136,7 @@ typedef struct
 
 
 
-#define MAX_EFRAGS              2048 // FS: 512
+#define MAX_EFRAGS		2048 // FS: 512
 
 #define	MAX_DEMOS		8
 #define	MAX_DEMONAME	16
@@ -352,6 +350,7 @@ extern	cvar_t	m_side;
 extern cvar_t		_windowed_mouse;
 
 extern	cvar_t	name;
+extern cvar_t show_fps; // FS: why was this not global?
 
 
 #define	MAX_STATIC_ENTITIES	128			// torches, etc
@@ -367,6 +366,7 @@ extern	dlight_t		cl_dlights[MAX_DLIGHTS];
 
 extern	qboolean	nomaster;
 extern float	server_version;	// version of server we connected to
+extern qboolean	bFlashlight; // FS: Flashlight
 
 //=============================================================================
 
@@ -405,7 +405,7 @@ typedef struct
 	int		state;			// low bit is down state
 } kbutton_t;
 
-extern  cvar_t          in_freelook; // FS: mlook
+extern  cvar_t		in_freelook; // FS: mlook
 extern	kbutton_t	in_mlook, in_klook;
 extern 	kbutton_t 	in_strafe;
 extern 	kbutton_t 	in_speed;

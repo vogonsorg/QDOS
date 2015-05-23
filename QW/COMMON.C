@@ -2254,3 +2254,16 @@ int build_number( void )
 	return b;
 }
 
+// FS: Buffer safe sprintf so we aren't va'ing all over the place
+void Com_sprintf(dstring_t *dst, const char *fmt, ...)
+{
+ // FS: New school Dstrings
+	va_list     argptr;
+
+	if(!dst)
+		Host_Error("Error in Com_sprintf:  DST is NULL!\n");
+
+	va_start (argptr, fmt);
+	dvsprintf (dst,fmt,argptr);
+	va_end (argptr);
+}

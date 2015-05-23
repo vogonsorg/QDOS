@@ -525,34 +525,16 @@ Sys_Printf
 void Sys_Printf (const char *fmt, ...)
 {
  // FS: New school Dstrings
-        va_list     argptr;
-        static dstring_t *text;
+	va_list     argptr;
+	static dstring_t *text;
 
-        if (!text)
-                text = dstring_new ();
+	if (!text)
+		text = dstring_new ();
 
-        va_start (argptr, fmt);
-        dvsprintf (text,fmt,argptr);
-        va_end (argptr);
+	va_start (argptr, fmt);
+	dvsprintf (text,fmt,argptr);
+	va_end (argptr);
 }
-
-/*
-// FS: from QF
-void Sys_MaskPrintf (int mask, const char *fmt, ...)
-{
-        va_list args;
-        static dstring_t *text;
-
-        if (!text)
-                text = dstring_new ();
-
-        //if (!developer || (!developer.int_val & !mask))
-        //        return;
-        va_start (args, fmt);
-        dvsprintf (text, fmt,args);
-        va_end (args);
-}
-*/
 
 void Sys_AtExit (void)
 {

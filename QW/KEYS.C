@@ -184,8 +184,10 @@ void CompleteCommand (void)
 		s++;
 
 	cmd = Cmd_CompleteCommand (s);
+
 	if (!cmd)
 		cmd = Cvar_CompleteVariable (s);
+
 	if (cmd)
 	{
 		key_lines[edit_line][1] = '/';

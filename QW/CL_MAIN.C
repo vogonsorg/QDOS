@@ -143,7 +143,8 @@ cvar_t	console_old_complete = {"console_old_complete", "0", true}; // FS
 cvar_t	developer = {"developer","0"};
 
 int         fps_count;
-int bFlashlight = 0; // FS: Flashlight
+qboolean bFlashlight = false; // FS: Flashlight
+
 void CL_Flashlight_f (void); // FS: Prototype it
 
 jmp_buf  host_abort;
@@ -823,25 +824,25 @@ Called to play the next demo in the demo loop
 */
 void CL_NextDemo (void)
 {
-   char  str[1024];
+	char  str[1024];
 
-   if (cls.demonum == -1)
-      return;     // don't play demos
+	if (cls.demonum == -1)
+		return;     // don't play demos
 
-   if (!cls.demos[cls.demonum][0] || cls.demonum == MAX_DEMOS)
-   {
-      cls.demonum = 0;
-      if (!cls.demos[cls.demonum][0])
-      {
-//       Con_Printf ("No demos listed with startdemos\n");
-         cls.demonum = -1;
-         return;
-      }
-   }
+	if (!cls.demos[cls.demonum][0] || cls.demonum == MAX_DEMOS)
+	{
+		cls.demonum = 0;
+		if (!cls.demos[cls.demonum][0])
+		{
+//			Con_Printf ("No demos listed with startdemos\n");
+			cls.demonum = -1;
+			return;
+		}
+	}
 
-   sprintf (str,"playdemo %s\n", cls.demos[cls.demonum]);
-   Cbuf_InsertText (str);
-   cls.demonum++;
+	sprintf (str,"playdemo %s\n", cls.demos[cls.demonum]);
+	Cbuf_InsertText (str);
+	cls.demonum++;
 }
 
 
@@ -1125,40 +1126,46 @@ CL_Download_f
 */
 void CL_Download_f (void)
 {
-   char *p, *q;
+	char *p, *q;
+	dstring_t *dlstr;
 
-   if (cls.state == ca_disconnected)
-   {
-      Con_Printf ("Must be connected.\n");
-      return;
-   }
+	if (cls.state == ca_disconnected)
+	{
+		Con_Printf ("Must be connected.\n");
+		return;
+	}
 
-   if (Cmd_Argc() != 2)
-   {
-      Con_Printf ("Usage: download <datafile>\n");
-      return;
-   }
+	if (Cmd_Argc() != 2)
+	{
+		Con_Printf ("Usage: download <datafile>\n");
+		return;
+	}
 
-        dsprintf (cls.downloadname, "%s/%s", com_gamedir, Cmd_Argv(1));
-        // FS
-        p = cls.downloadname->str;
-   for (;;) {
-      if ((q = strchr(p, '/')) != NULL) {
-         *q = 0;
-                        Sys_mkdir(cls.downloadname->str);
-         *q = '/';
-         p = q + 1;
-      } else
-         break;
-   }
+	dlstr = dstring_new(); // FS: Dstrings
+	dsprintf (cls.downloadname, "%s/%s", com_gamedir, Cmd_Argv(1));
+	p = cls.downloadname->str;
+	for (;;)
+	{
+		if ((q = strchr(p, '/')) != NULL)
+		{
+			*q = 0;
+			Sys_mkdir(cls.downloadname->str);
+			*q = '/';
+			p = q + 1;
+		}
+		else
+			break;
+	}
 
-        //strcpy(cls.downloadtempname, cls.downloadname);
-        dstring_copystr (cls.downloadtempname, cls.downloadname->str);
-        cls.download = fopen (cls.downloadname->str, "wb");
-   cls.downloadtype = dl_single;
+	//strcpy(cls.downloadtempname, cls.downloadname);
+	dstring_copystr (cls.downloadtempname, cls.downloadname->str);
+	cls.download = fopen (cls.downloadname->str, "wb");
+	cls.downloadtype = dl_single;
 
-   MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
-   SZ_Print (&cls.netchan.message, va("download %s\n",Cmd_Argv(1)));
+	MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
+	Com_sprintf(dlstr, "download %s\n",Cmd_Argv(1));
+	SZ_Print (&cls.netchan.message, dlstr->str);
+	dstring_delete(dlstr);
 }
 
 #ifdef _WINDOWS
@@ -1179,8 +1186,7 @@ void CL_Windows_f (void) {
   // FS: Was used for Sys_Error dstring conversion test
 void CL_ForceError_f (void)
 {
-        Con_Printf("key_dest: %i\nchat: %s\n", key_dest, va(Info_ValueForKey(cls.userinfo, "chat")));
-//        Sys_Error("This is a forced error!");
+	Sys_Error("This is a forced error!");
 }
 
 
@@ -1193,7 +1199,8 @@ void CL_Init (void)
 {
 	extern   cvar_t      baseskin;
 	extern   cvar_t      noskins;
-	const char *st;
+	dstring_t *version = dstring_new(); // FS: Dstrings
+	Com_sprintf(version, "QWDOS v%4.2f", VERSION);
 
 	cls.state = ca_disconnected;
 
@@ -1205,8 +1212,7 @@ void CL_Init (void)
 	Info_SetValueForKey (cls.userinfo, "bottomcolor", "0", MAX_INFO_STRING);
 	Info_SetValueForKey (cls.userinfo, "rate", "2500", MAX_INFO_STRING);
 	Info_SetValueForKey (cls.userinfo, "msg", "1", MAX_INFO_STRING);
-	st = va("QWDOS v%4.2f", VERSION);
-	Info_SetValueForStarKey (cls.userinfo, "*ver", st, MAX_INFO_STRING);
+	Info_SetValueForStarKey (cls.userinfo, "*ver", version->str, MAX_INFO_STRING);
 	Info_SetValueForKey (cls.userinfo, "chat", "", MAX_INFO_STRING); // FS: For AFK
 
 //	Info_SetValueForStarKey (cls.userinfo, "*cap", "h", MAX_INFO_STRING); // FS: For HTTP
@@ -1342,7 +1348,8 @@ void CL_Init (void)
 #ifdef _WINDOWS
 	Cmd_AddCommand ("windows", CL_Windows_f);
 #endif
-specbool = spectator.value; // FS
+	specbool = spectator.value; // FS
+	dstring_delete(version);
 }
 
 
@@ -1566,11 +1573,11 @@ static void simple_crypt(char *buf, int len)
 
 void Host_FixupModelNames(void)
 {
-   simple_crypt(emodel_name, sizeof(emodel_name) - 1);
-   simple_crypt(pmodel_name, sizeof(pmodel_name) - 1);
-   simple_crypt(prespawn_name,  sizeof(prespawn_name)  - 1);
-   simple_crypt(modellist_name, sizeof(modellist_name) - 1);
-   simple_crypt(soundlist_name, sizeof(soundlist_name) - 1);
+	simple_crypt(emodel_name, sizeof(emodel_name) - 1);
+	simple_crypt(pmodel_name, sizeof(pmodel_name) - 1);
+	simple_crypt(prespawn_name,  sizeof(prespawn_name)  - 1);
+	simple_crypt(modellist_name, sizeof(modellist_name) - 1);
+	simple_crypt(soundlist_name, sizeof(soundlist_name) - 1);
 }
 
 //============================================================================
@@ -1582,88 +1589,88 @@ Host_Init
 */
 void Host_Init (quakeparms_t *parms)
 {
-   COM_InitArgv (parms->argc, parms->argv);
-   COM_AddParm ("-game");
-   COM_AddParm ("qw");
+	COM_InitArgv (parms->argc, parms->argv);
+	COM_AddParm ("-game");
+	COM_AddParm ("qw");
 
-   Sys_mkdir("qw");
+	Sys_mkdir("qw");
 
-   if (COM_CheckParm ("-minmemory"))
-      parms->memsize = MINIMUM_MEMORY;
+	if (COM_CheckParm ("-minmemory"))
+		parms->memsize = MINIMUM_MEMORY;
 
-   host_parms = *parms;
+	host_parms = *parms;
 
-   if (parms->memsize < MINIMUM_MEMORY)
-      Sys_Error ("Only %4.1f megs of memory reported, can't execute game", parms->memsize / (float)0x100000);
+	if (parms->memsize < MINIMUM_MEMORY)
+		Sys_Error ("Only %4.1f megs of memory reported, can't execute game", parms->memsize / (float)0x100000);
 
-   Memory_Init (parms->membase, parms->memsize);
-   Cbuf_Init ();
-   Cmd_Init ();
-   V_Init ();
+	Memory_Init (parms->membase, parms->memsize);
+	Cbuf_Init ();
+	Cmd_Init ();
+	V_Init ();
 
-   COM_Init ();
-   Cvar_Init (); // FS: CVARLIST
-   CFG_OpenConfig("config.cfg");  // FS: Parse CFG early -- sezero
-   cls.servername = dstring_newstr (); // FS: Dstring
-   cls.downloadtempname = dstring_newstr (); // FS: Dstring
-   cls.downloadname = dstring_newstr(); // FS: Dstring
-   cls.downloadurl = dstring_newstr(); // FS: Dstring
+	COM_Init ();
+	Cvar_Init (); // FS: CVARLIST
+	CFG_OpenConfig("config.cfg");  // FS: Parse CFG early -- sezero
+	cls.servername = dstring_newstr (); // FS: Dstring
+	cls.downloadtempname = dstring_newstr (); // FS: Dstring
+	cls.downloadname = dstring_newstr(); // FS: Dstring
+	cls.downloadurl = dstring_newstr(); // FS: Dstring
 
-   Host_FixupModelNames();
+	Host_FixupModelNames();
    
-   NET_Init (PORT_CLIENT);
-   Netchan_Init ();
+	NET_Init (PORT_CLIENT);
+	Netchan_Init ();
 
-   W_LoadWadFile ("gfx.wad");
-   Key_Init ();
-   Con_Init ();   
-   M_Init ();  
-   Mod_Init ();
+	W_LoadWadFile ("gfx.wad");
+	Key_Init ();
+	Con_Init ();   
+	M_Init ();  
+	Mod_Init ();
    
 // Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
-   Con_Printf ("%4.1f megs RAM used.\n",parms->memsize/ (1024*1024.0));
+	Con_Printf ("%4.1f megs RAM used.\n",parms->memsize/ (1024*1024.0));
    
-   R_InitTextures ();
+	R_InitTextures ();
  
-   host_basepal = (byte *)COM_LoadHunkFile ("gfx/palette.lmp");
-   if (!host_basepal)
-      Sys_Error ("Couldn't load gfx/palette.lmp");
-   host_colormap = (byte *)COM_LoadHunkFile ("gfx/colormap.lmp");
-   if (!host_colormap)
-      Sys_Error ("Couldn't load gfx/colormap.lmp");
+	host_basepal = (byte *)COM_LoadHunkFile ("gfx/palette.lmp");
+	if (!host_basepal)
+		Sys_Error ("Couldn't load gfx/palette.lmp");
+	host_colormap = (byte *)COM_LoadHunkFile ("gfx/colormap.lmp");
+	if (!host_colormap)
+		Sys_Error ("Couldn't load gfx/colormap.lmp");
 
-   VID_Init (host_basepal);
-   Draw_Init ();
-   SCR_Init ();
-   R_Init ();
+	VID_Init (host_basepal);
+	Draw_Init ();
+	SCR_Init ();
+	R_Init ();
 #ifndef _WIN32
-   S_Init ();
+	S_Init ();
 #endif
 
-   cls.state = ca_disconnected;
-   CDAudio_Init ();
-   Sbar_Init ();
-   CL_Init ();
-   IN_Init ();
+	cls.state = ca_disconnected;
+	CDAudio_Init ();
+	Sbar_Init ();
+	CL_Init ();
+	IN_Init ();
 
-   if(COM_CheckParm("-safevga")) // FS: Safe VGA mode
-   {
-      Con_Printf("Safe VGA mode enabled\n");
-      Cbuf_AddText("vid_mode 0");
-   }
+	if(COM_CheckParm("-safevga")) // FS: Safe VGA mode
+	{
+		Con_Printf("Safe VGA mode enabled\n");
+		Cbuf_AddText("vid_mode 0");
+	}
 
-   Cbuf_InsertText ("exec quake.rc\n");
-   Cbuf_AddText ("echo Type connect <internet address> or use GameSpy to connect to a game.\n");
-   Cbuf_AddText ("cl_warncmd 1\n");
+	Cbuf_InsertText ("exec quake.rc\n");
+	Cbuf_AddText ("echo Type connect <internet address> or use GameSpy to connect to a game.\n");
+	Cbuf_AddText ("cl_warncmd 1\n");
 
-   Hunk_AllocName (0, "-HOST_HUNKLEVEL-");
-   host_hunklevel = Hunk_LowMark ();
+	Hunk_AllocName (0, "-HOST_HUNKLEVEL-");
+	host_hunklevel = Hunk_LowMark ();
 
-   host_initialized = true;
+	host_initialized = true;
 
-   Con_Printf ("\nClient Version %4.2f (Build %04d)\n\n", VERSION, build_number());
+	Con_Printf ("\nClient Version %4.2f (Build %04d)\n\n", VERSION, build_number());
 
-   Con_Printf ("ÄÅÅÅÅÅÅ QuakeWorld Initialized ÅÅÅÅÅÅÇ\n"); 
+	Con_Printf ("ÄÅÅÅÅÅÅ QuakeWorld Initialized ÅÅÅÅÅÅÇ\n"); 
 }
 
 

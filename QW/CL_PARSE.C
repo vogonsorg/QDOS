@@ -179,17 +179,17 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 	if (cls.demoplayback)
 		return true;
 
-        dstring_copystr (cls.downloadname, filename); // FS: New school dstring
-        Con_Printf ("Downloading %s...\n", cls.downloadname->str);
+	dstring_copystr (cls.downloadname, filename); // FS: New school dstring
+	Con_Printf ("Downloading %s...\n", cls.downloadname->str);
 
 	// download to a temp name, and only rename
 	// to the real name when done, so if interrupted
 	// a runt file wont be left
-        COM_StripExtension (cls.downloadname->str, cls.downloadtempname->str);
-        strcat (cls.downloadtempname->str, ".tmp");
+	COM_StripExtension (cls.downloadname->str, cls.downloadtempname->str);
+	strcat (cls.downloadtempname->str, ".tmp");
 
 	MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
-        MSG_WriteString (&cls.netchan.message, va("download %s", cls.downloadname->str));
+	MSG_WriteString (&cls.netchan.message, va("download %s", cls.downloadname->str));
 
 	cls.downloadnumber++;
 
@@ -1442,12 +1442,10 @@ CL_ParseServerMessage
 int	received_framecount;
 void CL_ParseServerMessage (void)
 {
-	int			cmd;
-	char		*s;
-        char            *fversion; // FS
-        char            *time = __TIME__; // FS: for fversion stuff
-        char            *date = __DATE__; // FS: for fversion stuff
-        int			i, j;
+	int		cmd;
+	char	*s;
+	char	*fversion; // FS
+	int		i, j;
 
 	received_framecount = host_framecount;
 	cl.last_servermessage = realtime;
@@ -1523,7 +1521,10 @@ void CL_ParseServerMessage (void)
 			fversion = strchr(fversion, ':');
 			if (fversion && !strcmp(fversion, ": f_version\n"))
 			{
-				Cbuf_AddText (va("say QuakeWorld DOS with WATTCP v%4.2f.  Built %s at %s.\n", VERSION, date, time));
+				dstring_t *fversionStr = dstring_new();
+				Com_sprintf(fversionStr, "say QuakeWorld DOS with WATTCP v%4.2f.  Built %s at %s.\n", VERSION, __DATE__, __TIME__);
+				Cbuf_AddText(fversionStr->str);
+				dstring_delete(fversionStr);
 			}
 			con_ormask = 0;
 			break;

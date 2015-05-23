@@ -807,6 +807,7 @@ int Cmd_CheckParm (char *parm)
 			
 	return 0;
 }
+
 #define RETRY_INITIAL	0
 #define RETRY_ONCE		1
 #define RETRY_MULTIPLE	2
@@ -814,14 +815,17 @@ char *Sort_Possible_Cmds (char *partial)
 {
 	cmd_function_t	*cmd;
 	cvar_t			*cvar; // FS
-	int				len;
 	cmdalias_t		*a;
 	int	foundExactCount = 0; // FS
 	int foundPartialCount = 0; // FS
 	int retryPartialFlag = RETRY_INITIAL; // FS
-	len = Q_strlen(partial);
-	if (!len)
+
+	if (!partial || partial[0] == 0)
 		return NULL;
+
+	if (*partial == '\\' || *partial == '/')
+		partial++;
+
 	foundExactCount = 0;
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
 	{
@@ -847,6 +851,7 @@ char *Sort_Possible_Cmds (char *partial)
 			return cvar->name;
 		}
 	}
+
 retryPartial:
 	foundPartialCount = 0;
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
@@ -901,7 +906,8 @@ retryPartial:
 		Con_Printf("Found %i matches.\n", foundExactCount+foundPartialCount);
 	return NULL;
 }
-qboolean	Sort_Possible_Strtolower (char *partial, char *complete)
+
+qboolean Sort_Possible_Strtolower (char *partial, char *complete)
 {
 	int partialLength = 0;
 	int x = 0;
