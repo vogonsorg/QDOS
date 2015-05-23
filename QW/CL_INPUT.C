@@ -444,9 +444,17 @@ void CL_SendCmd (void)
 
 // send this and the previous cmds in the message, so
 // if the last packet was dropped, it can be recovered
-	buf.maxsize = 128;
+/*	buf.maxsize = 128;
 	buf.cursize = 0;
 	buf.data = data;
+*/
+
+	SZ_Init (&buf, data, sizeof(data)); // FS: From EZQ
+
+	SZ_Write (&buf, cls.cmdmsg.data, cls.cmdmsg.cursize); // FS: From EZQ
+	if (cls.cmdmsg.overflowed)
+		Con_DPrintf(DEVELOPER_MSG_NET, "cls.cmdmsg overflowed\n");
+	SZ_Clear (&cls.cmdmsg);
 
 	MSG_WriteByte (&buf, clc_move);
 
@@ -522,7 +530,7 @@ void CL_SendClientCommand(qboolean reliable, char *format, ...) // FS: From JQua
 	}
 	else
 	{
-		sizebuf_t	buf;
+/*		sizebuf_t	buf;
 		byte data[MAX_MSGLEN];
 
 		memset(&buf, 0, sizeof(buf));
@@ -535,6 +543,9 @@ void CL_SendClientCommand(qboolean reliable, char *format, ...) // FS: From JQua
 		MSG_WriteString (&buf, string->str);
 		Netchan_Transmit(&cls.netchan, buf.cursize, buf.data);
 		SZ_Clear(&buf);
+*/
+		MSG_WriteByte (&cls.cmdmsg, clc_stringcmd);
+		MSG_WriteString (&cls.cmdmsg, string->str);
 	}
 	dstring_delete(string);
 }

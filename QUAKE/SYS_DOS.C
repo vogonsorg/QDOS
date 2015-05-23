@@ -524,24 +524,6 @@ void Sys_Printf (const char *fmt, ...)
 	va_end (argptr);
 }
 
-/*
-// FS: from QF
-void Sys_MaskPrintf (int mask, const char *fmt, ...)
-{
-        va_list args;
-        static dstring_t *text;
-
-        if (!text)
-                text = dstring_new ();
-
-        //if (!developer || (!developer.int_val & !mask))
-        //        return;
-        va_start (args, fmt);
-        dvsprintf (text, fmt,args);
-        va_end (args);
-}
-*/
-
 void Sys_AtExit (void)
 {
 

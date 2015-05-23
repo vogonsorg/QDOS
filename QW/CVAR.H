@@ -60,7 +60,7 @@ typedef struct cvar_s
 	qboolean archive;		// set to true to cause it to be saved to vars.rc
 	qboolean info;			// added to serverinfo or userinfo when changed
 	float	value;
-	int     integer;			// FS: may be set in Cvar_Set(), Cvar_Register(), Cvar_Create()
+	int     intvalue;			// FS: may be set in Cvar_Set(), Cvar_Register(), Cvar_Create()
 	struct cvar_s *next;
 } cvar_t;
 

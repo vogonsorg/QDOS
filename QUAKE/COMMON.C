@@ -1943,21 +1943,21 @@ void COM_InitFilesystem () //johnfitz -- modified based on topaz's tutorial
 		COM_AddGameDirectory (va("%s/quoth", basedir) );
 		com_nummissionpacks++;
 	}
-        if (COM_CheckParm ("-nehahra")) // FS: Nehahra
-        {
+	if (COM_CheckParm ("-nehahra")) // FS: Nehahra
+	{
 		COM_AddGameDirectory (va("%s/hipnotic", basedir) );
 		com_nummissionpacks++;
-                COM_AddGameDirectory (va("%s/nehahra", basedir) );
-                com_nummissionpacks++;
-        }
-        if (COM_CheckParm ("-warp")) // FS: Warp Spasm
-        {
+		COM_AddGameDirectory (va("%s/nehahra", basedir) );
+		com_nummissionpacks++;
+	}
+	if (COM_CheckParm ("-warp")) // FS: Warp Spasm
+	{
 		COM_AddGameDirectory (va("%s/quoth", basedir) );
 		com_nummissionpacks++;
-                COM_AddGameDirectory (va("%s/warp", basedir) );
+		COM_AddGameDirectory (va("%s/warp", basedir) );
 		com_nummissionpacks++;
-        }                
-        //johnfitz
+	}                
+	//johnfitz
 
 	i = COM_CheckParm ("-game");
 	if (i && i < com_argc-1)

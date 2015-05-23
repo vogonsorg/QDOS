@@ -37,6 +37,7 @@ typedef enum {false, true}      qboolean;
 //JASON upped from 512 -- Spoike
 #define MAX_LOCALINFO_STRING    32768
 
+#define qbool qboolean // FS: Tired of importing code from EZQ and getting errors related to this
 //============================================================================
 
 typedef struct sizebuf_s
@@ -48,6 +49,8 @@ typedef struct sizebuf_s
 	int             cursize;
 } sizebuf_t;
 
+void SZ_InitEx (sizebuf_t *buf, byte *data, int length, qbool allowoverflow); // FS: From EZQ
+void SZ_Init (sizebuf_t *buf, byte *data, int length); // FS: From EZQ
 void SZ_Clear (sizebuf_t *buf);
 void *SZ_GetSpace (sizebuf_t *buf, int length);
 void SZ_Write (sizebuf_t *buf, void *data, int length);

@@ -171,20 +171,27 @@ typedef struct
 // network stuff
 	netchan_t	netchan;
 
+//
+// Variables related to client cmds aka clc_stringcmd, unreliable part, reliable part goes to cls.netchan.message
+//
+
+	byte		cmdmsg_data[1024];
+	sizebuf_t	cmdmsg;
+
 // private userinfo for sending to masterless servers
 	char		userinfo[MAX_INFO_STRING];
 
-//        char            servername[MAX_OSPATH]; // name of server from original connect
-        struct dstring_s *servername; // FS: Dstring
+//	char            servername[MAX_OSPATH]; // name of server from original connect
+	struct dstring_s *servername; // FS: Dstring
 	int			qport;
 
 	FILE		*download;		// file transfer from server
-        //char            downloadtempname[MAX_OSPATH];
-        //char            downloadname[MAX_OSPATH];
-        struct dstring_s *downloadtempname; // FS: Dstring
-        struct dstring_s *downloadname; // FS: Dstring
-        struct dstring_s *downloadurl; // FS: HTTP downloading
-        int                      downloadnumber;
+	//char            downloadtempname[MAX_OSPATH];
+	//char            downloadname[MAX_OSPATH];
+	struct dstring_s *downloadtempname; // FS: Dstring
+	struct dstring_s *downloadname; // FS: Dstring
+	struct dstring_s *downloadurl; // FS: HTTP downloading
+	int                      downloadnumber;
 	dltype_t	downloadtype;
 	int			downloadpercent;
 	int			downloadrate; // FS

@@ -782,6 +782,19 @@ void MSG_ReadData (void *data, int len) // FS
 
 //===========================================================================
 
+void SZ_InitEx (sizebuf_t *buf, byte *data, int length, qbool allowoverflow) // FS: From EZQ
+{
+	memset (buf, 0, sizeof (*buf));
+	buf->data = data;
+	buf->maxsize = length;
+	buf->allowoverflow = allowoverflow;
+}
+
+void SZ_Init (sizebuf_t *buf, byte *data, int length) // FS: From EZQ
+{
+	SZ_InitEx (buf, data, length, false);
+}
+
 void SZ_Clear (sizebuf_t *buf)
 {
 	buf->cursize = 0;
@@ -795,7 +808,7 @@ void *SZ_GetSpace (sizebuf_t *buf, int length)
 	if (buf->cursize + length > buf->maxsize)
 	{
 		if (!buf->allowoverflow)
-                	Sys_Error ("SZ_GetSpace: overflow without allowoverflow set (%d)", buf->maxsize);
+			Sys_Error ("SZ_GetSpace: overflow without allowoverflow set (%d)", buf->maxsize);
 
 		if (length > buf->maxsize)
 			Sys_Error ("SZ_GetSpace: %i is > full buffer size", length);

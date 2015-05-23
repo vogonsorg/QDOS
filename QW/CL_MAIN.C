@@ -542,7 +542,12 @@ void CL_Disconnect (void)
 	CL_FinishDownload(false);
 
 	CL_StopUpload();
-	key_dest = 0; // FS: hack so main menu still works after disconnect
+
+	cls.qport++; // FS: From EZQ-- A hack I picked up from qizmo.
+
+	SZ_Clear(&cls.cmdmsg); // FS: From EZQ
+
+	key_dest = 0; // FS: Fix so main menu still works after disconnect
 	cl.intermission = 0; // FS: Baker fix
 }
 
@@ -899,8 +904,8 @@ Responses to broadcasts, etc
 */
 void CL_ConnectionlessPacket (void)
 {
-   char  *s;
-   int      c;
+	char  *s;
+	int      c;
 
 #ifdef PROTOCOL_VERSION_FTE
 	unsigned int pext = 0;
@@ -909,140 +914,151 @@ void CL_ConnectionlessPacket (void)
     MSG_BeginReading ();
     MSG_ReadLong ();        // skip the -1
 
-   c = MSG_ReadByte ();
-   if (!cls.demoplayback)
-      Con_Printf ("%s: ", NET_AdrToString (net_from));
-// Con_DPrintf (DEVELOPER_MSG_NET, "%s", net_message.data + 5);
-   if (c == S2C_CONNECTION)
-   {
-      Con_Printf ("connection\n");
-      if (cls.state >= ca_connected)
-      {
-         if (!cls.demoplayback)
-            Con_Printf ("Dup connect received.  Ignored.\n");
-         return;
-      }
-      Netchan_Setup (&cls.netchan, net_from, cls.qport);
-      MSG_WriteChar (&cls.netchan.message, clc_stringcmd);
-      MSG_WriteString (&cls.netchan.message, "new");  
-      cls.state = ca_connected;
-      Con_Printf ("Connected.\n");
-      allowremotecmd = false; // localid required now for remote cmds
-      return;
-   }
-   // remote command from gui front end
-   if (c == A2C_CLIENT_COMMAND)
-   {
-      char  cmdtext[2048];
+	c = MSG_ReadByte ();
+//	if (!cls.demoplayback)
+//		Con_Printf ("%s: ", NET_AdrToString (net_from));
+//	Con_DPrintf (DEVELOPER_MSG_NET, "%s", net_message.data + 5);
+	if (c == S2C_CONNECTION)
+	{
+		Con_Printf ("%s: connection\n", NET_AdrToString (net_from));
+		if (cls.state >= ca_connected)
+		{
+			if (!cls.demoplayback)
+				Con_Printf ("Dup connect received.  Ignored.\n");
+			return;
+		}
+		Netchan_Setup (&cls.netchan, net_from, cls.qport);
+		MSG_WriteChar (&cls.netchan.message, clc_stringcmd);
+		MSG_WriteString (&cls.netchan.message, "new");  
+		cls.state = ca_connected;
+		Con_Printf ("Connected.\n");
+		allowremotecmd = false; // localid required now for remote cmds
+		return;
+	}
+	// remote command from gui front end
+	if (c == A2C_CLIENT_COMMAND)
+	{
+		char  cmdtext[2048];
 
-      Con_Printf ("client command\n");
+		Con_Printf ("%s: client command\n", NET_AdrToString (net_from));
 
-      if ((*(unsigned *)net_from.ip != *(unsigned *)net_local_adr.ip
-         && *(unsigned *)net_from.ip != htonl(INADDR_LOOPBACK)) )
-      {
-         Con_Printf ("Command packet from remote host.  Ignored.\n");
-         return;
-      }
+		if ((*(unsigned *)net_from.ip != *(unsigned *)net_local_adr.ip
+		&& *(unsigned *)net_from.ip != htonl(INADDR_LOOPBACK)) )
+		{
+			Con_Printf ("Command packet from remote host.  Ignored.\n");
+			return;
+		}
 #ifdef _WIN32
 		ShowWindow (mainwindow, SW_RESTORE);
 		SetForegroundWindow (mainwindow);
 #endif
-      s = MSG_ReadString ();
+		s = MSG_ReadString ();
 
-      strncpy(cmdtext, s, sizeof(cmdtext) - 1);
-      cmdtext[sizeof(cmdtext) - 1] = 0;
+		strncpy(cmdtext, s, sizeof(cmdtext) - 1);
+		cmdtext[sizeof(cmdtext) - 1] = 0;
 
-      s = MSG_ReadString ();
+		s = MSG_ReadString ();
 
-      while (*s && isspace(*s))
-         s++;
-      while (*s && isspace(s[strlen(s) - 1]))
-         s[strlen(s) - 1] = 0;
+		while (*s && isspace(*s))
+			s++;
+		while (*s && isspace(s[strlen(s) - 1]))
+			s[strlen(s) - 1] = 0;
 
-      if (!allowremotecmd && (!*localid.string || strcmp(localid.string, s))) {
-         if (!*localid.string) {
-            Con_Printf("===========================\n");
-            Con_Printf("Command packet received from local host, but no "
-               "localid has been set.  You may need to upgrade your server "
-               "browser.\n");
-            Con_Printf("===========================\n");
-            return;
-         }
-         Con_Printf("===========================\n");
-         Con_Printf("Invalid localid on command packet received from local host. "
-            "\n|%s| != |%s|\n"
-            "You may need to reload your server browser and QuakeWorld.\n",
-            s, localid.string);
-         Con_Printf("===========================\n");
-         Cvar_Set("localid", "");
-         return;
-      }
-
-      Cbuf_AddText (cmdtext);
-      allowremotecmd = false;
-      return;
-   }
-   // print command from somewhere
-   if (c == A2C_PRINT)
-   {
-      Con_Printf ("print\n");
-
-      s = MSG_ReadString ();
-      Con_Print (s);
-      return;
-   }
-
-   // ping from somewhere
-   if (c == A2A_PING)
-   {
-      char  data[6];
-
-      Con_Printf ("ping\n");
-
-      data[0] = 0xff;
-      data[1] = 0xff;
-      data[2] = 0xff;
-      data[3] = 0xff;
-      data[4] = A2A_ACK;
-      data[5] = 0;
-      
-      NET_SendPacket (6, &data, net_from);
-      return;
-   }
-
-   if (c == S2C_CHALLENGE) {
-      Con_Printf ("challenge\n");
-
-      s = MSG_ReadString ();
-      cls.challenge = atoi(s);
-#ifdef PROTOCOL_VERSION_FTE
-			for(;;)
+		if (!allowremotecmd && (!*localid.string || strcmp(localid.string, s)))
+		{
+			if (!*localid.string)
 			{
-				c = MSG_ReadLong();
-				if (msg_badread)
-					break;
-				if (c == PROTOCOL_VERSION_FTE)
-					pext = MSG_ReadLong();
-				else
-					MSG_ReadLong();
+				Con_Printf("===========================\n");
+			    Con_Printf("Command packet received from local host, but no "
+							"localid has been set.  You may need to upgrade your server "
+							"browser.\n");
+				Con_Printf("===========================\n");
+				return;
 			}
+			Con_Printf("===========================\n");
+			Con_Printf("Invalid localid on command packet received from local host. "
+						"\n|%s| != |%s|\n"
+						"You may need to reload your server browser and QuakeWorld.\n", s, localid.string);
+			Con_Printf("===========================\n");
+			Cvar_Set("localid", "");
+			return;
+		}
 
-			CL_SendConnectPacket(pext);
+		Cbuf_AddText (cmdtext);
+		allowremotecmd = false;
+		return;
+	}
+
+	// print command from somewhere
+	if (c == A2C_PRINT)
+	{
+#ifdef FTE_PEXT_CHUNKEDDOWNLOADS
+		if (net_message.cursize > 100 && !strncmp((char *)net_message.data + 5, "\\chunk", sizeof("\\chunk")-1)) 
+		{
+			CL_Parse_OOB_ChunkedDownload();
+			return;
+		}
+#endif // FTE_PEXT_CHUNKEDDOWNLOADS
+//		Con_Printf ("print\n");
+		Con_Printf("%s: print\n", NET_AdrToString(net_from));
+
+		s = MSG_ReadString ();
+		Con_Print (s);
+		return;
+	}
+
+	// ping from somewhere
+	if (c == A2A_PING)
+	{
+		char  data[6];
+
+		Con_Printf ("%s: ping\n", NET_AdrToString (net_from));
+
+		data[0] = 0xff;
+		data[1] = 0xff;
+		data[2] = 0xff;
+		data[3] = 0xff;
+		data[4] = A2A_ACK;
+		data[5] = 0;
+      
+		NET_SendPacket (6, &data, net_from);
+		return;
+	}
+
+	if (c == S2C_CHALLENGE)
+	{
+		Con_Printf ("%s: challenge\n", NET_AdrToString (net_from));
+
+		s = MSG_ReadString ();
+		cls.challenge = atoi(s);
+#ifdef PROTOCOL_VERSION_FTE
+		for(;;)
+		{
+			c = MSG_ReadLong();
+			if (msg_badread)
+				break;
+			if (c == PROTOCOL_VERSION_FTE)
+				pext = MSG_ReadLong();
+			else
+				MSG_ReadLong();
+		}
+
+		CL_SendConnectPacket(pext);
 #else
-			CL_SendConnectPacket();
+		CL_SendConnectPacket();
 #endif // PROTOCOL_VERSION_FTE
-      return;
-   }
+		return;
+	}
 
-   if (c == svc_disconnect) {
-                if(cls.demoplayback)
-                        Host_EndGame ("End of demo");
-                else
-                        Con_Printf ("svc_disconnect\n");
-      return;
-   }
-
-   Con_Printf ("unknown:  %c\n", c);
+	if (c == svc_disconnect)
+	{
+		if(cls.demoplayback)
+			Host_EndGame ("End of demo");
+		else
+			Con_Printf ("svc_disconnect\n");
+		return;
+	}
+	Con_Printf ("%s: unknown: %c\n", NET_AdrToString (net_from), c);
 }
 
 
@@ -1175,88 +1191,91 @@ CL_Init
 */
 void CL_Init (void)
 {
-   extern   cvar_t      baseskin;
-   extern   cvar_t      noskins;
-        const char *st;
+	extern   cvar_t      baseskin;
+	extern   cvar_t      noskins;
+	const char *st;
 
-   cls.state = ca_disconnected;
+	cls.state = ca_disconnected;
 
-   Info_SetValueForKey (cls.userinfo, "name", "unnamed", MAX_INFO_STRING);
-   Info_SetValueForKey (cls.userinfo, "topcolor", "0", MAX_INFO_STRING);
-   Info_SetValueForKey (cls.userinfo, "bottomcolor", "0", MAX_INFO_STRING);
-   Info_SetValueForKey (cls.userinfo, "rate", "2500", MAX_INFO_STRING);
-   Info_SetValueForKey (cls.userinfo, "msg", "1", MAX_INFO_STRING);
-   st = va("QWDOS v%4.2f", VERSION);
-   Info_SetValueForStarKey (cls.userinfo, "*ver", st, MAX_INFO_STRING);
-   Info_SetValueForKey (cls.userinfo, "chat", "", MAX_INFO_STRING); // FS: For AFK
+	SZ_Init(&cls.cmdmsg, cls.cmdmsg_data, sizeof(cls.cmdmsg_data));
+	cls.cmdmsg.allowoverflow = true;
 
-//   Info_SetValueForStarKey (cls.userinfo, "*cap", "h", MAX_INFO_STRING); // FS: For HTTP
-   CL_InitInput ();
-   CL_InitTEnts ();
-   CL_InitPrediction ();
-   CL_InitCam ();
-   Pmove_Init ();
+	Info_SetValueForKey (cls.userinfo, "name", "unnamed", MAX_INFO_STRING);
+	Info_SetValueForKey (cls.userinfo, "topcolor", "0", MAX_INFO_STRING);
+	Info_SetValueForKey (cls.userinfo, "bottomcolor", "0", MAX_INFO_STRING);
+	Info_SetValueForKey (cls.userinfo, "rate", "2500", MAX_INFO_STRING);
+	Info_SetValueForKey (cls.userinfo, "msg", "1", MAX_INFO_STRING);
+	st = va("QWDOS v%4.2f", VERSION);
+	Info_SetValueForStarKey (cls.userinfo, "*ver", st, MAX_INFO_STRING);
+	Info_SetValueForKey (cls.userinfo, "chat", "", MAX_INFO_STRING); // FS: For AFK
+
+//	Info_SetValueForStarKey (cls.userinfo, "*cap", "h", MAX_INFO_STRING); // FS: For HTTP
+	CL_InitInput ();
+	CL_InitTEnts ();
+	CL_InitPrediction ();
+	CL_InitCam ();
+	Pmove_Init ();
    
 //
 // register our commands
 //
-   Cvar_RegisterVariable (&show_fps);
-   Cvar_RegisterVariable (&show_time); // FS: Show Time
-   Cvar_RegisterVariable (&show_uptime); // FS: Show uptime
-   Cvar_RegisterVariable (&console_old_complete); // FS
-   Cvar_RegisterVariable (&net_broadcast_chat); // FS: Broadcast Chat notifications
-   Cvar_RegisterVariable (&host_speeds);
-   Cvar_RegisterVariable (&developer);
+	Cvar_RegisterVariable (&show_fps);
+	Cvar_RegisterVariable (&show_time); // FS: Show Time
+	Cvar_RegisterVariable (&show_uptime); // FS: Show uptime
+	Cvar_RegisterVariable (&console_old_complete); // FS
+	Cvar_RegisterVariable (&net_broadcast_chat); // FS: Broadcast Chat notifications
+	Cvar_RegisterVariable (&host_speeds);
+	Cvar_RegisterVariable (&developer);
 
-   Cvar_RegisterVariable (&cl_warncmd);
-   Cvar_RegisterVariable (&cl_upspeed);
-   Cvar_RegisterVariable (&cl_forwardspeed);
-   Cvar_RegisterVariable (&cl_backspeed);
-   Cvar_RegisterVariable (&cl_sidespeed);
-   Cvar_RegisterVariable (&cl_movespeedkey);
-   Cvar_RegisterVariable (&cl_yawspeed);
-   Cvar_RegisterVariable (&cl_pitchspeed);
-   Cvar_RegisterVariable (&cl_anglespeedkey);
-   Cvar_RegisterVariable (&cl_shownet);
-   Cvar_RegisterVariable (&cl_sbar);
-   Cvar_RegisterVariable (&cl_hudswap);
-   Cvar_RegisterVariable (&cl_maxfps);
-   Cvar_RegisterVariable (&cl_timeout);
-   Cvar_RegisterVariable (&lookspring);
-   Cvar_RegisterVariable (&lookstrafe);
-   Cvar_RegisterVariable (&sensitivity);
+	Cvar_RegisterVariable (&cl_warncmd);
+	Cvar_RegisterVariable (&cl_upspeed);
+	Cvar_RegisterVariable (&cl_forwardspeed);
+	Cvar_RegisterVariable (&cl_backspeed);
+	Cvar_RegisterVariable (&cl_sidespeed);
+	Cvar_RegisterVariable (&cl_movespeedkey);
+	Cvar_RegisterVariable (&cl_yawspeed);
+	Cvar_RegisterVariable (&cl_pitchspeed);
+	Cvar_RegisterVariable (&cl_anglespeedkey);
+	Cvar_RegisterVariable (&cl_shownet);
+	Cvar_RegisterVariable (&cl_sbar);
+	Cvar_RegisterVariable (&cl_hudswap);
+	Cvar_RegisterVariable (&cl_maxfps);
+	Cvar_RegisterVariable (&cl_timeout);
+	Cvar_RegisterVariable (&lookspring);
+	Cvar_RegisterVariable (&lookstrafe);
+	Cvar_RegisterVariable (&sensitivity);
 
-   Cvar_RegisterVariable (&m_pitch);
-   Cvar_RegisterVariable (&m_yaw);
-   Cvar_RegisterVariable (&m_forward);
-   Cvar_RegisterVariable (&m_side);
+	Cvar_RegisterVariable (&m_pitch);
+	Cvar_RegisterVariable (&m_yaw);
+	Cvar_RegisterVariable (&m_forward);
+	Cvar_RegisterVariable (&m_side);
 
-   Cvar_RegisterVariable (&rcon_password);
-   Cvar_RegisterVariable (&rcon_address);
+	Cvar_RegisterVariable (&rcon_password);
+	Cvar_RegisterVariable (&rcon_address);
 
-   Cvar_RegisterVariable (&entlatency);
-   Cvar_RegisterVariable (&cl_predict_players2);
-   Cvar_RegisterVariable (&cl_predict_players);
-   Cvar_RegisterVariable (&cl_solid_players);
+	Cvar_RegisterVariable (&entlatency);
+	Cvar_RegisterVariable (&cl_predict_players2);
+	Cvar_RegisterVariable (&cl_predict_players);
+	Cvar_RegisterVariable (&cl_solid_players);
 
-   Cvar_RegisterVariable (&localid);
+	Cvar_RegisterVariable (&localid);
 
-   Cvar_RegisterVariable (&baseskin);
-   Cvar_RegisterVariable (&noskins);
+	Cvar_RegisterVariable (&baseskin);
+	Cvar_RegisterVariable (&noskins);
 
    //
    // info mirrors
    //
-   Cvar_RegisterVariable (&name);
-   Cvar_RegisterVariable (&password);
-   Cvar_RegisterVariable (&spectator);
-   Cvar_RegisterVariable (&skin);
-   Cvar_RegisterVariable (&team);
-   Cvar_RegisterVariable (&topcolor);
-   Cvar_RegisterVariable (&bottomcolor);
-   Cvar_RegisterVariable (&rate);
-   Cvar_RegisterVariable (&msg);
-   Cvar_RegisterVariable (&noaim);
+	Cvar_RegisterVariable (&name);
+	Cvar_RegisterVariable (&password);
+	Cvar_RegisterVariable (&spectator);
+	Cvar_RegisterVariable (&skin);
+	Cvar_RegisterVariable (&team);
+	Cvar_RegisterVariable (&topcolor);
+	Cvar_RegisterVariable (&bottomcolor);
+	Cvar_RegisterVariable (&rate);
+	Cvar_RegisterVariable (&msg);
+	Cvar_RegisterVariable (&noaim);
 	Cvar_RegisterVariable (&chat); // FS: For AFK
 
 #ifdef PROTOCOL_VERSION_FTE
@@ -1273,49 +1292,49 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&cl_pext_floatcoords);
 #endif
 
-   Cmd_AddCommand ("version", CL_Version_f);
-   Cmd_AddCommand ("force_error", CL_ForceError_f); // FS: was used for Sys_Error dstring conversion test
+	Cmd_AddCommand ("version", CL_Version_f);
+	Cmd_AddCommand ("force_error", CL_ForceError_f); // FS: was used for Sys_Error dstring conversion test
 	Cmd_AddCommand ("cl_flashlight", CL_Flashlight_f); // FS: Flashlight
-   Cmd_AddCommand ("changing", CL_Changing_f);
-   Cmd_AddCommand ("disconnect", CL_Disconnect_f);
-   Cmd_AddCommand ("record", CL_Record_f);
-   Cmd_AddCommand ("rerecord", CL_ReRecord_f);
-   Cmd_AddCommand ("stop", CL_Stop_f);
-   Cmd_AddCommand ("playdemo", CL_PlayDemo_f);
-   Cmd_AddCommand ("timedemo", CL_TimeDemo_f);
+	Cmd_AddCommand ("changing", CL_Changing_f);
+	Cmd_AddCommand ("disconnect", CL_Disconnect_f);
+	Cmd_AddCommand ("record", CL_Record_f);
+	Cmd_AddCommand ("rerecord", CL_ReRecord_f);
+	Cmd_AddCommand ("stop", CL_Stop_f);
+	Cmd_AddCommand ("playdemo", CL_PlayDemo_f);
+	Cmd_AddCommand ("timedemo", CL_TimeDemo_f);
 
-   Cmd_AddCommand ("skins", Skin_Skins_f);
-   Cmd_AddCommand ("allskins", Skin_AllSkins_f);
+	Cmd_AddCommand ("skins", Skin_Skins_f);
+	Cmd_AddCommand ("allskins", Skin_AllSkins_f);
 
-   Cmd_AddCommand ("quit", CL_Quit_f);
-   Cmd_AddCommand ("quit!", CL_Fast_Quit_f); // FS: Fast quit
+	Cmd_AddCommand ("quit", CL_Quit_f);
+	Cmd_AddCommand ("quit!", CL_Fast_Quit_f); // FS: Fast quit
 
-   Cmd_AddCommand ("connect", CL_Connect_f);
-   Cmd_AddCommand ("reconnect", CL_Reconnect_f);
+	Cmd_AddCommand ("connect", CL_Connect_f);
+	Cmd_AddCommand ("reconnect", CL_Reconnect_f);
 
-   Cmd_AddCommand ("rcon", CL_Rcon_f);
-   Cmd_AddCommand ("packet", CL_Packet_f);
-   Cmd_AddCommand ("user", CL_User_f);
-   Cmd_AddCommand ("users", CL_Users_f);
+	Cmd_AddCommand ("rcon", CL_Rcon_f);
+	Cmd_AddCommand ("packet", CL_Packet_f);
+	Cmd_AddCommand ("user", CL_User_f);
+	Cmd_AddCommand ("users", CL_Users_f);
 
-   Cmd_AddCommand ("setinfo", CL_SetInfo_f);
-   Cmd_AddCommand ("fullinfo", CL_FullInfo_f);
-   Cmd_AddCommand ("fullserverinfo", CL_FullServerinfo_f);
+	Cmd_AddCommand ("setinfo", CL_SetInfo_f);
+	Cmd_AddCommand ("fullinfo", CL_FullInfo_f);
+	Cmd_AddCommand ("fullserverinfo", CL_FullServerinfo_f);
 
-   Cmd_AddCommand ("color", CL_Color_f);
-   Cmd_AddCommand ("download", CL_Download_f);
+	Cmd_AddCommand ("color", CL_Color_f);
+	Cmd_AddCommand ("download", CL_Download_f);
 
-   Cmd_AddCommand ("nextul", CL_NextUpload);
-   Cmd_AddCommand ("stopul", CL_StopUpload);
+	Cmd_AddCommand ("nextul", CL_NextUpload);
+	Cmd_AddCommand ("stopul", CL_StopUpload);
 
 //
 // forward to server commands
 //
-   Cmd_AddCommand ("kill", NULL);
-   Cmd_AddCommand ("pause", NULL);
-   Cmd_AddCommand ("say", NULL);
-   Cmd_AddCommand ("say_team", NULL);
-   Cmd_AddCommand ("serverinfo", NULL);
+	Cmd_AddCommand ("kill", NULL);
+	Cmd_AddCommand ("pause", NULL);
+	Cmd_AddCommand ("say", NULL);
+	Cmd_AddCommand ("say_team", NULL);
+	Cmd_AddCommand ("serverinfo", NULL);
 
 //
 //  Windows commands
@@ -1446,13 +1465,13 @@ void Host_Frame (float time)
    if (oldrealtime > realtime)
       oldrealtime = 0;
 
-   if (cl_maxfps.value)
-      fps = max(30.0, min(cl_maxfps.value, 240.0)); // FS: 240
+   if (cl_maxfps.intvalue)
+      fps = bound(30, cl_maxfps.intvalue, 240);//max(30.0, min(cl_maxfps.value, 240.0)); // FS: 240
    else
-      fps = max(30.0, min(rate.value/80.0, 72.0));
+      fps = bound(30, cl_maxfps.intvalue, 72);//max(30.0, min(rate.value/80.0, 72.0));
 
-   if (!cls.timedemo && realtime - oldrealtime < 1.0/fps)
-      return;        // framerate is too high
+	if ((!cls.timedemo && !cls.download) && realtime - oldrealtime < 1.0/fps) // FS: Don't lock framerate 
+		return;        // framerate is too high
 
    host_frametime = realtime - oldrealtime;
    oldrealtime = realtime;
@@ -1612,7 +1631,9 @@ void Host_Init (quakeparms_t *parms)
    Draw_Init ();
    SCR_Init ();
    R_Init ();
+#ifndef _WIN32
    S_Init ();
+#endif
 
    cls.state = ca_disconnected;
    CDAudio_Init ();

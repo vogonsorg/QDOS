@@ -192,7 +192,7 @@ void Cvar_Set (char *var_name, char *value)
 	var->string = Z_Malloc (Q_strlen(value)+1);
 	Q_strcpy (var->string, value);
 	var->value = Q_atof (var->string);
-	var->integer = Q_atoi (var->string); // FS
+	var->intvalue = Q_atoi (var->string); // FS
 }
 
 /*
@@ -207,14 +207,14 @@ void Cvar_SetValue (char *var_name, float value)
 	
 	sprintf (val, "%f",value);
 */ // FS: New school dstring
-        dstring_t *val;
-        val = dstring_new ();
+	dstring_t *val;
+	val = dstring_new ();
 	if (value == (int)value) // FS: Weird zeros fix from QIP
 		dsprintf(val, "%d", (int)value);
 	else
-        	dsprintf(val, "%f",value); 
-        Cvar_Set (var_name, val->str);
-        dstring_delete (val);
+		dsprintf(val, "%f",value); 
+	Cvar_Set (var_name, val->str);
+	dstring_delete (val);
 }
 
 
@@ -227,7 +227,7 @@ Adds a freestanding variable to the variable list.
 */
 void Cvar_RegisterVariable (cvar_t *variable)
 {
-        char    value[512];
+	char    value[512];
 // first check to see if it has allready been defined
 	if (Cvar_FindVar (variable->name))
 	{

@@ -43,7 +43,7 @@ double      host_time;
 double      realtime;            // without any filtering or bounding
 double      oldrealtime;         // last frame run
 int         host_framecount;
-int             fps_count; // FS: for SHOW_FPS
+int			fps_count; // FS: for SHOW_FPS
 
 int         host_hunklevel;
 
@@ -56,43 +56,43 @@ jmp_buf  host_abortserver;
 byte     *host_basepal;
 byte     *host_colormap;
 
-cvar_t   host_framerate = {"host_framerate","0"};  // set for slow motion
-cvar_t   host_speeds = {"host_speeds","0"};        // set for running times
+cvar_t	host_framerate = {"host_framerate","0"};  // set for slow motion
+cvar_t	host_speeds = {"host_speeds","0"};        // set for running times
 cvar_t	host_maxfps = {"host_maxfps", "72", true}; //johnfitz
 cvar_t	host_timescale = {"host_timescale", "0"}; //johnfitz
 cvar_t	max_edicts = {"max_edicts", "2048"}; //johnfitz
 
-cvar_t   sys_ticrate = {"sys_ticrate","0.05"};
-cvar_t   serverprofile = {"serverprofile","0"};
+cvar_t	sys_ticrate = {"sys_ticrate","0.05"};
+cvar_t	serverprofile = {"serverprofile","0"};
 
-cvar_t   fraglimit = {"fraglimit","0",false,true};
-cvar_t   timelimit = {"timelimit","0",false,true};
-cvar_t   teamplay = {"teamplay","0",false,true};
+cvar_t	fraglimit = {"fraglimit","0",false,true};
+cvar_t	timelimit = {"timelimit","0",false,true};
+cvar_t	teamplay = {"teamplay","0",false,true};
 
-cvar_t   samelevel = {"samelevel","0"};
-cvar_t   noexit = {"noexit","0",false,true};
+cvar_t	samelevel = {"samelevel","0"};
+cvar_t	noexit = {"noexit","0",false,true};
 
 /* FS: Address Book */
-cvar_t adr0 = {"adr0", "", true};
-cvar_t adr1 = {"adr1", "", true};
-cvar_t adr2 = {"adr2", "", true};
-cvar_t adr3 = {"adr3", "", true};
-cvar_t adr4 = {"adr4", "", true};
-cvar_t adr5 = {"adr5", "", true};
-cvar_t adr6 = {"adr6", "", true};
-cvar_t adr7 = {"adr7", "", true};
-cvar_t adr8 = {"adr8", "", true};
-cvar_t adr9 = {"adr9", "", true};
+cvar_t	adr0 = {"adr0", "", true};
+cvar_t	adr1 = {"adr1", "", true};
+cvar_t	adr2 = {"adr2", "", true};
+cvar_t	adr3 = {"adr3", "", true};
+cvar_t	adr4 = {"adr4", "", true};
+cvar_t	adr5 = {"adr5", "", true};
+cvar_t	adr6 = {"adr6", "", true};
+cvar_t	adr7 = {"adr7", "", true};
+cvar_t	adr8 = {"adr8", "", true};
+cvar_t	adr9 = {"adr9", "", true};
 
-cvar_t   developer = {"developer","0"};
+cvar_t	developer = {"developer","0"};
 
-cvar_t   skill = {"skill","1"};                 // 0 - 3
-cvar_t   deathmatch = {"deathmatch","0"};       // 0, 1, or 2
-cvar_t   coop = {"coop","0"};       // 0 or 1
+cvar_t	skill = {"skill","1"};                 // 0 - 3
+cvar_t	deathmatch = {"deathmatch","0"};       // 0, 1, or 2
+cvar_t	coop = {"coop","0"};       // 0 or 1
 
-cvar_t   pausable = {"pausable","1"};
+cvar_t	pausable = {"pausable","1"};
 
-cvar_t   temp1 = {"temp1","0"};
+cvar_t	temp1 = {"temp1","0"};
 
 
 /*
@@ -122,30 +122,30 @@ Host_EndGame
 */
 void Host_EndGame (const char *message, ...)
 {
-   va_list     argptr;
+	va_list     argptr;
 //   char     string[1024];
-  static dstring_t *string; // FS: New school dstring
+	static dstring_t *string; // FS: New school dstring
   
-  if (!string)
-	  string = dstring_new();
+	if (!string)
+		string = dstring_new();
 
-   va_start (argptr,message);
-   dvsprintf (string,message,argptr);
-   va_end (argptr);
-   Con_DPrintf (DEVELOPER_MSG_NET, "Host_EndGame: %s\n",string->str);
+	va_start (argptr,message);
+	dvsprintf (string,message,argptr);
+	va_end (argptr);
+	Con_DPrintf (DEVELOPER_MSG_NET, "Host_EndGame: %s\n",string->str);
    
-   if (sv.active)
-      Host_ShutdownServer (false);
+	if (sv.active)
+		Host_ShutdownServer (false);
 
-   if (cls.state == ca_dedicated)
-      Sys_Error ("Host_EndGame: %s\n",string->str);  // dedicated servers exit
+	if (cls.state == ca_dedicated)
+		Sys_Error ("Host_EndGame: %s\n",string->str);  // dedicated servers exit
    
-   if (cls.demonum != -1)
-      CL_NextDemo ();
-   else
-      CL_Disconnect ();
+	if (cls.demonum != -1)
+		CL_NextDemo ();
+	else
+		CL_Disconnect ();
 
-   longjmp (host_abortserver, 1);
+	longjmp (host_abortserver, 1);
 }
 
 /*
@@ -799,7 +799,7 @@ void _Host_Frame (float time)
    }
    
    host_framecount++;
-        fps_count++; // FS: for SHOW_FPS
+	fps_count++; // FS: for SHOW_FPS
 }
 
 void Host_Frame (float time)
@@ -847,82 +847,83 @@ Host_Init
 */
 void Host_Init (quakeparms_t *parms)
 {
+	if (standard_quake)
+		minimum_memory = MINIMUM_MEMORY;
+	else
+		minimum_memory = MINIMUM_MEMORY_LEVELPAK;
 
-   if (standard_quake)
-      minimum_memory = MINIMUM_MEMORY;
-   else
-      minimum_memory = MINIMUM_MEMORY_LEVELPAK;
+	if (COM_CheckParm ("-minmemory"))
+		parms->memsize = minimum_memory;
 
-   if (COM_CheckParm ("-minmemory"))
-      parms->memsize = minimum_memory;
+	host_parms = *parms;
 
-   host_parms = *parms;
+	if (parms->memsize < minimum_memory)
+		Sys_Error ("Only %4.1f megs of memory available, can't execute game", parms->memsize / (float)0x100000);
 
-   if (parms->memsize < minimum_memory)
-      Sys_Error ("Only %4.1f megs of memory available, can't execute game", parms->memsize / (float)0x100000);
+	com_argc = parms->argc;
+	com_argv = parms->argv;
 
-   com_argc = parms->argc;
-   com_argv = parms->argv;
+	Memory_Init (parms->membase, parms->memsize);
+	Cbuf_Init ();
+	Cmd_Init ();   
+	V_Init ();
+	Chase_Init ();
+	COM_Init (parms->basedir);
+	Cvar_Init(); // FS
+	CFG_OpenConfig("config.cfg");  // FS: Parse CFG early -- sezero
+	Host_InitLocal ();
+	W_LoadWadFile ("gfx.wad");
+	Key_Init ();
+	Con_Init ();   
+	M_Init ();  
+	PR_Init ();
+	Mod_Init ();
+	NET_Init ();
+	SV_Init ();
 
-   Memory_Init (parms->membase, parms->memsize);
-   Cbuf_Init ();
-   Cmd_Init ();   
-   V_Init ();
-   Chase_Init ();
-   COM_Init (parms->basedir);
-   Cvar_Init(); // FS
-   CFG_OpenConfig("config.cfg");  // FS: Parse CFG early -- sezero
-   Host_InitLocal ();
-   W_LoadWadFile ("gfx.wad");
-   Key_Init ();
-   Con_Init ();   
-   M_Init ();  
-   PR_Init ();
-   Mod_Init ();
-   NET_Init ();
-   SV_Init ();
-
-   Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
-   Con_Printf ("%4.1f megabyte heap\n",parms->memsize/ (1024*1024.0));
+	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
+	Con_Printf ("%4.1f megabyte heap\n",parms->memsize/ (1024*1024.0));
    
-   R_InitTextures ();      // needed even for dedicated servers
+	R_InitTextures ();      // needed even for dedicated servers
  
-   if (cls.state != ca_dedicated)
-   {
-      host_basepal = (byte *)COM_LoadHunkFile ("gfx/palette.lmp");
-      if (!host_basepal)
-         Sys_Error ("Couldn't load gfx/palette.lmp");
-      host_colormap = (byte *)COM_LoadHunkFile ("gfx/colormap.lmp");
-      if (!host_colormap)
-         Sys_Error ("Couldn't load gfx/colormap.lmp");
+	if (cls.state != ca_dedicated)
+	{
+		host_basepal = (byte *)COM_LoadHunkFile ("gfx/palette.lmp");
+		if (!host_basepal)
+			Sys_Error ("Couldn't load gfx/palette.lmp");
+		host_colormap = (byte *)COM_LoadHunkFile ("gfx/colormap.lmp");
+		if (!host_colormap)
+			Sys_Error ("Couldn't load gfx/colormap.lmp");
                 // FS: Joystick.
 
-      VID_Init (host_basepal);
-      Draw_Init ();
-      SCR_Init ();
-      R_Init ();
-                S_Init ();
-      CDAudio_Init ();
-      Sbar_Init ();
-      CL_Init ();
-      IN_Init (); // FS: Disable for Debug
+		VID_Init (host_basepal);
+		Draw_Init ();
+		SCR_Init ();
+		R_Init ();
+#ifndef _WIN32 // FS: Tired of warnings about things already registered.  See vid_win.c
+		S_Init ();
+#endif
+		CDAudio_Init ();
+		Sbar_Init ();
+		CL_Init ();
+		IN_Init (); // FS: Disable for Debug
 
-      if(COM_CheckParm("-safevga")) // FS: Safe VGA mode
-      {
-         Con_Printf("Safe VGA mode enabled\n");
-         Cbuf_AddText("vid_mode 0");
-      }
-   }
+		if(COM_CheckParm("-safevga")) // FS: Safe VGA mode
+		{
+			Con_Printf("Safe VGA mode enabled\n");
+			Cbuf_AddText("vid_mode 0");
+		}
+	}
 
-   Cbuf_InsertText ("exec quake.rc\n");
-        Cbuf_AddText ("cl_warncmd 1\n"); // FS: from QW
+	Cbuf_InsertText ("exec quake.rc\n");
+	Cbuf_AddText ("cl_warncmd 1\n"); // FS: from QW
 
-   Hunk_AllocName (0, "-HOST_HUNKLEVEL-");
-   host_hunklevel = Hunk_LowMark ();
+	Hunk_AllocName (0, "-HOST_HUNKLEVEL-");
+	host_hunklevel = Hunk_LowMark ();
 
-   host_initialized = true;
+	host_initialized = true;
    
-   Sys_Printf ("========Quake Initialized=========\n");  
+	Sys_Printf ("========Quake Initialized=========\n");  
 }
 
 
