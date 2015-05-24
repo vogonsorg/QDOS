@@ -120,6 +120,8 @@ clean:
 	del qw.exe
 	del dqw.exe
 	del dos\*.o
+	del dos\goa\*.o
+	del dos\goa\cengine\*.o
 
 qw.exe: $(OBJS) $(O)/sys_dos.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) $(O)/sys_dos.o \

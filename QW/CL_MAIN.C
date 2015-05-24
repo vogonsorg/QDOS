@@ -30,9 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "cfgfile.h" // FS: Parse CFG early -- sezero
 #include <ctype.h> // FS: -Werror fix
 
-#ifdef GAMESPY
 #include "Goa/CEngine/goaceng.h"
-#endif
 
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
@@ -144,7 +142,7 @@ cvar_t  show_fps = {"show_fps","0", true}; // FS
 cvar_t  show_time = {"show_time","0", true}; // FS: Show time
 cvar_t  show_uptime = {"show_uptime", "0", true}; // FS: Show uptime
 cvar_t	console_old_complete = {"console_old_complete", "0", true, false , "Use legacy style tab completion."}; // FS
-cvar_t	developer = {"developer","0", false, false, "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Extremely verbose msgs - 65536\n"};
+cvar_t	developer = {"developer","0", false, false, "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Extremely verbose msgs - 65536\n  * Extremely verbose gamespy msgs - 131072\n"};
 cvar_t	con_show_description = {"con_show_description", "1", true, false, "Show descriptions for CVARs."}; // FS
 cvar_t	con_show_dev_flags = {"con_show_dev_flags", "1", true, false, "Show developer flag options."}; // FS
 
@@ -153,10 +151,8 @@ qboolean bFlashlight = false; // FS: Flashlight
 
 void CL_Flashlight_f (void); // FS: Prototype it
 
-#ifdef GAMESPY // FS
 void ListCallBack(GServerList serverlist, int msg, void *instance, void *param1, void *param2);
 void CL_PingNetServers_f (void);
-#endif
 
 jmp_buf  host_abort;
 
@@ -1364,9 +1360,7 @@ void CL_Init (void)
 	Cmd_AddCommand ("windows", CL_Windows_f);
 #endif
 
-#ifdef GAMESPY
 	Cmd_AddCommand ("slist2", CL_PingNetServers_f);
-#endif
 
 	specbool = spectator.value; // FS
 	dstring_delete(version);
@@ -1731,7 +1725,6 @@ void CL_Flashlight_f (void) // FS: Flashlight
 		bFlashlight = 1;
 }
 
-#ifdef GAMESPY
 //GAMESPY
 void ListCallBack(GServerList serverlist, int msg, void *instance, void *param1, void *param2)
 {
@@ -1739,7 +1732,8 @@ void ListCallBack(GServerList serverlist, int msg, void *instance, void *param1,
 	if (msg == LIST_PROGRESS)
 	{
 		server = (GServer)param1;
-		Con_Printf ( "%s:%d [%d] %s %d/%d %s\n",ServerGetAddress(server),ServerGetQueryPort(server), ServerGetPing(server),ServerGetStringValue(server, "hostname","(NONE)"), ServerGetIntValue(server,"numplayers",0), ServerGetIntValue(server,"maxclients",0), ServerGetStringValue(server,"map","(NO MAP)"));
+		if(ServerGetIntValue(server,"numplayers",0)) // FS: Only show populated servers
+			Con_Printf ( "%s:%d [%d] %s %d/%d %s\n",ServerGetAddress(server),ServerGetQueryPort(server), ServerGetPing(server),ServerGetStringValue(server, "hostname","(NONE)"), ServerGetIntValue(server,"numplayers",0), ServerGetIntValue(server,"maxclients",0), ServerGetStringValue(server,"map","(NO MAP)"));
 	}
 
 }
@@ -1757,6 +1751,7 @@ void CL_PingNetServers_f (void)
 	goa_secret_key[4] = 'q';
 	goa_secret_key[5] = 'n';
 	goa_secret_key[6] = '\0';
+	Con_Printf("Grabbing populated server list from GameSpy master. . .\n");
 	serverlist = ServerListNew("quakeworld","quakeworld",goa_secret_key,10,ListCallBack,GCALLBACK_FUNCTION,NULL);
     error = ServerListUpdate(serverlist,false);
 
@@ -1769,4 +1764,3 @@ void CL_PingNetServers_f (void)
     ServerListFree(serverlist);
 
 }
-#endif

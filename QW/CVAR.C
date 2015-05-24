@@ -372,6 +372,8 @@ void Cvar_ParseDeveloperFlags (void) // FS: Special stuff for showing all the de
 //			Con_Printf(" * Save/Restore messages - 32768\n");
 		if(devFlags & DEVELOPER_MSG_VERBOSE)
 			Con_Printf(" * Extremely Verbose messages - 65536\n");
+		if(devFlags & DEVELOPER_MSG_GAMESPY)
+			Con_Printf(" * Extremely Verbose GameSpy messages - 131072\n");
 	}
 	else
 	{

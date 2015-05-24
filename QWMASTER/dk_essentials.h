@@ -1,0 +1,18 @@
+#ifndef _DK_ESSENTIALS_H
+#define _DK_ESSENTIALS_H
+
+#include "shared.h"
+
+void Com_sprintf( char *dest, int size, char *fmt, ... );
+void Con_DPrintf (char *fmt, ...);
+char *DK_strtok_r(char *s, const char *delim, char **last);
+char *Info_ValueForKey(const char *s, const char *key); // FS: From Quake 2
+extern int enctypex_wrapper(unsigned char *key, unsigned char *validate, unsigned char *data, int size);
+unsigned char *gsseckey(unsigned char *dst, unsigned char *src, unsigned char *key, int enctype);
+void Gamespy_Create_Challenge_Key(char *s, const int len);
+char *Gamespy_Get_Game_SecKey (char *gamename);
+char *DK_strlwr (char *s); // FS: Some compilers might not have this
+void Parse_ServerList (unsigned int fileSize, char *fileBuffer);
+void AddServers_From_List_Execute(char *fileBuffer); // FS: From Quake 2
+
+#endif // _DK_ESSENTIALS_H
