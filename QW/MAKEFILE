@@ -104,7 +104,13 @@ $(O)/R_VARSA.o \
 $(O)/R_DRAWA.o \
 $(O)/SND_MIXA.o \
 $(O)/SURF16.o \
-$(O)/SURF8.o 
+$(O)/SURF8.o \
+$(O)/Goa/CEngine/darray.o \
+$(O)/Goa/CEngine/gserver.o \
+$(O)/Goa/CEngine/gserverlist.o \
+$(O)/Goa/CEngine/gutil.o \
+$(O)/Goa/CEngine/hashtable.o \
+$(O)/Goa/nonport.o 
 
 
 all:     qw.exe

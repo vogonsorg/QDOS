@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // quakedef.h -- primary header for client
 
 #define	QUAKE_GAME			// as opposed to utilities
+#define GAMESPY // FS: Use gamespy SDK for server browser
 
 //define	PARANOID			// speed sapping error checking
 

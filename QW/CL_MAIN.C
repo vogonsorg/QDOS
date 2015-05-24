@@ -30,6 +30,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "cfgfile.h" // FS: Parse CFG early -- sezero
 #include <ctype.h> // FS: -Werror fix
 
+#ifdef GAMESPY
+#include "Goa/CEngine/goaceng.h"
+#endif
+
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
 
@@ -148,6 +152,11 @@ int         fps_count;
 qboolean bFlashlight = false; // FS: Flashlight
 
 void CL_Flashlight_f (void); // FS: Prototype it
+
+#ifdef GAMESPY // FS
+void ListCallBack(GServerList serverlist, int msg, void *instance, void *param1, void *param2);
+void CL_PingNetServers_f (void);
+#endif
 
 jmp_buf  host_abort;
 
@@ -1354,6 +1363,11 @@ void CL_Init (void)
 #ifdef _WINDOWS
 	Cmd_AddCommand ("windows", CL_Windows_f);
 #endif
+
+#ifdef GAMESPY
+	Cmd_AddCommand ("slist2", CL_PingNetServers_f);
+#endif
+
 	specbool = spectator.value; // FS
 	dstring_delete(version);
 }
@@ -1716,3 +1730,43 @@ void CL_Flashlight_f (void) // FS: Flashlight
 	else
 		bFlashlight = 1;
 }
+
+#ifdef GAMESPY
+//GAMESPY
+void ListCallBack(GServerList serverlist, int msg, void *instance, void *param1, void *param2)
+{
+	GServer server;
+	if (msg == LIST_PROGRESS)
+	{
+		server = (GServer)param1;
+		Con_Printf ( "%s:%d [%d] %s %d/%d %s\n",ServerGetAddress(server),ServerGetQueryPort(server), ServerGetPing(server),ServerGetStringValue(server, "hostname","(NONE)"), ServerGetIntValue(server,"numplayers",0), ServerGetIntValue(server,"maxclients",0), ServerGetStringValue(server,"map","(NO MAP)"));
+	}
+
+}
+
+void CL_PingNetServers_f (void)
+{
+	char goa_secret_key[256];
+	int error = 0; // FS: Grab the error code
+    GServerList serverlist;
+
+	goa_secret_key[0] = 'F';
+	goa_secret_key[1] = 'U';
+	goa_secret_key[2] = '6';
+	goa_secret_key[3] = 'V';
+	goa_secret_key[4] = 'q';
+	goa_secret_key[5] = 'n';
+	goa_secret_key[6] = '\0';
+	serverlist = ServerListNew("quakeworld","quakeworld",goa_secret_key,10,ListCallBack,GCALLBACK_FUNCTION,NULL);
+    error = ServerListUpdate(serverlist,false);
+
+	if (error != GE_NOERROR) // FS: Grab the error code
+	{
+		Con_Printf("GameSpy Error: %s.\n", ServerListErrorDesc(serverlist, error));
+		ServerListHalt( serverlist );
+		ServerListClear( serverlist );
+	}
+    ServerListFree(serverlist);
+
+}
+#endif

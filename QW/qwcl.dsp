@@ -92,6 +92,62 @@ LINK32=link.exe
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90"
+# Begin Group "Gamespy"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\Goa\CEngine\darray.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\CEngine\darray.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\CEngine\goaceng.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\Sdk\goautil.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\CEngine\gserver.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\CEngine\gserver.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\CEngine\gserverlist.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\CEngine\gutil.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\CEngine\gutil.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\CEngine\hashtable.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\CEngine\hashtable.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\nonport.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\nonport.h
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=.\cd_win.c
