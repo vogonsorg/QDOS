@@ -98,7 +98,7 @@ cvar_t  cl_chunksperframe  = {"cl_chunksperframe", "5"};
 #ifdef FTE_PEXT_FLOATCOORDS
 cvar_t  cl_pext_floatcoords  = {"cl_pext_floatcoords", "1"};
 #endif
-
+cvar_t	cl_downloadrate_hack = {"cl_downloadrate_hack", "1", true}; // FS
 
 client_static_t   cls;
 client_state_t cl;
@@ -1297,6 +1297,8 @@ void CL_Init (void)
 #ifdef FTE_PEXT_FLOATCOORDS
 	Cvar_RegisterVariable (&cl_pext_floatcoords);
 #endif
+
+	Cvar_RegisterVariable (&cl_downloadrate_hack); // FS
 
 	Cmd_AddCommand ("version", CL_Version_f);
 	Cmd_AddCommand ("force_error", CL_ForceError_f); // FS: was used for Sys_Error dstring conversion test

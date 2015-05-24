@@ -426,7 +426,7 @@ void Con_Printf (const char *fmt, ...)
 	static qboolean	inupdate;
         
 	if (!msg)
-	msg = dstring_new ();
+		msg = dstring_new ();
         
 	va_start (argptr,fmt);
 	dvsprintf (msg,fmt,argptr);

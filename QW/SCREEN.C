@@ -1102,6 +1102,9 @@ void SCR_UpdateScreen (void)
 	if (scr_disabled_for_loading)
 		return;
 
+	if (cl_downloadrate_hack.intvalue && cls.download && cls.downloadpercent%5 != 1) // FS: HACK, don't update as often during downloading.
+		return;
+
 #ifdef _WIN32
 	{	// don't suck up any cpu if minimized
 		extern int Minimized;

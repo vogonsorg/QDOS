@@ -324,8 +324,9 @@ qboolean CL_CreateDownload(int size, qboolean extended)
 }
 void CL_FinishDownload(qboolean rename_files)
 {
-	dstring_t       *oldn;
-	dstring_t       *newn;
+	dstring_t	*oldn;
+	dstring_t	*newn;
+	dstring_t	*oldrate;
 	int	r;
 
 	if (cls.download)
@@ -366,11 +367,16 @@ void CL_FinishDownload(qboolean rename_files)
 	cls.downloadpercent = 0;
 	cls.downloadmethod = DL_NONE;
 
-	// VFS-FIXME: D-Kure: Surely there is somewhere better for this in fs.c
-//	filesystemchanged = true;
+	if (cl_downloadrate_hack.intvalue && (rate.intvalue > 0 && cls.downloadoldrate > 0)) // FS: Special hack to accelerate the downloading a bit
+	{
+		oldrate = dstring_new();
+		Com_sprintf(oldrate, "%i", cls.downloadoldrate);
+		Con_DPrintf(DEVELOPER_MSG_NET, "Changing rate from %i to %i\n", cls.downloadmaxrate, cls.downloadoldrate);
+		Cvar_Set("rate", oldrate->str);
+		dstring_delete(oldrate);
+	}
 
 	// get another file if needed
-
 	if (cls.state != ca_disconnected)
 		CL_RequestNextDownload ();
 }
@@ -479,6 +485,7 @@ void CL_ParseChunkedDownload(void)
 	int chunknum;
 	char data[DLBLOCKSIZE];
 	double tm;
+	dstring_t *maxrate;
 
 	chunknum = MSG_ReadLong();
 	if (chunknum < 0)
@@ -524,6 +531,17 @@ void CL_ParseChunkedDownload(void)
 		{
 			if(!CL_CreateDownload(0, true))
 				return;
+		}
+
+		if (cl_downloadrate_hack.intvalue)
+		{
+			maxrate = dstring_new();
+			cls.downloadoldrate = rate.intvalue;
+			cls.downloadmaxrate = 250000;
+			Com_sprintf(maxrate, "%i", cls.downloadmaxrate);
+			Con_DPrintf(DEVELOPER_MSG_NET, "Changing rate from %i to %i\n", cls.downloadoldrate, cls.downloadmaxrate);
+			Cvar_Set("rate", maxrate->str);
+			dstring_delete(maxrate);
 		}
 
 		cls.downloadmethod  = DL_QWCHUNKS;

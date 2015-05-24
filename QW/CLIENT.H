@@ -194,6 +194,8 @@ typedef struct
 	int			downloadpercent;
 	int			downloadrate; // FS
 	double		downloadstarttime; // FS
+	int downloadoldrate; // FS
+	int downloadmaxrate; // FS
 #ifdef FTE_PEXT_CHUNKEDDOWNLOADS
 	enum {DL_NONE = 0, DL_QW, DL_QWCHUNKS} downloadmethod;
 #else
@@ -347,11 +349,12 @@ extern	cvar_t	m_yaw;
 extern	cvar_t	m_forward;
 extern	cvar_t	m_side;
 
-extern cvar_t		_windowed_mouse;
+extern cvar_t	_windowed_mouse;
 
 extern	cvar_t	name;
-extern cvar_t show_fps; // FS: why was this not global?
-
+extern	cvar_t	show_fps; // FS: why was this not global?
+extern	cvar_t	rate; // FS
+extern	cvar_t	cl_downloadrate_hack; // FS
 
 #define	MAX_STATIC_ENTITIES	128			// torches, etc
 
