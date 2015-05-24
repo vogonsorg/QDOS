@@ -42,7 +42,7 @@ int *trashspot;
 
 qboolean	cmd_wait;
 
-cvar_t  cl_warncmd = {"cl_warncmd", "0", false}; // FS: from QW
+cvar_t  cl_warncmd = {"cl_warncmd", "0", false, false, "Warn about unknown commands."}; // FS: from QW
 char *Sort_Possible_Cmds (char *partial);
 qboolean	Sort_Possible_Strtolower (char *partial, char *complete); // FS
 
@@ -749,7 +749,7 @@ void	Cmd_ExecuteString (char *text, cmd_source_t src)
 		if(!strncmp(Cmd_Argv(0), "init", 4))
 			Con_DPrintf(DEVELOPER_MSG_VERBOSE, "Unknown Command init hack for some servers\n");
 		else
-		Con_Printf ("Unknown command \"%s\"\n", Cmd_Argv(0));
+			Con_Printf ("Unknown command \"%s\"\n", Cmd_Argv(0));
 	} 
 }
 

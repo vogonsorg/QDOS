@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 cvar_t	*cvar_vars;
 char	*cvar_null_string = "";
+void Cvar_ParseDeveloperFlags (void); // FS: Special stuff for showing all the dev flags
 
 // FS: Cvar_List_f from Quakespasm
 void Cvar_List_f (void)
@@ -72,12 +73,12 @@ void Cvar_List_f (void)
 Cvar_FindVar
 ============
 */
-cvar_t *Cvar_FindVar (char *var_name)
+cvar_t *Cvar_FindVar (const char *var_name)
 {
 	cvar_t	*var;
 	
 	for (var=cvar_vars ; var ; var=var->next)
-		if (!Q_strcmp (var_name, var->name))
+		if (!Q_strcmp ((char *)var_name, var->name))
 			return var;
 
 	return NULL;
@@ -163,6 +164,8 @@ void Cvar_Set (char *var_name, char *value)
 	var->string = Z_Malloc (Q_strlen(value)+1);
 	Q_strcpy (var->string, value);
 	var->value = Q_atof (var->string);
+	var->intValue = Q_atoi (var->string); // FS: Added
+
 	if (var->server && changed)
 	{
 		if (sv.active)
@@ -191,6 +194,7 @@ void Cvar_SetValue (char *var_name, float value)
 */ // FS: New school dstring
 	dstring_t *val;
 	val = dstring_new ();
+
 	if (value == (int)value) // FS: Weird zeros fix from QIP
 		dsprintf(val, "%d", (int)value);
 	else
@@ -230,6 +234,9 @@ void Cvar_RegisterVariable (cvar_t *variable)
 	variable->string = Z_Malloc (Q_strlen(variable->string)+1);	
 	Q_strcpy (variable->string, oldstr);
 	variable->value = Q_atof (variable->string);
+	variable->intValue = Q_atoi (variable->string); // FS
+	variable->defaultString = Z_Malloc (Q_strlen(variable->string)+1); // FS
+	Q_strcpy((char *)variable->defaultString, oldstr); // FS
 	
 // link the variable in
 	variable->next = cvar_vars;
@@ -251,11 +258,21 @@ qboolean	Cvar_Command (void)
 	v = Cvar_FindVar (Cmd_Argv(0));
 	if (!v)
 		return false;
-		
+
+	if (!Q_strcmp(v->name, "developer") && con_show_dev_flags.intValue) // FS: Special case for showing enabled flags
+	{
+		if(Q_strlen(Cmd_Argv(1)) > 0)
+			Cvar_Set(developer.name, Cmd_Argv(1));
+		Cvar_ParseDeveloperFlags();
+		return true;
+	}
+
 // perform a variable print or set
 	if (Cmd_Argc() == 1)
 	{
-		Con_Printf ("\"%s\" is \"%s\"\n", v->name, v->string);
+		Con_Printf ("\"%s\" is \"%s\".  Default: \"%s\".\n", v->name, v->string, v->defaultString);
+		if (con_show_description.value && v->description != NULL && v->description[0] != 0)
+			Con_Printf("Description: %s\n", v->description);
 		return true;
 	}
 
@@ -284,4 +301,67 @@ void Cvar_WriteVariables (FILE *f)
 void Cvar_Init (void) // FS: johnfitz
 {
 	Cmd_AddCommand ("cvarlist", Cvar_List_f);
+}
+
+void Cvar_Set_Description (const char *var_name, const char *description) // FS
+{
+	cvar_t	*var;
+	var = Cvar_FindVar (var_name);
+	if (!var)
+	{
+		Con_DPrintf(DEVELOPER_MSG_STANDARD, "Error: Can't set description for %s!\n", var_name);
+		return;
+	}
+	var->description = description;
+}
+
+void Cvar_ParseDeveloperFlags (void) // FS: Special stuff for showing all the dev flags
+{
+	Con_Printf("\"%s\" is \"%s\", Default: \"%s\"\n", developer.name, developer.string, developer.defaultString);
+	if(developer.intValue > 0)
+	{
+		unsigned long devFlags = 0;
+		if(developer.intValue == 1)
+			devFlags = 65534;
+		else
+			devFlags = (unsigned long)developer.value;
+		Con_Printf("Toggled flags:\n");
+		if(devFlags & DEVELOPER_MSG_STANDARD)
+			Con_Printf(" * Standard messages - 2\n");
+		if(devFlags & DEVELOPER_MSG_SOUND)
+			Con_Printf(" * Sound messages - 4\n");
+		if(devFlags & DEVELOPER_MSG_NET)
+			Con_Printf(" * Network messages - 8\n");
+		if(devFlags & DEVELOPER_MSG_IO)
+			Con_Printf(" * File IO messages - 16\n");
+		if(devFlags & DEVELOPER_MSG_VIDEO)
+			Con_Printf(" * Graphics Renderer messages - 32\n");
+		if(devFlags & DEVELOPER_MSG_CD)
+			Con_Printf(" * CD Player messages - 64\n");
+		if(devFlags & DEVELOPER_MSG_MEM)
+			Con_Printf(" * Memory messages - 128\n");
+		if(devFlags & DEVELOPER_MSG_SERVER)
+			Con_Printf(" * Server messages - 256\n");
+		if(devFlags & DEVELOPER_MSG_PROGS)
+			Con_Printf(" * Prog messages - 512\n");
+//		if(devFlags & DEVELOPER_MSG_WORLD)
+//			Con_Printf(" * World.dll messages - 1024\n");
+		if(devFlags & DEVELOPER_MSG_PHYSICS)
+			Con_Printf(" * Physics messages - 2048\n");
+//		if(devFlags & DEVELOPER_MSG_WEAPONS)
+//			Con_Printf(" * Weapons.dll messages - 4096\n");
+//		if(devFlags & DEVELOPER_MSG_GCE)
+//			Con_Printf(" * GCE.dll messages - 8192\n");
+		if(devFlags & DEVELOPER_MSG_ENTITY)
+			Con_Printf(" * Entity messages - 16384\n");
+		if(devFlags & DEVELOPER_MSG_SAVE)
+			Con_Printf(" * Save/Restore messages - 32768\n");
+		if(devFlags & DEVELOPER_MSG_VERBOSE)
+			Con_Printf(" * Extremely Verbose messages - 65536\n");
+	}
+	else
+	{
+		if (developer.description && con_show_description.intValue) // FS
+			Con_Printf("Description: %s\n", developer.description);
+	}
 }

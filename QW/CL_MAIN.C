@@ -136,11 +136,13 @@ byte     *host_colormap;
 netadr_t master_adr;          // address of the master server
 
 cvar_t	host_speeds = {"host_speeds","0"};        // set for running times
-cvar_t  show_fps = {"show_fps","0", true}; // FS                   // set for running times
+cvar_t  show_fps = {"show_fps","0", true}; // FS
 cvar_t  show_time = {"show_time","0", true}; // FS: Show time
 cvar_t  show_uptime = {"show_uptime", "0", true}; // FS: Show uptime
-cvar_t	console_old_complete = {"console_old_complete", "0", true}; // FS
-cvar_t	developer = {"developer","0"};
+cvar_t	console_old_complete = {"console_old_complete", "0", true, false , "Use legacy style tab completion."}; // FS
+cvar_t	developer = {"developer","0", false, false, "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Extremely verbose msgs - 65536\n"};
+cvar_t	con_show_description = {"con_show_description", "1", true, false, "Show descriptions for CVARs."}; // FS
+cvar_t	con_show_dev_flags = {"con_show_dev_flags", "1", true, false, "Show developer flag options."}; // FS
 
 int         fps_count;
 qboolean bFlashlight = false; // FS: Flashlight
@@ -1299,6 +1301,8 @@ void CL_Init (void)
 #endif
 
 	Cvar_RegisterVariable (&cl_downloadrate_hack); // FS
+	Cvar_RegisterVariable (&con_show_description); // FS
+	Cvar_RegisterVariable (&con_show_dev_flags); // FS
 
 	Cmd_AddCommand ("version", CL_Version_f);
 	Cmd_AddCommand ("force_error", CL_ForceError_f); // FS: was used for Sys_Error dstring conversion test
@@ -1474,10 +1478,10 @@ void Host_Frame (float time)
    if (oldrealtime > realtime)
       oldrealtime = 0;
 
-   if (cl_maxfps.intvalue)
-      fps = bound(30, cl_maxfps.intvalue, 240);//max(30.0, min(cl_maxfps.value, 240.0)); // FS: 240
+   if (cl_maxfps.intValue)
+      fps = bound(30, cl_maxfps.intValue, 240);//max(30.0, min(cl_maxfps.value, 240.0)); // FS: 240
    else
-      fps = bound(30, cl_maxfps.intvalue, 72);//max(30.0, min(rate.value/80.0, 72.0));
+      fps = bound(30, cl_maxfps.intValue, 72);//max(30.0, min(rate.value/80.0, 72.0));
 
 	if (!cls.timedemo && realtime - oldrealtime < 1.0/fps)
 	{

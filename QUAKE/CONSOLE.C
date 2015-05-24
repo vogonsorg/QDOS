@@ -41,9 +41,9 @@ int			con_current;		// where next message will be printed
 int			con_x;				// offset in current line for next print
 char		*con_text=0;
 
-cvar_t		con_notifytime = {"con_notifytime","3"};		//seconds
-cvar_t		con_logcenterprint = {"con_logcenterprint", "1"}; //johnfitz
-cvar_t		timestamp = {"timestamp", "0"}; // FS: Timestamp
+cvar_t		con_notifytime = {"con_notifytime","3", false, false , "Time (in seconds) a console notification message is displayed."};		//seconds
+cvar_t		con_logcenterprint = {"con_logcenterprint", "1", false, false, "Log centerprints to console."}; //johnfitz
+cvar_t		timestamp = {"timestamp", "0", false, false, "Enables timestamps.  1 for military format.  2 for AM/PM format."}; // FS: Timestamp
 
 char		con_lastcenterstring[1024]; //johnfitz
 
@@ -413,7 +413,6 @@ Handles cursor positioning, line wrapping, etc
 ================
 */
 #define	MAXPRINTMSG	4096
-// FIXME: make a buffer size safe vsprintf?
 void Con_Printf (const char *fmt, ...)
 {
 	va_list		argptr;
@@ -448,7 +447,7 @@ void Con_Printf (const char *fmt, ...)
 			timefmt = "[%m/%d/%y @ %k:%M:%S %p] ";
 		else if (timestamp.value > 1)
 			timefmt = "[%m/%d/%y @ %l:%M:%S %p] ";
-#endif;
+#endif
         strftime (st, sizeof (st), timefmt, local);
 		Sys_Printf("%s", st);
 		Con_Print(st);

@@ -982,33 +982,32 @@ void M_Quit_Key (int key)
 {
 	switch (key)
 	{
-	case K_ESCAPE:
-	case 'n':
-	case 'N':
-		if (wasInMenus)
-		{
-			m_state = m_quit_prevstate;
-			m_entersound = true;
-		}
-		else
-		{
-			key_dest = key_game;
-			m_state = m_none;
-		}
-		break;
+		case K_ESCAPE:
+		case 'n':
+		case 'N':
+			if (wasInMenus)
+			{
+				m_state = m_quit_prevstate;
+				m_entersound = true;
+			}
+			else
+			{
+				key_dest = key_game;
+				m_state = m_none;
+			}
+			break;
 
-        case K_ENTER: // FS: You can press enter to default Y
-        case 'Y':
-	case 'y':
-		key_dest = key_console;
-		CL_Disconnect ();
-		Sys_Quit ();
-		break;
+		case K_ENTER: // FS: You can press enter to default Y
+		case 'Y':
+		case 'y':
+			key_dest = key_console;
+			CL_Disconnect ();
+			Sys_Quit ();
+			break;
 
-	default:
-		break;
+		default:
+			break;
 	}
-
 }
 
 void M_Menu_SinglePlayer_f (void) {

@@ -58,19 +58,19 @@ byte     *host_colormap;
 
 cvar_t	host_framerate = {"host_framerate","0"};  // set for slow motion
 cvar_t	host_speeds = {"host_speeds","0"};        // set for running times
-cvar_t	host_maxfps = {"host_maxfps", "72", true}; //johnfitz
+cvar_t	host_maxfps = {"host_maxfps", "72", true, false, "Maximum frames pers second to render."}; //johnfitz
 cvar_t	host_timescale = {"host_timescale", "0"}; //johnfitz
-cvar_t	max_edicts = {"max_edicts", "2048"}; //johnfitz
+cvar_t	max_edicts = {"max_edicts", "2048", false, false, "Maximum number of edicts allowed."}; //johnfitz
 
 cvar_t	sys_ticrate = {"sys_ticrate","0.05"};
 cvar_t	serverprofile = {"serverprofile","0"};
 
-cvar_t	fraglimit = {"fraglimit","0",false,true};
-cvar_t	timelimit = {"timelimit","0",false,true};
-cvar_t	teamplay = {"teamplay","0",false,true};
+cvar_t	fraglimit = {"fraglimit","0",false,true, "Fraglimit in a deathmatch game."};
+cvar_t	timelimit = {"timelimit","0",false,true, "Timelimit in a deathmatch game."};
+cvar_t	teamplay = {"teamplay","0",false,true, "Enable team deathmatch."};
 
-cvar_t	samelevel = {"samelevel","0"};
-cvar_t	noexit = {"noexit","0",false,true};
+cvar_t	samelevel = {"samelevel","0", false, false, "Repeats the same level if an endlevel is triggered."};
+cvar_t	noexit = {"noexit","0", false, true, "Do not allow exiting in a game."};
 
 /* FS: Address Book */
 cvar_t	adr0 = {"adr0", "", true};
@@ -84,16 +84,17 @@ cvar_t	adr7 = {"adr7", "", true};
 cvar_t	adr8 = {"adr8", "", true};
 cvar_t	adr9 = {"adr9", "", true};
 
-cvar_t	developer = {"developer","0"};
+cvar_t	developer = {"developer","0", false, false, "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Server msgs - 256\n  * Progs msgs - 512\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Save/Restore msgs - 32768\n  * Extremely verbose msgs - 65536\n"};
 
-cvar_t	skill = {"skill","1"};                 // 0 - 3
-cvar_t	deathmatch = {"deathmatch","0"};       // 0, 1, or 2
-cvar_t	coop = {"coop","0"};       // 0 or 1
+cvar_t	skill = {"skill","1", false, false, "Sets the skill.  Valid values are 0 through 3."};                 // 0 - 3
+cvar_t	deathmatch = {"deathmatch","0", false, false, "Enable a deathmatch game.  Coop must be set to 0."};       // 0, 1, or 2
+cvar_t	coop = {"coop","0", false, false, "Enable a coop game.  Deathmatch must be set to 0."};       // 0 or 1
 
 cvar_t	pausable = {"pausable","1"};
 
 cvar_t	temp1 = {"temp1","0"};
-
+cvar_t	con_show_description = {"con_show_description", "1", true, false, "Show descriptions for CVARs."}; // FS
+cvar_t	con_show_dev_flags = {"con_show_dev_flags", "1", true, false, "Show developer flag options."}; // FS
 
 /*
 ================
@@ -250,46 +251,49 @@ Host_InitLocal
 */
 void Host_InitLocal (void)
 {
-   Host_InitCommands ();
+	Host_InitCommands ();
    
-   Cvar_RegisterVariable (&host_framerate);
-   Cvar_RegisterVariable (&host_speeds);
+	Cvar_RegisterVariable (&host_framerate);
+	Cvar_RegisterVariable (&host_speeds);
 	Cvar_RegisterVariable (&host_maxfps); //johnfitz
 	Cvar_RegisterVariable (&host_timescale); //johnfitz
-   Cvar_RegisterVariable (&sys_ticrate);
-   Cvar_RegisterVariable (&serverprofile);
+	Cvar_RegisterVariable (&sys_ticrate);
+	Cvar_RegisterVariable (&serverprofile);
 
 	Cvar_RegisterVariable (&max_edicts); //johnfitz
 
-   Cvar_RegisterVariable (&fraglimit);
-   Cvar_RegisterVariable (&timelimit);
-   Cvar_RegisterVariable (&teamplay);
-   Cvar_RegisterVariable (&samelevel);
-   Cvar_RegisterVariable (&noexit);
-   Cvar_RegisterVariable (&skill);
-   Cvar_RegisterVariable (&developer);
-   Cvar_RegisterVariable (&deathmatch);
-   Cvar_RegisterVariable (&coop);
+	Cvar_RegisterVariable (&fraglimit);
+	Cvar_RegisterVariable (&timelimit);
+	Cvar_RegisterVariable (&teamplay);
+	Cvar_RegisterVariable (&samelevel);
+	Cvar_RegisterVariable (&noexit);
+	Cvar_RegisterVariable (&skill);
+	Cvar_RegisterVariable (&developer);
+	Cvar_RegisterVariable (&deathmatch);
+	Cvar_RegisterVariable (&coop);
 
-   Cvar_RegisterVariable (&pausable);
+	Cvar_RegisterVariable (&pausable);
 
-   Cvar_RegisterVariable (&temp1);
+	Cvar_RegisterVariable (&temp1);
 
-        /* FS: Address Book */
-        Cvar_RegisterVariable(&adr0);
-        Cvar_RegisterVariable(&adr1);
-        Cvar_RegisterVariable(&adr2);
-        Cvar_RegisterVariable(&adr3);
-        Cvar_RegisterVariable(&adr4);
-        Cvar_RegisterVariable(&adr5);
-        Cvar_RegisterVariable(&adr6);
-        Cvar_RegisterVariable(&adr7);
-        Cvar_RegisterVariable(&adr8);
-        Cvar_RegisterVariable(&adr9);
+	/* FS: Address Book */
+	Cvar_RegisterVariable(&adr0);
+	Cvar_RegisterVariable(&adr1);
+	Cvar_RegisterVariable(&adr2);
+	Cvar_RegisterVariable(&adr3);
+	Cvar_RegisterVariable(&adr4);
+	Cvar_RegisterVariable(&adr5);
+	Cvar_RegisterVariable(&adr6);
+	Cvar_RegisterVariable(&adr7);
+	Cvar_RegisterVariable(&adr8);
+	Cvar_RegisterVariable(&adr9);
 
-   Host_FindMaxClients ();
+	Cvar_RegisterVariable(&con_show_description); // FS
+	Cvar_RegisterVariable(&con_show_dev_flags); // FS
+
+	Host_FindMaxClients ();
    
-   host_time = 1.0;     // so a think at time 0 won't get called
+	host_time = 1.0;     // so a think at time 0 won't get called
 }
 
 

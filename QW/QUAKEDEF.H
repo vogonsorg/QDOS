@@ -111,6 +111,8 @@ extern	cvar_t		sys_nostdout;
 extern	cvar_t		developer;
 
 extern	cvar_t	password;
+extern	cvar_t		con_show_description; // FS
+extern	cvar_t		con_show_dev_flags; // FS
 
 extern	qboolean	host_initialized;		// true if into command execution
 extern	double		host_frametime;

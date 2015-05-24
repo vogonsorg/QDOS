@@ -32,31 +32,31 @@ static char     *argvdummy = " ";
 static char     *safeargvs[NUM_SAFE_ARGVS] =
         {"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly", "-safevga"}; // FS: -safevga for 320x200
 
-cvar_t  registered = {"registered","0"};
-cvar_t  cmdline = {"cmdline","", false, true};
+cvar_t  registered = {"registered","0", false, false, "Special internal CVAR for setting Registered game."};
+cvar_t  cmdline = {"cmdline","", false, true, "Adds command line parameters as script statements\nCommands lead with a +, and continue until a - or another +\nquake +prog jctest.qp +cmd amlev1\nquake -nosound +cmd amlev1"};
 
 // FS: For Nehahra
-cvar_t	cutscene = {"cutscene", "1"};
-cvar_t	nehx00 = {"nehx00", "0"};
-cvar_t	nehx01 = {"nehx01", "0"};
-cvar_t	nehx02 = {"nehx02", "0"};
-cvar_t	nehx03 = {"nehx03", "0"};
-cvar_t	nehx04 = {"nehx04", "0"};
-cvar_t	nehx05 = {"nehx05", "0"};
-cvar_t	nehx06 = {"nehx06", "0"};
-cvar_t	nehx07 = {"nehx07", "0"};
-cvar_t	nehx08 = {"nehx08", "0"};
-cvar_t	nehx09 = {"nehx09", "0"};
-cvar_t	nehx10 = {"nehx10", "0"};
-cvar_t	nehx11 = {"nehx11", "0"};
-cvar_t	nehx12 = {"nehx12", "0"};
-cvar_t	nehx13 = {"nehx13", "0"};
-cvar_t	nehx14 = {"nehx14", "0"};
-cvar_t	nehx15 = {"nehx15", "0"};
-cvar_t	nehx16 = {"nehx16", "0"};
-cvar_t	nehx17 = {"nehx17", "0"};
-cvar_t	nehx18 = {"nehx18", "0"};
-cvar_t	nehx19 = {"nehx19", "0"};
+cvar_t	cutscene = {"cutscene", "1", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx00 = {"nehx00", "0", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx01 = {"nehx01", "0", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx02 = {"nehx02", "0", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx03 = {"nehx03", "0", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx04 = {"nehx04", "0", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx05 = {"nehx05", "0", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx06 = {"nehx06", "0", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx07 = {"nehx07", "0", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx08 = {"nehx08", "0", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx09 = {"nehx09", "0", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx10 = {"nehx10", "0", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx11 = {"nehx11", "0", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx12 = {"nehx12", "0", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx13 = {"nehx13", "0", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx14 = {"nehx14", "0", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx15 = {"nehx15", "0", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx16 = {"nehx16", "0", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx17 = {"nehx17", "0", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx18 = {"nehx18", "0", false, false, "Special internal CVAR for Nehara mod."};
+cvar_t	nehx19 = {"nehx19", "0", false, false, "Special internal CVAR for Nehara mod."};
 
 
 qboolean        com_modified;   // set true if using non-id files
@@ -1266,8 +1266,8 @@ void COM_Init (char *basedir)
 
 	Cvar_RegisterVariable (&registered);
 	Cvar_RegisterVariable (&cmdline);
-        Cmd_AddCommand ("type", COM_Type_f); // FS: notepad
-        Cmd_AddCommand ("path", COM_Path_f);
+	Cmd_AddCommand ("type", COM_Type_f); // FS: notepad
+	Cmd_AddCommand ("path", COM_Path_f);
 
 	COM_InitFilesystem ();
 	COM_CheckRegistered ();
@@ -1280,7 +1280,6 @@ va
 
 does a varargs printf into a temp buffer, so I don't need to have
 varargs versions of all text functions.
-FIXME: make this buffer size safe someday
 ============
 */
 VISIBLE char *

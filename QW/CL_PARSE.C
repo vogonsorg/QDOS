@@ -367,7 +367,7 @@ void CL_FinishDownload(qboolean rename_files)
 	cls.downloadpercent = 0;
 	cls.downloadmethod = DL_NONE;
 
-	if (cl_downloadrate_hack.intvalue && (rate.intvalue > 0 && cls.downloadoldrate > 0)) // FS: Special hack to accelerate the downloading a bit
+	if (cl_downloadrate_hack.intValue && (rate.intValue > 0 && cls.downloadoldrate > 0)) // FS: Special hack to accelerate the downloading a bit
 	{
 		oldrate = dstring_new();
 		Com_sprintf(oldrate, "%i", cls.downloadoldrate);
@@ -426,7 +426,7 @@ int CL_RequestADownloadChunk(void)
 void CL_SendChunkDownloadReq(void)
 {
 	extern cvar_t cl_chunksperframe;
-	int i, j, chunks = bound(1, cl_chunksperframe.intvalue, 5);
+	int i, j, chunks = bound(1, cl_chunksperframe.intValue, 5);
 
 	for (j = 0; j < chunks; j++)
 	{
@@ -533,10 +533,10 @@ void CL_ParseChunkedDownload(void)
 				return;
 		}
 
-		if (cl_downloadrate_hack.intvalue)
+		if (cl_downloadrate_hack.intValue)
 		{
 			maxrate = dstring_new();
-			cls.downloadoldrate = rate.intvalue;
+			cls.downloadoldrate = rate.intValue;
 			cls.downloadmaxrate = 250000;
 			Com_sprintf(maxrate, "%i", cls.downloadmaxrate);
 			Con_DPrintf(DEVELOPER_MSG_NET, "Changing rate from %i to %i\n", cls.downloadoldrate, cls.downloadmaxrate);

@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 extern cvar_t	pausable;
-cvar_t cl_demos = {"cl_demos","1",true}; // FS: Disable startup demos
+cvar_t cl_demos = {"cl_demos","1",true, false, "Set to 0 to disable startup demos."}; // FS: Disable startup demos
 int nostartupdemos = 0; // FS: Disable startup demos
 extern int com_nummissionpacks; //johnfitz
 
@@ -46,13 +46,13 @@ extern void Host_WriteConfiguration (void); // FS: Prototype it
 
 void Host_Quit_f (void)
 {
-	if (key_dest != key_console && cls.state != ca_dedicated)
+	if (/*key_dest != key_console &&*/ cls.state != ca_dedicated)
 	{
 		M_Menu_Quit_f ();
 		return;
 	}
 	CL_Disconnect ();
-	Host_ShutdownServer(false);		
+	Host_ShutdownServer(false);
 
 	Sys_Quit ();
 }
@@ -62,9 +62,9 @@ void Host_Fast_Quit_f (void) // FS: Fast Quit
 	CL_Disconnect ();
 	Host_ShutdownServer(false);		
 
-        //Sys_Quit ();
+	//Sys_Quit ();
 	Host_Shutdown();
-        exit(0);
+	exit(0);
 }
 
 //==============================================================================
@@ -2132,15 +2132,15 @@ void Host_Startdemos_f (void)
 {
 	int		i, c;
 
-        if (COM_CheckParm("-nodemo") || !cl_demos.value) // FS
-        {
-                Con_Printf("Startup demos disabled.\n");
-                c = 0;
-                i = 0;
-				cls.demonum = -1;
-                nostartupdemos = 1;
-                return;
-        }
+	if (COM_CheckParm("-nodemo") || !cl_demos.intValue) // FS
+	{
+		Con_Printf("Startup demos disabled.\n");
+		c = 0;
+		i = 0;
+		cls.demonum = -1;
+		nostartupdemos = 1;
+		return;
+	}
 
 	if (cls.state == ca_dedicated)
 	{
@@ -2179,15 +2179,15 @@ Return to looping demos
 */
 void Host_Demos_f (void)
 {
-        if (COM_CheckParm("-nodemo") || !cl_demos.value) //FS
-        {
-                nostartupdemos = 1;
-				cls.demonum = -1;
-                CL_Disconnect_f();
-                return;
-        }
+	if (COM_CheckParm("-nodemo") || !cl_demos.intValue) //FS
+	{
+		nostartupdemos = 1;
+		cls.demonum = -1;
+		CL_Disconnect_f();
+		return;
+	}
 
-        if (cls.state == ca_dedicated)
+	if (cls.state == ca_dedicated)
 		return;
 	if (cls.demonum == -1)
 		cls.demonum = 1;
@@ -2228,8 +2228,8 @@ void Host_InitCommands (void)
 
 	Cmd_AddCommand ("status", Host_Status_f);
 	Cmd_AddCommand ("quit", Host_Quit_f);
-        Cmd_AddCommand ("quit!", Host_Fast_Quit_f); // FS: Fast Quit
-        Cmd_AddCommand ("god", Host_God_f);
+	Cmd_AddCommand ("quit!", Host_Fast_Quit_f); // FS: Fast Quit
+	Cmd_AddCommand ("god", Host_God_f);
 	Cmd_AddCommand ("notarget", Host_Notarget_f);
 	Cmd_AddCommand ("fly", Host_Fly_f);
 	Cmd_AddCommand ("map", Host_Map_f);

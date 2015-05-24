@@ -159,6 +159,7 @@ void Sys_DetectWin95 (void)
 	}
 	else
 	{
+		printf("Microsoft Windows detected.  Please run QDOS in pure MS-DOS for best stability.\n"); // FS: Warning
 		win95 = 1;
 		lockunlockmem = COM_CheckParm ("-winlockunlock");
 
@@ -686,26 +687,26 @@ void Sys_GetMemory(void)
 		int j;
 		//quakeparms.membase = dos_getmaxlockedmem (&quakeparms.memsize);
 
-                if (extended_mod) // FS: We're not foolin' around with big boy mods...
-                        j=64;
-                else
-                        j=32; // FS: from QW
+		if (extended_mod) // FS: We're not foolin' around with big boy mods...
+			j=64;
+		else
+			j=32; // FS: from QW
 		quakeparms.memsize = (int) j * 1024 * 1024; 
 		quakeparms.membase = malloc (quakeparms.memsize);
-        }
+	}
 
 	fprintf(stderr, "malloc'd: %d\n", quakeparms.memsize);
 
-		if (COM_CheckParm ("-noclear")) // FS: Wanted the option
-		{
-			return;
-		}
-		else
-		{
-			printf("Clearing allocated memory...\n");
-			memset(quakeparms.membase,0x0,quakeparms.memsize); // JASON: Clear memory on startup
-			printf("Done!  Continuing to load Quake.\n");
-		}
+	if (COM_CheckParm ("-noclear")) // FS: Wanted the option
+	{
+		return;
+	}
+	else
+	{
+		printf("Clearing allocated memory...\n");
+		memset(quakeparms.membase,0x0,quakeparms.memsize); // JASON: Clear memory on startup
+		printf("Done!  Continuing to load Quake.\n");
+	}
 
 	if (COM_CheckParm ("-heapsize"))
 	{
@@ -829,7 +830,8 @@ int main (int c, char **v)
 	atexit (Sys_AtExit);    // in case we crash
 
 	getwd (cwd);
-	if (cwd[Q_strlen(cwd)-1] == '/') cwd[Q_strlen(cwd)-1] = 0;
+	if (cwd[Q_strlen(cwd)-1] == '/')
+		cwd[Q_strlen(cwd)-1] = 0;
 	quakeparms.basedir = cwd; //"f:/quake";
 
 	isDedicated = (COM_CheckParm ("-dedicated") != 0);

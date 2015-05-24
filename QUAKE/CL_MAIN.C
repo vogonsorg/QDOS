@@ -27,11 +27,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // references them even when on a unix system.
 
 // these two are not intended to be set directly
-cvar_t	cl_name = {"_cl_name", "player", true};
-cvar_t	cl_color = {"_cl_color", "0", true};
+cvar_t	cl_name = {"_cl_name", "player", true, false, "Internal CVAR for setting player name.  Use cvar \"name\" to set."};
+cvar_t	cl_color = {"_cl_color", "0", true, false, "Internal CVAR for setting player colour.  Use cvar \"color\" to set."};
 
 cvar_t	cl_shownet = {"cl_shownet","0"}; // can be 0, 1, or 2
-cvar_t	cl_nolerp = {"cl_nolerp","0"};
+cvar_t	cl_nolerp = {"cl_nolerp","0", false, false, "Disable animation lerping."};
 
 cvar_t	lookspring = {"lookspring","0", true};
 cvar_t	lookstrafe = {"lookstrafe","0", true};
@@ -41,9 +41,9 @@ cvar_t	m_pitch = {"m_pitch","0.022", true};
 cvar_t	m_yaw = {"m_yaw","0.022", true};
 cvar_t	m_forward = {"m_forward","1", true};
 cvar_t	m_side = {"m_side","0.8", true};
-cvar_t  show_time = {"show_time","0", true}; // FS: Show time
-cvar_t  show_uptime = {"show_uptime","0", true}; // FS: Show uptime
-cvar_t	console_old_complete = {"console_old_complete", "0", true}; // FS
+cvar_t  show_time = {"show_time","0", true, false, "Show current time in the HUD.  1 for military.  2 for AM/PM."}; // FS: Show time
+cvar_t  show_uptime = {"show_uptime","0", true, false, "Show uptime."}; // FS: Show uptime
+cvar_t	console_old_complete = {"console_old_complete", "0", true, false, "Use the legacy style console tab completion."}; // FS
 
 client_static_t	cls;
 client_state_t cl;

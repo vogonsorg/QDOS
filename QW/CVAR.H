@@ -53,14 +53,17 @@ Cvars are restricted from having the same names as commands to keep this
 interface from being ambiguous.
 */
 
+// FS: Note, if you add anything here add it after the qboolean and whatever is new!  You will goof up setting cvar_t's in the code!
 typedef struct cvar_s
 {
 	char    *name;
 	char    *string;
 	qboolean archive;		// set to true to cause it to be saved to vars.rc
 	qboolean info;			// added to serverinfo or userinfo when changed
+	const char *description; // FS
 	float	value;
-	int     intvalue;			// FS: may be set in Cvar_Set(), Cvar_Register(), Cvar_Create()
+	int		intValue; // FS
+	const char *defaultString; // FS
 	struct cvar_s *next;
 } cvar_t;
 
@@ -93,7 +96,8 @@ void 	Cvar_WriteVariables (FILE *f);
 // Writes lines containing "set variable value" for all variables
 // with the archive flag set to true.
 
-cvar_t *Cvar_FindVar (char *var_name);
+cvar_t *Cvar_FindVar (const char *var_name); // FS
+void Cvar_Set_Description (const char *var_name, const char *description); // FS
 
 void Cvar_Init (void); // FS
 
