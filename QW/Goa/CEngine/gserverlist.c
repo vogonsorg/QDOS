@@ -486,7 +486,8 @@ static GError ServerListQueryLoop(GServerList serverlist)
 		
 	if (serverlist->abortupdate || (serverlist->nextupdate >= ArrayLength(serverlist->servers) && scount == 0)) 
 	{ //we are done!!
-		Con_Printf("\x02Server list complete!\n");
+		if(!serverlist->abortupdate) // FS: Don't print if this was a forced abort
+			Con_Printf("\x02Server scan complete!\n");
 		FreeUpdateList(serverlist);
 		ServerListModeChange(serverlist, sl_idle);
 		return 0;
@@ -512,6 +513,7 @@ static GError ServerListQueryLoop(GServerList serverlist)
 			error = send(serverlist->updatelist[i].s,STATUS,strlen(STATUS),0);
 			serverlist->updatelist[i].starttime = current_time();
 		}
+		Sys_SendKeyEvents (); // FS: Check for aborts because this takes a while in DOS
 	}
 	return 0;
 }
@@ -533,6 +535,13 @@ static GError ServerListQueryLoop(GServerList serverlist)
 	FD_ZERO(&set);
 	for (i = 0 ; i < serverlist->maxupdates && serverlist->nextupdate < ArrayLength(serverlist->servers) ; i++)
 	{
+		if (serverlist->abortupdate) // FS: Check if we want to stop.
+		{
+			FreeUpdateList(serverlist);
+			ServerListModeChange(serverlist, sl_idle);
+			return 0;
+		}
+
 		if (serverlist->updatelist[i].serverindex < 0) //it's availalbe
 		{
 			FD_SET( serverlist->updatelist[count].s, &set);
@@ -583,6 +592,7 @@ static GError ServerListQueryLoop(GServerList serverlist)
 		}
 		percent = ((float)serverlist->nextupdate/(float)ServerListCount(serverlist)) * 100;
 		count++;
+		Sys_SendKeyEvents (); // FS: Check for aborts because this takes a while in DOS
 	}
 
 	Con_Printf("\x02Percent done: ");
@@ -593,7 +603,8 @@ static GError ServerListQueryLoop(GServerList serverlist)
 
 	if (serverlist->abortupdate || (serverlist->nextupdate >= ArrayLength(serverlist->servers) && scount == 0)) 
 	{ //we are done!!
-		Con_Printf("\x02Server list complete!\n");
+		if(!serverlist->abortupdate) // FS: Don't print if this was a forced abort
+			Con_Printf("\x02Server scan complete!\n");
 		FreeUpdateList(serverlist);
 		ServerListModeChange(serverlist, sl_idle);
 		return 0;
@@ -637,7 +648,7 @@ GError ServerListThink(GServerList serverlist)
 Halts the current update batch */
 GError ServerListHalt(GServerList serverlist)
 {
-	if (serverlist->state != sl_idle)
+//	if (serverlist->state != sl_idle) // FS: Immediately abort.
 		serverlist->abortupdate = 1;
 
 	return 0;

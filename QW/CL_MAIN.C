@@ -150,6 +150,7 @@ int         fps_count;
 qboolean bFlashlight = false; // FS: Flashlight
 
 void CL_Flashlight_f (void); // FS: Prototype it
+static    GServerList serverlist; // FS: Moved outside so we can abort whenever we need to
 
 void ListCallBack(GServerList serverlist, int msg, void *instance, void *param1, void *param2);
 void CL_PingNetServers_f (void);
@@ -557,6 +558,12 @@ void CL_Disconnect (void)
 
 	key_dest = 0; // FS: Fix so main menu still works after disconnect
 	cl.intermission = 0; // FS: Baker fix
+
+	if(serverlist != NULL) // FS: Immediately abort gspy scans
+	{
+		Con_Printf("\x02Server scan aborted!\n");
+		ServerListHalt( serverlist );
+	}
 }
 
 void CL_Disconnect_f (void)
@@ -1742,7 +1749,6 @@ void CL_PingNetServers_f (void)
 {
 	char goa_secret_key[256];
 	int error = 0; // FS: Grab the error code
-    GServerList serverlist;
 
 	goa_secret_key[0] = 'F';
 	goa_secret_key[1] = 'U';
@@ -1751,16 +1757,18 @@ void CL_PingNetServers_f (void)
 	goa_secret_key[4] = 'q';
 	goa_secret_key[5] = 'n';
 	goa_secret_key[6] = '\0';
-	Con_Printf("Grabbing populated server list from GameSpy master. . .\n");
+	Con_Printf("\x02Grabbing populated server list from GameSpy master. . .\n");
 	serverlist = ServerListNew("quakeworld","quakeworld",goa_secret_key,30,ListCallBack,GCALLBACK_FUNCTION,NULL);
     error = ServerListUpdate(serverlist,false);
 
 	if (error != GE_NOERROR) // FS: Grab the error code
 	{
-		Con_Printf("GameSpy Error: %s.\n", ServerListErrorDesc(serverlist, error));
+		Con_Printf("\x02GameSpy Error: ");
+		Con_Printf("%s.\n", ServerListErrorDesc(serverlist, error));
 		ServerListHalt( serverlist );
 		ServerListClear( serverlist );
 	}
+	ServerListClear( serverlist );
     ServerListFree(serverlist);
-
+	serverlist = NULL;
 }

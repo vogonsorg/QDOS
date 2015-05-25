@@ -260,6 +260,7 @@ extern	cvar_t	console_old_complete;
 		if (keydown[K_CTRL])
 		{
 			Cbuf_AddText("disconnect\n");
+			Cbuf_Execute(); // FS: Fire immediately because of gamespy crap
 			return;
 		}
 	}
