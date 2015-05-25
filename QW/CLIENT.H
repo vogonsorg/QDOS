@@ -196,6 +196,8 @@ typedef struct
 	double		downloadstarttime; // FS
 	int downloadoldrate; // FS
 	int downloadmaxrate; // FS
+	int gamespyupdate; // FS
+	int gamespypercent; // FS
 #ifdef FTE_PEXT_CHUNKEDDOWNLOADS
 	enum {DL_NONE = 0, DL_QW, DL_QWCHUNKS} downloadmethod;
 #else

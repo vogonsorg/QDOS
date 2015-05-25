@@ -1750,6 +1750,12 @@ void CL_PingNetServers_f (void)
 	char goa_secret_key[256];
 	int error = 0; // FS: Grab the error code
 
+	if(cls.state != ca_disconnected)
+	{
+		Con_Printf("You must be disconnected to use this command!\n");
+		return;
+	}
+
 	goa_secret_key[0] = 'F';
 	goa_secret_key[1] = 'U';
 	goa_secret_key[2] = '6';
@@ -1758,17 +1764,24 @@ void CL_PingNetServers_f (void)
 	goa_secret_key[5] = 'n';
 	goa_secret_key[6] = '\0';
 	Con_Printf("\x02Grabbing populated server list from GameSpy master. . .\n");
+	cls.gamespyupdate = 1;
+	cls.gamespypercent = 0;
+	SCR_UpdateScreen(); // FS: Force an update so the percentage bar shows some progress
 	serverlist = ServerListNew("quakeworld","quakeworld",goa_secret_key,30,ListCallBack,GCALLBACK_FUNCTION,NULL);
     error = ServerListUpdate(serverlist,false);
 
 	if (error != GE_NOERROR) // FS: Grab the error code
 	{
+		cls.gamespyupdate = 0;
+		cls.gamespypercent = 0;
 		Con_Printf("\x02GameSpy Error: ");
 		Con_Printf("%s.\n", ServerListErrorDesc(serverlist, error));
 		ServerListHalt( serverlist );
 		ServerListClear( serverlist );
 	}
+	cls.gamespyupdate = 0;
+	cls.gamespypercent = 0;
 	ServerListClear( serverlist );
     ServerListFree(serverlist);
-	serverlist = NULL;
+	serverlist = NULL; // FS: This is on purpose so future ctrl+c's won't try to close empty serverlists
 }

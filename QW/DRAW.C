@@ -658,12 +658,17 @@ void Draw_ConsoleBackground (int lines)
 
 	//sprintf (ver, "start commands with a \\ character %4.2f", VERSION);
 
-	if (cls.download) {
+	if (cls.download || cls.gamespyupdate) // FS: Added gamespy progress bar
+	{
 		sprintf (ver, "%4.2f", VERSION);
 		dest = conback->data + 320 + 320*186 - 11 - 8*strlen(ver);
-	} else {
+	}
+	else
+	{
 #if defined(__linux__)
 		sprintf (ver, "Linux (%4.2f) QuakeWorld %4.2f", LINUX_VERSION, VERSION);
+#elif defined (__DJGPP) // FS: Display QWDOS if we can
+		sprintf (ver, "QuakeWorld DOS %4.2f", LINUX_VERSION, VERSION);
 #else
 		sprintf (ver, "QuakeWorld %4.2f", VERSION);
 #endif

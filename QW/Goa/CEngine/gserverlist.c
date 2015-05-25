@@ -420,6 +420,7 @@ static GError ServerListReadList(GServerList serverlist)
 #define STATUS "\xff\xff\xff\xffstatus"
 
 #ifdef WIN32
+//#if 0
 static GError ServerListQueryLoop(GServerList serverlist)
 {
 	int i, scount = 0, error, final;
@@ -428,6 +429,7 @@ static GError ServerListQueryLoop(GServerList serverlist)
 	char indata[1500];
 	struct sockaddr_in saddr;
 	int saddrlen = sizeof(saddr);
+	float percent = 0; // FS
 	GServer server;
 
 //first, check for available data
@@ -515,6 +517,9 @@ static GError ServerListQueryLoop(GServerList serverlist)
 		}
 		Sys_SendKeyEvents (); // FS: Check for aborts because this takes a while in DOS
 	}
+	percent = ((float)serverlist->nextupdate/(float)ServerListCount(serverlist)) * 100;
+	cls.gamespypercent = percent;
+	SCR_UpdateScreen(); // FS: Force an update so the percentage bar shows some progress
 	return 0;
 }
 #else // DOS
@@ -591,12 +596,14 @@ static GError ServerListQueryLoop(GServerList serverlist)
 			}
 		}
 		percent = ((float)serverlist->nextupdate/(float)ServerListCount(serverlist)) * 100;
+		cls.gamespypercent = percent;
+		SCR_UpdateScreen(); // FS: Force an update so the percentage bar shows some progress
 		count++;
 		Sys_SendKeyEvents (); // FS: Check for aborts because this takes a while in DOS
 	}
 
-	Con_Printf("\x02Percent done: ");
-	Con_Printf("%1.0f\n", percent);
+//	Con_Printf("\x02Percent done: ");
+//	Con_Printf("%1.0f\n", percent);
 	FreeUpdateList(serverlist);
 	InitUpdateList(serverlist);
 	count = 0;
