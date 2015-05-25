@@ -118,7 +118,7 @@ static GError InitUpdateList(GServerList serverlist)
 
 	for (i = 0 ; i < serverlist->maxupdates ; i++)
 	{
-		serverlist->updatelist[i].s = socket(AF_INET, SOCK_DGRAM,IPPROTO_UDP);
+		serverlist->updatelist[i].s = socket (AF_INET, SOCK_DGRAM,IPPROTO_UDP);
 		if (serverlist->updatelist[i].s == INVALID_SOCKET)
 			return GE_NOSOCKET;
 		serverlist->updatelist[i].serverindex = -1;
@@ -418,10 +418,11 @@ static GError ServerListReadList(GServerList serverlist)
 //loop through pending queries and send out new ones
 #define OOB_SEQ "\xff\xff\xff\xff" //32 bit integer (-1) as string sequence for out of band data
 #define STATUS "\xff\xff\xff\xffstatus"
+
+#ifdef WIN32
 static GError ServerListQueryLoop(GServerList serverlist)
 {
 	int i, scount = 0, error, final;
-	int x, y, z; // FS
 	fd_set set;
 	struct timeval timeout = {3,0};
 	char indata[1500];
@@ -436,24 +437,22 @@ static GError ServerListQueryLoop(GServerList serverlist)
 		{
 			scount++;
 			FD_SET( serverlist->updatelist[i].s, &set);
-
 		}
 	if (scount > 0) //there are sockets to check for data
 	{
-
 		error = select(FD_SETSIZE, &set, NULL, NULL, &timeout);
 		if (SOCKET_ERROR != error && 0 != error)
-			for (x = 0 ; x < serverlist->maxupdates ; x++)
-				if (serverlist->updatelist[x].serverindex >= 0 && FD_ISSET(serverlist->updatelist[x].s, &set) ) //there is a server waiting
+			for (i = 0 ; i < serverlist->maxupdates ; i++)
+				if (serverlist->updatelist[i].serverindex >= 0 && FD_ISSET(serverlist->updatelist[i].s, &set) ) //there is a server waiting
 				{ //we can read data!!
-					error = recv(serverlist->updatelist[x].s, indata, sizeof(indata) - 1, 0/*, &saddr, saddrlen*/ );
+					error = recv(serverlist->updatelist[i].s, indata, sizeof(indata) - 1, 0/*, &saddr, saddrlen*/ );
 					if (SOCKET_ERROR != error) //we got data
 					{
 						indata[error] = 0; //truncate and parse it
 						final = (strstr(indata,"\\final\\") != NULL);
-						server = *(GServer *)ArrayNth(serverlist->servers,serverlist->updatelist[x].serverindex);
+						server = *(GServer *)ArrayNth(serverlist->servers,serverlist->updatelist[i].serverindex);
 						if (server->ping == 9999) //set the ping
-							server->ping = current_time() - serverlist->updatelist[x].starttime;
+							server->ping = current_time() - serverlist->updatelist[i].starttime;
 						ServerParseKeyVals(server, indata); 
 //						if (final) //it's all done
 						{
@@ -462,19 +461,19 @@ static GError ServerListQueryLoop(GServerList serverlist)
 													serverlist->instance,
 													server,
 													(void *)((serverlist->nextupdate * 100) / ArrayLength(serverlist->servers))); //percent done
-							serverlist->updatelist[x].serverindex = -1; //reuse the updatelist
+							serverlist->updatelist[i].serverindex = -1; //reuse the updatelist
 						} 
 					}
 					else
 					{
-						Con_Printf("Error during send: %d\n", errno); // FS
-						serverlist->updatelist[x].serverindex = -1; //reuse the updatelist
+						serverlist->updatelist[i].serverindex = -1; //reuse the updatelist
 					}
 				}
 	}
+
 	//kill expired ones
-	for (y = 0 ; y < serverlist->maxupdates ; y++)
-		if (serverlist->updatelist[y].serverindex >= 0 && current_time() - serverlist->updatelist[y].starttime > SERVER_TIMEOUT ) 
+	for (i = 0 ; i < serverlist->maxupdates ; i++)
+		if (serverlist->updatelist[i].serverindex >= 0 && current_time() - serverlist->updatelist[i].starttime > SERVER_TIMEOUT ) 
 		{
 			/* serverlist->CallBackFn(serverlist,  //do we want to notify of dead servers? if so, uncomment!
 				LIST_PROGRESS, 
@@ -482,11 +481,12 @@ static GError ServerListQueryLoop(GServerList serverlist)
 				*(GServer *)ArrayNth(serverlist->servers,serverlist->updatelist[i].serverindex),
 				(void *)((serverlist->nextupdate * 100) / ArrayLength(serverlist->servers))); //percent done
 				*/
-			serverlist->updatelist[y].serverindex = -1; //reuse the updatelist
+			serverlist->updatelist[i].serverindex = -1; //reuse the updatelist
 		}
 		
 	if (serverlist->abortupdate || (serverlist->nextupdate >= ArrayLength(serverlist->servers) && scount == 0)) 
 	{ //we are done!!
+		Con_Printf("\x02Server list complete!\n");
 		FreeUpdateList(serverlist);
 		ServerListModeChange(serverlist, sl_idle);
 		return 0;
@@ -494,28 +494,113 @@ static GError ServerListQueryLoop(GServerList serverlist)
 
 
 //now, send out queries on available sockets
-	for (z = 0 ; z < serverlist->maxupdates && serverlist->nextupdate < ArrayLength(serverlist->servers) ; z++)
-		if (serverlist->updatelist[z].serverindex < 0) //it's availalbe
+	for (i = 0 ; i < serverlist->maxupdates && serverlist->nextupdate < ArrayLength(serverlist->servers) ; i++)
+	{
+		if (serverlist->updatelist[i].serverindex < 0) //it's availalbe
 		{
-			serverlist->updatelist[z].serverindex = serverlist->nextupdate++;
-			server = *(GServer *)ArrayNth(serverlist->servers,serverlist->updatelist[z].serverindex);
+			serverlist->updatelist[i].serverindex = serverlist->nextupdate++;
+			server = *(GServer *)ArrayNth(serverlist->servers,serverlist->updatelist[i].serverindex);
 			saddr.sin_family = AF_INET;
 			saddr.sin_addr.s_addr = inet_addr(ServerGetAddress(server));
 			saddr.sin_port = htons((short)ServerGetQueryPort(server));
-			error = connect (serverlist->updatelist[z].s, (struct sockaddr *) &saddr, saddrlen);
+			error = connect (serverlist->updatelist[i].s, (struct sockaddr *) &saddr, saddrlen);
 			if (error != 0) //uhh.. bad server address?
 			{
-				Con_Printf("Error during connect: %d\n", errno); // FS
-				 serverlist->updatelist[z].serverindex = -1;
+				 serverlist->updatelist[i].serverindex = -1;
 				 continue;
 			}
-			send(serverlist->updatelist[z].s,STATUS,strlen(STATUS),0);
-			serverlist->updatelist[z].starttime = current_time();
+			error = send(serverlist->updatelist[i].s,STATUS,strlen(STATUS),0);
+			serverlist->updatelist[i].starttime = current_time();
 		}
-
-
+	}
 	return 0;
 }
+#else // DOS
+
+// FS: DJGGP is all sorts of fucked with sockets.  This will have to do sadly :(
+int count = 0;
+static GError ServerListQueryLoop(GServerList serverlist)
+{
+	int i, scount = 0, error, final;
+	fd_set set;
+	struct timeval timeout = {3,0};
+	char indata[1500];
+	struct sockaddr_in saddr;
+	int saddrlen = sizeof(saddr);
+	float percent = 0; // FS
+	GServer server;
+
+	FD_ZERO(&set);
+	for (i = 0 ; i < serverlist->maxupdates && serverlist->nextupdate < ArrayLength(serverlist->servers) ; i++)
+	{
+		if (serverlist->updatelist[i].serverindex < 0) //it's availalbe
+		{
+			FD_SET( serverlist->updatelist[count].s, &set);
+			serverlist->updatelist[i].serverindex = serverlist->nextupdate++;
+			server = *(GServer *)ArrayNth(serverlist->servers,serverlist->updatelist[i].serverindex);
+			saddr.sin_family = AF_INET;
+			saddr.sin_addr.s_addr = inet_addr(ServerGetAddress(server));
+			Con_DPrintf(DEVELOPER_MSG_GAMESPY, "Attempting to ping[%i]: %s\n", count, ServerGetAddress(server));
+			saddr.sin_port = htons((short)ServerGetQueryPort(server));
+			error = connect (serverlist->updatelist[count].s, (struct sockaddr *) &saddr, saddrlen);
+			if (error != 0) //uhh.. bad server address?
+			{
+				Con_DPrintf(DEVELOPER_MSG_GAMESPY, "Error during connect: %d\n", errno); // FS
+				 serverlist->updatelist[i].serverindex = -1;
+				 continue;
+			}
+
+			error = send(serverlist->updatelist[count].s,STATUS,strlen(STATUS),0);
+			serverlist->updatelist[i].starttime = current_time();
+
+			select(FD_SETSIZE, &set, NULL, NULL, &timeout);
+			if (FD_ISSET(serverlist->updatelist[i].s, &set))
+			{
+				error = recv(serverlist->updatelist[count].s, indata, sizeof(indata) - 1, 0/*, &saddr, saddrlen*/ );
+				if (SOCKET_ERROR != error) //we got data
+				{
+					indata[error] = 0; //truncate and parse it
+					final = (strstr(indata,"\\final\\") != NULL);
+					server = *(GServer *)ArrayNth(serverlist->servers,serverlist->updatelist[i].serverindex);
+					if (server->ping == 9999) //set the ping
+						server->ping = current_time() - serverlist->updatelist[i].starttime;
+					ServerParseKeyVals(server, indata); 
+	//				if (final) //it's all done
+					{
+						serverlist->CallBackFn(serverlist, 
+											LIST_PROGRESS, 
+											serverlist->instance,
+											server,
+											(void *)((serverlist->nextupdate * 100) / ArrayLength(serverlist->servers))); //percent done
+						serverlist->updatelist[i].serverindex = -1; //reuse the updatelist
+					}
+				}
+				else
+				{
+					continue;
+				}
+			}
+		}
+		percent = ((float)serverlist->nextupdate/(float)ServerListCount(serverlist)) * 100;
+		count++;
+	}
+
+	Con_Printf("\x02Percent done: ");
+	Con_Printf("%1.0f\n", percent);
+	FreeUpdateList(serverlist);
+	InitUpdateList(serverlist);
+	count = 0;
+
+	if (serverlist->abortupdate || (serverlist->nextupdate >= ArrayLength(serverlist->servers) && scount == 0)) 
+	{ //we are done!!
+		Con_Printf("\x02Server list complete!\n");
+		FreeUpdateList(serverlist);
+		ServerListModeChange(serverlist, sl_idle);
+		return 0;
+	}
+	return 0;
+}
+#endif // WIN32
 
 /* ServerListThink
 ------------------

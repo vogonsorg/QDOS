@@ -1752,7 +1752,7 @@ void CL_PingNetServers_f (void)
 	goa_secret_key[5] = 'n';
 	goa_secret_key[6] = '\0';
 	Con_Printf("Grabbing populated server list from GameSpy master. . .\n");
-	serverlist = ServerListNew("quakeworld","quakeworld",goa_secret_key,10,ListCallBack,GCALLBACK_FUNCTION,NULL);
+	serverlist = ServerListNew("quakeworld","quakeworld",goa_secret_key,30,ListCallBack,GCALLBACK_FUNCTION,NULL);
     error = ServerListUpdate(serverlist,false);
 
 	if (error != GE_NOERROR) // FS: Grab the error code
