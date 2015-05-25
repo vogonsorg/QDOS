@@ -420,7 +420,6 @@ static GError ServerListReadList(GServerList serverlist)
 #define STATUS "\xff\xff\xff\xffstatus"
 
 #ifdef WIN32
-//#if 0
 static GError ServerListQueryLoop(GServerList serverlist)
 {
 	int i, scount = 0, error, final;
@@ -442,7 +441,7 @@ static GError ServerListQueryLoop(GServerList serverlist)
 		}
 	if (scount > 0) //there are sockets to check for data
 	{
-		error = select(FD_SETSIZE, &set, NULL, NULL, &timeout);
+		error = select(serverlist->updatelist[i].s + 1, &set, NULL, NULL, &timeout);
 		if (SOCKET_ERROR != error && 0 != error)
 			for (i = 0 ; i < serverlist->maxupdates ; i++)
 				if (serverlist->updatelist[i].serverindex >= 0 && FD_ISSET(serverlist->updatelist[i].s, &set) ) //there is a server waiting
@@ -523,7 +522,6 @@ static GError ServerListQueryLoop(GServerList serverlist)
 	return 0;
 }
 #else // DOS
-
 // FS: DJGGP is all sorts of fucked with sockets.  This will have to do sadly :(
 int count = 0;
 static GError ServerListQueryLoop(GServerList serverlist)
@@ -568,7 +566,7 @@ static GError ServerListQueryLoop(GServerList serverlist)
 			serverlist->updatelist[i].starttime = current_time();
 
 			select(FD_SETSIZE, &set, NULL, NULL, &timeout);
-			if (FD_ISSET(serverlist->updatelist[i].s, &set))
+			if (FD_ISSET(serverlist->updatelist[count].s, &set))
 			{
 				error = recv(serverlist->updatelist[count].s, indata, sizeof(indata) - 1, 0/*, &saddr, saddrlen*/ );
 				if (SOCKET_ERROR != error) //we got data
@@ -579,7 +577,7 @@ static GError ServerListQueryLoop(GServerList serverlist)
 					if (server->ping == 9999) //set the ping
 						server->ping = current_time() - serverlist->updatelist[i].starttime;
 					ServerParseKeyVals(server, indata); 
-	//				if (final) //it's all done
+					if (final) //it's all done
 					{
 						serverlist->CallBackFn(serverlist, 
 											LIST_PROGRESS, 
@@ -605,7 +603,7 @@ static GError ServerListQueryLoop(GServerList serverlist)
 //	Con_Printf("\x02Percent done: ");
 //	Con_Printf("%1.0f\n", percent);
 	FreeUpdateList(serverlist);
-	InitUpdateList(serverlist);
+	InitUpdateList(serverlist);  // FS: For some reason I have to re-init the sockets again here.  In Windows this is unnecessary.
 	count = 0;
 
 	if (serverlist->abortupdate || (serverlist->nextupdate >= ArrayLength(serverlist->servers) && scount == 0)) 
