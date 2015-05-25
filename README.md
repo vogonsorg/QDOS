@@ -151,6 +151,7 @@ To summarize:
    ULTRAMID -Q.  Then run, ULTRAMID -F -Q.  This will initialize your card.
    For a batch script that handles this issue please see:
     http://dk.toastednet.org/QDOS/GUSFIX.ZIP
+* QWDOS /slist2 command for pinging gamespy servers is slow.  Might take up to 3-5 minutes to grab the entire list.  WATTCP has problems with async I/O and reusing sockets. :/
 
 6 - Final Thoughts
 ---------------------------------------------------------
