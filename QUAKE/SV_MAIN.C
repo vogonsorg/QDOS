@@ -28,6 +28,9 @@ char  localmodels[MAX_MODELS][5];         // inline model names for precache
 
 int sv_protocol = PROTOCOL_FITZQUAKE; //johnfitz
 cvar_t  sv_loadentfiles = {"sv_loadentfiles","1", true}; // FS: Load external ent files
+cvar_t	sv_master_server_ip = {"sv_master_server_ip", SV_MASTER_ADDR, true, false}; // FS: Gamespy
+cvar_t	sv_master_server_port = {"sv_master_server_port", SV_MASTER_PORT, true, false}; // FS: Gamespy
+cvar_t	public_server = {"public", "0", false, false}; // FS: Gamespy
 
 extern qboolean		pr_alpha_supported; //johnfitz
 
@@ -90,39 +93,42 @@ SV_Init
 */
 void SV_Init (void)
 {
-   int      i;
-   extern   cvar_t   sv_maxvelocity;
-   extern   cvar_t   sv_gravity;
-   extern   cvar_t   sv_nostep;
-   extern   cvar_t   sv_friction;
-   extern   cvar_t   sv_edgefriction;
-   extern   cvar_t   sv_stopspeed;
-   extern   cvar_t   sv_maxspeed;
-   extern   cvar_t   sv_accelerate;
-   extern   cvar_t   sv_idealpitchscale;
-   extern   cvar_t   sv_aim;
+	int      i;
+	extern   cvar_t   sv_maxvelocity;
+	extern   cvar_t   sv_gravity;
+	extern   cvar_t   sv_nostep;
+	extern   cvar_t   sv_friction;
+	extern   cvar_t   sv_edgefriction;
+	extern   cvar_t   sv_stopspeed;
+	extern   cvar_t   sv_maxspeed;
+	extern   cvar_t   sv_accelerate;
+	extern   cvar_t   sv_idealpitchscale;
+	extern   cvar_t   sv_aim;
 	extern	cvar_t	sv_altnoclip; //johnfitz
 
-   Cvar_RegisterVariable (&sv_maxvelocity);
-   Cvar_RegisterVariable (&sv_gravity);
-   Cvar_RegisterVariable (&sv_friction);
-   Cvar_RegisterVariable (&sv_edgefriction);
-   Cvar_RegisterVariable (&sv_stopspeed);
-   Cvar_RegisterVariable (&sv_maxspeed);
-   Cvar_RegisterVariable (&sv_accelerate);
-   Cvar_RegisterVariable (&sv_idealpitchscale);
-   Cvar_RegisterVariable (&sv_aim);
-   Cvar_RegisterVariable (&sv_nostep);
+	Cvar_RegisterVariable (&sv_maxvelocity);
+	Cvar_RegisterVariable (&sv_gravity);
+	Cvar_RegisterVariable (&sv_friction);
+	Cvar_RegisterVariable (&sv_edgefriction);
+	Cvar_RegisterVariable (&sv_stopspeed);
+	Cvar_RegisterVariable (&sv_maxspeed);
+	Cvar_RegisterVariable (&sv_accelerate);
+	Cvar_RegisterVariable (&sv_idealpitchscale);
+	Cvar_RegisterVariable (&sv_aim);
+	Cvar_RegisterVariable (&sv_nostep);
 	Cvar_RegisterVariable (&pq_fullpitch); // FS
     Cvar_RegisterVariable (&cl_fullpitch); // FS
 	Cvar_RegisterVariable (&sv_loadentfiles); // FS
 	Cvar_RegisterVariable (&sv_altnoclip); //johnfitz
+	Cvar_RegisterVariable (&sv_master_server_ip); // FS
+	Cvar_RegisterVariable (&sv_master_server_port); // FS
+	Cvar_RegisterVariable (&public_server); // FS
 
 	Cmd_AddCommand ("sv_dumpentities", &SV_DumpEntities_f);
 	Cmd_AddCommand ("sv_protocol", &SV_Protocol_f); //johnfitz
 
-   for (i=0 ; i<MAX_MODELS ; i++)
-      sprintf (localmodels[i], "*%i", i);
+	for (i=0 ; i<MAX_MODELS ; i++)
+		sprintf (localmodels[i], "*%i", i);
 }
 
 /*
@@ -181,10 +187,10 @@ Larger attenuations will drop off.  (max 4 attenuation)
 void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
     float attenuation)
 {       
-    int         sound_num;
+    int	sound_num;
     int field_mask;
-    int        i;
-   int         ent;
+    int	i;
+	int	ent;
    
    if (volume < 0 || volume > 255)
       Sys_Error ("SV_StartSound: volume = %i", volume);

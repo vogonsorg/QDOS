@@ -668,7 +668,7 @@ void Draw_ConsoleBackground (int lines)
 #if defined(__linux__)
 		sprintf (ver, "Linux (%4.2f) QuakeWorld %4.2f", LINUX_VERSION, VERSION);
 #elif defined (__DJGPP) // FS: Display QWDOS if we can
-		sprintf (ver, "QuakeWorld DOS %4.2f", LINUX_VERSION, VERSION);
+		sprintf (ver, "QuakeWorld DOS %4.2f", VERSION);
 #else
 		sprintf (ver, "QuakeWorld %4.2f", VERSION);
 #endif

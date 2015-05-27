@@ -128,7 +128,8 @@ typedef struct
 	int			td_lastframe;		// to meter out one message a frame
 	int			td_startframe;		// host_framecount at start
 	float		td_starttime;		// realtime at second frame of timedemo
-
+	int			gamespyupdate; // FS
+	int			gamespypercent; // FS
 
 // connection information
 	int			signon;			// 0 to SIGNONS
@@ -316,8 +317,11 @@ typedef struct
 extern	kbutton_t	in_mlook, in_klook;
 extern 	kbutton_t 	in_strafe;
 extern 	kbutton_t 	in_speed;
-extern  int     nostartupdemos; // FS: Disable startup demos
-extern  cvar_t          cl_demos; // FS: Disable startup demos
+extern	int			nostartupdemos; // FS: Disable startup demos
+extern	cvar_t		cl_demos; // FS: Disable startup demos
+extern	cvar_t		cl_master_server_ip; // FS: Gamespy
+extern	cvar_t		cl_master_server_port; // FS: Gamespy
+
 
 void CL_InitInput (void);
 void CL_SendCmd (void);

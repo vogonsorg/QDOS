@@ -357,6 +357,8 @@ extern	cvar_t	name;
 extern	cvar_t	show_fps; // FS: why was this not global?
 extern	cvar_t	rate; // FS
 extern	cvar_t	cl_downloadrate_hack; // FS
+extern	cvar_t	cl_master_server_ip; // FS
+extern	cvar_t	cl_master_server_port; // FS
 
 #define	MAX_STATIC_ENTITIES	128			// torches, etc
 

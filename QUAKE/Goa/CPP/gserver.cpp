@@ -39,7 +39,7 @@ GServer ServerNew(char *ip, int port)
 {
 	GServer server;
 
-	server = malloc(sizeof(struct GServerImplementation));
+	server = (GServerImplementation *)malloc(sizeof(struct GServerImplementation));
 	strncpy(server->ip,ip, 16);
 	server->ip[15] = 0; //make sure it's terminated
 	server->port = port;
@@ -71,57 +71,27 @@ char *mytok(char *instr, char delim)
 void ServerParseKeyVals(GServer server, char *keyvals)
 {
 	char *k, *v;
-	char savedkeyvals[MAX_MSGLEN];
 	GKeyValuePair kvpair;
-	int numplayers = 0;
 
-	*keyvals = *keyvals++; // FS: Skip past the OOB_SEQ
-	*keyvals = *keyvals++;
-	*keyvals = *keyvals++;
-	*keyvals = *keyvals++;
-	*keyvals = *keyvals++;
-
-	Q_strcpy(savedkeyvals, keyvals);
-	savedkeyvals[strlen(keyvals)] = '\0';
+	*keyvals++; // FS: Skip past the OOB_SEQ
+	*keyvals++;
+	*keyvals++;
+	*keyvals++;
+	*keyvals++;
 
 	k = mytok(++keyvals,'\\'); //skip over starting backslash
-	while (!numplayers || k != NULL)
+	while (k != NULL)
 	{
 		v = mytok(NULL,'\\');
 		if (v != NULL)
 		{
 			kvpair.key = _strdup(k);
 			kvpair.value = _strdup(v);
-			if(strstr(kvpair.value, "\n"))
-			{
-				char *cutoffLen;
-				cutoffLen = strchr(kvpair.value, '\n');
-				kvpair.value[cutoffLen-kvpair.value] = '\0';
-				numplayers++;
-			}
 			TableEnter(server->keyvals, &kvpair);
 		}
 		k = mytok(NULL,'\\');
 
 	}
-
-	if (numplayers) // FS: QW sends shit with \n as players and their data :/
-	{
-		dstring_t *players = dstring_new();
-		char *test = strchr(savedkeyvals, '\n');
-
-		while (test != NULL)
-		{
-			numplayers++;
-			test = strchr(test+1, '\n');
-		}
-
-		kvpair.key = _strdup("numplayers");
-		Com_sprintf(players, "%i", numplayers-2);
-		kvpair.value = _strdup(players->str);
-		TableEnter(server->keyvals, &kvpair);
-		dstring_delete(players);
-	}	
 }
 
 

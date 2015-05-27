@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "cfgfile.h" // FS: Parse CFG early -- sezero
 #include <ctype.h> // FS: -Werror fix
 
-#include "Goa/CEngine/goaceng.h"
+#include "Goa/CEngine/goaceng.h" // FS: For Gamespy
 
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
@@ -145,6 +145,8 @@ cvar_t	console_old_complete = {"console_old_complete", "0", true, false , "Use l
 cvar_t	developer = {"developer","0", false, false, "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Extremely verbose msgs - 65536\n  * Extremely verbose gamespy msgs - 131072\n"};
 cvar_t	con_show_description = {"con_show_description", "1", true, false, "Show descriptions for CVARs."}; // FS
 cvar_t	con_show_dev_flags = {"con_show_dev_flags", "1", true, false, "Show developer flag options."}; // FS
+cvar_t	cl_master_server_ip = {"cl_master_server_ip", CL_MASTER_ADDR, true, false}; // FS
+cvar_t	cl_master_server_port = {"cl_master_server_port", CL_MASTER_PORT, true, false}; // FS
 
 int         fps_count;
 qboolean bFlashlight = false; // FS: Flashlight
@@ -1315,6 +1317,8 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&cl_downloadrate_hack); // FS
 	Cvar_RegisterVariable (&con_show_description); // FS
 	Cvar_RegisterVariable (&con_show_dev_flags); // FS
+	Cvar_RegisterVariable (&cl_master_server_ip); // FS: Gamespy
+	Cvar_RegisterVariable (&cl_master_server_port); // FS: Gamespy
 
 	Cmd_AddCommand ("version", CL_Version_f);
 	Cmd_AddCommand ("force_error", CL_ForceError_f); // FS: was used for Sys_Error dstring conversion test

@@ -178,6 +178,9 @@ extern	cvar_t	timelimit;
 
 extern  cvar_t  cl_fullpitch; // FS
 extern  cvar_t  pq_fullpitch; // FS
+extern	cvar_t	sv_master_server_ip; // FS
+extern	cvar_t	sv_master_server_port; // FS
+extern	cvar_t	public_server;			// should heartbeats be sent
 
 extern	server_static_t	svs;				// persistant server info
 extern	server_t		sv;					// local server

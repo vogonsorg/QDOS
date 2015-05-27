@@ -40,6 +40,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define DEVELOPER_MSG_ENTITY		0x00004000 // 16384
 #define DEVELOPER_MSG_SAVE			0x00008000 // 32768
 #define DEVELOPER_MSG_VERBOSE		0x00010000 // 65536
+#define DEVELOPER_MSG_GAMESPY		0x00020000 // 131072
 
 extern int con_totallines;
 extern int con_backscroll;

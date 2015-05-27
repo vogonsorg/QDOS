@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "dstring.h" // FS: Dstring
 #include <ctype.h> // FS: -Werror fix
+#include "Goa/CEngine/goaceng.h" // FS: For Gamespy
 
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
@@ -44,6 +45,8 @@ cvar_t	m_side = {"m_side","0.8", true};
 cvar_t  show_time = {"show_time","0", true, false, "Show current time in the HUD.  1 for military.  2 for AM/PM."}; // FS: Show time
 cvar_t  show_uptime = {"show_uptime","0", true, false, "Show uptime."}; // FS: Show uptime
 cvar_t	console_old_complete = {"console_old_complete", "0", true, false, "Use the legacy style console tab completion."}; // FS
+cvar_t	cl_master_server_ip = {"cl_master_server_ip", CL_MASTER_ADDR, true, false}; // FS
+cvar_t	cl_master_server_port = {"cl_master_server_port", CL_MASTER_PORT, true, false}; // FS
 
 client_static_t	cls;
 client_state_t cl;
@@ -62,6 +65,11 @@ entity_t		*cl_visedicts[MAX_VISEDICTS];
 extern cvar_t	r_lerpmodels, r_lerpmove; //johnfitz
 int bFlashlight = 0; // FS: Flashlight
 void CL_Flashlight_f (void); // FS: Prototype it
+
+static    GServerList serverlist; // FS: Moved outside so we can abort whenever we need to
+
+void ListCallBack(GServerList serverlist, int msg, void *instance, void *param1, void *param2);
+void CL_PingNetServers_f (void);
 
 /*
 =====================
@@ -714,6 +722,8 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&m_forward);
 	Cvar_RegisterVariable (&m_side);
 	Cvar_RegisterVariable (&console_old_complete); // FS
+	Cvar_RegisterVariable (&cl_master_server_ip); // FS: Gamespy
+	Cvar_RegisterVariable (&cl_master_server_port); // FS: Gamespy
 
 	Cmd_AddCommand ("entities", CL_PrintEntities_f);
 	Cmd_AddCommand ("disconnect", CL_Disconnect_f);
@@ -722,5 +732,59 @@ void CL_Init (void)
 	Cmd_AddCommand ("playdemo", CL_PlayDemo_f);
 	Cmd_AddCommand ("timedemo", CL_TimeDemo_f);
 	Cmd_AddCommand ("flashlight", CL_Flashlight_f); // FS: Flashlight
+	Cmd_AddCommand ("slist2", CL_PingNetServers_f);
 }
 
+//GAMESPY
+void ListCallBack(GServerList serverlist, int msg, void *instance, void *param1, void *param2)
+{
+	GServer server;
+	if (msg == LIST_PROGRESS)
+	{
+		server = (GServer)param1;
+		if(ServerGetIntValue(server,"numplayers",0)) // FS: Only show populated servers
+			Con_Printf ( "%s:%d [%d] %s %d/%d %s\n",ServerGetAddress(server),ServerGetQueryPort(server), ServerGetPing(server),ServerGetStringValue(server, "hostname","(NONE)"), ServerGetIntValue(server,"numplayers",0), ServerGetIntValue(server,"maxclients",0), ServerGetStringValue(server,"map","(NO MAP)"));
+	}
+
+}
+
+void CL_PingNetServers_f (void)
+{
+	char goa_secret_key[256];
+	int error = 0; // FS: Grab the error code
+
+	if(cls.state != ca_disconnected)
+	{
+		Con_Printf("You must be disconnected to use this command!\n");
+		return;
+	}
+
+	goa_secret_key[0] = '7';
+	goa_secret_key[1] = 'W';
+	goa_secret_key[2] = '7';
+	goa_secret_key[3] = 'y';
+	goa_secret_key[4] = 'Z';
+	goa_secret_key[5] = 'z';
+	goa_secret_key[6] = '\0';
+	Con_Printf("\x02Grabbing populated server list from GameSpy master. . .\n");
+	cls.gamespyupdate = 1;
+	cls.gamespypercent = 0;
+	SCR_UpdateScreen(); // FS: Force an update so the percentage bar shows some progress
+	serverlist = ServerListNew("quake1","quake1",goa_secret_key,30,ListCallBack,GCALLBACK_FUNCTION,NULL);
+    error = ServerListUpdate(serverlist,false);
+
+	if (error != GE_NOERROR) // FS: Grab the error code
+	{
+		cls.gamespyupdate = 0;
+		cls.gamespypercent = 0;
+		Con_Printf("\x02GameSpy Error: ");
+		Con_Printf("%s.\n", ServerListErrorDesc(serverlist, error));
+		ServerListHalt( serverlist );
+		ServerListClear( serverlist );
+	}
+	cls.gamespyupdate = 0;
+	cls.gamespypercent = 0;
+	ServerListClear( serverlist );
+    ServerListFree(serverlist);
+	serverlist = NULL; // FS: This is on purpose so future ctrl+c's won't try to close empty serverlists
+}

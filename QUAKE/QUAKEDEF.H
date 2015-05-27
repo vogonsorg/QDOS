@@ -121,6 +121,11 @@ void    VID_UnlockBuffer (void);
 
 #define MAX_STYLESTRING 64
 
+#define CL_MASTER_ADDR	"maraakate.org" // FS: Gamespy dead "master.gamespy.com"
+#define CL_MASTER_PORT "28900"
+#define SV_MASTER_ADDR "maraakate.org" // FS: gamespy dead "master.gamespy.com"
+#define SV_MASTER_PORT "27900"
+
 //
 // stats are integers communicated to the client by the server
 //

@@ -145,6 +145,12 @@ $(O)/surf8.o    \
 $(O)/worlda.o   \
 $(O)/cfgfile.o   \
 $(O)/dos_v2.o   \
+$(O)/Goa/CEngine/darray.o \
+$(O)/Goa/CEngine/gserver.o \
+$(O)/Goa/CEngine/gserverlist.o \
+$(O)/Goa/SDK/goautil.o \
+$(O)/Goa/CEngine/hashtable.o \
+$(O)/Goa/nonport.o \
 $(O)/sys_dos.o
 #$(O)/dosasm.o
 
@@ -155,6 +161,9 @@ clean:
 	del qdos.exe
 	del dquake.exe
 	del dos\*.o
+	del dos\Goa\*.o
+	del dos\CEngine\*.o
+	del dos\SDK\*.o
 
 qdos.exe: $(OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) -o dquake.exe $(LIBS)

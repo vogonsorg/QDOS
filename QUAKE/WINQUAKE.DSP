@@ -70,7 +70,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /G5 /ML /W1 /GX /ZI /Od /I ".\scitech\include" /I ".\dxsdk\sdk\inc" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /ML /GX /ZI /Od /I ".\scitech\include" /I ".\dxsdk\sdk\inc" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -92,6 +92,62 @@ LINK32=link.exe
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90"
+# Begin Group "Gamespy"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\Goa\CEngine\darray.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\CEngine\darray.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\CEngine\goaceng.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\SDK\goautil.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\Sdk\goautil.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\CEngine\gserver.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\CEngine\gserver.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\CEngine\gserverlist.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\CEngine\gutil.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\CEngine\hashtable.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\CEngine\hashtable.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\nonport.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\Goa\nonport.h
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=.\cd_win.c

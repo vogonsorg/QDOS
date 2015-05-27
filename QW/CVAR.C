@@ -249,10 +249,10 @@ void Cvar_RegisterVariable (cvar_t *variable)
 
 // copy the value off, because future sets will Z_Free it
 	strcpy (value, variable->string);
-	variable->string = Z_Malloc (1);	
-	variable->defaultString = Z_Malloc (Q_strlen(variable->string)+1); // FS
+	variable->string = Z_Malloc (1);
+	variable->defaultString = Z_Malloc (Q_strlen(value)+1); // FS
 	Q_strcpy((char *)variable->defaultString, value); // FS
-	
+
 // set it through the function to be consistant
 	Cvar_Set (variable->name, value);
 }
