@@ -226,7 +226,7 @@ void goa_shutdown(void)
 Returns the hostent in savehent if it is not NULL */
 int get_sockaddrin(char *host, int port, struct sockaddr_in *saddr, struct hostent **savehent)
 {
-	struct hostent *hent;
+	struct hostent *hent = NULL; // FS: Compiler warning
 
 	saddr->sin_family = AF_INET;
 	saddr->sin_port = htons((unsigned short)port);

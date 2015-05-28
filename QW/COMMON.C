@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <stdio.h>
 #include <stdarg.h>
 
-#define DG_MISC_IMPLEMENTATION
+#define DG_MISC_IMPLEMENTATION // FS: Use caedes special string stuff
 
 #ifdef SERVERONLY 
 #include "qwsvdef.h"
