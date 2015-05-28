@@ -675,7 +675,7 @@ Sys_FloatTime
 */
 double Sys_FloatTime (void)
 {
-        return (double) uclock() / (double) UCLOCKS_PER_SEC; //FS: Accurate Clock (QIP)
+	return (double) uclock() / (double) UCLOCKS_PER_SEC; //FS: Accurate Clock (QIP)
 }
 
 /*
@@ -686,22 +686,21 @@ JASON: THIS IS FROM LinuxQuakeWorld
 */
 double Sys_DoubleTime (void)
 {
-/*    struct timeval tp;
-    struct timezone tzp; 
-    static int      secbase; 
+/*	struct timeval tp;
+	struct timezone tzp; 
+	static int      secbase; 
     
-    gettimeofday(&tp, &tzp);  
+	gettimeofday(&tp, &tzp);  
 
-    if (!secbase)
-    {
-	secbase = tp.tv_sec;
-	return tp.tv_usec/1000000.0;
-    }
+	if (!secbase)
+	{
+		secbase = tp.tv_sec;
+		return tp.tv_usec/1000000.0;
+	}
 
     return (tp.tv_sec - secbase) + tp.tv_usec/1000000.0;
 */
-        return (double) uclock() / (double) UCLOCKS_PER_SEC; //FS: Accurate Clock (QIP)
-
+	return (double) uclock() / (double) UCLOCKS_PER_SEC; //FS: Accurate Clock (QIP)
 }
 
 

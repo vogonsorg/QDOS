@@ -145,9 +145,9 @@ cvar_t	console_old_complete = {"console_old_complete", "0", true, false , "Use l
 cvar_t	developer = {"developer","0", false, false, "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Extremely verbose msgs - 65536\n  * Extremely verbose gamespy msgs - 131072\n"};
 cvar_t	con_show_description = {"con_show_description", "1", true, false, "Show descriptions for CVARs."}; // FS
 cvar_t	con_show_dev_flags = {"con_show_dev_flags", "1", true, false, "Show developer flag options."}; // FS
-cvar_t	cl_master_server_ip = {"cl_master_server_ip", CL_MASTER_ADDR, true, false}; // FS
-cvar_t	cl_master_server_port = {"cl_master_server_port", CL_MASTER_PORT, true, false}; // FS
-
+cvar_t	cl_master_server_ip = {"cl_master_server_ip", CL_MASTER_ADDR, true, false, "GameSpy Master Server IP."}; // FS
+cvar_t	cl_master_server_port = {"cl_master_server_port", CL_MASTER_PORT, true, false, "GameSpy Master Server Port."}; // FS
+cvar_t	cl_master_server_queries = {"cl_master_server_queries", "10", true, false, "Number of sockets to allocate for GameSpy."};
 int         fps_count;
 qboolean bFlashlight = false; // FS: Flashlight
 
@@ -1319,6 +1319,7 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&con_show_dev_flags); // FS
 	Cvar_RegisterVariable (&cl_master_server_ip); // FS: Gamespy
 	Cvar_RegisterVariable (&cl_master_server_port); // FS: Gamespy
+	Cvar_RegisterVariable (&cl_master_server_queries); // FS: Gamespy
 
 	Cmd_AddCommand ("version", CL_Version_f);
 	Cmd_AddCommand ("force_error", CL_ForceError_f); // FS: was used for Sys_Error dstring conversion test
@@ -1753,6 +1754,7 @@ void CL_PingNetServers_f (void)
 {
 	char goa_secret_key[256];
 	int error = 0; // FS: Grab the error code
+	int allocatedSockets; // FS
 
 	if(cls.state != ca_disconnected)
 	{
@@ -1771,7 +1773,10 @@ void CL_PingNetServers_f (void)
 	cls.gamespyupdate = 1;
 	cls.gamespypercent = 0;
 	SCR_UpdateScreen(); // FS: Force an update so the percentage bar shows some progress
-	serverlist = ServerListNew("quakeworld","quakeworld",goa_secret_key,30,ListCallBack,GCALLBACK_FUNCTION,NULL);
+
+	allocatedSockets = bound(5, cl_master_server_queries.intValue, 100);
+
+	serverlist = ServerListNew("quakeworld","quakeworld",goa_secret_key,allocatedSockets,ListCallBack,GCALLBACK_FUNCTION,NULL);
     error = ServerListUpdate(serverlist,false);
 
 	if (error != GE_NOERROR) // FS: Grab the error code

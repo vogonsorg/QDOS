@@ -205,7 +205,7 @@ extern "C" {
 // for uintptr_t:
 #ifdef __DJGPP__ // FS: DJGPP doesn't have this either
 #include "stdint.h"
-#elif !defiend (_MSC_VER)
+#elif !defined (_MSC_VER)
 #include <stdint.h>
 #endif
 
