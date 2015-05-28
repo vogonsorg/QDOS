@@ -22,43 +22,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include <string.h>
 
-#ifndef strlcpy
-size_t
-strlcpy(char *dst, const char *src, size_t siz)
-{
-	register char *d = dst;
-	register const char *s = src;
-	register size_t n = siz;
-
-	/* Copy as many bytes as will fit */
-	if (n != 0 && --n != 0)
-	{
-		do
-		{
-			if ((*d++ = *s++) == 0)
-				break;
-		}
-		while (--n != 0);
-	}
-
-	/* Not enough room in dst, add NUL and traverse rest of src */
-	if (n == 0)
-	{
-		if (siz != 0)
-			*d = '\0';		/* NUL-terminate dst */
-		while (*s++);
-	}
-
-	return(s - src - 1);	/* count does not include NUL */
-}
-#endif
-
 void SHOWLMP_Decodeshow (void)
 {
 	char lmplabel[256], picname[256];
 	float x, y;
-	strlcpy (lmplabel,MSG_ReadString(), sizeof (lmplabel));
-	strlcpy (picname, MSG_ReadString(), sizeof (picname));
+	Q_strlcpy (lmplabel,MSG_ReadString(), sizeof (lmplabel));
+	Q_strlcpy (picname, MSG_ReadString(), sizeof (picname));
 
 	if (nehahra)
 	{

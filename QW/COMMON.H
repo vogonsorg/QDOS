@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "dstring.h"
 
+#include "DG_misc.h" // FS: Caedes special safe string stuff
+
 #ifdef _MSC_VER // FS: VS6
 	#define __attribute__(x)
 #endif
@@ -205,8 +207,7 @@ void MSG_ReadDeltaUsercmd (struct usercmd_s *from, struct usercmd_s *cmd);
 
 int     Q_atoi (char *str);
 float Q_atof (char *str);
-
-
+size_t Q_strlcpy (char *dst, const char *src, size_t siz); // FS: From OpenBSD
 
 //============================================================================
 

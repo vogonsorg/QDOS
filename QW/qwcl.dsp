@@ -1119,6 +1119,10 @@ SOURCE=.\d_local.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\DG_misc.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\draw.h
 # End Source File
 # Begin Source File

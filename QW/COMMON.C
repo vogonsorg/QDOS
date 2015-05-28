@@ -20,6 +20,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // common.c -- misc functions used in client and server
 
 #include <ctype.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdarg.h>
+
+#define DG_MISC_IMPLEMENTATION
 
 #ifdef SERVERONLY 
 #include "qwsvdef.h"
@@ -269,6 +274,32 @@ float Q_atof (char *str)
 	}
 	
 	return val*sign;
+}
+
+// FS: From OpenBSD
+size_t Q_strlcpy (char *dst, const char *src, size_t siz)
+{
+	char *d = dst;
+	const char *s = src;
+	size_t n = siz;
+
+	/* Copy as many bytes as will fit */
+	if (n != 0) {
+		while (--n != 0) {
+			if ((*d++ = *s++) == '\0')
+				break;
+		}
+	}
+
+	/* Not enough room in dst, add NUL and traverse rest of src */
+	if (n == 0) {
+		if (siz != 0)
+			*d = '\0';		/* NUL-terminate dst */
+		while (*s++)
+			;
+	}
+
+	return(s - src - 1);	/* count does not include NUL */
 }
 
 /*
