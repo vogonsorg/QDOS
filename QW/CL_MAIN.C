@@ -1191,7 +1191,8 @@ void CL_Download_f (void)
 CL_Minimize_f
 =================
 */
-void CL_Windows_f (void) {
+void CL_Windows_f (void)
+{
 //	if (modestate == MS_WINDOWED)
 //		ShowWindow(mainwindow, SW_MINIMIZE);
 //	else
@@ -1741,13 +1742,41 @@ void CL_Flashlight_f (void) // FS: Flashlight
 void ListCallBack(GServerList serverlist, int msg, void *instance, void *param1, void *param2)
 {
 	GServer server;
+	int numplayers = 0; // FS
+
 	if (msg == LIST_PROGRESS)
 	{
 		server = (GServer)param1;
-		if(ServerGetIntValue(server,"numplayers",0)) // FS: Only show populated servers
-			Con_Printf ( "%s:%d [%d] %s %d/%d %s\n",ServerGetAddress(server),ServerGetQueryPort(server), ServerGetPing(server),ServerGetStringValue(server, "hostname","(NONE)"), ServerGetIntValue(server,"numplayers",0), ServerGetIntValue(server,"maxclients",0), ServerGetStringValue(server,"map","(NO MAP)"));
+		numplayers = ServerGetIntValue(server,"numplayers",0);
+		if(cls.gamespyupdate == SHOW_POPULATED_SERVERS && numplayers > 0) // FS: Only show populated servers
+		{
+			Con_Printf ( "%s:%d [%d] %s ",ServerGetAddress(server),ServerGetQueryPort(server), ServerGetPing(server), ServerGetStringValue(server, "hostname","(NONE)"));
+			Con_Printf ("\x02%d", numplayers);
+			Con_Printf ("/%d %s\n", ServerGetIntValue(server,"maxclients",0), ServerGetStringValue(server,"map","(NO MAP)"));
+		}
+		else if (cls.gamespyupdate == SHOW_ALL_SERVERS)
+		{
+			Con_Printf ( "%s:%d [%d] %s ",ServerGetAddress(server),ServerGetQueryPort(server), ServerGetPing(server), ServerGetStringValue(server, "hostname","(NONE)"));
+			if (numplayers > 0)
+				Con_Printf ("\x02%d", numplayers);
+			else
+				Con_Printf ("%d", numplayers);
+			Con_Printf ("/%d %s\n", ServerGetIntValue(server,"maxclients",0), ServerGetStringValue(server,"map","(NO MAP)"));
+		}
 	}
-
+/*
+	else if (msg == LIST_STATECHANGED)
+	{
+		switch( ServerListState( serverlist ) )
+		{
+			case sl_idle:	// Finished
+//				serverlist_state = SERVERLISTSTATE_IDLE;
+				ServerListSort( serverlist, true, "numplayers", cm_int );
+			default:
+				break;
+		}
+	}
+*/
 }
 
 void CL_PingNetServers_f (void)
@@ -1762,6 +1791,12 @@ void CL_PingNetServers_f (void)
 		return;
 	}
 
+	if (Cmd_Argc() > 2)
+	{
+		Con_Printf ("Usage: slist2 <value>.  Set <value> to 1 or higher to show all servers, not just populated ones.\n");
+		return;
+	}
+
 	goa_secret_key[0] = 'F';
 	goa_secret_key[1] = 'U';
 	goa_secret_key[2] = '6';
@@ -1769,8 +1804,17 @@ void CL_PingNetServers_f (void)
 	goa_secret_key[4] = 'q';
 	goa_secret_key[5] = 'n';
 	goa_secret_key[6] = '\0';
-	Con_Printf("\x02Grabbing populated server list from GameSpy master. . .\n");
-	cls.gamespyupdate = 1;
+
+	if (Cmd_Argc() == 1)
+	{
+		cls.gamespyupdate = SHOW_POPULATED_SERVERS;
+		Con_Printf("\x02Grabbing populated server list from GameSpy master. . .\n");
+	}
+	else
+	{
+		cls.gamespyupdate = SHOW_ALL_SERVERS;
+		Con_Printf("\x02Grabbing all servers from GameSpy master. . .\n");
+	}
 	cls.gamespypercent = 0;
 	SCR_UpdateScreen(); // FS: Force an update so the percentage bar shows some progress
 

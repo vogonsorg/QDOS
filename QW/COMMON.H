@@ -109,6 +109,10 @@ extern  float   (*LittleFloat) (float l);
 
 //============================================================================
 
+// FS: GameSpy SLIST2 stuff
+#define SHOW_POPULATED_SERVERS 1
+#define SHOW_ALL_SERVERS 2
+
 // FS: FIXME TODO HACK HACK HACKKY HACKK.  The MSG_Write/Read for PEXT_FLOATCOORDS is read before protocol.h, so i'm putting it here.
 // fte protocol extensions.
 #define PROTOCOL_VERSION_FTE	(('F'<<0) + ('T'<<8) + ('E'<<16) + ('X' << 24)) //fte extensions.

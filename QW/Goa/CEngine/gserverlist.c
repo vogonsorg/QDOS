@@ -528,8 +528,8 @@ static GError ServerListQueryLoop(GServerList serverlist)
 	{ //we are done!!
 		if(!serverlist->abortupdate) // FS: Don't print if this was a forced abort
 			Con_Printf("\x02Server scan complete!\n");
-		ServerListModeChange(serverlist, sl_idle);
 		FreeUpdateList(serverlist);
+		ServerListModeChange(serverlist, sl_idle);
 		return 0;
 	}
 
@@ -560,10 +560,10 @@ static GError ServerListQueryLoop(GServerList serverlist)
 			error = sendto(serverlist->updatelist[i].s,STATUS,strlen(STATUS), 0, (struct sockaddr *) &saddr, saddrlen);
 			serverlist->updatelist[i].starttime = current_time();
 		}
-	percent = ((float)serverlist->nextupdate/(float)ServerListCount(serverlist)) * 100;
-	cls.gamespypercent = percent;
-	SCR_UpdateScreen(); // FS: Force an update so the percentage bar shows some progress
-	Sys_SendKeyEvents (); // FS: Check for aborts because this takes a while in DOS
+		percent = ((float)serverlist->nextupdate/(float)ServerListCount(serverlist)) * 100;
+		cls.gamespypercent = percent;
+		SCR_UpdateScreen(); // FS: Force an update so the percentage bar shows some progress
+		Sys_SendKeyEvents (); // FS: Check for aborts because this takes a while in DOS
 	}
 	return 0;
 }
