@@ -36,7 +36,7 @@ typedef unsigned char           byte;
 
 typedef enum {false, true}      qboolean;
 
-#define MAX_INFO_STRING 512 // FS: 196
+#define MAX_INFO_STRING 1024 // FS: 196
 #define MAX_SERVERINFO_STRING 2048  // FS: 1024
 //JASON upped from 512 -- Spoike
 #define MAX_LOCALINFO_STRING    32768

@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 
 
-#define MAX_BEAMS       8
+#define MAX_BEAMS       32 // FS: Was 8
 typedef struct
 {
 	int		entity;
@@ -33,7 +33,7 @@ typedef struct
 
 beam_t		cl_beams[MAX_BEAMS];
 
-#define MAX_EXPLOSIONS  8
+#define MAX_EXPLOSIONS  32 // FS: Was 8
 typedef struct
 {
 	vec3_t	origin;

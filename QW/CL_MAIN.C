@@ -148,6 +148,8 @@ cvar_t	con_show_dev_flags = {"con_show_dev_flags", "1", true, false, "Show devel
 cvar_t	cl_master_server_ip = {"cl_master_server_ip", CL_MASTER_ADDR, true, false, "GameSpy Master Server IP."}; // FS
 cvar_t	cl_master_server_port = {"cl_master_server_port", CL_MASTER_PORT, true, false, "GameSpy Master Server Port."}; // FS
 cvar_t	cl_master_server_queries = {"cl_master_server_queries", "10", true, false, "Number of sockets to allocate for GameSpy."};
+cvar_t	snd_gamespy_sounds = {"snd_gamespy_sounds", "0", true, false, "Play GameSpy sounds."}; // FS
+
 int         fps_count;
 qboolean bFlashlight = false; // FS: Flashlight
 
@@ -564,6 +566,7 @@ void CL_Disconnect (void)
 	if(serverlist != NULL) // FS: Immediately abort gspy scans
 	{
 		Con_Printf("\x02Server scan aborted!\n");
+		S_GamespySound ("gamespy/abort.wav");
 		ServerListHalt( serverlist );
 	}
 }
@@ -1321,6 +1324,7 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&cl_master_server_ip); // FS: Gamespy
 	Cvar_RegisterVariable (&cl_master_server_port); // FS: Gamespy
 	Cvar_RegisterVariable (&cl_master_server_queries); // FS: Gamespy
+	Cvar_RegisterVariable (&snd_gamespy_sounds); // FS: Gamespy
 
 	Cmd_AddCommand ("version", CL_Version_f);
 	Cmd_AddCommand ("force_error", CL_ForceError_f); // FS: was used for Sys_Error dstring conversion test

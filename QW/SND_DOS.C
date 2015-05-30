@@ -441,10 +441,10 @@ qboolean BLASTER_Init(void)
 		shm->samplebits = 8;    
 	}
 
-        if(!host_initialized) // FS: SND_RESTART
-        {
-                Cmd_AddCommand("sbinfo", SB_Info_f);
-        }
+	if(!host_initialized) // FS: SND_RESTART
+	{
+		Cmd_AddCommand("sbinfo", SB_Info_f);
+	}
 
         size = 4096;
 
@@ -569,20 +569,19 @@ INTERFACE
 
 void snd_shutdown_f (void) // FS: SND_SHUTDOWN
 {
-        SNDDMA_Shutdown();
-        Con_Printf("\nSound Disabled.\n");
-        Cache_Flush();
+	SNDDMA_Shutdown();
+	Con_Printf("\nSound Disabled.\n");
+	Cache_Flush();
 }
-
 
 void snd_restart_f (void) // FS: SND_RESTART
 {
-        SNDDMA_Shutdown();
-        Con_Printf("\nSound Restarting\n");
-        Cache_Flush();
-        SNDDMA_Init();
+	SNDDMA_Shutdown();
+	Con_Printf("\nSound Restarting\n");
+	Cache_Flush();
+	SNDDMA_Init();
 	S_StopAllSoundsC(); // FS: For GUS Buffer Clear Fix
-        Con_Printf ("Sound sampling rate: %i\n", shm->speed);
+	Con_Printf ("Sound sampling rate: %i\n", shm->speed);
 }
 
 typedef enum
@@ -608,8 +607,9 @@ qboolean SNDDMA_Init(void)
 	if (!host_initialized)
 	{
 		Cmd_AddCommand ("snd_restart", snd_restart_f); // FS
-	Cmd_AddCommand ("snd_shutdown", snd_shutdown_f); // FS
+		Cmd_AddCommand ("snd_shutdown", snd_shutdown_f); // FS
 	}
+
 	if (GUS_Init ())
 	{
 		Con_DPrintf(DEVELOPER_MSG_SOUND, "GUS_Init\n");

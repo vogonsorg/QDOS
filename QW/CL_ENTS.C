@@ -431,11 +431,11 @@ void CL_ParsePacketEntities (qboolean delta)
 #endif // PROTOCOL_VERSION_FTE
             if (full)
             {
-               cl.validsequence = 0;
-                                        Con_DPrintf(DEVELOPER_MSG_ENTITY, "WARNING: U_REMOVE on full update\n"); // FS: Changed to a dprintf
-               FlushEntityPacket ();
-               return;
-            }
+				cl.validsequence = 0;
+				Con_DPrintf(DEVELOPER_MSG_ENTITY, "WARNING: U_REMOVE on full update\n"); // FS: Changed to a dprintf
+				FlushEntityPacket ();
+				return;
+			}
             continue;
          }
          if (newindex >= MAX_PACKET_ENTITIES)

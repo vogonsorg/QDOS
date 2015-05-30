@@ -527,7 +527,10 @@ static GError ServerListQueryLoop(GServerList serverlist)
 	if (serverlist->abortupdate || ((serverlist->nextupdate >= ArrayLength(serverlist->servers) && scount == 0))) 
 	{ //we are done!!
 		if(!serverlist->abortupdate) // FS: Don't print if this was a forced abort
+		{
 			Con_Printf("\x02Server scan complete!\n");
+			S_GamespySound ("gamespy/complete.wav");
+		}
 		FreeUpdateList(serverlist);
 		ServerListModeChange(serverlist, sl_idle);
 		return 0;
@@ -649,7 +652,10 @@ static GError ServerListQueryLoop(GServerList serverlist)
 	if (serverlist->abortupdate || (serverlist->nextupdate >= ArrayLength(serverlist->servers))) 
 	{ //we are done!!
 		if(!serverlist->abortupdate) // FS: Don't print if this was a forced abort
+		{
 			Con_Printf("\x02Server scan complete!\n");
+			S_GamespySound ("gamespy/complete.wav");
+		}
 		FreeUpdateList(serverlist);
 		ServerListModeChange(serverlist, sl_idle);
 		return 0;

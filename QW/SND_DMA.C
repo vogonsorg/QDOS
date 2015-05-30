@@ -1094,6 +1094,11 @@ void S_LocalSound (char *sound)
 	S_StartSound (cl.viewentity, -1, sfx, vec3_origin, 1, 1);
 }
 
+void S_GamespySound (char *sound) // FS
+{
+	if (snd_gamespy_sounds.intValue)
+		S_LocalSound(sound);
+}
 
 void S_ClearPrecache (void)
 {
