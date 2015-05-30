@@ -86,6 +86,15 @@ void M_GameOptions_Key (int key);
 void M_Search_Key (int key);
 void M_ServerList_Key (int key);
 void M_Extended_Key (int key); // FS: Extended
+extern void snd_restart_f (void); // FS: SND_RESTART
+void M_Extended_Set_Sound_KHz (int dir, int khz); // FS: Extended
+
+// FS
+#ifdef _WIN32
+int havegus = 0;
+#else
+extern int havegus;
+#endif
 
 void M_Menu_Address_Book_f(void); // FS: Address Book
 void M_Menu_Address_Book_Key(int key); // FS: Address Book
@@ -1420,10 +1429,13 @@ void M_Options_Key (int k)
 		M_Menu_Main_f ();
 		break;
 
-	case 'v':
+	case 'v': // FS
+	case 'V': // FS
 		M_Menu_Video_f();
 		break;
-	case 'e':
+
+	case 'e': // FS
+	case 'E':
 		M_Menu_Extended_f();
 		break;
 
@@ -3523,7 +3535,9 @@ void M_ConfigureNetSubsystem(void)
 }
 
 int extended_cursor;  // FS: Extended
+#define EXTENDED_OPTIONS 10
 extern cvar_t	r_waterwarp;
+extern cvar_t scr_fov;
 
 void M_Menu_Extended_f(void) // FS: Extended
 {
@@ -3584,12 +3598,15 @@ void M_Extended_Draw() // FS: Extended
 		M_DrawSlider (220, 104, r);
 
         M_DrawCharacter (200, 32 + extended_cursor*8, 12+((int)(realtime*4)&1));
+		M_Print (16, 112, "            Sound Rate");
+		if (s_khz.intValue <= 0)
+			Cvar_SetValue("s_khz", 11025);
+		M_Print (220, 112, s_khz.string);
 }
 
 
 void M_AdjustSliders_Extended (int dir)
 {
-	S_LocalSound ("misc/menu3.wav");
 	switch(extended_cursor)
 	{
         case 0: // FS: V_CONTENTBLEND
@@ -3642,7 +3659,13 @@ void M_AdjustSliders_Extended (int dir)
 			scr_fov.value = 170;
 		Cvar_SetValue ("fov", scr_fov.value);
 		break;
+		case 10: // FS: S_KHZ
+			M_Extended_Set_Sound_KHz(dir, s_khz.intValue);
+			break;
+		default:
+			break;
 	}
+	S_LocalSound ("misc/menu3.wav");
 }
 
 
@@ -3654,13 +3677,13 @@ void M_Extended_Key(int k) // FS: Extended
 		S_LocalSound ("misc/menu1.wav");
 		extended_cursor--;
         if (extended_cursor < 0)
-			extended_cursor = 9;
+			extended_cursor = EXTENDED_OPTIONS;
 		break;
 
 	case K_DOWNARROW:
 		S_LocalSound ("misc/menu1.wav");
 		extended_cursor++;
-		if (extended_cursor > 9)
+		if (extended_cursor > EXTENDED_OPTIONS)
 			extended_cursor = 0;
 		break;
 
@@ -3726,10 +3749,114 @@ void M_Extended_Key(int k) // FS: Extended
 		case 9:
 				M_AdjustSliders_Extended(1);
 				break;
+		case 10:
+			M_AdjustSliders_Extended(1);
+			break;
         default:
                 Con_Printf("\nShouldn't be here mannn...\n");
                 break;
 	}
+	}
+}
+
+void M_Extended_Set_Sound_KHz (int dir, int khz)
+{
+	switch(khz)
+	{
+		case 48000:
+			if (dir > 0)
+				break;
+			else
+			{
+				Cvar_SetValue("s_khz", 44100);
+				Cbuf_AddText("snd_restart\n");
+			}
+			break;
+		case 44100:
+			if (dir > 0)
+			{
+				Cvar_SetValue("s_khz", 48000);
+			}
+			else
+			{
+				Cvar_SetValue("s_khz", 22050);
+			}
+			Cbuf_AddText("snd_restart\n");
+			break;
+		case 22050:
+			if (dir > 0)
+			{
+				Cvar_SetValue("s_khz", 44100);
+			}
+			else
+			{
+				if(havegus)
+					Cvar_SetValue("s_khz", 19293);
+				else
+					Cvar_SetValue("s_khz", 11025);
+			}
+			Cbuf_AddText("snd_restart\n");
+			break;
+		case 19293:
+			if (dir > 0)
+			{
+				Cvar_SetValue("s_khz", 22050);
+			}
+			else
+			{
+				Cvar_SetValue("s_khz", 11025);
+			}
+			Cbuf_AddText("snd_restart\n");
+			break;
+		case 11025:
+			if (dir > 0)
+			{
+				if(havegus)
+					Cvar_SetValue("s_khz", 19293);
+				else
+					Cvar_SetValue("s_khz", 22050);
+				Cbuf_AddText("snd_restart\n");
+			}
+			else
+			{
+				break;
+			}
+			break;
+		default:
+			if (dir > 0)
+			{
+				if(khz < 11025)
+					Cvar_SetValue("s_khz", 11025);
+				else if(khz > 11025 && khz < 22050)
+				{
+					if(havegus)
+						Cvar_SetValue("s_khz", 19293);
+					else
+						Cvar_SetValue("s_khz", 22050);
+				}
+				else if(khz > 22050 && khz < 44100)
+					Cvar_SetValue("s_khz", 44100);
+				else if(khz > 48000)
+					Cvar_SetValue("s_khz", 48000);
+				Cbuf_AddText("snd_restart\n");
+			}
+			else
+			{
+				if(khz < 11025)
+					Cvar_SetValue("s_khz", 11025);
+				else if(khz > 11025 && khz < 22050)
+				{
+					if(havegus)
+						Cvar_SetValue("s_khz", 19293);
+					else
+						Cvar_SetValue("s_khz", 11025);
+				}
+				else if(khz > 22050 && khz < 44100)
+					Cvar_SetValue("s_khz", 22050);
+				else if(khz > 48000)
+					Cvar_SetValue("s_khz", 44100);
+				Cbuf_AddText("snd_restart\n");
+			}
 	}
 }
 

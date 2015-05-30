@@ -570,6 +570,7 @@ INTERFACE
 void snd_shutdown_f (void) // FS: SND_SHUTDOWN
 {
 	SNDDMA_Shutdown();
+//	S_Shutdown();
 	Con_Printf("\nSound Disabled.\n");
 	Cache_Flush();
 }
@@ -577,8 +578,10 @@ void snd_shutdown_f (void) // FS: SND_SHUTDOWN
 void snd_restart_f (void) // FS: SND_RESTART
 {
 	SNDDMA_Shutdown();
+//	S_Shutdown();
 	Con_Printf("\nSound Restarting\n");
 	Cache_Flush();
+//	S_Startup();
 	SNDDMA_Init();
 	S_StopAllSoundsC(); // FS: For GUS Buffer Clear Fix
 	Con_Printf ("Sound sampling rate: %i\n", shm->speed);

@@ -68,7 +68,8 @@ HINSTANCE hInstDS;
 
 qboolean SNDDMA_InitDirect (void);
 qboolean SNDDMA_InitWav (void);
-
+void snd_restart_f (void); // FS: SND_RESTART
+void snd_shutdown_f (void); // FS: SND_SHUTDOWN
 
 /*
 ==================
@@ -576,6 +577,11 @@ int SNDDMA_Init(void)
 
 	stat = SIS_FAILURE;	// assume DirectSound won't initialize
 
+	if (!host_initialized)
+	{
+		Cmd_AddCommand ("snd_restart", snd_restart_f); // FS
+		Cmd_AddCommand ("snd_shutdown", snd_shutdown_f); // FS
+	}
 	/* Init DirectSound */
 	if (!wavonly)
 	{
@@ -738,3 +744,20 @@ void SNDDMA_Shutdown(void)
 	FreeSound ();
 }
 
+void snd_shutdown_f (void) // FS: SND_SHUTDOWN
+{
+	S_Shutdown();
+	Con_Printf("\nSound Disabled.\n");
+	Cache_Flush();
+}
+void snd_restart_f (void) // FS: SND_RESTART
+{
+	S_StopAllSounds(true);
+	S_Shutdown();
+	Con_Printf("\nSound Restarting\n");
+	Cache_Flush();
+	snd_firsttime = true;
+	S_Startup();
+	SNDDMA_Init();
+	Con_Printf ("Sound sampling rate: %i\n", shm->speed);
+}

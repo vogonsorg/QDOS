@@ -173,6 +173,7 @@ extern qboolean	snd_initialized;
 extern int		snd_blocked;
 
 void S_LocalSound (char *s);
+void S_GamespySound (char *s); // FS
 void S_MusicPlay (int cdtrack); // FS
 sfxcache_t *S_LoadSound (sfx_t *s);
 

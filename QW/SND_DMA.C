@@ -271,7 +271,10 @@ void S_Init (void)
 void S_Shutdown(void)
 {
 	if (!sound_started)
+	{
+		Con_Printf("Sound not started!\n");
 		return;
+	}
 
 	if (shm)
 		shm->gamealive = 0;
