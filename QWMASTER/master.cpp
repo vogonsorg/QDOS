@@ -252,6 +252,7 @@ int load_Serverlist = 0;
 int validate_newserver_immediately = 0; // FS
 int validation_required = 0; // FS
 unsigned int minimumHeartbeats = 2; // FS: Minimum amount of heartbeats required before we're added to the list, used to verify it's a real server.
+double lastHTTPDL = 0; // FS
 
 // FS: For gamespy list
 const char *listheader = "\\";
@@ -262,6 +263,7 @@ const char *statusstring = "\xff\xff\xff\xffstatus";
 const char *challengeHeader = "\\basic\\\\secure\\"; // FS: This is the start of the handshake
 
 int Rcon (struct sockaddr_in *from, char *queryString);
+void HTTP_DL_List(void);
 
 //
 // This becomes main for Linux
@@ -278,7 +280,7 @@ int My_Main (int argc, char *argv[])
 #endif
 	struct sockaddr_in from;
 
-	printf ("Daikatana-GSPY-Master v%s.\nBased on Q2-Master 1.1 originally GloomMaster.\n(c) 2002-2003 r1ch.net, modifications by QwazyWabbit 2007.\n", VERSION);
+	printf ("QWDOS-GSPY-Master v%s.\nBased on Q2-Master 1.1 originally GloomMaster.\n(c) 2002-2003 r1ch.net, modifications by QwazyWabbit 2007.\n", VERSION);
 	printf ("Built: %s at %s.\n\n", __DATE__, __TIME__);
 	numservers = 0;
 
@@ -384,11 +386,17 @@ int My_Main (int argc, char *argv[])
 	FD_SET(listener, &master);
 	maxConnections = listener + listenerTCP;
 #endif
+	CURL_HTTP_Init();
+	HTTP_DL_List();
 
 	while (runmode == SRV_RUN) // 1 = running, 0 = stop, -1 = stopped.
 	{
 		delay.tv_sec = 1;
 		delay.tv_usec = 0;
+
+		CURL_HTTP_Update();
+		if(time(NULL)-lastHTTPDL > 3600) // FS: Every hour get a new serverlist from quakeservers.net
+			HTTP_DL_List();
 
 #ifdef OLDER_STYLE_PARSE
 		FD_ZERO(&set);
@@ -584,6 +592,7 @@ void ExitNicely (void)
 	
 	if (old)
 		free (old);
+	CURL_HTTP_Shutdown();
 }
 
 void DropServer (server_t *server)
@@ -2010,4 +2019,13 @@ rconFailed:
 
 	status = validated;
 	return status;
+}
+
+void HTTP_DL_List(void)
+{
+#ifdef USE_CURL
+	printf("[I] Serverlist download sceduled!\n");
+	CURL_HTTP_StartDownload("http://www.quakeservers.net/lists/servers/global.txt", "qwservers.txt");
+	lastHTTPDL = time(NULL);
+#endif
 }
