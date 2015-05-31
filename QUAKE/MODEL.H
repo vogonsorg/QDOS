@@ -65,6 +65,7 @@ typedef struct mplane_s
 	byte	pad[2];
 } mplane_t;
 
+
 typedef struct texture_s
 {
 	char		name[16];
@@ -83,6 +84,11 @@ typedef struct texture_s
 #define SURF_DRAWTURB		0x10
 #define SURF_DRAWTILED		0x20
 #define SURF_DRAWBACKGROUND	0x40
+// FS: QuakeSpasm
+#define SURF_NOTEXTURE		0x100 //johnfitz
+// FS: QuakeSpasm
+#define SURF_DRAWFENCE		0x200
+
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
 typedef struct
@@ -102,6 +108,11 @@ typedef struct
 typedef struct msurface_s
 {
 	int			visframe;		// should be drawn when node is crossed
+#ifdef BSP2_SUPPORT
+	qboolean	culled;			// johnfitz -- for frustum culling
+	float		mins[3];		// johnfitz -- for frustum culling
+	float		maxs[3];		// johnfitz -- for frustum culling
+#endif
 
 	int			dlightframe;
 	int			dlightbits;
@@ -319,6 +330,7 @@ typedef struct model_s
 	
 	int			flags;
 	int			fromgame; // FS: Engoo
+	int			bspversion; // FS: QuakeSpasm
 //
 // volume occupied by the model
 //		
