@@ -50,8 +50,11 @@ static void	(*surfmiptable[4])(void) = {
 };
 
 
+#define	BLOCK_WIDTH	128
+#define	BLOCK_HEIGHT	128
 
-unsigned		blocklights[18*18];
+//unsigned		blocklights[18*18];
+unsigned	blocklights[BLOCK_WIDTH*BLOCK_HEIGHT]; //johnfitz -- was 18*18, added loosened surface extents maximum (BLOCK_WIDTH*BLOCK_HEIGHT)
 
 /*
 ===============
