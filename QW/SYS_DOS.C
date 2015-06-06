@@ -444,7 +444,7 @@ void Sys_Init(void)
 
 	//  Sys_InitFloatTime ();
 
-	_go32_interrupt_stack_size = 4 * 1024;;
+	_go32_interrupt_stack_size = 4 * 1024;
 	_go32_rmcb_stack_size = 4 * 1024;
 }
 

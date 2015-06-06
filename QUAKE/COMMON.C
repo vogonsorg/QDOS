@@ -589,7 +589,7 @@ void MSG_WriteByte (sizebuf_t *sb, int c)
 	
 #ifdef PARANOID
 	if (c < 0 || c > 255)
-                Con_Printf ("MSG_WriteByte: range error %i", c);
+		Sys_Error ("MSG_WriteByte: range error");
 #endif
 
 	buf = SZ_GetSpace (sb, 1);

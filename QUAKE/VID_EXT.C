@@ -313,16 +313,16 @@ void VID_InitExtra (void)
 	dos_int86(0x10);
 
 	if (regs.x.ax != 0x4f)
-        {
-                dos_freememory(pinfoblock); // FS: from HOT
-        	return;		// no VESA support
-        }
+	{
+		dos_freememory(pinfoblock); // FS: from HOT
+		return;		// no VESA support
+	}
 
 	if (pinfoblock->VbeVersion[1] < 0x02)
-        {
-                dos_freememory(pinfoblock); // FS: from HOT
-        	return;		// not VESA 2.0 or greater
-        }
+	{
+		dos_freememory(pinfoblock); // FS: from HOT
+		return;		// not VESA 2.0 or greater
+	}
 
 	Con_Printf ("VESA 2.0 compliant adapter:\n%s\n",
 				VID_ExtraFarToLinear (*(byte **)&pinfoblock->OemStringPtr[0]));

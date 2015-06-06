@@ -608,7 +608,7 @@ qboolean SNDDMA_Init(void)
 	if (!host_initialized)
 	{
 		Cmd_AddCommand ("snd_restart", snd_restart_f); // FS
-	Cmd_AddCommand ("snd_shutdown", snd_shutdown_f); // FS
+		Cmd_AddCommand ("snd_shutdown", snd_shutdown_f); // FS
 	}
 	if (GUS_Init ())
 	{
