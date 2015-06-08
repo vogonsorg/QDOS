@@ -33,8 +33,6 @@ void S_SoundList(void);
 void S_Update_();
 void S_StopAllSounds(qboolean clear);
 void S_StopAllSoundsC(void);
-void S_RestartBGM (void); // FS
-void S_ChangeCD (void); // FS
 #ifndef _WINDOWS
 extern void GUS_ClearDMA(void); // FS
 extern int havegus; // FS
@@ -89,7 +87,6 @@ cvar_t snd_noextraupdate = {"snd_noextraupdate", "0"};
 cvar_t snd_show = {"snd_show", "0"};
 cvar_t _snd_mixahead = {"_snd_mixahead", "0.1", true};
 cvar_t s_khz = {"s_khz","", true};	// FS: S_KHZ
-cvar_t s_usewavbgm = {"s_usewavbgm", "0", true}; // FS
 #ifdef OGG_SUPPORT	// Knightmare added
 cvar_t	s_musicvolume = {"s_musicvolume", " 1.0", true};
 #endif
@@ -200,8 +197,6 @@ void S_Init (void)
 	#ifdef OGG_SUPPORT
 		Cmd_AddCommand("ogg_restart", S_OGG_Restart); // Knightmare added
 	#endif
-	Cmd_AddCommand("restartbgm", S_RestartBGM); // FS
-	Cmd_AddCommand("s_changewavcd", S_ChangeCD); // FS
 
 	Cvar_RegisterVariable(&nosound);
 	Cvar_RegisterVariable(&volume);
@@ -215,7 +210,6 @@ void S_Init (void)
 	Cvar_RegisterVariable(&snd_show);
 	Cvar_RegisterVariable(&_snd_mixahead);
 	Cvar_RegisterVariable (&s_khz);		// FS: S_KHZ
-	Cvar_RegisterVariable(&s_usewavbgm); // FS
 #ifdef OGG_SUPPORT
 	Cvar_RegisterVariable (&s_musicvolume); // Knightmare: added
 #endif	
@@ -404,6 +398,11 @@ channel_t *SND_PickChannel(int entnum, int entchannel)
 	life_left = 0x7fffffff;
 	for (ch_idx=NUM_AMBIENTS ; ch_idx < NUM_AMBIENTS + MAX_DYNAMIC_CHANNELS ; ch_idx++)
 	{
+	#ifdef OGG_SUPPORT	//  Knightmare added
+		// Don't let game sounds override streaming sounds
+		if (channels[ch_idx].streaming)  // Q2E
+			continue;
+	#endif
 		if (entchannel != 0		// channel 0 never overrides
 				&& channels[ch_idx].entnum == entnum
 				&& (channels[ch_idx].entchannel == entchannel || entchannel == -1))
@@ -585,6 +584,8 @@ void S_StopAllSounds(qboolean clear)
 	if (!sound_started)
 		return;
 
+	s_rawend = 0;
+
 	total_channels = MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS;   // no statics
 
 	for (i=0 ; i<MAX_CHANNELS ; i++)
@@ -592,6 +593,12 @@ void S_StopAllSounds(qboolean clear)
 			channels[i].sfx = NULL;
 
 	Q_memset(channels, 0, MAX_CHANNELS * sizeof(channel_t));
+
+#ifdef OGG_SUPPORT
+	// Stop background track
+//	Com_DPrintf ("S_StopAllSounds: calling S_StopBackgroundTrack\n");	// debug
+	S_StopBackgroundTrack (); // Knightmare added
+#endif
 
 	if (clear)
 		S_ClearBuffer ();
@@ -601,28 +608,6 @@ void S_StopAllSoundsC (void)
 {
 	S_StopAllSounds (true);
 }
-void S_ChangeCD (void) // FS
-{
-        if(Cmd_Argc() != 2)
-        {
-                Con_Printf("usage: s_changewavcd <track number>\n");
-                return;
-        }
-        if (Q_atoi(Cmd_Argv(1)) <= 1)
-        {
-                Con_Printf("Invalid track number!\n");
-                return;
-        }
-        cl.cdtrack = Q_atoi(Cmd_Argv(1));
-        S_RestartBGM();
-}
-
-void S_RestartBGM (void)
-{
-	S_StopAllSounds (true);
-	S_MusicPlay(cl.cdtrack);
-}
-
 
 void S_ClearBuffer (void)
 {
@@ -890,6 +875,11 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 		Con_Printf ("----(%i)----\n", total);
 	}
 
+#ifdef OGG_SUPPORT
+//	Com_DPrintf ("S_Update: calling S_UpdateBackgroundTrack\n");	// debug
+	S_UpdateBackgroundTrack ();	//  Knightmare added
+#endif
+
 // mix some sound
 	S_Update_();
 }
@@ -1037,33 +1027,6 @@ void S_Play2(void)
 	}
 }
 
-// FS: For playing SOUND/CDTRACKS/TRACKX.WAV
-void S_MusicPlay(int cdtrack)
-{
-	static int hash=345;
-	char name[256];
-	char buffer2[256];
-
-	sfx_t   *sfx;
-
-	if(cdtrack <= 1)
-	{
-		if (developer.value > 1)
-		{
-			Con_Warning("CD Track is invalid!\n");
-		}
-		return;
-	}
-	Con_DPrintf(DEVELOPER_MSG_SOUND, "Attempting to play music track %i\n", cdtrack);
-	Q_strcpy(name, "cdtracks/track");
-	sprintf(buffer2,"%d",cdtrack);
-	Q_strcat(name,buffer2);
-	Q_strcat(name, ".wav");
-	sfx = S_FindName(name);
-	sfx->isCDtrack = 1;
-	S_StartSound (hash++, -1, sfx, vec3_origin, 2, 0);
-}
-
 void S_PlayVol(void)
 {
 	static int hash=543;
@@ -1197,10 +1160,10 @@ void S_RawSamples (int samples, int rate, int width, int channels, byte *data, q
 // Knightmare added
 #ifdef OGG_SUPPORT
 	if (music)
-		snd_vol = (int)(s_musicvolume.value * 256);
+		snd_vol = (int)(s_musicvolume.value);
 	else
 #endif
-		snd_vol = (int)(volume.value * 256);
+		snd_vol = (int)(volume.value);
 // end Knightmare
 	if (s_rawend < paintedtime)
 		s_rawend = paintedtime;

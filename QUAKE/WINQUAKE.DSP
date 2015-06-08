@@ -521,6 +521,10 @@ SOURCE=.\DSTRING.C
 # End Source File
 # Begin Source File
 
+SOURCE=.\glob.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\host.c
 # End Source File
 # Begin Source File
@@ -920,6 +924,10 @@ InputName=snd_mixa
 # End Source File
 # Begin Source File
 
+SOURCE=.\snd_strm.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\snd_win.c
 # End Source File
 # Begin Source File
@@ -1011,6 +1019,10 @@ SOURCE=.\sv_phys.c
 # Begin Source File
 
 SOURCE=.\sv_user.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\sys_find.c
 # End Source File
 # Begin Source File
 
@@ -1184,6 +1196,10 @@ SOURCE=.\DSTRING.H
 # End Source File
 # Begin Source File
 
+SOURCE=.\glob.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\input.h
 # End Source File
 # Begin Source File
@@ -1277,6 +1293,10 @@ SOURCE=.\screen.h
 # Begin Source File
 
 SOURCE=.\server.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\snd_ogg.h
 # End Source File
 # Begin Source File
 

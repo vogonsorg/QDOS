@@ -336,3 +336,14 @@ extern  cvar_t  chase_active;
 void Chase_Init (void);
 void Chase_Reset (void);
 void Chase_Update (void);
+
+
+// FS: From Q2
+#define SFF_ARCH    0x01
+#define SFF_HIDDEN  0x02
+#define SFF_RDONLY  0x04
+#define SFF_SUBDIR  0x08
+#define SFF_SYSTEM  0x10
+char *Sys_FindFirst (char *path, unsigned musthave, unsigned canhave);
+char *Sys_FindNext (unsigned musthave, unsigned canhave);
+void Sys_FindClose (void);

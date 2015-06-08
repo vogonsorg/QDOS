@@ -194,7 +194,6 @@ extern	cvar_t loadas8bit;
 extern	cvar_t bgmvolume;
 extern	cvar_t volume;
 extern  cvar_t s_khz; // FS: S_KHZ
-extern	cvar_t s_usewavbgm; // FS
 #ifdef OGG_SUPPORT
 extern	cvar_t	s_musicvolume; // FS
 #endif

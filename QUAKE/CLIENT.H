@@ -264,6 +264,7 @@ extern	cvar_t	m_yaw;
 extern	cvar_t	m_forward;
 extern	cvar_t	m_side;
 extern	cvar_t	snd_gamespy_sounds; // FS :Gamespy
+extern	cvar_t	cl_ogg_music; // FS
 
 #define	MAX_TEMP_ENTITIES	256		//johnfitz -- was 64
 #define	MAX_STATIC_ENTITIES	512		//johnfitz -- was 128

@@ -948,6 +948,8 @@ void CL_ParseServerMessage (void)
 	int			cmd;
 	int			i;
 	char		*fversion, *str; // FS
+	char		name[MAX_OSPATH]; // FS: For OGG
+	int			fileHandle; // FS: For OGG
 	int			total, j;
 	int			lastcmd = 0; //johnfitz
 //
@@ -1195,27 +1197,33 @@ void CL_ParseServerMessage (void)
 
 				if ( (cls.demoplayback || cls.demorecording) && (cls.forcetrack != -1) )
 				{
-					if(s_usewavbgm.value) // FS
+#ifdef OGG_SUPPORT
+					// Knightmare
+					// If an OGG file exists play it, otherwise fall back to CD audio
+					sprintf (name, /*sizeof(name),*/ "music/track%02i.ogg", cls.forcetrack);
+					if ( (COM_OpenFile(name, &fileHandle) != -1) && cl_ogg_music.value )
 					{
-						S_StopAllSounds(true);
-						S_MusicPlay((byte)cls.forcetrack);
+						Con_DPrintf (DEVELOPER_MSG_CD, "CL_PlayBackgroundTrack: playing track %s\n", name);	// debug
+						S_StartBackgroundTrack(name, name);
 					}
 					else
-					{
-						CDAudio_Play ((byte)cls.forcetrack, true);
-					}
+#endif // OGG_SUPPORT
+						CDAudio_Play((byte)cls.forcetrack, true);
 				}
 				else
 				{
-					if(s_usewavbgm.value) // FS
+#ifdef OGG_SUPPORT
+					// Knightmare
+					// If an OGG file exists play it, otherwise fall back to CD audio
+					sprintf (name, /*sizeof(name),*/ "music/track%02i.ogg", cl.cdtrack);
+					if ( (COM_OpenFile(name, &fileHandle) != -1) && cl_ogg_music.value )
 					{
-						S_StopAllSounds(true);
-						S_MusicPlay((byte)cl.cdtrack);
+						Con_DPrintf (DEVELOPER_MSG_CD, "CL_PlayBackgroundTrack: playing track %s\n", name);	// debug
+						S_StartBackgroundTrack(name, name);
 					}
 					else
-					{
+#endif // OGG_SUPPORT
 						CDAudio_Play ((byte)cl.cdtrack, true);
-					}
 				}
 				break;
 

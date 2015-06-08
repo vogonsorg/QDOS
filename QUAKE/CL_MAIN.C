@@ -48,6 +48,7 @@ cvar_t	console_old_complete = {"console_old_complete", "0", true, false, "Use th
 cvar_t	cl_master_server_ip = {"cl_master_server_ip", CL_MASTER_ADDR, true, false}; // FS
 cvar_t	cl_master_server_port = {"cl_master_server_port", CL_MASTER_PORT, true, false}; // FS
 cvar_t	snd_gamespy_sounds = {"snd_gamespy_sounds", "0", true, false, "Play sounds for GameSpy."}; // FS
+cvar_t	cl_ogg_music = {"cl_ogg_music", "1", true, false, "Play OGG music from /music/trackXX.ogg if it exists."}; // Knightmare
 
 client_static_t	cls;
 client_state_t cl;
@@ -726,6 +727,7 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&cl_master_server_ip); // FS: Gamespy
 	Cvar_RegisterVariable (&cl_master_server_port); // FS: Gamespy
 	Cvar_RegisterVariable (&snd_gamespy_sounds); // FS: Gamespy
+	Cvar_RegisterVariable (&cl_ogg_music); // FS
 
 	Cmd_AddCommand ("entities", CL_PrintEntities_f);
 	Cmd_AddCommand ("disconnect", CL_Disconnect_f);

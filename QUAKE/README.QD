@@ -33,6 +33,7 @@ Why code for DOS in 2012 you ask?  Pretty much the same reason anybody
 QDOS has many features, I can't remember each one that me or others have added
    but are some highlights:
 
+* Ogg Vorbis support.  Put tracks in id1/music/trackXX.ogg format.
 * External *.ent file support, and entity dumping in-game.   
 * Fitzquake v666 Protocol support.  Thanks to Fitzquake.
 * Warp Spasm and other large mods support.  Thanks to Fitzquake.

@@ -1418,6 +1418,107 @@ COM_Path_f
 
 ============
 */
+// FS: From Q2
+char **COM_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned canthave )
+{
+	char *s;
+	int nfiles = 0;
+	char **list = 0;
+
+	s = Sys_FindFirst( findname, musthave, canthave );
+	while ( s )
+	{
+		if ( s[strlen(s)-1] != '.' )
+			nfiles++;
+		s = Sys_FindNext( musthave, canthave );
+	}
+	Sys_FindClose ();
+
+	if ( !nfiles ) {
+		*numfiles = 0;
+		return NULL;
+	}
+
+	nfiles++; // add space for a guard
+	*numfiles = nfiles;
+
+	list = malloc( sizeof( char * ) * nfiles );
+	memset( list, 0, sizeof( char * ) * nfiles );
+
+	s = Sys_FindFirst( findname, musthave, canthave );
+	nfiles = 0;
+	while ( s )
+	{
+		if ( s[strlen(s)-1] != '.' )
+		{
+			list[nfiles] = strdup( s );
+#ifdef _WIN32
+			strlwr( list[nfiles] );
+#endif
+			nfiles++;
+		}
+		s = Sys_FindNext( musthave, canthave );
+	}
+	Sys_FindClose ();
+
+	return list;
+}
+
+// FS: From Q2
+char *COM_NextPath (char *prevpath)
+{
+	searchpath_t	*s;
+	char			*prev;
+
+	if (!prevpath)
+		return com_gamedir;
+
+	prev = com_gamedir;
+	for (s=com_searchpaths ; s ; s=s->next)
+	{
+		if (s->pack)
+			continue;
+		if (prevpath == prev)
+			return s->filename;
+		prev = s->filename;
+	}
+
+	return NULL;
+}
+
+// FS: From Q2
+void COM_FreeFileList (char **list, int n)
+{
+	int i;
+
+	for (i = 0; i < n; i++)
+	{
+		if (list && list[i])
+		{
+			free(list[i]);
+			list[i] = 0;
+		}
+	}
+	free(list);
+}
+
+// FS: From Q2
+qboolean COM_ItemInList (char *check, int num, char **list)
+{
+	int		i;
+
+	if (!check || !list)
+		return false;
+	for (i=0; i<num; i++)
+	{
+		if (!list[i])
+			continue;
+		if (!Q_strcasecmp(check, list[i]))
+			return true;
+	}
+	return false;
+}
+
 void COM_Path_f (void)
 {
 	searchpath_t    *s;
@@ -2038,4 +2139,24 @@ void Com_sprintf(dstring_t *dst, const char *fmt, ...)
 	va_start (argptr, fmt);
 	dvsprintf (dst,fmt,argptr);
 	va_end (argptr);
+}
+
+// Knightmare added
+void Com_strcpy (char *dest, int destSize, const char *src)
+{
+	if (!dest) {
+		Con_Printf ("Com_strcpy: NULL dst\n");
+		return;
+	}
+	if (!src) {
+		Con_Printf ("Com_strcpy: NULL src\n");
+		return;
+	}
+	if (destSize < 1) {
+		Con_Printf ("Com_strcpy: dstSize < 1\n");
+		return;
+	}
+
+	strncpy(dest, src, destSize-1);
+	dest[destSize-1] = 0;
 }

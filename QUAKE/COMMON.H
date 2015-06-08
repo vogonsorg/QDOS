@@ -186,6 +186,10 @@ byte *COM_LoadStackFile (char *path, void *buffer, int bufsize);
 byte *COM_LoadTempFile (char *path);
 byte *COM_LoadHunkFile (char *path);
 void COM_LoadCacheFile (char *path, struct cache_user_s *cu);
+char *COM_NextPath (char *prevpath); // FS: From Q2
+void COM_FreeFileList (char **list, int n); // FS: From Q2
+qboolean COM_ItemInList (char *check, int num, char **list); // FS: From Q2
+char **COM_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned canthave ); // FS: From Q2
 
 
 extern	struct cvar_s	registered;
@@ -193,3 +197,4 @@ extern	struct cvar_s	registered;
 extern qboolean         standard_quake, rogue, hipnotic;
 extern int              nehahra, extended_mod; // FS: nehahra
 void Com_sprintf(dstring_t *dst, const char *fmt, ...); // FS
+void Com_strcpy (char *dest, int destSize, const char *src); // FS
