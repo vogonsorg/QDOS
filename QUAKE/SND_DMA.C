@@ -26,7 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "winquake.h"
 #endif
 
-void S_MusicSound (char *sfx, vec3_t origin, float vol, float attenuation);
 void S_Play(void);
 void S_Play2(void); // FS: For Nehahra
 void S_PlayVol(void);
@@ -51,6 +50,7 @@ int			total_channels;
 int			snd_blocked = 0;
 static qboolean		snd_ambient = 1;
 qboolean		snd_initialized = false;
+int			sound_started=0;
 
 // pointer should go away
 volatile dma_t	*shm = NULL;
@@ -67,7 +67,6 @@ int		paintedtime;	// sample PAIRS
 int		s_rawend; // FS: Quake 2 RAW shit
 portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 
-
 #define MAX_SFX		512
 sfx_t		*known_sfx;	// hunk allocated [MAX_SFX]
 int		num_sfx;
@@ -76,8 +75,6 @@ sfx_t		*ambient_sfx[NUM_AMBIENTS];
 
 int		desired_speed = 11025;
 int		desired_bits = 16;
-
-int		sound_started = 0;
 
 cvar_t bgmvolume = {"bgmvolume", "1", true};
 cvar_t volume = {"volume", "0.7", true};
@@ -93,7 +90,9 @@ cvar_t snd_show = {"snd_show", "0"};
 cvar_t _snd_mixahead = {"_snd_mixahead", "0.1", true};
 cvar_t s_khz = {"s_khz","", true};	// FS: S_KHZ
 cvar_t s_usewavbgm = {"s_usewavbgm", "0", true}; // FS
-
+#ifdef OGG_SUPPORT	// Knightmare added
+cvar_t	s_musicvolume = {"s_musicvolume", " 1.0", true};
+#endif
 
 // ====================================================================
 // User-setable variables
@@ -198,6 +197,9 @@ void S_Init (void)
 	Cmd_AddCommand("stopsound", S_StopAllSoundsC);
 	Cmd_AddCommand("soundlist", S_SoundList);
 	Cmd_AddCommand("soundinfo", S_SoundInfo_f);
+	#ifdef OGG_SUPPORT
+		Cmd_AddCommand("ogg_restart", S_OGG_Restart); // Knightmare added
+	#endif
 	Cmd_AddCommand("restartbgm", S_RestartBGM); // FS
 	Cmd_AddCommand("s_changewavcd", S_ChangeCD); // FS
 
@@ -214,7 +216,9 @@ void S_Init (void)
 	Cvar_RegisterVariable(&_snd_mixahead);
 	Cvar_RegisterVariable (&s_khz);		// FS: S_KHZ
 	Cvar_RegisterVariable(&s_usewavbgm); // FS
-	
+#ifdef OGG_SUPPORT
+	Cvar_RegisterVariable (&s_musicvolume); // Knightmare: added
+#endif	
 	if (host_parms.memsize < 0x800000)
 	{
 		Cvar_Set ("loadas8bit", "1");
@@ -263,6 +267,11 @@ void S_Init (void)
 	ambient_sfx[AMBIENT_WATER] = S_PrecacheSound ("ambience/water1.wav");
 	ambient_sfx[AMBIENT_SKY] = S_PrecacheSound ("ambience/wind2.wav");
 
+#ifdef OGG_SUPPORT
+//	Com_DPrintf ("S_Init: calling S_OGG_Init\n");	// debug
+	S_OGG_Init(); // Knightmare added
+#endif
+
 	S_StopAllSounds (true);
 }
 
@@ -278,6 +287,11 @@ void S_Shutdown(void)
 		Con_Printf("Sound not started!\n");
 		return;
 	}
+
+#ifdef OGG_SUPPORT
+//	Com_DPrintf ("S_Shutdown: calling S_OGG_Shutdown\n");	// debug
+	S_OGG_Shutdown(); // Knightmare added
+#endif
 
 	if (shm)
 		shm->gamealive = 0;
@@ -1169,20 +1183,30 @@ S_RawSamples
 Cinematic streaming and voice over network
 ============
 */
-void S_RawSamples (int samples, int rate, int width, int channels, byte *data)
+//void S_RawSamples (int samples, int rate, int width, int channels, byte *data)
+void S_RawSamples (int samples, int rate, int width, int channels, byte *data, qboolean music)
 {
 	int		i;
 	int		src, dst;
 	float	scale;
+	int		snd_vol;	// Knightmare added
 
 	if (!sound_started)
 		return;
 
+// Knightmare added
+#ifdef OGG_SUPPORT
+	if (music)
+		snd_vol = (int)(s_musicvolume.value * 256);
+	else
+#endif
+		snd_vol = (int)(volume.value * 256);
+// end Knightmare
 	if (s_rawend < paintedtime)
 		s_rawend = paintedtime;
 	scale = (float)rate / shm->speed;
 
-Con_Printf ("%i < %i < %i\n", soundtime, paintedtime, s_rawend);
+//Com_Printf ("%i < %i < %i\n", soundtime, paintedtime, s_rawend);
 	if (channels == 2 && width == 2)
 	{
 		if (scale == 1.0)
@@ -1192,9 +1216,9 @@ Con_Printf ("%i < %i < %i\n", soundtime, paintedtime, s_rawend);
 				dst = s_rawend&(MAX_RAW_SAMPLES-1);
 				s_rawend++;
 				s_rawsamples[dst].left =
-				    LittleShort(((short *)data)[i*2]) << 8;
+				    LittleShort(((short *)data)[i*2]) * snd_vol;	// << 8; // Knightmare- changed to uses snd_vol
 				s_rawsamples[dst].right =
-				    LittleShort(((short *)data)[i*2+1]) << 8;
+				    LittleShort(((short *)data)[i*2+1]) * snd_vol;	// << 8; // Knightmare- changed to uses snd_vol
 			}
 		}
 		else
@@ -1207,9 +1231,9 @@ Con_Printf ("%i < %i < %i\n", soundtime, paintedtime, s_rawend);
 				dst = s_rawend&(MAX_RAW_SAMPLES-1);
 				s_rawend++;
 				s_rawsamples[dst].left =
-				    LittleShort(((short *)data)[src*2]) << 8;
+				    LittleShort(((short *)data)[src*2]) * snd_vol;	// << 8; // Knightmare- changed to use snd_vol
 				s_rawsamples[dst].right =
-				    LittleShort(((short *)data)[src*2+1]) << 8;
+				    LittleShort(((short *)data)[src*2+1]) * snd_vol;	// << 8; // Knightmare- changed to use snd_vol
 			}
 		}
 	}
@@ -1223,9 +1247,9 @@ Con_Printf ("%i < %i < %i\n", soundtime, paintedtime, s_rawend);
 			dst = s_rawend&(MAX_RAW_SAMPLES-1);
 			s_rawend++;
 			s_rawsamples[dst].left =
-			    LittleShort(((short *)data)[src]) << 8;
+			    LittleShort(((short *)data)[src]) * snd_vol;	// << 8; // Knightmare- changed to use snd_vol
 			s_rawsamples[dst].right =
-			    LittleShort(((short *)data)[src]) << 8;
+			    LittleShort(((short *)data)[src]) * snd_vol;	// << 8; // Knightmare- changed to use snd_vol
 		}
 	}
 	else if (channels == 2 && width == 1)
@@ -1238,9 +1262,9 @@ Con_Printf ("%i < %i < %i\n", soundtime, paintedtime, s_rawend);
 			dst = s_rawend&(MAX_RAW_SAMPLES-1);
 			s_rawend++;
 			s_rawsamples[dst].left =
-			    ((char *)data)[src*2] << 16;
+			    ( ((char *)data)[src*2] << 8 ) * snd_vol;	// << 16; // Knightmare- changed to use snd_vol
 			s_rawsamples[dst].right =
-			    ((char *)data)[src*2+1] << 16;
+			    ( ((char *)data)[src*2+1] << 8 ) * snd_vol;	// << 16; // Knightmare- changed to use snd_vol
 		}
 	}
 	else if (channels == 1 && width == 1)
@@ -1253,8 +1277,8 @@ Con_Printf ("%i < %i < %i\n", soundtime, paintedtime, s_rawend);
 			dst = s_rawend&(MAX_RAW_SAMPLES-1);
 			s_rawend++;
 			s_rawsamples[dst].left =
-			    (((byte *)data)[src]-128) << 16;
-			s_rawsamples[dst].right = (((byte *)data)[src]-128) << 16;
+				( (((byte *)data)[src]-128) << 8 ) * snd_vol;	// << 16; // Knightmare- changed to use snd_vol
+			s_rawsamples[dst].right = ( (((byte *)data)[src]-128) << 8 ) * snd_vol;	// << 16; // Knightmare- changed to use snd_vol
 		}
 	}
 }

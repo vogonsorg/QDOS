@@ -122,7 +122,7 @@ void CURL_HTTP_Update (void)
 				if(download)
 					fclose(download);
 				download = NULL;
-				Add_Servers_From_List("qwservers.txt");
+				Add_Servers_From_List(name);
 
 			}
 			else
@@ -135,6 +135,10 @@ void CURL_HTTP_Update (void)
 
 			}
 			curl_multi_remove_handle (multi_handle, easy_handle);
+			if(!strcmp(name, "qwservers.txt"))
+			{
+				CURL_HTTP_StartDownload("http://qtracker.com/server_list_details.php?game=quake2", "q2servers.txt");
+			}
 		}
 	}
 }

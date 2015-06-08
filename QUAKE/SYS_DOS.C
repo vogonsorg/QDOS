@@ -800,7 +800,7 @@ main
 int main (int c, char **v)
 {
 	double                  time, oldtime, newtime;
-        extern void (*dos_error_func)(const char *, ...);
+	extern void (*dos_error_func)(const char *, ...);
 	static  char    cwd[1024];
 
 	printf ("Quake v%4.2f\n", VERSION);

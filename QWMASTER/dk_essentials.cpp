@@ -176,7 +176,7 @@ char *DK_strlwr (char *s)
 }
 
 // FS: From Quake 2's Cbuf_Execute
-void Parse_ServerList (unsigned int fileSize, char *fileBuffer)
+void Parse_ServerList (unsigned int fileSize, char *fileBuffer, char *gamenameFromHttp)
 {
 	unsigned int		i;
 	char	*text;
@@ -210,6 +210,6 @@ void Parse_ServerList (unsigned int fileSize, char *fileBuffer)
 		}
 
 // execute the command line
-		AddServers_From_List_Execute(line);
+		AddServers_From_List_Execute(line, gamenameFromHttp);
 	}
 }

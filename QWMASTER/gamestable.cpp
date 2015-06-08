@@ -9,6 +9,7 @@ typedef struct
 game_table_t gameTable[] =
 {
 	{"quake1", "7W7yZz"},
+	{"quake2", "rtW0xg"},
 	{"quakeworld", "FU6Vqn"},
 	{NULL, NULL}
 };
@@ -20,7 +21,7 @@ char *Gamespy_Get_Game_SecKey (char *gamename)
 	if (!gamename || gamename[0] == 0)
 		return NULL;
 
-	gamename = DK_strlwr(gamename); // FS: Some games (mainly sin) stupidly send it partially uppercase
+//	gamename = DK_strlwr(gamename); // FS: Some games (mainly sin) stupidly send it partially uppercase
 
 	while (gameTable[x].gamename != NULL)
 	{

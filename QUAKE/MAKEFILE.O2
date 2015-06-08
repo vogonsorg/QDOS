@@ -7,8 +7,10 @@ USE_WATT32=yes
 USE_BWTCP=yes
 # whether to use MPATH for DOS UDP networking under Win9x
 USE_MPATH=no
+# whether to use OGG VORBIS
+USE_OGG=yes
 
-CFLAGS = -g -Wall -Werror -O2
+CFLAGS = -g -Wall -O2
 LIBS   =
 
 ifeq ($(USE_BWTCP),yes)
@@ -22,6 +24,14 @@ CFLAGS+= -DUSE_WATT32
 CFLAGS+= -I../wat/inc
 LDFLAGS= -L../wat/lib
 LIBS  += -lwatt
+endif
+ifeq ($(USE_OGG),yes)
+CFLAGS+= -DOGG_SUPPORT
+CFLAGS+= -I../libogg/include
+CFLAGS+= -I../libvorb/inc
+LDFLAGS += -L../libogg/lib -logg
+LDFLAGS += -L../libvorb/lib
+LIBS  += -lvorbisenc -lvorbisfile -lvorbis -logg
 endif
 LIBS  += -lc -lgcc -lm
 
@@ -119,6 +129,9 @@ $(O)/snd_dma.o  \
 $(O)/snd_gus.o  \
 $(O)/snd_mix.o  \
 $(O)/snd_mem.o  \
+$(O)/glob.o  \
+$(O)/sys_find.o  \
+$(O)/snd_strm.o  \
 $(O)/in_dos.o   \
 $(O)/vid_vga.o  \
 $(O)/vid_ext.o  \

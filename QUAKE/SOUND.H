@@ -22,6 +22,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef __SOUND__
 #define __SOUND__
 
+#ifdef OGG_SUPPORT	// Knightmare added- vorbis support
+#include "include/ogg/vorbisfile.h"
+#include "include/al/altypes.h"
+#include "snd_ogg.h"
+#endif
+
 #define DEFAULT_SOUND_PACKET_VOLUME 255
 #define DEFAULT_SOUND_PACKET_ATTENUATION 1.0
 
@@ -37,6 +43,7 @@ typedef struct sfx_s
 	char 	name[MAX_QPATH];
 	cache_user_t	cache;
 	int		isCDtrack; // FS
+	qboolean	music;			// Knightmare added
 } sfx_t;
 
 // !!! if this is changed, it much be changed in asm_i386.h too !!!
@@ -48,7 +55,24 @@ typedef struct
 	int 	width;
 	int 	stereo;
 	byte	data[1];		// variable sized
+	int		music;			// Knightmare added
 } sfxcache_t;
+
+// Knightmare - added from Q2E
+typedef struct {
+	char				introName[MAX_QPATH];
+	char				loopName[MAX_QPATH];
+	char				ambientName[MAX_QPATH];
+	qboolean			looping;
+	qboolean			ambient_looping;
+	FILE				*file;
+	int					start;
+	int					rate;
+	int					width;
+	int					channels;
+	unsigned			format;
+	void				*vorbisFile;
+} bgTrack_t;
 
 typedef struct
 {
@@ -78,6 +102,9 @@ typedef struct
 	vec3_t	origin;			// origin of sound effect
 	vec_t	dist_mult;		// distance multiplier (attenuation/clipK)
 	int		master_vol;		// 0-255 master volume
+#ifdef OGG_SUPPORT	// Knightmare added
+	int		streaming;
+#endif
 } channel_t;
 
 typedef struct
@@ -103,7 +130,8 @@ void S_StopAllSounds(qboolean clear);
 void S_ClearBuffer (void);
 void S_Update (vec3_t origin, vec3_t v_forward, vec3_t v_right, vec3_t v_up);
 void S_ExtraUpdate (void);
-void S_RawSamples (int samples, int rate, int width, int channels, byte *data); // FS: Raw Samples
+//void S_RawSamples (int samples, int rate, int width, int channels, byte *data);
+void S_RawSamples (int samples, int rate, int width, int channels, byte *data, qboolean music);	// Knightmare changed
 
 sfx_t *S_PrecacheSound (char *sample);
 void S_TouchSound (char *sample);
@@ -167,6 +195,9 @@ extern	cvar_t bgmvolume;
 extern	cvar_t volume;
 extern  cvar_t s_khz; // FS: S_KHZ
 extern	cvar_t s_usewavbgm; // FS
+#ifdef OGG_SUPPORT
+extern	cvar_t	s_musicvolume; // FS
+#endif
 
 extern qboolean	snd_initialized;
 

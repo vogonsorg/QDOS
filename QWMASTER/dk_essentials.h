@@ -12,7 +12,7 @@ unsigned char *gsseckey(unsigned char *dst, unsigned char *src, unsigned char *k
 void Gamespy_Create_Challenge_Key(char *s, const int len);
 char *Gamespy_Get_Game_SecKey (char *gamename);
 char *DK_strlwr (char *s); // FS: Some compilers might not have this
-void Parse_ServerList (unsigned int fileSize, char *fileBuffer);
-void AddServers_From_List_Execute(char *fileBuffer); // FS: From Quake 2
+void Parse_ServerList (unsigned int fileSize, char *fileBuffer, char *gamenameFromHttp);
+void AddServers_From_List_Execute(char *fileBuffer, char *gamenameFromHttp); // FS: From Quake 2
 
 #endif // _DK_ESSENTIALS_H

@@ -686,7 +686,7 @@ int AddServer (struct sockaddr_in *from, int normal, unsigned short queryPort, c
 	if(!hostnameIp || hostnameIp[0] == 0) // FS: If we add servers from a list using dynamic IPs, etc.  let's remember it.  Else, just copy the ip
 		hostnameIp = inet_ntoa(from->sin_addr);
 
-	gamename = DK_strlwr(gamename); // FS: Some games (mainly sin) stupidly send it partially uppercase
+//	gamename = DK_strlwr(gamename); // FS: Some games (mainly sin) stupidly send it partially uppercase
 	DG_strlcpy(server->gamename, gamename, sizeof(server->gamename));
 
 	server->port = queryPort; //from->sin_port; // FS: Gamespy does it differently.
@@ -1765,6 +1765,7 @@ closeTcpSocket:
 void Add_Servers_From_List(char *filename)
 {
 	char *fileBuffer = NULL;
+	const char *gamenameFromHttp = NULL;
 	long fileSize;
 	FILE *listFile = fopen(filename, "r+");
 	size_t toEOF = 0;
@@ -1808,12 +1809,20 @@ void Add_Servers_From_List(char *filename)
 	fileBuffer[toEOF] = '\n';
 	fileBuffer[toEOF+1] = '\0';
 
-	Parse_ServerList(toEOF, fileBuffer); // FS: Break it up divided by newline terminator
-	free(fileBuffer);
+	if(strstr(filename, "q2servers"))
+		gamenameFromHttp = "quake2";
+	else if(strstr(filename, "qwservers"))
+		gamenameFromHttp = "quakeworld";
+	else
+		gamenameFromHttp = NULL;
+
+	Parse_ServerList(toEOF, fileBuffer, (char *)gamenameFromHttp); // FS: Break it up divided by newline terminator
+
+//	free(fileBuffer);
 }
 
 // FS
-void AddServers_From_List_Execute(char *fileBuffer)
+void AddServers_From_List_Execute(char *fileBuffer, char *gamenameFromHttp)
 {
 	char *ip = NULL;
 	char *listToken = NULL;
@@ -1862,8 +1871,10 @@ void AddServers_From_List_Execute(char *fileBuffer)
 			Con_DPrintf("[E] Invalid Port specified for '%s' in server list; skipping.\n", ip);
 			break;
 		}
-
-		listToken = "quakeworld";//DK_strtok_r(NULL, separators, &listPtr); // Gamename
+		if(gamenameFromHttp)
+			listToken = gamenameFromHttp;
+		else
+			DK_strtok_r(NULL, separators, &listPtr); // Gamename
 		if(!listToken)
 		{
 			Con_DPrintf("[E] Gamename not specified for '%s:%u' in server list; skipping.\n", ip, queryPort);
