@@ -79,6 +79,19 @@ FILE IO
 
 ===============================================================================
 */
+#define	MAX_HANDLES		100 //johnfitz -- was 10
+FILE	*sys_handles[MAX_HANDLES];
+
+int		findhandle (void)
+{
+	int		i;
+	
+	for (i=1 ; i<MAX_HANDLES ; i++)
+		if (!sys_handles[i])
+			return i;
+	Sys_Error ("out of handles");
+	return -1;
+}
 
 /*
 ================
@@ -98,6 +111,53 @@ int filelength (FILE *f)
 	return end;
 }
 
+void Sys_FileClose (int handle)
+{
+	int		t;
+
+	t = VID_ForceUnlockedAndReturnState ();
+	fclose (sys_handles[handle]);
+	sys_handles[handle] = NULL;
+	VID_ForceLockState (t);
+}
+
+int Sys_FileOpenRead (char *path, int *hndl)
+{
+	FILE	*f;
+	int		i, retval;
+	int		t;
+
+	t = VID_ForceUnlockedAndReturnState ();
+
+	i = findhandle ();
+
+	f = fopen(path, "rb");
+
+	if (!f)
+	{
+		*hndl = -1;
+		retval = -1;
+	}
+	else
+	{
+		sys_handles[i] = f;
+		*hndl = i;
+		retval = filelength(f);
+	}
+
+	VID_ForceLockState (t);
+
+	return retval;
+}
+
+void Sys_FileSeek (int handle, int position)
+{
+	int		t;
+
+	t = VID_ForceUnlockedAndReturnState ();
+	fseek (sys_handles[handle], position, SEEK_SET);
+	VID_ForceLockState (t);
+}
 
 int	Sys_FileTime (char *path)
 {

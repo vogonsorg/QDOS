@@ -529,6 +529,10 @@ SOURCE=.\DSTRING.C
 # End Source File
 # Begin Source File
 
+SOURCE=.\glob.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\in_win.c
 # End Source File
 # Begin Source File
@@ -912,6 +916,10 @@ InputName=snd_mixa
 # End Source File
 # Begin Source File
 
+SOURCE=.\snd_strm.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\snd_win.c
 # End Source File
 # Begin Source File
@@ -987,6 +995,10 @@ InputName=surf8
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=.\sys_find.c
 # End Source File
 # Begin Source File
 
@@ -1131,6 +1143,10 @@ SOURCE=.\DSTRING.H
 # End Source File
 # Begin Source File
 
+SOURCE=.\glob.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\input.h
 # End Source File
 # Begin Source File
@@ -1192,6 +1208,10 @@ SOURCE=.\sbar.h
 # Begin Source File
 
 SOURCE=.\screen.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\snd_ogg.h
 # End Source File
 # Begin Source File
 

@@ -249,6 +249,7 @@ struct cache_user_s;
 extern  char    com_gamedir[MAX_OSPATH];
 
 void COM_WriteFile (char *filename, void *data, int len);
+int COM_OpenFile (char *filename, int *hndl); // FS: From Q1
 int COM_FOpenFile (char *filename, FILE **file);
 void COM_CloseFile (FILE *h);
 
@@ -258,6 +259,10 @@ byte *COM_LoadHunkFile (char *path);
 void COM_LoadCacheFile (char *path, struct cache_user_s *cu);
 void COM_CreatePath (char *path);
 void COM_Gamedir (char *dir);
+char *COM_NextPath (char *prevpath); // FS: From Q2
+void COM_FreeFileList (char **list, int n); // FS: From Q2
+qboolean COM_ItemInList (char *check, int num, char **list); // FS: From Q2
+char **COM_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned canthave ); // FS: From Q2
 
 extern  struct cvar_s   registered;
 extern qboolean         standard_quake, rogue, hipnotic;
@@ -277,3 +282,4 @@ byte    COM_BlockSequenceCRCByte (byte *base, int length, int sequence);
 int build_number( void );
 void CompleteCommand (void); // FS
 void Com_sprintf(dstring_t *dst, const char *fmt, ...); // FS
+void Com_strcpy (char *dest, int destSize, const char *src); // FS

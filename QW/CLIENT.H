@@ -360,6 +360,7 @@ extern	cvar_t	cl_downloadrate_hack; // FS
 extern	cvar_t	cl_master_server_ip; // FS
 extern	cvar_t	cl_master_server_port; // FS
 extern	cvar_t	snd_gamespy_sounds; // FS
+extern	cvar_t	cl_ogg_music; // FS: For OGG
 
 #define	MAX_STATIC_ENTITIES	128			// torches, etc
 

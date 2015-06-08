@@ -48,7 +48,6 @@ int			total_channels;
 int			snd_blocked = 0;
 static qboolean		snd_ambient = 1;
 qboolean		snd_initialized = false;
-int			sound_started=0;
 
 // pointer should go away
 volatile dma_t	*shm = NULL;
@@ -74,6 +73,8 @@ sfx_t		*ambient_sfx[NUM_AMBIENTS];
 int		desired_speed = 11025;
 int		desired_bits = 16;
 
+int		sound_started = 0;
+
 cvar_t bgmvolume = {"bgmvolume", "1", true};
 cvar_t volume = {"volume", "0.7", true};
 
@@ -88,7 +89,7 @@ cvar_t snd_show = {"snd_show", "0"};
 cvar_t _snd_mixahead = {"_snd_mixahead", "0.1", true};
 cvar_t s_khz = {"s_khz","", true};	// FS: S_KHZ
 #ifdef OGG_SUPPORT	// Knightmare added
-cvar_t	s_musicvolume = {"s_musicvolume", " 1.0", true};
+cvar_t	s_musicvolume = {"s_musicvolume", "1", true};
 #endif
 
 // ====================================================================
@@ -945,6 +946,13 @@ void S_Update_(void)
 
 // mix ahead of current position
 	endtime = soundtime + _snd_mixahead.value * shm->speed;
+#if 0
+	samps = shm->samples >> (shm->channels-1);
+	if (endtime - soundtime > samps)
+		endtime = soundtime + samps;
+#endif
+	// mix to an even submission block size
+	endtime = (endtime + shm->submission_chunk-1) & ~(shm->submission_chunk-1);
 	samps = shm->samples >> (shm->channels-1);
 	if (endtime - soundtime > samps)
 		endtime = soundtime + samps;
@@ -1114,30 +1122,6 @@ void S_BeginPrecaching (void)
 void S_EndPrecaching (void)
 {
 }
-
-/*
-=================
-S_StaticSound
-=================
-*/
-void S_MusicSound (char *sfx, vec3_t origin, float vol, float attenuation)
-{
-	channel_t	*ss;
-
-	if (!sfx)
-		return;
-
-	if (total_channels == MAX_CHANNELS)
-	{
-		Con_DPrintf (DEVELOPER_MSG_SOUND, "total_channels == MAX_CHANNELS\n"); // FS: Now DPrintf
-		return;
-	}
-
-	ss = &channels[total_channels];
-	total_channels++;
-	Con_Printf("CHANNELS: %i\n", total_channels);
-}
-
 
 /*
 ============

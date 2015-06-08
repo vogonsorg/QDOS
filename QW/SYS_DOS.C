@@ -164,6 +164,7 @@ void Sys_DetectWin95 (void)
 	}
 	else
 	{
+		printf("Microsoft Windows detected.  Please run QWDOS in pure MS-DOS for best stability.\n"); // FS: Warning
 		win95 = 1;
 		lockunlockmem = COM_CheckParm ("-winlockunlock");
 
@@ -872,7 +873,8 @@ int main (int c, char **v)
 	atexit (Sys_AtExit);    // in case we crash
 
 	getwd (cwd);
-	if (cwd[Q_strlen(cwd)-1] == '/') cwd[Q_strlen(cwd)-1] = 0;
+	if (cwd[Q_strlen(cwd)-1] == '/')
+		cwd[Q_strlen(cwd)-1] = 0;
 	quakeparms.basedir = cwd; //"f:/quake";
 
 	isDedicated = (COM_CheckParm ("-dedicated") != 0);

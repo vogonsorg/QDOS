@@ -1285,6 +1285,7 @@ typedef struct pack_s
 {
 	char	filename[MAX_OSPATH];
 	FILE	*handle;
+//	int		handle; // FS
 	int		numfiles;
 	packfile_t	*files;
 } pack_t;
@@ -1309,6 +1310,7 @@ typedef struct
 
 char	com_gamedir[MAX_OSPATH];
 char	com_basedir[MAX_OSPATH];
+char    com_cachedir[MAX_OSPATH]; // FS
 
 typedef struct searchpath_s
 {
@@ -1461,6 +1463,236 @@ void COM_CopyFile (char *netpath, char *cachepath)
 	fclose (out);
 }
 
+// FS: From Q2
+char **COM_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned canthave )
+{
+	char *s;
+	int nfiles = 0;
+	char **list = 0;
+
+	s = Sys_FindFirst( findname, musthave, canthave );
+	while ( s )
+	{
+		if ( s[strlen(s)-1] != '.' )
+			nfiles++;
+		s = Sys_FindNext( musthave, canthave );
+	}
+	Sys_FindClose ();
+
+	if ( !nfiles ) {
+		*numfiles = 0;
+		return NULL;
+	}
+
+	nfiles++; // add space for a guard
+	*numfiles = nfiles;
+
+	list = malloc( sizeof( char * ) * nfiles );
+	memset( list, 0, sizeof( char * ) * nfiles );
+
+	s = Sys_FindFirst( findname, musthave, canthave );
+	nfiles = 0;
+	while ( s )
+	{
+		if ( s[strlen(s)-1] != '.' )
+		{
+			list[nfiles] = strdup( s );
+#ifdef _WIN32
+			strlwr( list[nfiles] );
+#endif
+			nfiles++;
+		}
+		s = Sys_FindNext( musthave, canthave );
+	}
+	Sys_FindClose ();
+
+	return list;
+}
+
+// FS: From Q2
+char *COM_NextPath (char *prevpath)
+{
+	searchpath_t	*s;
+	char			*prev;
+
+	if (!prevpath)
+		return com_gamedir;
+
+	prev = com_gamedir;
+	for (s=com_searchpaths ; s ; s=s->next)
+	{
+		if (s->pack)
+			continue;
+		if (prevpath == prev)
+			return s->filename;
+		prev = s->filename;
+	}
+
+	return NULL;
+}
+
+// FS: From Q2
+void COM_FreeFileList (char **list, int n)
+{
+	int i;
+
+	for (i = 0; i < n; i++)
+	{
+		if (list && list[i])
+		{
+			free(list[i]);
+			list[i] = 0;
+		}
+	}
+	free(list);
+}
+
+// FS: From Q2
+qboolean COM_ItemInList (char *check, int num, char **list)
+{
+	int		i;
+
+	if (!check || !list)
+		return false;
+	for (i=0; i<num; i++)
+	{
+		if (!list[i])
+			continue;
+		if (!Q_strcasecmp(check, list[i]))
+			return true;
+	}
+	return false;
+}
+
+/*
+===========
+COM_FindFile
+
+Finds the file in the search path.
+Sets com_filesize and one of handle or file
+===========
+*/
+int COM_FindFile (char *filename, int *handle, FILE **file)
+{
+	searchpath_t    *search;
+	char            netpath[MAX_OSPATH];
+	char            cachepath[MAX_OSPATH];
+	pack_t          *pak;
+	int                     i;
+	int                     findtime, cachetime;
+
+	if (file && handle)
+		Sys_Error ("COM_FindFile: both handle and file set");
+	if (!file && !handle)
+		Sys_Error ("COM_FindFile: neither handle or file set");
+
+//
+// search through the path, one element at a time
+//
+	search = com_searchpaths;
+
+	for ( ; search ; search = search->next)
+	{
+	// is the element a pak file?
+		if (search->pack)
+		{
+		// look through all the pak file elements
+			pak = search->pack;
+			for (i=0 ; i<pak->numfiles ; i++)
+				if (!strcmp (pak->files[i].name, filename))
+				{       // found it!
+					Sys_Printf ("PackFile: %s : %s\n",pak->filename, filename);
+					if (handle)
+					{
+						*handle = (int)pak->handle;
+						Sys_FileSeek ((int)pak->handle, pak->files[i].filepos);
+					}
+					else
+					{       // open a new file on the pakfile
+						*file = fopen (pak->filename, "rb");
+						if (*file)
+							fseek (*file, pak->files[i].filepos, SEEK_SET);
+					}
+					com_filesize = pak->files[i].filelen;
+					return com_filesize;
+				}
+		}
+		else
+		{               
+	// check a file in the directory tree
+			if (!static_registered)
+			{       // if not a registered version, don't ever go beyond base
+				if ( strchr (filename, '/') || strchr (filename,'\\'))
+					continue;
+			}
+			
+			sprintf (netpath, "%s/%s",search->filename, filename);
+			
+			findtime = Sys_FileTime (netpath);
+			if (findtime == -1)
+				continue;
+				
+		// see if the file needs to be updated in the cache
+			if (!com_cachedir[0])
+				strcpy (cachepath, netpath);
+			else
+			{	
+#if defined(_WIN32)
+				if ((strlen(netpath) < 2) || (netpath[1] != ':'))
+					sprintf (cachepath,"%s%s", com_cachedir, netpath);
+				else
+					sprintf (cachepath,"%s%s", com_cachedir, netpath+2);
+#else
+				sprintf (cachepath,"%s%s", com_cachedir, netpath);
+#endif
+
+				cachetime = Sys_FileTime (cachepath);
+			
+				if (cachetime < findtime)
+					COM_CopyFile (netpath, cachepath);
+				strcpy (netpath, cachepath);
+			}	
+
+			Sys_Printf ("FindFile: %s\n",netpath);
+			com_filesize = Sys_FileOpenRead (netpath, &i);
+			if (handle)
+				*handle = i;
+			else
+			{
+				Sys_FileClose (i);
+				*file = fopen (netpath, "rb");
+			}
+			return com_filesize;
+		}
+		
+	}
+	
+	Sys_Printf ("FindFile: can't find %s\n", filename);
+	
+	if (handle)
+		*handle = -1;
+	else
+		*file = NULL;
+	com_filesize = -1;
+	return -1;
+}
+
+
+/*
+===========
+COM_OpenFile
+
+filename never has a leading slash, but may contain directory walks
+returns a handle and a length
+it may actually be inside a pak file
+===========
+*/
+// FS: From Q1
+int COM_OpenFile (char *filename, int *handle)
+{
+	return COM_FindFile (filename, handle, NULL);
+}
+
 /*
 ===========
 COM_FindFile
@@ -1474,15 +1706,15 @@ int file_from_pak; // global indicating file came from pack file ZOID
 int COM_FOpenFile (char *filename, FILE **file)
 {
 	searchpath_t	*search;
-        //char            netpath[MAX_OSPATH];
-        static dstring_t *netpath; // FS: New school dstring
-        pack_t		*pak;
+	//char            netpath[MAX_OSPATH];
+	static dstring_t *netpath; // FS: New school dstring
+	pack_t		*pak;
 	int			i;
 	int			findtime;
 
-        if(!netpath)
-                netpath = dstring_new();
-        file_from_pak = 0;
+	if(!netpath)
+		netpath = dstring_new();
+	file_from_pak = 0;
 		
 //
 // search through the path, one element at a time
@@ -1877,6 +2109,8 @@ void COM_InitFilesystem (void)
 		strcpy (com_basedir, com_argv[i+1]);
 	else
 		strcpy (com_basedir, host_parms.basedir);
+
+	com_cachedir[0] = 0; // FS
 
 //
 // start up with id1 by default
@@ -2297,4 +2531,24 @@ void Com_sprintf(dstring_t *dst, const char *fmt, ...)
 	va_start (argptr, fmt);
 	dvsprintf (dst,fmt,argptr);
 	va_end (argptr);
+}
+
+// Knightmare added
+void Com_strcpy (char *dest, int destSize, const char *src)
+{
+	if (!dest) {
+		Con_Printf ("Com_strcpy: NULL dst\n");
+		return;
+	}
+	if (!src) {
+		Con_Printf ("Com_strcpy: NULL src\n");
+		return;
+	}
+	if (destSize < 1) {
+		Con_Printf ("Com_strcpy: dstSize < 1\n");
+		return;
+	}
+
+	strncpy(dest, src, destSize-1);
+	dest[destSize-1] = 0;
 }

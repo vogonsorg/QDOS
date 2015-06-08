@@ -31,8 +31,7 @@ void S_SoundList(void);
 void S_Update_();
 void S_StopAllSounds(qboolean clear);
 void S_StopAllSoundsC(void);
-void S_RestartBGM (void); // FS
-void S_ChangeCD (void); // FS
+
 // QuakeWorld hack...
 #define viewentity	playernum+1
 #ifndef _WINDOWS
@@ -66,7 +65,6 @@ int		paintedtime;	// sample PAIRS
 int		s_rawend; // FS: Quake 2 RAW shit
 portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 
-
 #define MAX_SFX		512
 sfx_t		*known_sfx;	// hunk allocated [MAX_SFX]
 int		num_sfx;
@@ -91,8 +89,9 @@ cvar_t snd_noextraupdate = {"snd_noextraupdate", "0"};
 cvar_t snd_show = {"snd_show", "0"};
 cvar_t _snd_mixahead = {"_snd_mixahead", "0.1", true};
 cvar_t s_khz = {"s_khz","", true};	// FS: S_KHZ
-cvar_t s_usewavbgm = {"s_usewavbgm", "0", true}; // FS
-
+#ifdef OGG_SUPPORT	// Knightmare added
+cvar_t	s_musicvolume = {"s_musicvolume", "1", true};
+#endif
 
 // ====================================================================
 // User-setable variables
@@ -196,8 +195,9 @@ void S_Init (void)
 	Cmd_AddCommand("stopsound", S_StopAllSoundsC);
 	Cmd_AddCommand("soundlist", S_SoundList);
 	Cmd_AddCommand("soundinfo", S_SoundInfo_f);
-	Cmd_AddCommand("restartbgm", S_RestartBGM); // FS
-        Cmd_AddCommand("s_changewavcd", S_ChangeCD); // FS
+	#ifdef OGG_SUPPORT
+		Cmd_AddCommand("ogg_restart", S_OGG_Restart); // Knightmare added
+	#endif
 
 	Cvar_RegisterVariable(&nosound);
 	Cvar_RegisterVariable(&volume);
@@ -211,7 +211,9 @@ void S_Init (void)
 	Cvar_RegisterVariable(&snd_show);
 	Cvar_RegisterVariable(&_snd_mixahead);
 	Cvar_RegisterVariable (&s_khz);		// FS: S_KHZ
-	Cvar_RegisterVariable(&s_usewavbgm); // FS
+#ifdef OGG_SUPPORT
+	Cvar_RegisterVariable (&s_musicvolume); // Knightmare: added
+#endif	
 	if (host_parms.memsize < 0x800000)
 	{
 		Cvar_Set ("loadas8bit", "1");
@@ -260,6 +262,11 @@ void S_Init (void)
 	ambient_sfx[AMBIENT_WATER] = S_PrecacheSound ("ambience/water1.wav");
 	ambient_sfx[AMBIENT_SKY] = S_PrecacheSound ("ambience/wind2.wav");
 
+#ifdef OGG_SUPPORT
+//	Com_DPrintf ("S_Init: calling S_OGG_Init\n");	// debug
+	S_OGG_Init(); // Knightmare added
+#endif
+
 	S_StopAllSounds (true);
 }
 
@@ -275,6 +282,11 @@ void S_Shutdown(void)
 		Con_Printf("Sound not started!\n");
 		return;
 	}
+
+#ifdef OGG_SUPPORT
+//	Com_DPrintf ("S_Shutdown: calling S_OGG_Shutdown\n");	// debug
+	S_OGG_Shutdown(); // Knightmare added
+#endif
 
 	if (shm)
 		shm->gamealive = 0;
@@ -387,6 +399,11 @@ channel_t *SND_PickChannel(int entnum, int entchannel)
 	life_left = 0x7fffffff;
 	for (ch_idx=NUM_AMBIENTS ; ch_idx < NUM_AMBIENTS + MAX_DYNAMIC_CHANNELS ; ch_idx++)
 	{
+	#ifdef OGG_SUPPORT	//  Knightmare added
+		// Don't let game sounds override streaming sounds
+		if (channels[ch_idx].streaming)  // Q2E
+			continue;
+	#endif
 		if (entchannel != 0		// channel 0 never overrides
 				&& channels[ch_idx].entnum == entnum
 				&& (channels[ch_idx].entchannel == entchannel || entchannel == -1))
@@ -516,7 +533,7 @@ void S_StartSound(int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float f
 		return;         // couldn't load the sound's data
 	}
 
-        if (sfx->isCDtrack == 1) // FS: Loop
+	if (sfx->isCDtrack == 1) // FS: Loop
 	{
 		sc->loopstart = 0;
 	}
@@ -568,6 +585,8 @@ void S_StopAllSounds(qboolean clear)
 	if (!sound_started)
 		return;
 
+	s_rawend = 0;
+
 	total_channels = MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS;   // no statics
 
 	for (i=0 ; i<MAX_CHANNELS ; i++)
@@ -575,6 +594,12 @@ void S_StopAllSounds(qboolean clear)
 			channels[i].sfx = NULL;
 
 	Q_memset(channels, 0, MAX_CHANNELS * sizeof(channel_t));
+
+#ifdef OGG_SUPPORT
+	// Stop background track
+//	Com_DPrintf ("S_StopAllSounds: calling S_StopBackgroundTrack\n");	// debug
+	S_StopBackgroundTrack (); // Knightmare added
+#endif
 
 	if (clear)
 		S_ClearBuffer ();
@@ -584,31 +609,6 @@ void S_StopAllSoundsC (void)
 {
 	S_StopAllSounds (true);
 }
-
-void S_ChangeCD (void) // FS
-{
-        if(Cmd_Argc() != 2)
-        {
-                Con_Printf("usage: s_changewavcd <track number>\n");
-                return;
-        }
-
-        if (Q_atoi(Cmd_Argv(1)) <= 1)
-        {
-                Con_Printf("Invalid track number!\n");
-                return;
-        }
-
-        cl.cdtrack = Q_atoi(Cmd_Argv(1));
-        S_RestartBGM();
-}
-
-void S_RestartBGM (void)
-{
-	S_StopAllSounds (true);
-	S_MusicPlay(cl.cdtrack);
-}
-
 
 void S_ClearBuffer (void)
 {
@@ -811,7 +811,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 	{
 		if (!ch->sfx)
 			continue;
-                if (ch->sfx->isCDtrack == 1)  // FS: Fucks up tunes if we allow spatial
+		if (ch->sfx->isCDtrack == 1)  // FS: Fucks up tunes if we allow spatial
 		{
 			ch->leftvol = ch->master_vol;
 			ch->rightvol = ch->master_vol;
@@ -875,6 +875,11 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 		
 		Con_Printf ("----(%i)----\n", total);
 	}
+
+#ifdef OGG_SUPPORT
+//	Com_DPrintf ("S_Update: calling S_UpdateBackgroundTrack\n");	// debug
+	S_UpdateBackgroundTrack ();	//  Knightmare added
+#endif
 
 // mix some sound
 	S_Update_();
@@ -941,6 +946,13 @@ void S_Update_(void)
 
 // mix ahead of current position
 	endtime = soundtime + _snd_mixahead.value * shm->speed;
+#if 0
+	samps = shm->samples >> (shm->channels-1);
+	if (endtime - soundtime > samps)
+		endtime = soundtime + samps;
+#endif
+	// mix to an even submission block size
+	endtime = (endtime + shm->submission_chunk-1) & ~(shm->submission_chunk-1);
 	samps = shm->samples >> (shm->channels-1);
 	if (endtime - soundtime > samps)
 		endtime = soundtime + samps;
@@ -998,35 +1010,6 @@ void S_Play(void)
 		S_StartSound(hash++, 0, sfx, listener_origin, 1.0, 1.0);
 		i++;
 	}
-}
-
-// FS: For playing SOUND/CDTRACKS/TRACKX.WAV
-void S_MusicPlay(int cdtrack)
-{
-	static int hash=345;
-	char name[256];
-	char buffer2[256];
-
-	sfx_t   *sfx;
-
-        if(cdtrack <= 1)
-        {
-                if (developer.value > 1)
-                {
-                        Con_Warning("CD Track is invalid!\n");
-                }
-                return;
-        }
-
-	Con_DPrintf(DEVELOPER_MSG_SOUND, "Attempting to play music track %i\n", cdtrack);
-	Q_strcpy(name, "cdtracks/track");
-	sprintf(buffer2,"%d",cdtrack);
-	Q_strcat(name,buffer2);
-	Q_strcat(name, ".wav");
-	sfx = S_FindName(name);
-
-	sfx->isCDtrack = 1;
-	S_StartSound (hash++, -1, sfx, vec3_origin, 2, 0);
 }
 
 void S_PlayVol(void)
@@ -1117,7 +1100,6 @@ void S_EndPrecaching (void)
 {
 }
 
-
 /*
 ============
 S_RawSamples
@@ -1125,20 +1107,30 @@ S_RawSamples
 Cinematic streaming and voice over network
 ============
 */
-void S_RawSamples (int samples, int rate, int width, int channels, byte *data)
+//void S_RawSamples (int samples, int rate, int width, int channels, byte *data)
+void S_RawSamples (int samples, int rate, int width, int channels, byte *data, qboolean music)
 {
 	int		i;
 	int		src, dst;
 	float	scale;
+	int		snd_vol;	// Knightmare added
 
 	if (!sound_started)
 		return;
 
+// Knightmare added
+#ifdef OGG_SUPPORT
+	if (music)
+		snd_vol = (int)(s_musicvolume.value);
+	else
+#endif
+		snd_vol = (int)(volume.value);
+// end Knightmare
 	if (s_rawend < paintedtime)
 		s_rawend = paintedtime;
 	scale = (float)rate / shm->speed;
 
-Con_Printf ("%i < %i < %i\n", soundtime, paintedtime, s_rawend);
+//Com_Printf ("%i < %i < %i\n", soundtime, paintedtime, s_rawend);
 	if (channels == 2 && width == 2)
 	{
 		if (scale == 1.0)
@@ -1148,9 +1140,9 @@ Con_Printf ("%i < %i < %i\n", soundtime, paintedtime, s_rawend);
 				dst = s_rawend&(MAX_RAW_SAMPLES-1);
 				s_rawend++;
 				s_rawsamples[dst].left =
-				    LittleShort(((short *)data)[i*2]) << 8;
+				    LittleShort(((short *)data)[i*2]) * snd_vol;	// << 8; // Knightmare- changed to uses snd_vol
 				s_rawsamples[dst].right =
-				    LittleShort(((short *)data)[i*2+1]) << 8;
+				    LittleShort(((short *)data)[i*2+1]) * snd_vol;	// << 8; // Knightmare- changed to uses snd_vol
 			}
 		}
 		else
@@ -1163,9 +1155,9 @@ Con_Printf ("%i < %i < %i\n", soundtime, paintedtime, s_rawend);
 				dst = s_rawend&(MAX_RAW_SAMPLES-1);
 				s_rawend++;
 				s_rawsamples[dst].left =
-				    LittleShort(((short *)data)[src*2]) << 8;
+				    LittleShort(((short *)data)[src*2]) * snd_vol;	// << 8; // Knightmare- changed to use snd_vol
 				s_rawsamples[dst].right =
-				    LittleShort(((short *)data)[src*2+1]) << 8;
+				    LittleShort(((short *)data)[src*2+1]) * snd_vol;	// << 8; // Knightmare- changed to use snd_vol
 			}
 		}
 	}
@@ -1179,9 +1171,9 @@ Con_Printf ("%i < %i < %i\n", soundtime, paintedtime, s_rawend);
 			dst = s_rawend&(MAX_RAW_SAMPLES-1);
 			s_rawend++;
 			s_rawsamples[dst].left =
-			    LittleShort(((short *)data)[src]) << 8;
+			    LittleShort(((short *)data)[src]) * snd_vol;	// << 8; // Knightmare- changed to use snd_vol
 			s_rawsamples[dst].right =
-			    LittleShort(((short *)data)[src]) << 8;
+			    LittleShort(((short *)data)[src]) * snd_vol;	// << 8; // Knightmare- changed to use snd_vol
 		}
 	}
 	else if (channels == 2 && width == 1)
@@ -1194,9 +1186,9 @@ Con_Printf ("%i < %i < %i\n", soundtime, paintedtime, s_rawend);
 			dst = s_rawend&(MAX_RAW_SAMPLES-1);
 			s_rawend++;
 			s_rawsamples[dst].left =
-			    ((char *)data)[src*2] << 16;
+			    ( ((char *)data)[src*2] << 8 ) * snd_vol;	// << 16; // Knightmare- changed to use snd_vol
 			s_rawsamples[dst].right =
-			    ((char *)data)[src*2+1] << 16;
+			    ( ((char *)data)[src*2+1] << 8 ) * snd_vol;	// << 16; // Knightmare- changed to use snd_vol
 		}
 	}
 	else if (channels == 1 && width == 1)
@@ -1209,8 +1201,8 @@ Con_Printf ("%i < %i < %i\n", soundtime, paintedtime, s_rawend);
 			dst = s_rawend&(MAX_RAW_SAMPLES-1);
 			s_rawend++;
 			s_rawsamples[dst].left =
-			    (((byte *)data)[src]-128) << 16;
-			s_rawsamples[dst].right = (((byte *)data)[src]-128) << 16;
+				( (((byte *)data)[src]-128) << 8 ) * snd_vol;	// << 16; // Knightmare- changed to use snd_vol
+			s_rawsamples[dst].right = ( (((byte *)data)[src]-128) << 8 ) * snd_vol;	// << 16; // Knightmare- changed to use snd_vol
 		}
 	}
 }

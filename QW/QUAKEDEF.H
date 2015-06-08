@@ -138,3 +138,13 @@ void Host_ShutdownServer (qboolean crash);
 extern qboolean		msg_suppress_1;		// suppresses resolution and cache size console output
 										//  an fullscreen DIB focus gain/loss
 
+// FS: From Q2
+#define SFF_ARCH    0x01
+#define SFF_HIDDEN  0x02
+#define SFF_RDONLY  0x04
+#define SFF_SUBDIR  0x08
+#define SFF_SYSTEM  0x10
+char *Sys_FindFirst (char *path, unsigned musthave, unsigned canhave);
+char *Sys_FindNext (unsigned musthave, unsigned canhave);
+void Sys_FindClose (void);
+

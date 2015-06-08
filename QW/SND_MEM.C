@@ -125,9 +125,16 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 	}
 
 	info = GetWavinfo (s->name, data, com_filesize);
+/*
 	if (info.channels != 1)
 	{
 		Con_DPrintf (DEVELOPER_MSG_SOUND, "%s is a stereo sample\n",s->name); // FS: Testing
+	}
+*/
+	if (info.channels < 1 || info.channels > 2)	//CDawg changed
+	{
+		Con_Printf ("%s has an invalid number of channels\n", s->name);
+		return NULL;
 	}
 
 	stepscale = (float)info.rate / shm->speed;	
@@ -145,7 +152,15 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 	sc->speed = info.rate * info.channels;	//CDawg changed
 	sc->width = info.width;
 	sc->stereo = info.channels;
+#ifdef OGG_SUPPORT
+	// Knightmare added
+	sc->music = !strncmp (namebuffer, "music/", 6);
 
+	// force loopstart if it's a music file
+	if ( sc->music && (sc->loopstart == -1) )
+		sc->loopstart = 0;
+	// end Knightmare
+#endif
 	ResampleSfx (s, sc->speed, sc->width, data + info.dataofs);
 
 	return sc;

@@ -1641,7 +1641,7 @@ int COM_FindFile (char *filename, int *handle, FILE **file)
 		Sys_Error ("COM_FindFile: both handle and file set");
 	if (!file && !handle)
 		Sys_Error ("COM_FindFile: neither handle or file set");
-		
+
 //
 // search through the path, one element at a time
 //

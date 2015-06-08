@@ -71,7 +71,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define sfxc_width		12
 #define sfxc_stereo		16
 #define sfxc_data		20
-#define sfxc_music		24
+#define sfxc_music		24 // FS: For OGG
 
 // channel_t structure
 // !!! if this is changed, it much be changed in sound.h too !!!
@@ -87,7 +87,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define ch_dist_mult	44
 #define ch_master_vol	48
 #define ch_size			52
-#define ch_streaming	56
+#define ch_streaming	56 // FS: For OGG
 
 // portable_samplepair_t structure
 // !!! if this is changed, it much be changed in sound.h too !!!

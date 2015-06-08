@@ -1463,6 +1463,8 @@ void CL_ParseServerMessage (void)
 	int		cmd;
 	char	*s;
 	char	*fversion; // FS
+	char	name[MAX_OSPATH]; // FS: For OGG
+	int		fileHandle; // FS: For OGG
 	int		i, j;
 
 	received_framecount = host_framecount;
@@ -1682,12 +1684,17 @@ void CL_ParseServerMessage (void)
 		case svc_cdtrack:
 			// FS: Change to allow BGM via WAV
 			cl.cdtrack = MSG_ReadByte ();
-			if(s_usewavbgm.value) // FS
+#ifdef OGG_SUPPORT
+			// Knightmare
+			// If an OGG file exists play it, otherwise fall back to CD audio
+			sprintf (name, /*sizeof(name),*/ "music/track%02i.ogg", cl.cdtrack);
+			if ( (COM_OpenFile(name, &fileHandle) != -1) && cl_ogg_music.value )
 			{
-				S_StopAllSounds(true); // FS
-				S_MusicPlay((byte)cl.cdtrack);
+				Con_DPrintf (DEVELOPER_MSG_CD, "CL_PlayBackgroundTrack: playing track %s\n", name);	// debug
+				S_StartBackgroundTrack(name, name);
 			}
 			else
+#endif // OGG_SUPPORT
 				CDAudio_Play ((byte)cl.cdtrack, true);
 			break;
 

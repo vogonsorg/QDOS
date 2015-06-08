@@ -149,6 +149,7 @@ cvar_t	cl_master_server_ip = {"cl_master_server_ip", CL_MASTER_ADDR, true, false
 cvar_t	cl_master_server_port = {"cl_master_server_port", CL_MASTER_PORT, true, false, "GameSpy Master Server Port."}; // FS
 cvar_t	cl_master_server_queries = {"cl_master_server_queries", "10", true, false, "Number of sockets to allocate for GameSpy."};
 cvar_t	snd_gamespy_sounds = {"snd_gamespy_sounds", "0", true, false, "Play GameSpy sounds."}; // FS
+cvar_t	cl_ogg_music = {"cl_ogg_music", "1", true, false, "Play OGG tracks in the format of music/trackXX.ogg if they exist."}; // FS
 
 int         fps_count;
 qboolean bFlashlight = false; // FS: Flashlight
@@ -1325,6 +1326,7 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&cl_master_server_port); // FS: Gamespy
 	Cvar_RegisterVariable (&cl_master_server_queries); // FS: Gamespy
 	Cvar_RegisterVariable (&snd_gamespy_sounds); // FS: Gamespy
+	Cvar_RegisterVariable (&cl_ogg_music); // FS: For OGG
 
 	Cmd_AddCommand ("version", CL_Version_f);
 	Cmd_AddCommand ("force_error", CL_ForceError_f); // FS: was used for Sys_Error dstring conversion test

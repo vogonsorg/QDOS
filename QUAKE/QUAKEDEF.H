@@ -261,6 +261,14 @@ typedef struct
 #include "menu.h"
 #include "crc.h"
 #include "cdaudio.h"
+#ifndef max
+#define max(a,b) ((a) > (b) ? (a) : (b))
+#define min(a,b) ((a) < (b) ? (a) : (b))
+#endif
+
+// FS
+#define bound(a,b,c) ((a) >= (c) ? (a) : \
+					(b) < (a) ? (a) : (b) > (c) ? (c) : (b))
 
 //=============================================================================
 
