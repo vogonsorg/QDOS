@@ -34,13 +34,6 @@ Additional code from sezero, taniwha, spoike, LordHavoc,
 * TYPE command.  Use this as a notepad.  Useful for reading CFGs in game
   and map readmes.
 * Warpspasm will now play the music without the 3D spatializing effect.
-* Load music from WAV.  **THIS IS STILL EXPERIMENTAL!**
-  If you plan to use this, it MUST be 44khz/16bit *MONO* and you must
-  have at least 128MB RAM allocated via -mem or -heapsize!
-  Stereo cuts off at 1:35'ish mark.  I have not figured out why.
-  Files go into sound/cdtracks/trackX.wav where X is track number.
-  Currently porting S_RawSamples from Quake 2 to allow streaming 
-  without a huge memory allocation and should fix the stereo issue.
 * Now compressed with UPX -9 for sneakernet dudes.
 * MAX_DATAGRAM reduced from 32000 to 8000.  Causing IPX issues.
   If this breaks support connecting to Fitz servers let me know.

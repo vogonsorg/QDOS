@@ -31,13 +31,6 @@ Additional code from sezero, taniwha, spoike, LordHavoc,
   This behavior can be disabled with console_old_complete 1.
 * Fixed S_KHZ goof-up with GUS MAX/GUS PnP cards.
 * Gravis UltraSound stuttering during map transitions, etc. fixed.
-* Load music from WAV.  **THIS IS STILL EXPERIMENTAL!**
-  If you plan to use this, it MUST be 44khz/16bit *MONO* and you must
-  have at least 128MB RAM allocated via -mem or -heapsize!
-  Stereo cuts off at 1:35'ish mark.  I have not figured out why.
-  Files go into sound/cdtracks/trackX.wav where X is track number.
-  Currently porting S_RawSamples from Quake 2 to allow streaming 
-  without a huge memory allocation and should fix the stereo issue.
 * Rare bug involving playdemo and connection state
   read more at: http://forums.inside3d.com/viewtopic.php?f=12&t=4944
 * Added S,M,O,H,Q shortcuts on Main Menu.  Thought I ported
