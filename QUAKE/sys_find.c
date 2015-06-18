@@ -40,7 +40,7 @@ char *Sys_FindFirst (char *path, unsigned musthave, unsigned canhave)
 	char *p;
 
 	if (fdir)
-		Sys_Error ("Sys_BeginFind without close");
+		Sys_Error ("Sys_FindFirst without close");
 
 //	COM_FilePath (path, findbase);
 	strcpy(findbase, path);
@@ -106,9 +106,9 @@ void Sys_FindClose (void)
 #include <io.h>
 #include <conio.h>
 
-char	findbase[MAX_OSPATH];
-char	findpath[MAX_OSPATH];
-int		findhandle;
+static char	findbase[MAX_OSPATH];
+static char	findpath[MAX_OSPATH];
+static int		findhandle;
 
 static qboolean CompareAttributes( unsigned found, unsigned musthave, unsigned canthave )
 {
@@ -142,7 +142,7 @@ char *Sys_FindFirst (char *path, unsigned musthave, unsigned canthave )
 	struct _finddata_t findinfo;
 
 	if (findhandle)
-		Sys_Error ("Sys_BeginFind without close");
+		Sys_Error ("Sys_FindFirst without close");
 	findhandle = 0;
 
 //	COM_FilePath (path, findbase); // FS: Check this on Windows
