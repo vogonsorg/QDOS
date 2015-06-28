@@ -40,7 +40,6 @@ C_SOURCE = $(CORE_SOURCE) $(BSD_SOURCE) $(BIND_SOURCE)
 
 
 OBJS = \
-       $(OBJDIR)\asmpkt.obj   \
        $(OBJDIR)\chksum0.obj  $(OBJDIR)\cpumodel.obj  \
        $(OBJDIR)\accept.obj   $(OBJDIR)\adr2asc.obj   \
        $(OBJDIR)\asc2adr.obj  $(OBJDIR)\bind.obj      \
@@ -112,64 +111,54 @@ ZLIB_OBJS = $(OBJDIR)\adler32.obj  $(OBJDIR)\compress.obj \
             $(OBJDIR)\inflate.obj  $(OBJDIR)\infback.obj  \
             $(OBJDIR)\inftrees.obj $(OBJDIR)\inffast.obj
 
-O = obj
+O = o
 
 PKT_STUB = pkt_stub.h
 
 ########################################################################
 
 
-CC     = cl
-CFLAGS = -AS
-TARGET = ..\lib\wattcpms.lib
-OBJDIR = quickc\small
+CC     = i586-pc-msdosdjgpp-gcc -m486
+CFLAGS = -O2 -g -gcoff -I. -I../inc -W -Wall -fno-strength-reduce \
+         -ffast-math #-ffunction-sections -fomit-frame-pointer
 
+AS     = i586-pc-msdosdjgpp-as  #--gdwarf2
+TARGET = ../lib/libwatt.a
+OBJDIR = djgpp
 
-LIBARG = $(OBJDIR)\lib.rsp
-CFLAGS = $(CFLAGS) -I..\inc -c -nologo -O -W2 -Gs -Gr -G1 -Zi -Oa -Os
-AFLAGS = -mx -m2 -t -l
-AS     = tasm
+OBJS := $(subst \,/,$(OBJS))
+OBJS := $(subst .obj,.o,$(OBJS))
+
+ZLIB_OBJS := $(subst \,/,$(ZLIB_OBJS))
+ZLIB_OBJS := $(subst .obj,.o,$(ZLIB_OBJS))
 
 all: $(PKT_STUB) $(TARGET)
 
-..\lib\wattcpms.lib: $(OBJS) $(ZLIB_OBJS)
-      cd zlib
-      $(MAKE) -f quickc_s.mak
-      cd ..
-      lib /page:32 /noi /nologo ..\lib\wattcpms.lib @<<
-        -+$(?: = &^
-        -+),,
-<<
+$(TARGET): $(OBJS) $(ZLIB_OBJS)
+	ar rs $@ $?
 
-..\lib\wattcpml.lib: $(OBJS) $(ZLIB_OBJS)
-      cd zlib
-      $(MAKE) -f quickc_l.mak
-      cd ..
-      lib /page:32 /noi /nologo ..\lib\wattcpml.lib @<<
-        -+$(?: = &^
-        -+),,
-<<
+$(ZLIB_OBJS):
+	$(MAKE) -f djgpp.mak -C zlib
 
-clean:
-      - @del $(OBJDIR)\*.obj
-      - @del *.lst
-      - @del $(TARGET)
-      @echo Cleaning done
+$(OBJDIR)/%.o: %.c
+	$(CC) $(CFLAGS) -o $@ -c $<
 
-$(OBJDIR)\asmpkt.obj:   asmpkt.asm
-$(OBJDIR)\chksum0.obj:  chksum0.asm
-$(OBJDIR)\cpumodel.obj: cpumodel.asm
+$(OBJDIR)/%.o: %.S
+	$(CC) -E $< > $(OBJDIR)/$*.iS
+	$(AS) $(OBJDIR)/$*.iS -o $@
 
-.c{$(OBJDIR)}.obj:
-      $(CC) $(CFLAGS) -Fo$*.obj $<
-
-.asm{$(OBJDIR)}.obj:
-       $(AS) $(AFLAGS) $<, $*.obj
+$(OBJDIR)/chksum0.o:  chksum0.S
+$(OBJDIR)/cpumodel.o: cpumodel.S
 
 language.c: language.l
-       flex -8 -o$*.c $*.l
+	flex -8 -o$@ $<
 
-!include quickc\watt32.dep
+clean:
+	rm -f $(TARGET) $(OBJDIR)/*.o $(OBJDIR)/*.iS $(PKT_STUB)
+	@echo Cleaning done
+
+-include djgpp/watt32.dep
+
 
 ########################################################################
 
@@ -183,10 +172,10 @@ doxygen:
 	doxygen doxyfile
 
 
-$(OBJDIR)\pcpkt.obj: asmpkt.nas
+$(OBJDIR)/pcpkt.o: asmpkt.nas
 
 $(PKT_STUB): asmpkt.nas
-        ..\util\nasm32 -f bin -l asmpkt.lst -o asmpkt.bin asmpkt.nas
-        ..\util\bin2c asmpkt.bin > $@
+	../util/nasm32 -f bin -l asmpkt.lst -o asmpkt.bin asmpkt.nas
+	../util/bin2c asmpkt.bin > $@
 
 

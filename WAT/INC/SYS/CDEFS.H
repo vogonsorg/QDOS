@@ -45,7 +45,9 @@
 #define __SYS_CDEFS_H
 
 #if defined(__DJGPP__) && !defined(djgpp_cdefs_incl)
-  #include "/dev/env/DJDIR/include/sys/cdefs.h"
+  //#include "/dev/env/DJDIR/include/sys/cdefs.h"
+  #include <sys/cdefs.h>
+  #include_next <sys/cdefs.h> // FS: Rayer fix for DJGPP 2.05
   #define djgpp_cdefs_incl
 #endif
 
