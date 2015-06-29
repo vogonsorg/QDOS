@@ -1792,7 +1792,7 @@ void Add_Servers_From_List(char *filename)
 	}
 
 	rewind(listFile);
-	fileBuffer = (char *)malloc(sizeof(char)*(fileSize+4)); // FS: In case we have to add a newline terminator
+	fileBuffer = (char *)malloc(sizeof(char)*(fileSize+1)); // FS: In case we have to add a newline terminator
 	assert(fileBuffer);
 	if(!fileBuffer)
 	{
