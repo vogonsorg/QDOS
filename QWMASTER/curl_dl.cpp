@@ -126,7 +126,10 @@ void CURL_HTTP_Update (void)
 				printf ("[I] HTTP Download of %s completed\n", name); // FS: Tell me when it's done
 
 				if(download)
+				{
 					fclose(download);
+				}
+
 				download = NULL;
 				Add_Servers_From_List(name);
 
@@ -134,13 +137,17 @@ void CURL_HTTP_Update (void)
 			else
 			{
 				if(download)
+				{
 					fclose(download);
+				}
+
 				download = NULL;
 
 				printf ("[E] HTTP Download Failed: %ld.\n", response_code);
 
 			}
 			curl_multi_remove_handle (multi_handle, easy_handle);
+
 			if(!strcmp(name, "qwservers.txt"))
 			{
 				CURL_HTTP_StartDownload("http://qtracker.com/server_list_details.php?game=quake2", "q2servers.txt");
