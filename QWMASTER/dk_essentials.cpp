@@ -1,9 +1,11 @@
 #include <time.h>
 #include <stdlib.h>
+#include <ctype.h>
+
 #define DG_MISC_IMPLEMENTATION // FS: Caedes special string safe stuff
 #include "dk_essentials.h"
 
-void Com_sprintf( char *dest, int size, char *fmt, ... )
+void Com_sprintf( char *dest, int size, const char *fmt, ... )
 {
 	// DG: implement this with vsnprintf() instead of a big buffer etc
 	va_list	argptr;
@@ -14,7 +16,7 @@ void Com_sprintf( char *dest, int size, char *fmt, ... )
 	va_end(argptr);
 }
 
-void Con_DPrintf (char *fmt, ...)
+void Con_DPrintf (const char *fmt, ...)
 {
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];

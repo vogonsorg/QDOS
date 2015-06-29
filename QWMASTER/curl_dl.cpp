@@ -14,7 +14,13 @@
 #include <io.h>
 #endif
 
-#include "curl/curl.h"
+#ifdef _WIN32
+	#include "curl/curl.h"
+#else
+	#include "../libcurl/include/curl/curl.h"
+#endif
+
+#define CURL_ERROR(x)	curl_easy_strerror(x)
 
 #include "shared.h"
 #include "master.h"
@@ -56,7 +62,7 @@ void CURL_HTTP_Shutdown (void)
 	curl_global_cleanup ();
 }
 
-void CURL_HTTP_StartDownload (char *url, char *filename)
+void CURL_HTTP_StartDownload (const char *url, const char *filename)
 {
 	char completedURL[MAX_URLLENGTH];
 
@@ -155,7 +161,7 @@ void CURL_HTTP_Reset (void)
 
 void CURL_HTTP_Init (void) {}
 void CURL_HTTP_Shutdown (void) {}
-void CURL_HTTP_StartDownload (char *url, char *filename) {}
+void CURL_HTTP_StartDownload (const char *url, const char *filename) {}
 void CURL_HTTP_Update (void) {}
 void CURL_HTTP_Reset (void) {}
 

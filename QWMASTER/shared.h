@@ -23,12 +23,23 @@
 #define MAX_GAMENAME_LEN 16 // FS: Max gamename length used for game table and server structs
 #define DEFAULTHEARTBEAT 5*60 // FS: 5 minutes
 
+#ifndef MAX_PATH
+#define MAX_PATH 256
+#endif
+
 #define MAXPRINTMSG 16384
 #define MAX_INFO_STRING 64
 #define MAX_DNS_NAMELEN 254
 #define MAX_PORT_LEN 5
 #define MAX_SERVERLIST_LINE MAX_DNS_NAMELEN+1+MAX_PORT_LEN+1+MAX_GAMENAME_LEN // FS: 1 == ',' separator
 #define MAX_GSPY_VAL 89 // FS: See gsmalg.cpp
+
+// FS: From HoT: For ioctl sockets
+#ifdef __DJGPP__
+#define	IOCTLARG_T	(char*) // FS: Some WATT32 stuff
+#else
+#define IOCTLARG_T
+#endif
 
 //
 // These are Windows specific but need to be defined here so GCC won't barf

@@ -174,14 +174,28 @@ void GetQ2MasterRegKey(char* name, char *value);
 #include <netinet/in.h>
 #include <errno.h>
 #include <unistd.h>
-#include <sys/signal.h>
+#include <tcp.h> // FS: TODO: Is this WATT32 only?
+
+#ifndef __DJGPP__
+	#include <sys/signal.h>
+#endif // __DJGPP__
+
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+
 #include <assert.h>
 
 enum {FALSE, TRUE};
 
 // stuff not defined in sys/socket.h
 #define SOCKET unsigned int
+
+#ifndef SOCKET_ERROR
 #define SOCKET_ERROR -1
+#endif
+
 #define TIMEVAL struct timeval
 
 // portability, rename or delete functions
@@ -189,8 +203,8 @@ enum {FALSE, TRUE};
 #define _strnicmp strncasecmp
 #define My_Main main
 #define closesocket close // FS
-#define SetQ2MasterRegKey
-#define	GetQ2MasterRegKey
+#define SetQ2MasterRegKey(x,y)
+#define	GetQ2MasterRegKey(x,y)
 #define WSACleanup()
 #define Sleep(x)	sleep((x/1000))
 void signal_handler(int sig);
@@ -301,7 +315,7 @@ int My_Main (int argc, char *argv[])
 	printf("Send Acknowledgments: %i\n", SendAck); // FS
 	printf("Validate New Server Immediately: %i\n", validate_newserver_immediately); // FS
 	printf("Require Validation: %i\n", validation_required); // FS
-	printf("Heartbeat interval: %u Minutes\n", heartbeatInterval/60); // FS
+	printf("Heartbeat interval: %lu Minutes\n", heartbeatInterval/60); // FS
 	printf("Minimum Heartbeats Required: %u\n", minimumHeartbeats); // FS
 	printf("Timestamps: %i\n", Timestamp); // FS
 
@@ -359,6 +373,7 @@ int My_Main (int argc, char *argv[])
 	runmode = SRV_RUN; // set loop control
 	
 #ifndef WIN32
+	#ifndef __DJGPP__
 	// in Linux or BSD we fork a daemon
 	if (!Debug) {			// ...but not if debug mode
 		if (daemon(0,0) < 0) {	
@@ -376,6 +391,7 @@ int My_Main (int argc, char *argv[])
 		signal(SIGHUP, signal_handler); /* catch hangup signal */
 		signal(SIGTERM, signal_handler); /* catch terminate signal */
 	}
+	#endif
 #endif
 
 	if(load_Serverlist)
@@ -482,7 +498,7 @@ int My_Main (int argc, char *argv[])
 							}
 							else
 							{
-								Con_DPrintf ("[W] runt packet from %s:%d\n", inet_ntoa (from.sin_addr), ntohs(from.sin_port));
+								Con_DPrintf ("[W] runt packet from %s:%d\n", inet_ntoa(from.sin_addr), ntohs(from.sin_port));
 							}
 						}
 						else
@@ -539,6 +555,7 @@ int My_Main (int argc, char *argv[])
 
 	WSACleanup();	// Windows Sockets cleanup
 	runmode = SRV_STOPPED;
+	err = 0; // FS: Warning
 	return(err);
 }
 
@@ -557,6 +574,7 @@ void Close_TCP_Socket_On_Error (int socket, struct sockaddr_in *from)
 int TCP_Set_Non_Blocking (int socket)
 {
 	int error = 0;
+#ifdef old
 #ifdef WIN32
 	u_long nonblocking_enabled = 1;
 	error = ioctlsocket( socket, FIONBIO, &nonblocking_enabled );
@@ -567,8 +585,14 @@ int TCP_Set_Non_Blocking (int socket)
 	flags = fcntl(socket, F_GETFL, 0);
 	if (flags == -1)
 		flags = 0;
-	error = fcntl(socket, F_SETFL, flags | O_NONBLOCK))
+	error = fcntl(socket, F_SETFL, flags | O_NONBLOCK);
 #endif // _WIN32
+	return error;
+#endif // old
+	unsigned long _true = true;
+
+	error = ioctlsocket( socket, FIONBIO,IOCTLARG_T &_true);
+
 	return error;
 }
 
@@ -1440,6 +1464,7 @@ void GetQ2MasterRegKey(char* name, char *value)
 //
 void signal_handler(int sig)
 {
+#ifndef __DJGPP__
 	switch(sig) {
 	case SIGHUP:
 		break;
@@ -1458,6 +1483,7 @@ void signal_handler(int sig)
 		ExitNicely();
 		break;
 	}
+#endif
 }
 
 #endif
@@ -1522,7 +1548,7 @@ int Gamespy_Challenge_Cross_Check(char *challengePacket, char *validatePacket, i
 	char validateKey[MAX_INFO_STRING];
 	char gameKey[MAX_INFO_STRING];
 	char *decodedKey = NULL;
-	char *gameSecKey = NULL;
+	const char *gameSecKey = NULL;
 	char challengeKey[MAX_INFO_STRING];
 
 	if(!validation_required) // FS: Just pass it if we want to.
@@ -1655,8 +1681,10 @@ retryIncomingTcpValidate:
 		}
 	}
 
-	if (incomingTcpValidate && incomingTcpValidate[0] != 0)
+	if ((incomingTcpValidate != NULL) && (incomingTcpValidate[0] != 0))
+	{
 		Con_DPrintf("[I] Incoming Validate: %s\n", incomingTcpValidate);
+	}
 	else
 	{
 		Con_DPrintf("[E] Incoming Validate Packet is NULL!\n");
@@ -1665,6 +1693,7 @@ retryIncomingTcpValidate:
 
 	// FS: Currently, only the oldest mode, enctype 0 is supported.
 	enctypeKey = Info_ValueForKey(incomingTcpValidate, "enctype");
+
 	if(enctypeKey && enctypeKey[0] != 0)
 	{
 		int encodetype = atoi(enctypeKey);
@@ -1715,7 +1744,7 @@ retryIncomingTcpList:
 
 	if (len != SOCKET_ERROR)
 	{
-		if(incomingTcpList && incomingTcpList[0] != 0)
+		if( (incomingTcpList != NULL) && (incomingTcpList[0] != 0) )
 		{
 			Con_DPrintf("[I] Incoming List Request: %s\n", incomingTcpList);
 		}
@@ -1914,18 +1943,20 @@ struct in_addr Hostname_to_IP (struct in_addr *server, char *hostnameIp)
 {
 	struct hostent *remoteHost;
 	struct in_addr addr;
-	struct sockaddr_in from;
+//	struct sockaddr_in from;
 
 	memset(&addr, 0, sizeof(addr));
 	remoteHost = gethostbyname(hostnameIp);
+
 	// FS: Can't resolve.  Just default to the old IP previously retained so it can be removed later.
 	if (!remoteHost)
 	{
 		Con_DPrintf("Can't resolve %s.  Defaulting to previous known good %s.\n", hostnameIp, inet_ntoa(*server));
 		return *server;
 	}
+
 	addr.s_addr = *(u_long *) remoteHost->h_addr_list[0];
-	from.sin_addr.s_addr = addr.s_addr;
+//	from.sin_addr.s_addr = addr.s_addr;
 
 	return addr;
 }
@@ -1996,7 +2027,7 @@ int Rcon (struct sockaddr_in *from, char *queryString)
 
 	password = DK_strtok_r(queryString, " \\n", &queryPtr);
 
-	if(rconPassword && rconPassword[0] != 0)
+	if( (rconPassword != NULL) && (rconPassword[0] != 0) )
 	{
 		if(password && password[0] != 0)
 		{

@@ -2,8 +2,8 @@
 
 typedef struct
 {
-	char *gamename;
-	char *seckey;
+	const char *gamename;
+	const char *seckey;
 } game_table_t;
 
 game_table_t gameTable[] =
@@ -14,7 +14,7 @@ game_table_t gameTable[] =
 	{NULL, NULL}
 };
 
-char *Gamespy_Get_Game_SecKey (char *gamename)
+const char *Gamespy_Get_Game_SecKey (char *gamename)
 {
 	int x = 0;
 

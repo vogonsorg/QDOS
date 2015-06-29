@@ -8,7 +8,7 @@
 #define HTTP_NOT_FOUND 404
 void CURL_HTTP_Init (void);
 void CURL_HTTP_Shutdown (void);
-void CURL_HTTP_StartDownload (char *url, char *filename);
+void CURL_HTTP_StartDownload (const char *url, const char *filename);
 void CURL_HTTP_Update (void);
 void CURL_HTTP_Reset (void);
 

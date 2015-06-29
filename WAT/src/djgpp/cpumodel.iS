@@ -121,7 +121,7 @@ is486x:
     div %bl
     lahf
     cmpb $2, %ah
-    jne ncyrix
+    jne is386
 # 174 "cpumodel.S"
     cli
     movw $0xC3, %ax; outw %ax, $0x22; inw $0x23, %ax
@@ -136,10 +136,16 @@ is486x:
     movw %ax, %bx
     movw $0xE8, %ax; outw %ax, $0x22; movw %bx, %ax; outw %ax, $0x23
 
+
+
+
+
+
     movw $0xFE, %ax; outw %ax, $0x22; inw $0x23, %ax
     andw $0xF0, %ax
     cmpw $0x30, %ax
-    jne n6x86
+    jne is386
+
     movw $0xE9, %ax; outw %ax, $0x22; inw $0x23, %ax
     andw $0xFD, %ax
     movw %ax, %bx
@@ -148,16 +154,6 @@ is486x:
     movw $0xC3, %ax; outw %ax, $0x22; movw %cx, %ax; outw %ax, $0x23
     sti
     jmp isnew
-
-n6x86:
-    movw $0xC3, %ax; outw %ax, $0x22; movw %cx, %ax; outw %ax, $0x23
-    sti
-
-ncyrix:
-    popfl
-    call check_x87
-    popl %ebx
-    jmp end_CheckCpuType
 
 is386:
     popfl
@@ -182,7 +178,7 @@ check_x87:
 
 1: movl $1, _x86_hard_math
     ret
-# 241 "cpumodel.S"
+# 237 "cpumodel.S"
 .text; .align 2; .globl __w32_Get_CR4; __w32_Get_CR4:;
     movw %cs, %ax
     testw $3, %ax

@@ -25,7 +25,8 @@
 //  AUTHOR: Craig Link - Microsoft Developer Support 
 // 
  
- 
+
+#ifdef WIN32 // FS: Not needed in non-windows
 #include <windows.h> 
 #include <stdio.h> 
 #include <stdlib.h> 
@@ -602,4 +603,4 @@ LPTSTR GetLastErrorText( LPTSTR lpszBuf, DWORD dwSize )
  
     return lpszBuf; 
 } 
-
+#endif // WIN32
