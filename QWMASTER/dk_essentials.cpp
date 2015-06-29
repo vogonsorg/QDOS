@@ -167,6 +167,7 @@ void Gamespy_Create_Challenge_Key(char *s, const int len)
 char *DK_strlwr (char *s)
 {
 	char* ret = s;
+
 	while (*s)
 	{
 		*s = tolower(*s);

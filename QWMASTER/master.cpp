@@ -563,6 +563,7 @@ int TCP_Set_Non_Blocking (int socket)
 #else
 	int flags = 0;
 
+// FS: TODO FIXME: This is wrong, I have the proper code in Q2DOS.
 	flags = fcntl(socket, F_GETFL, 0);
 	if (flags == -1)
 		flags = 0;
@@ -686,7 +687,7 @@ int AddServer (struct sockaddr_in *from, int normal, unsigned short queryPort, c
 	if(!hostnameIp || hostnameIp[0] == 0) // FS: If we add servers from a list using dynamic IPs, etc.  let's remember it.  Else, just copy the ip
 		hostnameIp = inet_ntoa(from->sin_addr);
 
-//	gamename = DK_strlwr(gamename); // FS: Some games (mainly sin) stupidly send it partially uppercase
+	DK_strlwr(gamename); // FS: Some games (mainly sin) stupidly send it partially uppercase
 	DG_strlcpy(server->gamename, gamename, sizeof(server->gamename));
 
 	server->port = queryPort; //from->sin_port; // FS: Gamespy does it differently.
@@ -926,7 +927,7 @@ void SendGamespyListToClient (int socket, char *gamename, struct sockaddr_in *fr
 		return;
 	}
 
-	gamename = DK_strlwr(gamename); // FS: Some games (mainly sin) stupidly send it partially uppercase
+	DK_strlwr(gamename); // FS: Some games (mainly sin) stupidly send it partially uppercase
 
 	bufsize = 1 + 26 * (numservers + 1) + 6; // 1 byte for /, 26 bytes for ip:port/, 6 for final/
 	buflen = 0;
@@ -1509,7 +1510,7 @@ error:
 		return;
 	}
 
-	gamename = DK_strlwr(gamename); // FS: Some games (mainly sin) stupidly send it partially uppercase
+	DK_strlwr(gamename); // FS: Some games (mainly sin) stupidly send it partially uppercase
 
 	SendGamespyListToClient(socket, gamename, from, basic);
 }
@@ -1765,7 +1766,7 @@ closeTcpSocket:
 void Add_Servers_From_List(char *filename)
 {
 	char *fileBuffer = NULL;
-	const char *gamenameFromHttp = NULL;
+	char *gamenameFromHttp = NULL;
 	long fileSize;
 	FILE *listFile = fopen(filename, "r+");
 	size_t toEOF = 0;
@@ -1791,7 +1792,7 @@ void Add_Servers_From_List(char *filename)
 	}
 
 	rewind(listFile);
-	fileBuffer = (char *)malloc(sizeof(char)*(fileSize+1)); // FS: In case we have to add a newline terminator
+	fileBuffer = (char *)malloc(sizeof(char)*(fileSize+4)); // FS: In case we have to add a newline terminator
 	assert(fileBuffer);
 	if(!fileBuffer)
 	{
@@ -1810,9 +1811,15 @@ void Add_Servers_From_List(char *filename)
 	fileBuffer[toEOF+1] = '\0';
 
 	if(strstr(filename, "q2servers"))
-		gamenameFromHttp = "quake2";
+	{
+		gamenameFromHttp = (char *)malloc(7);
+		Com_sprintf(gamenameFromHttp, 7, "quake2");
+	}
 	else if(strstr(filename, "qwservers"))
-		gamenameFromHttp = "quakeworld";
+	{
+		gamenameFromHttp = (char *)malloc(11);
+		Com_sprintf(gamenameFromHttp, 11, "quakeworld");
+	}
 	else
 		gamenameFromHttp = NULL;
 
@@ -1844,13 +1851,16 @@ void AddServers_From_List_Execute(char *fileBuffer, char *gamenameFromHttp)
 	{
 		ipStrLen = DG_strlen(listToken)+2;
 		ip = (char *)malloc(sizeof(char)*(ipStrLen));
+
 		if(!ip)
 		{
 			printf("Memory error in AddServers_From_List_Execute!\n");
 			break;
 		}
+
 		DG_strlcpy(ip, listToken, ipStrLen);
 		remoteHost = gethostbyname(ip);
+
 		// FS: Junk data, or doesn't exist.
 		if (!remoteHost)
 		{
@@ -1860,21 +1870,30 @@ void AddServers_From_List_Execute(char *fileBuffer, char *gamenameFromHttp)
 		addr.s_addr = *(u_long *) remoteHost->h_addr_list[0];
 
 		listToken = DK_strtok_r(NULL, separators, &listPtr); // Port
+
 		if(!listToken)
 		{
 			Con_DPrintf("[E] Port not specified for '%s' in server list; skipping.\n", ip);
 			break;
 		}
+
 		queryPort = (unsigned short)atoi(listToken);
+
 		if(atoi(listToken) <= 0 || atoi(listToken) > 65536)
 		{
 			Con_DPrintf("[E] Invalid Port specified for '%s' in server list; skipping.\n", ip);
 			break;
 		}
+
 		if(gamenameFromHttp)
+		{
 			listToken = gamenameFromHttp;
+		}
 		else
-			DK_strtok_r(NULL, separators, &listPtr); // Gamename
+		{
+			listToken = DK_strtok_r(NULL, separators, &listPtr); // Gamename
+		}
+
 		if(!listToken)
 		{
 			Con_DPrintf("[E] Gamename not specified for '%s:%u' in server list; skipping.\n", ip, queryPort);
@@ -1918,10 +1937,14 @@ void Check_Port_Boundaries (void)
 	int tcp;
 
 	if(bind_port[0] != 0)
+	{
 		udp = atoi(bind_port);
+	}
 
 	if(bind_port_tcp[0] != 0)
+	{
 		tcp = atoi(bind_port_tcp);
+	}
 
 	if(bind_port[0] == 0 || udp < 1)
 	{
@@ -1982,13 +2005,19 @@ int Rcon (struct sockaddr_in *from, char *queryString)
 				validated = TRUE;
 			}
 			else
+			{
 				goto rconFailed;
+			}
 		}
 		else
+		{
 			goto rconFailed;
+		}
 	}
 	else
+	{
 		goto rconFailed;
+	}
 
 	if (validated)
 	{

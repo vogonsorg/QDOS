@@ -165,6 +165,7 @@ void Cvar_Set (char *var_name, char *value)
 	Q_strcpy (var->string, value);
 	var->value = Q_atof (var->string);
 	var->intValue = Q_atoi (var->string); // FS: Added
+	var->modified = true; // FS: Added
 
 	if (var->server && changed)
 	{

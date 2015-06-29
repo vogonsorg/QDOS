@@ -742,6 +742,12 @@ void S_UpdateAmbientSounds (void)
 	if (!cl.worldmodel)
 		return;
 
+	if (volume.modified)
+	{
+		SND_InitScaletable();
+		volume.modified = false;
+	}
+
 	l = Mod_PointInLeaf (listener_origin, cl.worldmodel);
 	if (!l || !ambient_level.value)
 	{
@@ -869,7 +875,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 		for (i=0 ; i<total_channels; i++, ch++)
 			if (ch->sfx && (ch->leftvol || ch->rightvol) )
 			{
-				//Con_Printf ("%3i %3i %s\n", ch->leftvol, ch->rightvol, ch->sfx->name);
+				Con_Printf ("%3i %3i %s\n", ch->leftvol, ch->rightvol, ch->sfx->name);
 				total++;
 			}
 		
@@ -1148,6 +1154,7 @@ void S_RawSamples (int samples, int rate, int width, int channels, byte *data, q
 	else
 #endif
 		snd_vol = (int)(volume.value);
+
 // end Knightmare
 	if (s_rawend < paintedtime)
 		s_rawend = paintedtime;

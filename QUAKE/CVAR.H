@@ -64,6 +64,7 @@ typedef struct cvar_s
 	float	value;
 	int		intValue; // FS
 	const char *defaultString; // FS
+	qboolean modified; // FS
 	struct cvar_s *next;
 } cvar_t;
 

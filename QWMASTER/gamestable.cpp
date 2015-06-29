@@ -17,11 +17,11 @@ game_table_t gameTable[] =
 char *Gamespy_Get_Game_SecKey (char *gamename)
 {
 	int x = 0;
-	
+
 	if (!gamename || gamename[0] == 0)
 		return NULL;
 
-//	gamename = DK_strlwr(gamename); // FS: Some games (mainly sin) stupidly send it partially uppercase
+	DK_strlwr(gamename); // FS: Some games (mainly sin) stupidly send it partially uppercase
 
 	while (gameTable[x].gamename != NULL)
 	{
