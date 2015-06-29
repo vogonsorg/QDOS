@@ -19,7 +19,9 @@ const char *Gamespy_Get_Game_SecKey (char *gamename)
 	int x = 0;
 
 	if (!gamename || gamename[0] == 0)
+	{
 		return NULL;
+	}
 
 	DK_strlwr(gamename); // FS: Some games (mainly sin) stupidly send it partially uppercase
 
@@ -29,6 +31,7 @@ const char *Gamespy_Get_Game_SecKey (char *gamename)
 		{
 			return gameTable[x].seckey;
 		}
+
 		x++;
 	}
 	return NULL;

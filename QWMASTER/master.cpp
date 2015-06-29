@@ -193,7 +193,7 @@ enum {FALSE, TRUE};
 #define SOCKET unsigned int
 
 #ifndef SOCKET_ERROR
-#define SOCKET_ERROR -1
+	#define SOCKET_ERROR -1
 #endif
 
 #define TIMEVAL struct timeval
@@ -221,6 +221,7 @@ void signal_handler(int sig);
 int Debug;
 int Timestamp; // FS
 int SendAck;
+int httpDisable = FALSE; // FS
 unsigned long numservers;	// global count of the currently listed servers
 
 int runmode;	// server loop control
@@ -301,7 +302,8 @@ int My_Main (int argc, char *argv[])
 #ifdef WIN32
 	// overhead to tell Windows we're using TCP/IP.
 	err = WSAStartup ((WORD)MAKEWORD (1,1), &ws);
-	if (err) {
+	if (err)
+	{
 		printf("Error loading Windows Sockets! Error: %i\n",err);
 		return (err);
 	}
@@ -318,6 +320,7 @@ int My_Main (int argc, char *argv[])
 	printf("Heartbeat interval: %lu Minutes\n", heartbeatInterval/60); // FS
 	printf("Minimum Heartbeats Required: %u\n", minimumHeartbeats); // FS
 	printf("Timestamps: %i\n", Timestamp); // FS
+	printf("HTTP Disabled: %i\n", httpDisable); // FS
 
 	listener = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	listenerTCP = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP); // FS
@@ -391,11 +394,13 @@ int My_Main (int argc, char *argv[])
 		signal(SIGHUP, signal_handler); /* catch hangup signal */
 		signal(SIGTERM, signal_handler); /* catch terminate signal */
 	}
-	#endif
-#endif
+	#endif // __DJGPP__
+#endif // WIN32
 
 	if(load_Serverlist)
+	{
 		Add_Servers_From_List(serverlist_filename);
+	}
 
 #ifdef NEW_PARSE
 	FD_ZERO(&master);
@@ -411,8 +416,11 @@ int My_Main (int argc, char *argv[])
 		delay.tv_usec = 0;
 
 		CURL_HTTP_Update();
+
 		if(time(NULL)-lastHTTPDL > 3600) // FS: Every hour get a new serverlist from quakeservers.net
+		{
 			HTTP_DL_List();
+		}
 
 #ifdef OLDER_STYLE_PARSE
 		FD_ZERO(&set);
@@ -574,21 +582,6 @@ void Close_TCP_Socket_On_Error (int socket, struct sockaddr_in *from)
 int TCP_Set_Non_Blocking (int socket)
 {
 	int error = 0;
-#ifdef old
-#ifdef WIN32
-	u_long nonblocking_enabled = 1;
-	error = ioctlsocket( socket, FIONBIO, &nonblocking_enabled );
-#else
-	int flags = 0;
-
-// FS: TODO FIXME: This is wrong, I have the proper code in Q2DOS.
-	flags = fcntl(socket, F_GETFL, 0);
-	if (flags == -1)
-		flags = 0;
-	error = fcntl(socket, F_SETFL, flags | O_NONBLOCK);
-#endif // _WIN32
-	return error;
-#endif // old
 	unsigned long _true = true;
 
 	error = ioctlsocket( socket, FIONBIO,IOCTLARG_T &_true);
@@ -610,13 +603,19 @@ void ExitNicely (void)
 	while (server->next)
 	{
 		if (old)
+		{
 			free (old);
+		}
+
 		server = server->next;
 		old = server;
 	}
 	
 	if (old)
+	{
 		free (old);
+	}
+
 	CURL_HTTP_Shutdown();
 }
 
@@ -624,13 +623,19 @@ void DropServer (server_t *server)
 {
 	//unlink
 	if (server->next)
+	{
 		server->next->prev = server->prev;
+	}
 
 	if (server->prev)
+	{
 		server->prev->next = server->next;
+	}
 
-	if (numservers != 0) 
+	if (numservers != 0)
+	{
 		numservers--;
+	}
 
 	free (server);
 }
@@ -647,7 +652,7 @@ int AddServer (struct sockaddr_in *from, int normal, unsigned short queryPort, c
 	int validateStringLen = 0;
 	memset(validateString, 0, sizeof(validateString));
 
-	if(!gamename || gamename[0] == 0)
+	if(!gamename || (gamename[0] == 0))
 	{
 		Con_DPrintf ("[E] No gamename sent from %s:%u.  Aborting AddServer.\n", inet_ntoa(from->sin_addr), htons(from->sin_port));
 		return FALSE;
@@ -659,7 +664,7 @@ int AddServer (struct sockaddr_in *from, int normal, unsigned short queryPort, c
 		return FALSE;
 	}
 
-	if(!Gamespy_Get_Game_SecKey(gamename))
+	if(!(Gamespy_Get_Game_SecKey(gamename)))
 	{
 		Con_DPrintf ("[E] Game %s not supported from %s:%u.  Aborting AddServer.\n", gamename, inet_ntoa(from->sin_addr), htons(from->sin_port));
 		return FALSE;
@@ -678,8 +683,12 @@ int AddServer (struct sockaddr_in *from, int normal, unsigned short queryPort, c
 					inet_ntoa(from->sin_addr));
 				DropServer (server);
 				server = &servers;
+
 				while (server->next)
+				{
 					server = server->next;
+				}
+
 				break;
 			}
 			else
@@ -694,8 +703,10 @@ int AddServer (struct sockaddr_in *from, int normal, unsigned short queryPort, c
 
 	server->next = (server_t *)malloc(sizeof(server_t));
 	assert(server->next != NULL); // malloc failed if server->next == NULL
+
 	// Note: printf implicitly calls malloc so this is likely to fail if we're really out of memory
-	if (server->next == NULL) {
+	if (server->next == NULL)
+	{
 		printf("Fatal Error: memory allocation failed in AddServer\n");
 		return FALSE;
 	}
@@ -709,7 +720,9 @@ int AddServer (struct sockaddr_in *from, int normal, unsigned short queryPort, c
 	server->next = NULL;
 
 	if(!hostnameIp || hostnameIp[0] == 0) // FS: If we add servers from a list using dynamic IPs, etc.  let's remember it.  Else, just copy the ip
+	{
 		hostnameIp = inet_ntoa(from->sin_addr);
+	}
 
 	DK_strlwr(gamename); // FS: Some games (mainly sin) stupidly send it partially uppercase
 	DG_strlcpy(server->gamename, gamename, sizeof(server->gamename));
@@ -752,6 +765,7 @@ int AddServer (struct sockaddr_in *from, int normal, unsigned short queryPort, c
 	}
 
 	Com_sprintf(validateString, sizeof(validateString), "%s", statusstring);
+
 	validateStringLen = DG_strlen(validateString);
 	validateString[validateStringLen] = '\0';
 
@@ -772,6 +786,7 @@ void QueueShutdown (struct sockaddr_in *from, server_t *myserver)
 		while (server->next)
 		{
 			server = server->next;
+
 			if (*(int *)&from->sin_addr == *(int *)&server->ip.sin_addr && from->sin_port == server->port)
 			{
 				myserver = server;
@@ -799,7 +814,7 @@ void QueueShutdown (struct sockaddr_in *from, server_t *myserver)
 
 		Con_DPrintf ("[I] shutdown queued %s:%u \n", inet_ntoa (myserver->ip.sin_addr), htons(server->port));
 
-		Com_sprintf(validateString, sizeof(validateString), "%s%s", statusstring, server->challengeKey);
+		Com_sprintf(validateString, sizeof(validateString), "%s", statusstring);
 		validateStringLen = DG_strlen(validateString);
 		validateString[validateStringLen] = '\0'; // FS: Gamespy null terminates the end
 
@@ -890,7 +905,9 @@ void SendServerListToClient (struct sockaddr_in *from)
 	buflen = 0;
 	buff = malloc (bufsize);
 	assert(buff != NULL);	// catch it in debug
-	if (buff == NULL) {
+
+	if (buff == NULL)
+	{
 		printf("Fatal Error: memory allocation failed in SendServerListToClient\n");
 		return;
 	}
@@ -903,6 +920,7 @@ void SendServerListToClient (struct sockaddr_in *from)
 	while (server->next)
 	{
 		server = server->next;
+
 		if (server->heartbeats >= minimumHearbeats && !server->shutdown_issued && server->validated)
 		{
 			memcpy (buff + buflen, &server->ip.sin_addr, 4);
@@ -959,6 +977,7 @@ void SendGamespyListToClient (int socket, char *gamename, struct sockaddr_in *fr
 	port = (char *)malloc (bufsize);
 	memset (port, 0 , bufsize);
 	assert(buff != NULL);	// catch it in debug
+
 	if (buff == NULL)
 	{
 		printf("Fatal Error: memory allocation failed in SendGamespyListToClient\n");
@@ -966,6 +985,7 @@ void SendGamespyListToClient (int socket, char *gamename, struct sockaddr_in *fr
 	}
 	
 	memset (buff, 0, bufsize);
+
 	if (basic)
 	{
 		memcpy (buff, listheader, 1);
@@ -1019,6 +1039,7 @@ void SendGamespyListToClient (int socket, char *gamename, struct sockaddr_in *fr
 
 	Con_DPrintf ("[I] TCP gamespy list: %s\n", buff);
 	Con_DPrintf ("[I] TCP gamespy list response (%d bytes) sent to %s:%d\n", buflen, inet_ntoa (from->sin_addr), ntohs (from->sin_port));
+
 	if(send(socket, buff, buflen, 0) == SOCKET_ERROR)
 	{
 		Con_DPrintf ("[E] TCP list socket error on send! code %d.\n", WSAGetLastError());
@@ -1053,10 +1074,12 @@ void Ack (struct sockaddr_in *from, char* dataPacket)
 			server->last_heartbeat = time(NULL);
 			server->validated = Gamespy_Challenge_Cross_Check(server->challengeKey, dataPacket, 1);
 			server->queued_pings = 0;
+
 			if(server->shutdown_issued)
 			{
 				Con_DPrintf("[I] aborting scheduled shutdown from %s:%u.\n", inet_ntoa (server->ip.sin_addr), htons(server->port));
 			}
+
 			server->shutdown_issued = 0; // FS: If we're still responding then we didn't shutdown, just changed the map
 			server->heartbeats++;
 			return;
@@ -1077,30 +1100,40 @@ int HeartBeat (struct sockaddr_in *from, char *data)
 	status = TRUE;
 
 	if(!data || data[0] == '\0') // FS: Should never happen, but I'd rather just be paranoid.
+	{
 		return FALSE;
+	}
 
 	if(strstr(data,"\\statechanged\\")) // FS: Schedule a shutdown if statechanged is sent with heartbeat
 	{
 		if(strstr(data,"\\statechanged\\1")) // FS: Map change?  Don't abort
+		{
 			statechanged = FALSE;
+		}
 		else // FS: If we don't get a key after it or it's >= 2 assume shutdown.  We'll still ping it anyways to verify it's removal
+		{
 			statechanged = TRUE;
+		}
 	}
 
 	cmdToken = DK_strtok_r(data, seperators, &cmdPtr); // FS: heartbeat
 	cmdToken = DK_strtok_r(NULL, seperators, &cmdPtr); // FS: actual port #
+
 	if(!cmdPtr)
 	{
 		Con_DPrintf("[E] Invalid heartbeat packet (No query port) from %s:%u!\n", inet_ntoa (from->sin_addr), htons(from->sin_port));
 		return FALSE;
 	}
+
 	queryPort = (unsigned short)atoi(cmdToken); // FS: Query port
 	cmdToken = DK_strtok_r(NULL, seperators, &cmdPtr); // FS: gamename
+
 	if(!cmdPtr || strcmp(cmdToken,"gamename"))
 	{
 		Con_DPrintf("[E] Invalid heartbeat packet (No gamename) from %s:%u!\n", inet_ntoa (from->sin_addr), htons(from->sin_port));
 		return FALSE;
 	}
+
 	cmdToken = DK_strtok_r(NULL, seperators, &cmdPtr); // FS: actual gamename
 
 	//walk through known servers
@@ -1131,10 +1164,17 @@ int HeartBeat (struct sockaddr_in *from, char *data)
 			validateStringLen = DG_strlen(validateString);
 			validateString[validateStringLen] = '\0'; // FS: Gamespy null terminates the end
 			sendto (listener, validateString, validateStringLen, 0, (struct sockaddr *)&addr, sizeof(addr)); // FS: Gamespy uses the \status\ data for collection in a database so people can see the current stats without having to really ping the server.
+
 			if(SendAck) // FS: This isn't standard for DK, it will show messages about the ack.  This is more a courtesy to tell the ded server that we received the heartbeat
+			{
 				sendto (listener, OOB_SEQ"ack", 7, 0, (struct sockaddr *)&addr, sizeof(addr));
+			}
+
 			if(statechanged)
+			{
 				QueueShutdown(&addr, NULL);
+			}
+
 			return status;
 		}
 	}
@@ -1164,14 +1204,18 @@ int ParseResponse (struct sockaddr_in *from, char *data, int dglen)
 #endif // QUAKE2_SERVERS
 	{
 		while (*line && *line != '\n')
+		{
 			line++;
+		}
 		
 		*(line++) = '\0';
 
 		if(strstr(data, OOB_SEQ)) // FS: Gamespy doesn't send the 0xFF out-of-band.
 		{
 			if(_strnicmp(data, OOB_SEQ"rcon", 8))
+			{
 				cmd +=4;
+			}
 			else
 			{
 				cmd +=9;
@@ -1229,15 +1273,23 @@ void ParseCommandLine(int argc, char *argv[])
 		if (Debug == 3) 
 		{
 			if(_strnicmp(argv[i] + 1,"debug", 5) == 0)
+			{
 				Debug = TRUE;	//service debugged as console
+			}
 			else
+			{
 				Debug = FALSE;
+			}
 		}
 
 		if(_strnicmp((char*)argv[i] + 1,"sendack", 7) == 0) // FS
+		{
 			SendAck = TRUE;
+		}
 		else
+		{
 			SendAck = FALSE;
+		}
 
 		if(_strnicmp((char*)argv[i] + 1,"quickvalidate", 13) == 0) // FS
 		{
@@ -1254,6 +1306,11 @@ void ParseCommandLine(int argc, char *argv[])
 			Timestamp = atoi((char*)argv[i]+11);
 		}
 
+		if(_strnicmp((char*)argv[i] + 1,"httpdisable", 11) == 0) // FS
+		{
+			httpDisable = TRUE;
+		}
+
 		if(_strnicmp((char*)argv[i] + 1,"rconpassword", 12) == 0) // FS
 		{
 			DG_strlcpy(rconPassword, (char*)argv[i]+14, sizeof(rconPassword));
@@ -1263,6 +1320,7 @@ void ParseCommandLine(int argc, char *argv[])
 		if(_strnicmp((char*)argv[i] + 1, "heartbeatinterval", 17) == 0)
 		{
 			heartbeatInterval = atol((char*)argv[i]+19);
+
 			if(heartbeatInterval < 1)
 			{
 				printf("[W] Heartbeat interval less than one minute!  Setting to one minute.\n");
@@ -1275,6 +1333,7 @@ void ParseCommandLine(int argc, char *argv[])
 		if(_strnicmp((char*)argv[i] + 1, "minimumheartbeats", 17) == 0)
 		{
 			minimumHeartbeats = atoi((char*)argv[i]+19);
+
 			if(minimumHeartbeats < 1)
 			{
 				printf("[W] Minimum heartbeat less than one!  Setting to one heartbeat required.\n");
@@ -1326,14 +1385,18 @@ void ServiceCtrlHandler (DWORD Opcode)
 	case SERVICE_CONTROL_STOP: 
 		// Kill the server loop. 
 		runmode = SRV_STOP; // zero the loop control
+
 		while(runmode == SRV_STOP)	//give loop time to die
 		{
 			int i = 0;
 			
 			Sleep(500);	// SCM times out in 3 secs.
 			i++;		// we check twice per sec.
+
 			if(i >=	6)	// hopefully we beat the SCM timer
+			{
 				break;	// still no return? rats, terminate anyway
+			}
 		}
 		
 		ExitNicely();
@@ -1344,7 +1407,10 @@ void ServiceCtrlHandler (DWORD Opcode)
 		MyServiceStatus.dwWaitHint      = 0; 
 		
 		if(MyServiceStatusHandle)
+		{
 			SetServiceStatus (MyServiceStatusHandle, &MyServiceStatus);
+		}
+
 		return; 
     } 
     // Send current status. 
@@ -1366,7 +1432,8 @@ void ServiceStart (DWORD argc, LPTSTR *argv)
 	MyServiceStatusHandle = RegisterServiceCtrlHandler(argv[0], 
 		(LPHANDLER_FUNCTION)ServiceCtrlHandler); 
 	
-	if (!Debug && MyServiceStatusHandle == (SERVICE_STATUS_HANDLE)0) {
+	if (!Debug && MyServiceStatusHandle == (SERVICE_STATUS_HANDLE)0)
+	{
 		printf("%s not started.\n", SZSERVICEDISPLAYNAME);
 		return;
 	}
@@ -1377,7 +1444,9 @@ void ServiceStart (DWORD argc, LPTSTR *argv)
 	MyServiceStatus.dwWaitHint           = 0; 
 	
 	if (!Debug)
+	{
 		SetServiceStatus (MyServiceStatusHandle, &MyServiceStatus);
+	}
 	
 	My_Main(argc, &argv[0]);
 } 
@@ -1412,12 +1481,16 @@ void SetQ2MasterRegKey(char* name, char *value)
 		&Disposition);
 	
 	if(status)
+	{
 		Con_DPrintf("Error creating registry key for %s\n", SZSERVICEDISPLAYNAME);
+	}
 	
 	status = RegSetValueEx(hKey, name, 0, REG_SZ, (unsigned char*)value, DG_strlen(value));
 	
 	if(status)
+	{
 		Con_DPrintf("Registry key not set for IP: %s\n", bind_ip);
+	}
 	
 	RegCloseKey(hKey);
 }
@@ -1447,12 +1520,16 @@ void GetQ2MasterRegKey(char* name, char *value)
 		&Disposition);
 	
 	if(status)
+	{
 		Con_DPrintf("Registry key not found\n");
+	}
 	
 	status = RegQueryValueEx(hKey, name, NULL, NULL, (unsigned char*)value, &size);
 
 	if(status)
+	{
 		Con_DPrintf("Registry value not found %s\\%s\n", REGKEY_Q2MASTERSERVER, name);
+	}
 	
 	RegCloseKey(hKey);
 }
@@ -1465,7 +1542,8 @@ void GetQ2MasterRegKey(char* name, char *value)
 void signal_handler(int sig)
 {
 #ifndef __DJGPP__
-	switch(sig) {
+	switch(sig)
+	{
 	case SIGHUP:
 		break;
 	case SIGTERM:
@@ -1476,8 +1554,11 @@ void signal_handler(int sig)
 			
 			Sleep(500);	// 500 ms
 			i++;		// we check twice per sec.
+
 			if(i >=	6)
+			{
 				break;	// still no return? rats, terminate anyway
+			}
 		}
 		
 		ExitNicely();
@@ -1497,7 +1578,9 @@ void Gamespy_Parse_List_Request(char *querystring, int socket, struct sockaddr_i
 	int basic = 0;
 
 	if(!querystring || !strstr(querystring, "\\list\\") || !strstr(querystring, "\\gamename\\"))
+	{
 		goto error;
+	}
 
 	if(strstr(querystring,"\\list\\cmp\\gamename\\"))
 	{
@@ -1507,6 +1590,7 @@ void Gamespy_Parse_List_Request(char *querystring, int socket, struct sockaddr_i
 		{
 			gamename = DK_strtok_r(NULL, seperators, &tokenPtr); // FS: cmp
 		}
+
 		gamename = DK_strtok_r(NULL, seperators, &tokenPtr); // FS: gamename
 		gamename = DK_strtok_r(NULL, seperators, &tokenPtr); // FS: actual gamename
 
@@ -1521,6 +1605,7 @@ void Gamespy_Parse_List_Request(char *querystring, int socket, struct sockaddr_i
 		{
 			gamename = DK_strtok_r(NULL, seperators, &tokenPtr); // FS: list
 		}
+
 		gamename = DK_strtok_r(NULL, seperators, &tokenPtr); // FS: gamename
 		gamename = DK_strtok_r(NULL, seperators, &tokenPtr); // FS: actual gamename
 
@@ -1568,23 +1653,31 @@ int Gamespy_Challenge_Cross_Check(char *challengePacket, char *validatePacket, i
 	}
 
 	if(rawsecurekey)
+	{
 		ptr = challengePacket;
+	}
 	else
+	{
 		ptr = Info_ValueForKey(challengePacket, "secure");
+	}
+
 	if(!ptr)
 	{
 		Con_DPrintf("[E] Validation failed.  \\secure\\ missing from packet!\n");
 		return 0;
 	}
+
 	DG_strlcpy(challengeKey,ptr,sizeof(challengeKey));
 
 	ptr = NULL;
 	ptr = Info_ValueForKey(validatePacket, "gamename");
+
 	if(!ptr)
 	{
 		Con_DPrintf("[E] Validation failed.  \\gamename\\ missing from packet!\n");
 		return 0;
 	}
+
 	DG_strlcpy(gameKey,ptr,sizeof(gameKey));
 
 	if(!strcmp(gameKey,"nolf") && rawsecurekey) // FS: special hack for NOLF
@@ -1595,14 +1688,17 @@ int Gamespy_Challenge_Cross_Check(char *challengePacket, char *validatePacket, i
 
 	ptr = NULL;
 	ptr = Info_ValueForKey(validatePacket, "validate");
+
 	if(!ptr)
 	{
 		Con_DPrintf("[E] Validation failed.  \\validate\\ missing from packet!\n");
 		return 0;
 	}
+
 	DG_strlcpy(validateKey,ptr,sizeof(validateKey));
 
 	gameSecKey = Gamespy_Get_Game_SecKey (gameKey);
+
 	if(!gameSecKey)
 	{
 		Con_DPrintf("[E] Validation failed.  Game not supported!\n");
@@ -1610,6 +1706,7 @@ int Gamespy_Challenge_Cross_Check(char *challengePacket, char *validatePacket, i
 	}
 
 	decodedKey = (char *)gsseckey(NULL, (unsigned char*)challengeKey, (unsigned char*)gameSecKey, 0);
+
 	if(decodedKey && decodedKey[0] != '\0' && !strcmp(decodedKey, validateKey))
 	{
 		Con_DPrintf("[I] Validation passed!\n");
@@ -1633,8 +1730,8 @@ void Gamespy_Parse_TCP_Packet (int socket, struct sockaddr_in *from)
 	char *challengeBuffer = (char *)malloc(84);
 	char *enctypeKey = NULL;
 
-	memset (incomingTcpValidate, 0, sizeof(incomingTcpValidate));
-	memset (incomingTcpList, 0, sizeof(incomingTcpList));
+	memset(incomingTcpValidate, 0, sizeof(incomingTcpValidate));
+	memset(incomingTcpList, 0, sizeof(incomingTcpList));
 	memset(challengeKey, 0, 7);
 	memset(challengeBuffer, 0, 84);
 	Gamespy_Create_Challenge_Key(challengeKey, 6); // FS: Generate a random 6 character key to cross-check later
@@ -1653,15 +1750,18 @@ void Gamespy_Parse_TCP_Packet (int socket, struct sockaddr_in *from)
 	challengeBufferLen = DG_strlen(challengeBuffer);
 	challengeBuffer[challengeBufferLen] = '\0';
 	len = send(socket, challengeBuffer, challengeBufferLen, 0);
+
 	if(len == SOCKET_ERROR)
 	{
 		Con_DPrintf("[E] Couldn't send challenge to client!\n");
 		goto closeTcpSocket;
 	}
+
 	retry = 0;
 	sleepMs = 50;
 retryIncomingTcpValidate:
 	len = recv(socket, incomingTcpValidate, sizeof(incomingTcpValidate), 0);
+
 	if (len == SOCKET_ERROR)
 	{
 		lastWSAError = WSAGetLastError();
@@ -1697,6 +1797,7 @@ retryIncomingTcpValidate:
 	if(enctypeKey && enctypeKey[0] != 0)
 	{
 		int encodetype = atoi(enctypeKey);
+
 		if(encodetype > 0)
 		{
 			Con_DPrintf("[E] Encode Type: %i not supported on this server\n", encodetype);
@@ -1711,7 +1812,9 @@ retryIncomingTcpValidate:
 	}
 
 	if(strstr(incomingTcpValidate, "\\gamename\\unreal\\")) // FS: Special hack for unreal, it doesn't send list
+	{
 		strcat(incomingTcpValidate, "\\list\\gamename\\unreal\\");
+	}
 
 	// FS: This is the later version of gamespy which sent it all as one packet.
 	if(strstr(incomingTcpValidate,"\\list\\"))
@@ -1719,12 +1822,14 @@ retryIncomingTcpValidate:
 		Gamespy_Parse_List_Request(incomingTcpValidate, socket, from);
 		goto closeTcpSocket;
 	}
+
 	// FS: If we got here, it's the "basic" version which sends things a little differently (Daikatana, afaik)
 	// FS: So grab the packet which contains the list request as well as the gamename
 	retry = 0;
 	sleepMs = 50;
 retryIncomingTcpList:
 	len = recv(socket, incomingTcpList, sizeof(incomingTcpList), 0);
+
 	if (len == SOCKET_ERROR)
 	{
 		if(lastWSAError == WSAEWOULDBLOCK && (retry < totalRetry)) // FS: Yeah, yeah; this sucks.  But, it works OK for our purpose.  If you don't like this, redo it and send me the code.
@@ -1808,6 +1913,7 @@ void Add_Servers_From_List(char *filename)
 
 	fseek(listFile, 0, SEEK_END);
 	fileSize = ftell(listFile);
+
 	// FS: If the file size is less than 3 (an emtpy serverlist file) then don't waste time.
 	if (fileSize < 3)
 	{
@@ -1821,20 +1927,24 @@ void Add_Servers_From_List(char *filename)
 	}
 
 	rewind(listFile);
-	fileBuffer = (char *)malloc(sizeof(char)*(fileSize+1)); // FS: In case we have to add a newline terminator
+	fileBuffer = (char *)malloc(sizeof(char)*(fileSize+2)); // FS: In case we have to add a newline terminator
 	assert(fileBuffer);
+
 	if(!fileBuffer)
 	{
 		printf("[E] Out of memory!\n");
 		return;
 	}
+
 	toEOF = fread(fileBuffer, sizeof(char), fileSize, listFile); // FS: Copy it to a buffer
 	fclose(listFile);
+
 	if(toEOF <= 0)
 	{
 		printf("[E] Cannot read file '%s' into memory!\n", filename);
 		return;
 	}
+
 	// FS: Add newline terminator for some paranoia
 	fileBuffer[toEOF] = '\n';
 	fileBuffer[toEOF+1] = '\0';
@@ -1850,11 +1960,13 @@ void Add_Servers_From_List(char *filename)
 		Com_sprintf(gamenameFromHttp, 11, "quakeworld");
 	}
 	else
+	{
 		gamenameFromHttp = NULL;
+	}
 
 	Parse_ServerList(toEOF, fileBuffer, (char *)gamenameFromHttp); // FS: Break it up divided by newline terminator
 
-//	free(fileBuffer);
+	free(fileBuffer);
 }
 
 // FS
@@ -1871,6 +1983,7 @@ void AddServers_From_List_Execute(char *fileBuffer, char *gamenameFromHttp)
 	size_t ipStrLen = 0;
 
 	listToken = DK_strtok_r(fileBuffer, separators, &listPtr); // IP
+
 	if(!listToken)
 	{
 		return;
@@ -2056,6 +2169,7 @@ int Rcon (struct sockaddr_in *from, char *queryString)
 		{
 			char *key = queryPtr + 10;
 			key = DK_strtok_r(key, " \\\n", &queryPtr);
+
 			if(key && (key[0] != 0) && !strcmp(key, "filename"))
 			{
 				key = DK_strtok_r(NULL, " \\\n", &queryPtr);
@@ -2094,9 +2208,12 @@ rconFailed:
 
 void HTTP_DL_List(void)
 {
+	if(!httpDisable)
+	{
 #ifdef USE_CURL
-	printf("[I] Serverlist download sceduled!\n");
-	CURL_HTTP_StartDownload("http://www.quakeservers.net/lists/servers/global.txt", "qwservers.txt");
-	lastHTTPDL = time(NULL);
+		printf("[I] Serverlist download sceduled!\n");
+		CURL_HTTP_StartDownload("http://www.quakeservers.net/lists/servers/global.txt", "qwservers.txt");
+		lastHTTPDL = time(NULL);
 #endif
+	}
 }
