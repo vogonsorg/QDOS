@@ -75,11 +75,21 @@ void ServerParseKeyVals(GServer server, char *keyvals)
 	GKeyValuePair kvpair;
 	int numplayers = 0;
 
+	if(!keyvals || strlen(keyvals) < 6) // FS: Some kind of bad status packet, forget it.
+	{
+		return;
+	}
+
+/*
 	*keyvals = *keyvals++; // FS: Skip past the OOB_SEQ
 	*keyvals = *keyvals++;
 	*keyvals = *keyvals++;
 	*keyvals = *keyvals++;
 	*keyvals = *keyvals++;
+*/
+//	Com_Printf("Keyvals before[%i]: %s\n", strlen(keyvals), keyvals);
+	memmove(keyvals, keyvals+5, strlen(keyvals));
+//	Com_Printf("Keyvals now[%i]: %s\n", strlen(keyvals), keyvals);
 
 	Q_strcpy(savedkeyvals, keyvals);
 	savedkeyvals[strlen(keyvals)] = '\0';

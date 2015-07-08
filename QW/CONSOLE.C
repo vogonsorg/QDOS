@@ -452,7 +452,7 @@ void Con_Printf (const char *fmt, ...)
 			timefmt = "[%m/%d/%y @ %k:%M:%S %p] ";
 		else if (timestamp.value > 1)
 			timefmt = "[%m/%d/%y @ %l:%M:%S %p] ";
-#endif;
+#endif
         strftime (st, sizeof (st), timefmt, local);
 		Sys_Printf("%s", st);
 		Con_Print(st);

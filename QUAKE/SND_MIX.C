@@ -150,6 +150,7 @@ void S_TransferPaintBuffer(int endtime)
 	HRESULT	hresult;
 #endif
 
+/*
 	if (s_testsound->value)
 	{
 		int		i;
@@ -160,6 +161,7 @@ void S_TransferPaintBuffer(int endtime)
 		for (i=0 ; i<count ; i++)
 			paintbuffer[i].left = paintbuffer[i].right = sin((paintedtime+i)*0.1)*20000*256;
 	}
+*/
 
 	if (shm->samplebits == 16 && shm->channels == 2)
 	{

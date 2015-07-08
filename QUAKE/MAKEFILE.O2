@@ -10,7 +10,7 @@ USE_MPATH=no
 # whether to use OGG VORBIS
 USE_OGG=yes
 
-CFLAGS = -g -Wall -O2
+CFLAGS = -g -Wall -O2 -fno-strict-aliasing -fomit-frame-pointer
 LIBS   =
 
 ifeq ($(USE_BWTCP),yes)
@@ -33,7 +33,7 @@ LDFLAGS += -L../libogg/lib -logg
 LDFLAGS += -L../libvorb/lib
 LIBS  += -lvorbisenc -lvorbisfile -lvorbis -logg
 endif
-LIBS  += -lc -lgcc -lm
+LIBS  += -lm
 
 # subdirectory for objects
 O=dos

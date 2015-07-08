@@ -3,7 +3,7 @@ STRIP=  strip
 
 # whether to use OGG VORBIS
 USE_OGG=yes
-CFLAGS= -g -Wall -O2 -I../wat/inc
+CFLAGS= -g -Wall -O2 -fno-strict-aliasing -fomit-frame-pointer -DWATT32_NO_OLDIES -I../wat/inc
 LDFLAGS= -L../wat/lib
 LIBS= -lwatt
 ifeq ($(USE_OGG),yes)
@@ -14,7 +14,7 @@ LDFLAGS += -L../libogg/lib -logg
 LDFLAGS += -L../libvorb/lib
 LIBS  += -lvorbisenc -lvorbisfile -lvorbis -logg
 endif
-LIBS  += -lc -lgcc -lm
+LIBS  += -lm
 
 # subdirectory for objects
 O=dos

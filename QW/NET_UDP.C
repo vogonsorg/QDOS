@@ -22,26 +22,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
+#include <errno.h>
+#include <stddef.h>
+#include <limits.h>
+#include <sys/time.h> /* struct timeval */
+#include <stdio.h>
+#include <stdlib.h>
+
 #include <sys/param.h>
 #include <sys/ioctl.h>
-#include <sys/uio.h>
-#include <arpa/inet.h>
-#include <errno.h>
-
-#if defined(sun)
 #include <unistd.h>
-#endif
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <tcp.h>		/* for select_s(), sock_init() & friends. */
 
-#ifdef sun
-#include <sys/filio.h>
-#endif
+extern int	_watt_do_exit;	/* in sock_ini.h, but not in public headers. */
 
-#ifdef NeXT
-#include <libc.h>
-#endif
 
 netadr_t	net_local_adr;
 
@@ -55,6 +53,7 @@ byte		net_message_buffer[MAX_UDP_PACKET];
 
 int gethostname (char *, int);
 int close (int);
+char *NET_ErrorString (void);
 
 //=============================================================================
 
@@ -212,13 +211,22 @@ int UDP_OpenSocket (int port)
 {
 	int newsocket;
 	struct sockaddr_in address;
-	qboolean _true = true;
-	int i;
+	u_long _true = 1;
+	int	i = 1;
 
-	if ((newsocket = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
-                Sys_Error ("UDP_OpenSocket: socket: %s\n", strerror(errno));
-	if (ioctl (newsocket, FIONBIO, (char *)&_true) == -1)
-                Sys_Error ("UDP_OpenSocket: ioctl FIONBIO: %s\n", strerror(errno));
+	if ((newsocket = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == INVALID_SOCKET)
+	{
+		Con_Printf ("ERROR: UDP_OpenSocket: socket: %s", NET_ErrorString());
+		return 0;
+	}
+
+	// make it non-blocking
+	if (ioctlsocket (newsocket, FIONBIO, (char *) &_true) == SOCKET_ERROR)
+	{
+		Con_Printf ("ERROR: UDP_OpenSocket: ioctl FIONBIO: %s\n", NET_ErrorString());
+		return 0;
+	}
+
 	address.sin_family = AF_INET;
 //ZOID -- check for interface binding option
 	if ((i = COM_CheckParm("-ip")) != 0 && i < com_argc) {
@@ -263,6 +271,23 @@ NET_Init
 */
 void NET_Init (int port)
 {
+	int i, err;
+
+/*	dbug_init();*/
+
+	i = _watt_do_exit;
+	_watt_do_exit = 0;
+	err = sock_init();
+	_watt_do_exit = i;
+
+	if (err != 0)
+	{
+		Con_Printf("WATTCP initialization failed (%s)", sock_init_err(err));
+	}
+	else
+	{
+		Con_Printf("WATTCP Initialized\n");
+	}
 
 	//
 	// open the single socket to be used for all communications
@@ -281,6 +306,7 @@ void NET_Init (int port)
 	NET_GetLocalAddress ();
 
 	Con_Printf("UDP Initialized\n");
+
 }
 
 /*
@@ -293,3 +319,12 @@ void	NET_Shutdown (void)
 	close (net_socket);
 }
 
+/*
+====================
+NET_ErrorString
+====================
+*/
+char *NET_ErrorString (void)
+{
+	return strerror (errno);
+}

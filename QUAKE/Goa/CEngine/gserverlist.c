@@ -29,6 +29,11 @@ Fax(714)549-0757
 #include <fcntl.h> // FS
 #include <errno.h> // FS
 
+#ifndef _WIN32
+#include <sys/ioctl.h>
+#endif
+extern char *NET_ErrorString (void);
+
 #define MSHOST	"maraakate.org" // FS: Gamespy dead "master.gamespy.com"
 #define MSPORT	28900
 #define SERVER_GROWBY 32
@@ -115,27 +120,21 @@ void ServerListFree(GServerList serverlist)
 static GError InitUpdateList(GServerList serverlist)
 {
 	int i;
-	int error = 0;
-#ifdef _WIN32
-	u_long nonblocking_enabled;
-#else
-	int flags = 0;
-#endif
+	qboolean _true = true;
 
 	for (i = 0 ; i < serverlist->maxupdates ; i++)
 	{
 		serverlist->updatelist[i].s = socket (AF_INET, SOCK_DGRAM,IPPROTO_UDP);
 		if (serverlist->updatelist[i].s == INVALID_SOCKET)
 			return GE_NOSOCKET;
-#ifdef _WIN32 // FS: Set non-blocking sockets
-	nonblocking_enabled = 1;
-	error = ioctlsocket( serverlist->updatelist[i].s, FIONBIO, &nonblocking_enabled );
-#else
-	flags = fcntl(serverlist->updatelist[i].s, F_GETFL, 0);
-	if (flags == -1)
-		flags = 0;
-	error = fcntl(serverlist->updatelist[i].s, F_SETFL, flags | O_NONBLOCK);
-#endif // _WIN32
+
+		// FS: Set non-blocking sockets
+		if (ioctlsocket( serverlist->updatelist[i].s, FIONBIO,IOCTLARG_T &_true) == SOCKET_ERROR)
+		{
+			Com_Printf("ERROR: InitUpdateList: ioctl FIOBNIO:%s\n", NET_ErrorString());
+			return GE_NOSOCKET;
+		}
+
 		serverlist->updatelist[i].serverindex = -1;
 		serverlist->updatelist[i].starttime = 0;
 	}
@@ -236,8 +235,8 @@ static GError SendListRequest(GServerList serverlist)
 	data[len] = '\0'; //null terminate it
 	
 	ptr = strstr ( data, SECURE ) + strlen(SECURE);
-	gs_encrypt   ( (uchar *) serverlist->seckey, 6, ptr, 6 );
-	gs_encode ( ptr, 6, result );
+	gs_encrypt   ( (uchar *) serverlist->seckey, 6, (uchar *)ptr, 6 );
+	gs_encode ( (uchar *)ptr, 6, (uchar *)result );
 
 	//validate to the master
 	sprintf(data, "\\gamename\\%s\\gamever\\%s\\location\\0\\validate\\%s\\final\\\\queryid\\1.1\\",
@@ -456,7 +455,7 @@ static GError ServerListQueryLoop(GServerList serverlist)
 	char indata[1500];
 	struct sockaddr_in saddr;
 	int saddrlen = sizeof(saddr);
-	float percent = 0; // FS
+	float percent = 0.0f; // FS
 	GServer server;
 
 //first, check for available data
@@ -480,16 +479,15 @@ static GError ServerListQueryLoop(GServerList serverlist)
 			{
 				if (serverlist->updatelist[i].serverindex >= 0 && FD_ISSET(serverlist->updatelist[i].s, &set) ) //there is a server waiting
 				{ //we can read data!!
-//					Con_Printf("Got stuff to get %i\n", i);
-//					error = recv(serverlist->updatelist[i].s, indata, sizeof(indata) - 1, 0/*, &saddr, saddrlen*/ );
 					error = recvfrom(serverlist->updatelist[i].s, indata, sizeof(indata) - 1, 0, (struct sockaddr *)&saddr, &saddrlen );
 					if (SOCKET_ERROR != error) //we got data
 					{
-//						Con_Printf ("Got them servers %i\n", i);
 						indata[error] = 0; //truncate and parse it
 						server = *(GServer *)ArrayNth(serverlist->servers,serverlist->updatelist[i].serverindex);
 						if (server->ping == 9999) //set the ping
+						{
 							server->ping = current_time() - serverlist->updatelist[i].starttime;
+						}
 						ServerParseKeyVals(server, indata); 
 						serverlist->CallBackFn(serverlist, 
 												LIST_PROGRESS, 
@@ -500,11 +498,10 @@ static GError ServerListQueryLoop(GServerList serverlist)
 					}
 					else
 					{
-//						Con_Printf("Error in RECV\n");
 						serverlist->updatelist[i].serverindex = -1; //reuse the updatelist
 					}
 				}
-				Sys_SendKeyEvents (); // FS: Check for aborts because this takes a while in DOS
+				Sys_SendKeyEvents (); // FS: Check for aborts
 			}
 		}
 	}
@@ -514,12 +511,6 @@ static GError ServerListQueryLoop(GServerList serverlist)
 	{
 		if (serverlist->updatelist[i].serverindex >= 0 && current_time() - serverlist->updatelist[i].starttime > SERVER_TIMEOUT ) 
 		{
-			/* serverlist->CallBackFn(serverlist,  //do we want to notify of dead servers? if so, uncomment!
-				LIST_PROGRESS, 
-				serverlist->instance,
-				*(GServer *)ArrayNth(serverlist->servers,serverlist->updatelist[i].serverindex),
-				(void *)((serverlist->nextupdate * 100) / ArrayLength(serverlist->servers))); //percent done
-				*/
 			serverlist->updatelist[i].serverindex = -1; //reuse the updatelist
 		}
 	}
@@ -541,7 +532,6 @@ static GError ServerListQueryLoop(GServerList serverlist)
 	{
 		if (serverlist->updatelist[i].serverindex < 0) //it's availalbe
 		{
-//			Con_Printf("Sending %i\n", serverlist->nextupdate);
 			serverlist->updatelist[i].serverindex = serverlist->nextupdate++;
 
 			server = *(GServer *)ArrayNth(serverlist->servers,serverlist->updatelist[i].serverindex);
@@ -549,21 +539,10 @@ static GError ServerListQueryLoop(GServerList serverlist)
 			saddr.sin_addr.s_addr = inet_addr(ServerGetAddress(server));
 			saddr.sin_port = htons((short)ServerGetQueryPort(server));
 
-#if 0
-			error = connect (serverlist->updatelist[i].s, (struct sockaddr *) &saddr, saddrlen);
-			if (error != 0) //uhh.. bad server address?
-			{
-				Con_Printf("Error in connect %i!\n", i);
-				serverlist->updatelist[i].serverindex = -1;
-				continue;
-			}
-
-			error = send(serverlist->updatelist[i].s,STATUS,strlen(STATUS),0);
-#endif
 			error = sendto(serverlist->updatelist[i].s,STATUS,strlen(STATUS), 0, (struct sockaddr *) &saddr, saddrlen);
 			serverlist->updatelist[i].starttime = current_time();
 		}
-		percent = ((float)serverlist->nextupdate/(float)ServerListCount(serverlist)) * 100;
+		percent = ((float)serverlist->nextupdate/(float)ServerListCount(serverlist)) * 100.0f;
 		cls.gamespypercent = percent;
 		SCR_UpdateScreen(); // FS: Force an update so the percentage bar shows some progress
 		Sys_SendKeyEvents (); // FS: Check for aborts because this takes a while in DOS
@@ -571,19 +550,24 @@ static GError ServerListQueryLoop(GServerList serverlist)
 	return 0;
 }
 #else // DOS
+
+#ifdef WIN32 // FS: For testing in Win32
+#define EWOULDBLOCK WSAEWOULDBLOCK
+#endif
 // FS: DJGGP is all sorts of fucked with sockets.  This will have to do sadly :(
 static GError ServerListQueryLoop(GServerList serverlist)
 {
 	int i, error;
-	fd_set set;
-	struct timeval timeout = {1,0};
+	fd_set read_fd;
+	fd_set write_fd;
+	struct timeval timeout = {0,0}; // FS: One full second, after that fuck it
 	char indata[1500];
 	struct sockaddr_in saddr;
 	int saddrlen = sizeof(saddr);
-	float percent = 0; // FS
+	int server_timeout = bound(100, cl_master_server_timeout->intValue, 9000); // FS: Now a CVAR
+	float percent = 0.0f; // FS
 	GServer server;
 
-	FD_ZERO(&set);
 	for (i = 0 ; i < serverlist->maxupdates && serverlist->nextupdate < ArrayLength(serverlist->servers) ; i++)
 	{
 		if (serverlist->abortupdate) // FS: Check if we want to stop.
@@ -595,39 +579,47 @@ static GError ServerListQueryLoop(GServerList serverlist)
 
 		if (serverlist->updatelist[i].serverindex < 0) //it's availalbe
 		{
-			FD_SET( serverlist->updatelist[i].s, &set);
+			FD_ZERO(&write_fd);
+			FD_SET(serverlist->updatelist[i].s, &read_fd);
 			serverlist->updatelist[i].serverindex = serverlist->nextupdate++;
 			server = *(GServer *)ArrayNth(serverlist->servers,serverlist->updatelist[i].serverindex);
 			saddr.sin_family = AF_INET;
 			saddr.sin_addr.s_addr = inet_addr(ServerGetAddress(server));
 			Con_DPrintf(DEVELOPER_MSG_GAMESPY, "Attempting to ping[%i]: %s\n", i, ServerGetAddress(server));
+
 			saddr.sin_port = htons((short)ServerGetQueryPort(server));
 
-#if 0
-			error = connect (serverlist->updatelist[i].s, (struct sockaddr *) &saddr, saddrlen);
-			if (error != 0) //uhh.. bad server address?
+			error = sendto(serverlist->updatelist[i].s,STATUS,strlen(STATUS), 0, (struct sockaddr *) &saddr, saddrlen);
+
+			if (SOCKET_ERROR != error)
 			{
-				Con_DPrintf(DEVELOPER_MSG_GAMESPY, "Error during connect: %d\n", errno); // FS
-				serverlist->updatelist[i].serverindex = -1;
-				continue;
+				serverlist->updatelist[i].starttime = current_time();
+			}
+			else
+			{
+				Com_DPrintf(DEVELOPER_MSG_GAMESPY, "Error pinging server: %s\n", NET_ErrorString());
+				serverlist->updatelist[i].serverindex = -1; // reuse the update index
 			}
 
-//			error = send(serverlist->updatelist[i].s,STATUS,strlen(STATUS),0);
-#endif
-			error = sendto(serverlist->updatelist[i].s,STATUS,strlen(STATUS), 0, (struct sockaddr *) &saddr, saddrlen);
-			serverlist->updatelist[i].starttime = current_time();
+			FD_ZERO(&read_fd);
+			FD_SET(serverlist->updatelist[i].s, &write_fd);
+			selectsocket(serverlist->updatelist[i].s + 1, NULL, &write_fd, NULL, &timeout);
 
-			select(serverlist->updatelist[i].s + 1, &set, NULL, NULL, &timeout);
-			if (FD_ISSET(serverlist->updatelist[i].s, &set))
+			if (FD_ISSET(serverlist->updatelist[i].s, &write_fd))
 			{
-//				error = recv(serverlist->updatelist[i].s, indata, sizeof(indata) - 1, 0/*, &saddr, saddrlen*/ );
+retry:
 				error = recvfrom(serverlist->updatelist[i].s, indata, sizeof(indata) - 1, 0, (struct sockaddr *)&saddr, &saddrlen );
+
 				if (SOCKET_ERROR != error) //we got data
 				{
 					indata[error] = 0; //truncate and parse it
 					server = *(GServer *)ArrayNth(serverlist->servers,serverlist->updatelist[i].serverindex);
+
 					if (server->ping == 9999) //set the ping
+					{
 						server->ping = current_time() - serverlist->updatelist[i].starttime;
+					}
+
 					ServerParseKeyVals(server, indata); 
 					serverlist->CallBackFn(serverlist, 
 										LIST_PROGRESS, 
@@ -638,12 +630,22 @@ static GError ServerListQueryLoop(GServerList serverlist)
 				}
 				else
 				{
-					Con_DPrintf(DEVELOPER_MSG_GAMESPY,"Error during gamespy recv %d\n", errno);
-					continue;
+					if ( (errno == EWOULDBLOCK) && (current_time() - serverlist->updatelist[i].starttime < server_timeout) )
+
+					{
+						Sys_SendKeyEvents (); // FS: Check for aborts because this takes a while in DOS
+//						Com_DPrintf(DEVELOPER_MSG_GAMESPY, "Slow down cowboy[]..\n");
+						goto retry;
+					}
+					else // FS: If we got didn't get EWOULDBLOCK or if it just kept going past the server_timeout threshold then just give up.
+					{
+						Con_DPrintf(DEVELOPER_MSG_GAMESPY, "Error during gamespy recv %s\n", NET_ErrorString());
+						serverlist->updatelist[i].serverindex = -1; //reuse the updatelist
+					}
 				}
 			}
 		}
-		percent = ((float)serverlist->nextupdate/(float)ServerListCount(serverlist)) * 100;
+		percent = ((float)serverlist->nextupdate/(float)ServerListCount(serverlist)) * 100.0f;
 		cls.gamespypercent = percent;
 		SCR_UpdateScreen(); // FS: Force an update so the percentage bar shows some progress
 		Sys_SendKeyEvents (); // FS: Check for aborts because this takes a while in DOS
