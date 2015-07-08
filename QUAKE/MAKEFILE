@@ -170,13 +170,9 @@ $(O)/sys_dos.o
 all: qdos.exe
 
 clean:
-	del *.o
-	del qdos.exe
-	del dquake.exe
-	del dos\*.o
-	del dos\Goa\*.o
-	del dos\Goa\CEngine\*.o
-	del dos\Goa\SDK\*.o
+	rm -f DOS/*.o
+	rm -f DOS/Goa/*.o
+	rm -f DOS/Goa/CEngine/*.o
 
 qdos.exe: $(OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) -o dquake.exe $(LIBS)

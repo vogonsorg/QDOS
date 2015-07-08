@@ -11,7 +11,7 @@ USE_MPATH=yes
 USE_OGG=yes
 
 CFLAGS = -g -Wall -O2
-# -O2 -DNDEBUG=1 -ffast-math -fexpensive-optimizations
+# -O2 -DNDEBUG=1 -fno-strict-aliasing -fomit-frame-pointer
 LIBS   =
 
 ifeq ($(USE_BWTCP),yes)
@@ -21,7 +21,7 @@ ifeq ($(USE_MPATH),yes)
 CFLAGS+= -DUSE_MPATH
 endif
 ifeq ($(USE_WATT32),yes)
-CFLAGS+= -DUSE_WATT32
+CFLAGS+= -DUSE_WATT32 -DWATT32_NO_OLDIES
 CFLAGS+= -I../wat/inc
 LDFLAGS= -L../wat/lib
 LIBS  += -lwatt
@@ -171,13 +171,9 @@ $(O)/sys_dos.o
 all: qdos.exe
 
 clean:
-	del *.o
-	del qdos.exe
-	del dquake.exe
-	del dos\*.o
-	del dos\Goa\*.o
-	del dos\Goa\CEngine\*.o
-	del dos\Goa\SDK\*.o
+	rm -f DOS/*.o
+	rm -f DOS/Goa/*.o
+	rm -f DOS/Goa/CEngine/*.o
 
 qdos.exe: $(OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) -o dquake.exe $(LIBS)

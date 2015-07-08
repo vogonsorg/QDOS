@@ -124,12 +124,9 @@ $(O)/Goa/nonport.o
 all:     qw.exe
 
 clean:
-	del *.o
-	del qw.exe
-	del dqw.exe
-	del dos\*.o
-	del dos\goa\*.o
-	del dos\goa\cengine\*.o
+	rm -f DOS/*.o
+	rm -f DOS/Goa/*.o
+	rm -f DOS/Goa/CEngine/*.o
 
 qw.exe: $(OBJS) $(O)/sys_dos.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) $(O)/sys_dos.o \
