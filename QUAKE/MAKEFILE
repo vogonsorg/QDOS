@@ -10,8 +10,7 @@ USE_MPATH=no
 # whether to use OGG VORBIS
 USE_OGG=yes
 
-CFLAGS = -g -Wall -Werror -O0
-# -O2 -DNDEBUG=1
+CFLAGS = -g -Wall -Werror -O0 -fno-strict-aliasing -fomit-frame-pointer
 LIBS   =
 
 ifeq ($(USE_BWTCP),yes)
@@ -21,7 +20,7 @@ ifeq ($(USE_MPATH),yes)
 CFLAGS+= -DUSE_MPATH
 endif
 ifeq ($(USE_WATT32),yes)
-CFLAGS+= -DUSE_WATT32
+CFLAGS+= -DUSE_WATT32 -DWATT32_NO_OLDIES
 CFLAGS+= -I../wat/inc
 LDFLAGS= -L../wat/lib
 LIBS  += -lwatt
@@ -34,7 +33,7 @@ LDFLAGS += -L../libogg/lib -logg
 LDFLAGS += -L../libvorb/lib
 LIBS  += -lvorbisenc -lvorbisfile -lvorbis -logg
 endif
-LIBS  += -lc -lgcc -lm
+LIBS+= -lm
 
 # subdirectory for objects
 O=dos

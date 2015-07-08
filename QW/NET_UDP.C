@@ -284,10 +284,6 @@ void NET_Init (int port)
 	{
 		Con_Printf("WATTCP initialization failed (%s)", sock_init_err(err));
 	}
-	else
-	{
-		Con_Printf("WATTCP Initialized\n");
-	}
 
 	//
 	// open the single socket to be used for all communications
@@ -305,7 +301,7 @@ void NET_Init (int port)
 	//
 	NET_GetLocalAddress ();
 
-	Con_Printf("UDP Initialized\n");
+	Con_Printf("WATTCP Initialized\n");
 
 }
 

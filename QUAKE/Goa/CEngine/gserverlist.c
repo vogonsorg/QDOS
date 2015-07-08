@@ -131,7 +131,7 @@ static GError InitUpdateList(GServerList serverlist)
 		// FS: Set non-blocking sockets
 		if (ioctlsocket( serverlist->updatelist[i].s, FIONBIO,IOCTLARG_T &_true) == SOCKET_ERROR)
 		{
-			Com_Printf("ERROR: InitUpdateList: ioctl FIOBNIO:%s\n", NET_ErrorString());
+			Con_Printf("ERROR: InitUpdateList: ioctl FIOBNIO:%s\n", NET_ErrorString());
 			return GE_NOSOCKET;
 		}
 
@@ -564,7 +564,8 @@ static GError ServerListQueryLoop(GServerList serverlist)
 	char indata[1500];
 	struct sockaddr_in saddr;
 	int saddrlen = sizeof(saddr);
-	int server_timeout = bound(100, cl_master_server_timeout->intValue, 9000); // FS: Now a CVAR
+//	int server_timeout = bound(100, cl_master_server_timeout->intValue, 9000); // FS: Now a CVAR
+	int server_timeout = SERVER_TIMEOUT;
 	float percent = 0.0f; // FS
 	GServer server;
 
@@ -597,7 +598,7 @@ static GError ServerListQueryLoop(GServerList serverlist)
 			}
 			else
 			{
-				Com_DPrintf(DEVELOPER_MSG_GAMESPY, "Error pinging server: %s\n", NET_ErrorString());
+				Con_DPrintf(DEVELOPER_MSG_GAMESPY, "Error pinging server: %s\n", NET_ErrorString());
 				serverlist->updatelist[i].serverindex = -1; // reuse the update index
 			}
 

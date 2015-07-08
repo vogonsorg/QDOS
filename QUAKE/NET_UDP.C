@@ -30,6 +30,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <errno.h>
+#include <tcp.h>		/* for select_s(), sock_init() & friends. */
+
+extern int	_watt_do_exit;	/* in sock_ini.h, but not in public headers. */
 
 static int net_acceptsocket = -1;		// socket for fielding new connections
 static int net_controlsocket;
@@ -40,6 +43,8 @@ static unsigned long myAddr;
 
 #include "net_udp.h"
 
+char *NET_ErrorString (void);
+
 //=============================================================================
 
 int UDP_Init (void)
@@ -48,7 +53,8 @@ int UDP_Init (void)
 	char	buff[MAXHOSTNAMELEN];
 	struct qsockaddr addr;
 	char *colon;
-	
+	int i, err;
+
 	if (COM_CheckParm ("-noudp"))
 		return -1;
 #if defined(__DJGPP__)
@@ -103,6 +109,19 @@ int UDP_Init (void)
 		Cvar_Set ("hostname", buff);
 	}
 
+/*	dbug_init();*/
+
+	i = _watt_do_exit;
+	_watt_do_exit = 0;
+	err = sock_init();
+	_watt_do_exit = i;
+
+	if (err != 0)
+	{
+		Con_SafePrintf("WATTCP initialization failed (%s)", sock_init_err(err));
+		return -1;
+	}
+
 	if ((net_controlsocket = UDP_OpenSocket (0)) == -1)
 	{
 	//	Sys_Error("UDP_Init: Unable to open control socket\n");
@@ -120,7 +139,7 @@ int UDP_Init (void)
 	if (colon)
 		*colon = 0;
 
-	Con_SafePrintf("UDP Initialized\n");
+	Con_SafePrintf("WATTCP Initialized\n");
 	tcpipAvailable = true;
 
 	return net_controlsocket;
@@ -161,13 +180,20 @@ int UDP_OpenSocket (int port)
 {
 	int newsocket;
 	struct sockaddr_in address;
-	qboolean _true = true;
+	u_long _true = true;
 
-	if ((newsocket = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
+	if ((newsocket = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == INVALID_SOCKET)
+	{
+		Con_Printf ("ERROR: UDP_OpenSocket: socket: %s", NET_ErrorString());
 		return -1;
+	}
 
-	if (ioctl (newsocket, FIONBIO, (char *)&_true) == -1)
-		goto ErrorReturn;
+	// make it non-blocking
+	if (ioctlsocket (newsocket, FIONBIO, (char *) &_true) == SOCKET_ERROR)
+	{
+		Con_Printf ("ERROR: UDP_OpenSocket: ioctl FIONBIO: %s\n", NET_ErrorString());
+		return -1;
+	}
 
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
@@ -442,5 +468,13 @@ int UDP_SetSocketPort (struct qsockaddr *addr, int port)
 	((struct sockaddr_in *)addr)->sin_port = htons(port);
 	return 0;
 }
+/*
+====================
+NET_ErrorString
+====================
+*/
+char *NET_ErrorString (void)
+{
+	return strerror (errno);
+}
 
-//=============================================================================

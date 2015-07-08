@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// snd_mix.c -- portable code to mix sounds for snd_dma.c
+// snd_mix.c -- portable code to mix sounds for snd_dma->c
 
 #include "quakedef.h"
 
@@ -43,7 +43,7 @@ void Snd_WriteLinearBlastStereo16 (void)
 
 	for (i=0 ; i<snd_linear_count ; i+=2)
 	{
-		val = snd_p[i]>>8;
+		val = (snd_p[i]*snd_vol)>>8;
 		if (val > 0x7fff)
 			snd_out[i] = 0x7fff;
 		else if (val < (short)0x8000)
@@ -51,7 +51,7 @@ void Snd_WriteLinearBlastStereo16 (void)
 		else
 			snd_out[i] = val;
 
-		val = snd_p[i+1]>>8;
+		val = (snd_p[i+1]*snd_vol)>>8;
 		if (val > 0x7fff)
 			snd_out[i+1] = 0x7fff;
 		else if (val < (short)0x8000)
@@ -74,6 +74,8 @@ void S_TransferStereo16 (int endtime)
 	HRESULT	hresult;
 #endif
 	
+	snd_vol = volume.value*256;
+
 	snd_p = (int *) paintbuffer;
 	lpaintedtime = paintedtime;
 
@@ -142,6 +144,7 @@ void S_TransferPaintBuffer(int endtime)
 	int 	*p;
 	int 	step;
 	int		val;
+	int		snd_vol;
 	DWORD	*pbuf;
 #ifdef _WIN32
 	int		reps;
@@ -149,19 +152,6 @@ void S_TransferPaintBuffer(int endtime)
 	DWORD	*pbuf2;
 	HRESULT	hresult;
 #endif
-
-/*
-	if (s_testsound->value)
-	{
-		int		i;
-		int		count;
-
-		// write a fixed sine wave
-		count = (endtime - paintedtime);
-		for (i=0 ; i<count ; i++)
-			paintbuffer[i].left = paintbuffer[i].right = sin((paintedtime+i)*0.1)*20000*256;
-	}
-*/
 
 	if (shm->samplebits == 16 && shm->channels == 2)
 	{
@@ -174,6 +164,7 @@ void S_TransferPaintBuffer(int endtime)
 	out_mask = shm->samples - 1; 
 	out_idx = paintedtime * shm->channels & out_mask;
 	step = 3 - shm->channels;
+	snd_vol = volume.value*256;
 
 #ifdef _WIN32
 	if (pDSBuf)
@@ -211,7 +202,7 @@ void S_TransferPaintBuffer(int endtime)
 		short *out = (short *) pbuf;
 		while (count--)
 		{
-			val = *p >> 8;
+			val = (*p * snd_vol) >> 8;
 			p+= step;
 			if (val > 0x7fff)
 				val = 0x7fff;
@@ -226,7 +217,7 @@ void S_TransferPaintBuffer(int endtime)
 		unsigned char *out = (unsigned char *) pbuf;
 		while (count--)
 		{
-			val = *p >> 8;
+			val = (*p * snd_vol) >> 8;
 			p+= step;
 			if (val > 0x7fff)
 				val = 0x7fff;
@@ -264,8 +255,8 @@ CHANNEL MIXING
 ===============================================================================
 */
 
-void SND_PaintChannelFrom8 (channel_t *ch, sfxcache_t *sc, int endtime, int offset);
-void SND_PaintChannelFrom16 (channel_t *ch, sfxcache_t *sc, int count, int offset);
+void SND_PaintChannelFrom8 (channel_t *ch, sfxcache_t *sc, int endtime);
+void SND_PaintChannelFrom16 (channel_t *ch, sfxcache_t *sc, int endtime);
 
 void S_PaintChannels(int endtime)
 {
@@ -274,8 +265,6 @@ void S_PaintChannels(int endtime)
 	channel_t *ch;
 	sfxcache_t	*sc;
 	int		ltime, count;
-
-	snd_vol = volume.value*256;
 
 	while (paintedtime < endtime)
 	{
@@ -288,7 +277,7 @@ void S_PaintChannels(int endtime)
 		if (s_rawend < paintedtime)
 		{
 //			Con_Printf ("clear\n");
-			memset(paintbuffer, 0, (end - paintedtime) * sizeof(portable_samplepair_t));
+			Q_memset(paintbuffer, 0, (end - paintedtime) * sizeof(portable_samplepair_t));
 		}
 		else
 		{	// copy from the streaming sound source
@@ -302,7 +291,10 @@ void S_PaintChannels(int endtime)
 				s = i&(MAX_RAW_SAMPLES-1);
 				paintbuffer[i-paintedtime] = s_rawsamples[s];
 			}
-
+//		if (i != end)
+//			Com_Printf ("partial stream\n");
+//		else
+//			Com_Printf ("full stream\n");
 			for ( ; i<end ; i++)
 			{
 				paintbuffer[i-paintedtime].left =
@@ -313,31 +305,29 @@ void S_PaintChannels(int endtime)
 		ch = channels;
 		for (i=0; i<total_channels ; i++, ch++)
 		{
+			if (!ch->sfx)
+				continue;
+			if (!ch->leftvol && !ch->rightvol)
+				continue;
+			sc = S_LoadSound (ch->sfx);
+			if (!sc)
+				continue;
+
 			ltime = paintedtime;
 
-			while(ltime < end)
-			{
-				if (!ch->sfx || (!ch->leftvol && !ch->rightvol) )
-					break;
-
-				// max painting is to the end of the buffer
-				count = end - ltime;
-
-				// might be stopped by running out of data
-				if (ch->end - ltime < count)
+			while (ltime < end)
+			{	// paint up to end
+				if (ch->end < end)
 					count = ch->end - ltime;
+				else
+					count = end - ltime;
 
-				sc = S_LoadSound (ch->sfx);
-
-				if (!sc)
-					break;
-
-				if (count > 0 && ch->sfx)
+				if (count > 0)
 				{	
-					if (sc->width == 1)// FIXME; 8 bit asm is wrong now
-						SND_PaintChannelFrom8(ch, sc, count,  ltime - paintedtime);
+					if (sc->width == 1)
+						SND_PaintChannelFrom8(ch, sc, count);
 					else
-						SND_PaintChannelFrom16(ch, sc, count, ltime - paintedtime);
+						SND_PaintChannelFrom16(ch, sc, count);
 	
 					ltime += count;
 				}
@@ -353,6 +343,7 @@ void S_PaintChannels(int endtime)
 					else				
 					{	// channel just stopped
 						ch->sfx = NULL;
+						break;
 					}
 				}
 			}
@@ -368,45 +359,36 @@ void S_PaintChannels(int endtime)
 void SND_InitScaletable (void)
 {
 	int		i, j;
-	int		scale;
-
+	
 	for (i=0 ; i<32 ; i++)
-	{
-		scale = i * 8 * volume.value;
 		for (j=0 ; j<256 ; j++)
-			snd_scaletable[i][j] = ((signed char)j) * scale;
-	}
+			snd_scaletable[i][j] = ((signed char)j) * i * 8;
 }
 
 
 #if	!id386
 
-void SND_PaintChannelFrom8 (channel_t *ch, sfxcache_t *sc, int count, int offset)
+void SND_PaintChannelFrom8 (channel_t *ch, sfxcache_t *sc, int count)
 {
 	int 	data;
 	int		*lscale, *rscale;
 	unsigned char *sfx;
 	int		i;
-	portable_samplepair_t	*samp;
 
 	if (ch->leftvol > 255)
 		ch->leftvol = 255;
 	if (ch->rightvol > 255)
 		ch->rightvol = 255;
 		
-	//ZOID-- >>11 has been changed to >>3, >>11 didn't make much sense
-	//as it would always be zero.
-	lscale = snd_scaletable[ ch->leftvol >> 3];
-	rscale = snd_scaletable[ ch->rightvol >> 3];
+	lscale = snd_scaletable[ch->leftvol >> 3];
+	rscale = snd_scaletable[ch->rightvol >> 3];
 	sfx = (signed char *)sc->data + ch->pos;
 
-	samp = &paintbuffer[offset];
-
-	for (i=0 ; i<count ; i++, samp++)
+	for (i=0 ; i<count ; i++)
 	{
 		data = sfx[i];
-		samp->left += lscale[data];
-		samp->right += rscale[data];
+		paintbuffer[i].left += lscale[data];
+		paintbuffer[i].right += rscale[data];
 	}
 	
 	ch->pos += count;
@@ -415,28 +397,25 @@ void SND_PaintChannelFrom8 (channel_t *ch, sfxcache_t *sc, int count, int offset
 #endif	// !id386
 
 
-void SND_PaintChannelFrom16 (channel_t *ch, sfxcache_t *sc, int count, int offset)
+void SND_PaintChannelFrom16 (channel_t *ch, sfxcache_t *sc, int count)
 {
 	int data;
 	int left, right;
 	int leftvol, rightvol;
 	signed short *sfx;
 	int	i;
-	portable_samplepair_t	*samp;
 
-	Con_Printf("Paint from 16\n");
-	leftvol = ch->leftvol*snd_vol;
-	rightvol = ch->rightvol*snd_vol;
+	leftvol = ch->leftvol;
+	rightvol = ch->rightvol;
 	sfx = (signed short *)sc->data + ch->pos;
 
-	samp = &paintbuffer[offset];
-	for (i=0 ; i<count ; i++, samp++)
+	for (i=0 ; i<count ; i++)
 	{
 		data = sfx[i];
 		left = (data * leftvol) >> 8;
 		right = (data * rightvol) >> 8;
-		samp->left += left;
-		samp->right += right;
+		paintbuffer[i].left += left;
+		paintbuffer[i].right += right;
 	}
 
 	ch->pos += count;
