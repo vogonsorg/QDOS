@@ -12,13 +12,13 @@
 
 #ifdef _WIN32
 #include <io.h>
-#endif
+#endif // WIN32
 
 #ifdef _WIN32
 	#include "curl/curl.h"
 #else
 	#include "../libcurl/include/curl/curl.h"
-#endif
+#endif // WIN32
 
 #define CURL_ERROR(x)	curl_easy_strerror(x)
 
@@ -50,14 +50,19 @@ static size_t http_write (void *ptr, size_t size, size_t nmemb, void *stream)
 void CURL_HTTP_Init (void)
 {
 	if ((curl_borked = curl_global_init (CURL_GLOBAL_NOTHING)))
+	{
 		return;
+	}
 	multi_handle = curl_multi_init ();
 }
 
 void CURL_HTTP_Shutdown (void)
 {
 	if (curl_borked)
+	{
 		return;
+	}
+
 	curl_multi_cleanup (multi_handle);
 	curl_global_cleanup ();
 }
@@ -71,6 +76,7 @@ void CURL_HTTP_StartDownload (const char *url, const char *filename)
 		printf("[E] CURL_HTTP_StartDownload: Filename is NULL!\n");
 		return;
 	}
+
 	if (!url)
 	{
 		printf("[E] CURL_HTTP_StartDownload: URL is NULL!\n");
@@ -78,9 +84,11 @@ void CURL_HTTP_StartDownload (const char *url, const char *filename)
 	}
 
 	Com_sprintf(name, sizeof(name), "%s", filename);
+
 	if (!download)
 	{
 		download = fopen (name, "wb");
+
 		if (!download)
 		{
 			printf ("[E] CURL_HTTP_StartDownload: Failed to open %s\n", name);
@@ -121,6 +129,7 @@ void CURL_HTTP_Update (void)
 			curl_easy_getinfo (msg->easy_handle, CURLINFO_RESPONSE_CODE,
 							   &response_code);
 			Con_DPrintf("HTTP URL response code: %li\n", response_code);
+
 			if ( (response_code == HTTP_OK || response_code == HTTP_REST))
 			{
 				printf ("[I] HTTP Download of %s completed\n", name); // FS: Tell me when it's done
@@ -152,6 +161,7 @@ void CURL_HTTP_Update (void)
 			{
 				CURL_HTTP_StartDownload("http://qtracker.com/server_list_details.php?game=quake2", "q2servers.txt");
 			}
+
 		}
 	}
 }
