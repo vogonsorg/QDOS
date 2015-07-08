@@ -569,7 +569,7 @@ static void Test_Poll(void)
 		connectTime = MSG_ReadLong();
 		Q_strcpy(address, MSG_ReadString());
 
-		Con_Printf("%s\n  frags:%3i  colors:%u %u  time:%u\n  %s\n", name, frags, colors >> 4, colors & 0x0f, connectTime / 60, address);
+		Con_Printf("[%uc]%s\n  frags:%3i  colors:%u %u  time:%u\n  %s\n", playerNumber, name, frags, colors >> 4, colors & 0x0f, connectTime / 60, address);
 	}
 
 	testPollCount--;

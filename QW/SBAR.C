@@ -424,7 +424,7 @@ void Sbar_SortTeams (void)
 		// find his team in the list
 		t[16] = 0;
 		strncpy(t, Info_ValueForKey(s->userinfo, "team"), 16);
-		if (!t || !t[0])
+		if (t == NULL || t[0] == 0)
 			continue; // not on team
 		for (j = 0; j < scoreboardteams; j++)
 			if (!strcmp(teams[j].team, t)) {
@@ -878,7 +878,7 @@ added by Zoid
 void Sbar_TeamOverlay (void)
 {
 	qpic_t			*pic;
-	int				i, k, l;
+	int				i, k; //, l;
 	int				x, y;
 	char			num[12];
 	int				teamplay;
@@ -912,7 +912,7 @@ void Sbar_TeamOverlay (void)
 	Sbar_SortTeams();
 
 // draw the text
-	l = scoreboardlines;
+//	l = scoreboardlines;
 
 	for (i=0 ; i < scoreboardteams && y <= vid.height-10 ; i++)
 	{

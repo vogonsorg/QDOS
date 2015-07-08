@@ -432,7 +432,7 @@ void CL_Record_f (void)
 // serverdata
 	// send the info about the new client to all connected clients
 	memset(&buf, 0, sizeof(buf));
-	buf.data = buf_data;
+	buf.data = (byte *)buf_data;
 	buf.maxsize = sizeof(buf_data);
 
 // send the serverdata

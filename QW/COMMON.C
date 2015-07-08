@@ -1863,6 +1863,7 @@ void COM_Type_f (void) // FS: Notepad
 
 	// copy the file into the buffer:
 	result = fread (data,1,lSize,fdata);
+	result = result; /* FS: TODO FIXME: Finish this -- Silence compiler */
 //	Con_Printf("%s:\n%s\n", Cmd_Argv(1),data);
 	Con_Printf("%s\n", data);
 	free(data);

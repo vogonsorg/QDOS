@@ -1345,6 +1345,7 @@ void PF_aim (void)
 	{
 		VectorCopy (bestdir, G_VECTOR(OFS_RETURN));
 	}
+	speed = speed; /* FS: Silence compiler */
 }
 
 /*

@@ -108,7 +108,7 @@ void CL_ParseTEnt (void)
 {
 	int		type;
 	vec3_t	pos;
-	vec3_t	color; // FS: Nehahra
+//	vec3_t	color; // FS: Nehahra
 	dlight_t	*dl;
 	int		rnd;
 	int		colorStart, colorLength;
@@ -247,12 +247,12 @@ void CL_ParseTEnt (void)
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
 		break;
 	case TE_EXPLOSION3:
-		pos[0] = MSG_ReadCoord ();
-		pos[1] = MSG_ReadCoord ();
-		pos[2] = MSG_ReadCoord ();
-		color[0] = MSG_ReadCoord();
-		color[1] = MSG_ReadCoord ();
-		color[2] = MSG_ReadCoord ();
+/*		pos[0] =*/ MSG_ReadCoord ();
+/*		pos[1] =*/ MSG_ReadCoord ();
+/*		pos[2] =*/ MSG_ReadCoord ();
+/*		color[0] =*/ MSG_ReadCoord();
+/*		color[1] =*/ MSG_ReadCoord ();
+/*		color[2] =*/ MSG_ReadCoord ();
 		Con_DPrintf(DEVELOPER_MSG_VERBOSE, "Not implemented!\n"); // FS: For Nehahra
 		break;
 	case TE_LIGHTNING4NEH:

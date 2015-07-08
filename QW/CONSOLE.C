@@ -621,7 +621,7 @@ The input line scrolls horizontally if typing goes beyond the right edge
 */
 void Con_DrawInput (void)
 {
-	int		y;
+//	int		y;
 	int		i;
 	char	*text;
 
@@ -642,7 +642,7 @@ void Con_DrawInput (void)
 		text += 1 + key_linepos - con_linewidth;
 		
 // draw it
-	y = con_vislines-22;
+//	y = con_vislines-22;
 
 	for (i=0 ; i<con_linewidth ; i++)
 		Draw_Character ( (i+1)<<3, con_vislines - 22, text[i]);

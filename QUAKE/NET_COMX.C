@@ -781,8 +781,8 @@ int TTY_Connect(int handle, char *host)
 		key_count = -2;
 
 		Con_Printf ("Dialing...\n");
-		sprintf(dialstring, "AT D%c %s\r", p->dialType, host);
-		Modem_Command (p, dialstring);
+		sprintf((char *)dialstring, "AT D%c %s\r", p->dialType, host);
+		Modem_Command (p, (char *)dialstring);
 		start = Sys_FloatTime();
 		while(1)
 		{
@@ -856,6 +856,7 @@ int TTY_Connect(int handle, char *host)
 		}
 		return -1;
 	}
+	b = b; /* FS: Silence compiler */
 	m_return_onerror = false;
 	return 0;
 }

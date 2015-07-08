@@ -25,19 +25,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 void SHOWLMP_Decodeshow (void)
 {
 	char lmplabel[256], picname[256];
-	float x, y;
+//	float x, y;
 	Q_strlcpy (lmplabel,MSG_ReadString(), sizeof (lmplabel));
 	Q_strlcpy (picname, MSG_ReadString(), sizeof (picname));
 
 	if (nehahra)
 	{
-		x = MSG_ReadByte();
-		y = MSG_ReadByte();
+/*		x = */MSG_ReadByte();
+/*		y = */MSG_ReadByte();
 	}
 	else
 	{
-		x = MSG_ReadShort();
-		y = MSG_ReadShort();
+/*		x = */MSG_ReadShort();
+/*		y = */MSG_ReadShort();
 	}
 }
 

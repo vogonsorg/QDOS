@@ -742,7 +742,7 @@ void CL_ParsePlayerinfo (void)
 {
    int         msec;
    int         flags;
-   player_info_t  *info;
+//   player_info_t  *info;
    player_state_t *state;
    int         num;
    int         i;
@@ -751,7 +751,7 @@ void CL_ParsePlayerinfo (void)
    if (num > MAX_CLIENTS)
       Sys_Error ("CL_ParsePlayerinfo: bad num");
 
-   info = &cl.players[num];
+//   info = &cl.players[num];
 
    state = &cl.frames[parsecountmod].playerstate[num];
 

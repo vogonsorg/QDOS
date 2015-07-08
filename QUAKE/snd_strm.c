@@ -258,7 +258,7 @@ void S_StreamBackgroundTrack (void)
 		total = 0;
 		while (total < maxRead)
 		{
-			read = ov_read(s_bgTrack.vorbisFile, data + total, maxRead - total, 0, 2, 1, &dummy);
+			read = ov_read(s_bgTrack.vorbisFile, (char *)(data + total), maxRead - total, 0, 2, 1, &dummy);
 			if (!read)
 			{	// End of file
 				if (!s_bgTrack.looping)
