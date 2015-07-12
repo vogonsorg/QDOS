@@ -28,6 +28,22 @@ typedef struct
 	cache_user_t	cache;
 } skin_t;
 
+#define MAX_SERVERS 400 /* FS: There's barely 350 active servers existing, but OK. */
+/* FS: Gamespy browser */
+typedef struct
+{
+	char ip[15];
+	int port;
+	int ping;
+	char hostname[32];
+	int curPlayers;
+	int maxPlayers;
+	char mapname[32];
+}
+gamespyBrowser_t;
+extern gamespyBrowser_t browserList[MAX_SERVERS];
+void CL_PingNetServers_f (void);
+
 // player_state_t is the information needed by a player entity
 // to do move prediction and to generate a drawable entity
 typedef struct
@@ -194,10 +210,13 @@ typedef struct
 	int			downloadpercent;
 	int			downloadrate; // FS
 	double		downloadstarttime; // FS
+
 	int downloadoldrate; // FS
 	int downloadmaxrate; // FS
 	int gamespyupdate; // FS
 	int gamespypercent; // FS
+	int gamespytotalservers; // FS
+	int gamespystarttime; // FS
 #ifdef FTE_PEXT_CHUNKEDDOWNLOADS
 	enum {DL_NONE = 0, DL_QW, DL_QWCHUNKS} downloadmethod;
 #else
@@ -359,6 +378,7 @@ extern	cvar_t	rate; // FS
 extern	cvar_t	cl_downloadrate_hack; // FS
 extern	cvar_t	cl_master_server_ip; // FS
 extern	cvar_t	cl_master_server_port; // FS
+extern	cvar_t	cl_master_server_timeout; // FS
 extern	cvar_t	snd_gamespy_sounds; // FS
 extern	cvar_t	cl_ogg_music; // FS: For OGG
 

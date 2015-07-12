@@ -23,13 +23,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 void (*vid_menudrawfn)(void);
 void (*vid_menukeyfn)(int key);
 
-enum {m_none, m_main, m_singleplayer, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_quit, m_serialconfig, m_modemconfig, m_lanconfig, m_gameoptions, m_search, m_slist, m_extended} m_state; // FS: extended options
+enum {m_none, m_main, m_singleplayer, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_quit, m_serialconfig, m_modemconfig, m_lanconfig, m_gameoptions, m_search, m_slist, m_extended, m_gamespy} m_state; // FS: extended options
 
 void M_Menu_Main_f (void);
 	void M_Menu_SinglePlayer_f (void);
 		void M_Menu_Load_f (void);
 		void M_Menu_Save_f (void);
 	void M_Menu_MultiPlayer_f (void);
+		void M_Menu_Gamespy_f (void); /* FS: Gamespy stuff */
 		void M_Menu_Setup_f (void);
 		void M_Menu_Net_f (void);
 	void M_Menu_Options_f (void);
@@ -50,6 +51,7 @@ void M_Main_Draw (void);
 		void M_Load_Draw (void);
 		void M_Save_Draw (void);
 	void M_MultiPlayer_Draw (void);
+		void M_Gamespy_Draw (void); /* FS: Gamespy stuff */
 		void M_Setup_Draw (void);
 		void M_Net_Draw (void);
 	void M_Options_Draw (void);
@@ -70,6 +72,7 @@ void M_Main_Key (int key);
 		void M_Load_Key (int key);
 		void M_Save_Key (int key);
 	void M_MultiPlayer_Key (int key);
+		void M_Gamespy_Key (int key); /* FS: Gamespy stuff */
 		void M_Setup_Key (int key);
 		void M_Net_Key (int key);
 	void M_Options_Key (int key);
@@ -1429,7 +1432,6 @@ void M_Extended_Draw() // FS: Extended
 		M_Print (220, 120, s_khz.string);
 }
 
-
 void M_AdjustSliders_Extended (int dir)
 {
 	switch(extended_cursor)
@@ -1485,7 +1487,6 @@ void M_AdjustSliders_Extended (int dir)
 	}
 	S_LocalSound ("misc/menu3.wav");
 }
-
 
 void M_Extended_Key(int k) // FS: Extended
 {
@@ -1668,4 +1669,26 @@ void M_Extended_Set_Sound_KHz (int dir, int khz)
 				Cbuf_AddText("snd_restart\n");
 			}
 	}
+}
+
+/* FS: Gamespy stuff */
+void M_Menu_Gamespy_f(void)
+{
+	key_dest = key_menu;
+	m_state = m_gamespy;
+	m_entersound = true;
+
+}
+
+void M_Gamespy_Draw() // FS: Extended
+{
+	float	r;
+	qpic_t  *p;
+
+	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
+	p = Draw_CachePic ("gfx/p_option.lmp");
+	M_DrawPic ( (320-p->width)/2, 4, p);
+
+        M_Print (16, 32, "     Refresh Server List");
+        M_DrawCheckbox (220, 32, net_broadcast_chat.value); // FS
 }
