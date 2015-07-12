@@ -6,7 +6,7 @@ USE_OGG=yes
 # whether to use ASM
 USE_ASM=1
 
-CFLAGS= -g -Wall -Werror -O0 -fno-strict-aliasing -fomit-frame-pointer -DWATT32_NO_OLDIES -I../wat/inc
+CFLAGS= -g -Wall -O2 -fno-strict-aliasing -fomit-frame-pointer -mtune=pentium3 -march=pentium3 -mfpmath=sse -DWATT32_NO_OLDIES -I../wat/inc
 LDFLAGS= -L../wat/lib
 LIBS= -lwatt
 
@@ -130,18 +130,18 @@ endif
 
 OBJECTS =  $(CLIENT) $(ASM)
 
-all:     qw.exe
+all:     qwsse.exe
 
 clean:
 	rm -f DOS/*.o
 	rm -f DOS/Goa/*.o
 	rm -f DOS/Goa/CEngine/*.o
 
-qw.exe: $(OBJECTS)
-	$(CC) $(LDFLAGS) $(OBJECTS) -o dqw.exe $(LIBS)
-	del  qw.exe
-	copy dqw.exe qw.exe
-	$(STRIP) qw.exe
+qwsse.exe: $(OBJECTS)
+	$(CC) $(LDFLAGS) $(OBJECTS) -o dqwsse.exe $(LIBS)
+	del  qwsse.exe
+	copy dqwsse.exe qwsse.exe
+	$(STRIP) qwsse.exe
 
 
 DO_AS=$(CC) -x assembler-with-cpp

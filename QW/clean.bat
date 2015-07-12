@@ -22,4 +22,4 @@ rm -rf Release
 
 cd ..
 cd DOS
-del *.o
+del /s *.o

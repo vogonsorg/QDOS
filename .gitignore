@@ -15,8 +15,12 @@ out.txt
 gas2masm.exe
 gas2masm.ilk
 qw.exe
+qwsse.exe
 dqw.exe
+dqwsse.exe
+dqsse.exe
 qdos.exe
+qdossse.exe
 dquake.exe
 relqw.bat
 relqwexe.bat
