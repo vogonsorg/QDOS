@@ -1,6 +1,7 @@
 # ignore all make dependency files
 *.d
 *.o
+q*.7z
 *.ncb
 *.opt
 *.plg
