@@ -40,6 +40,10 @@ extern void GUS_ClearDMA(void); // FS
 extern int havegus; // FS
 #endif
 
+#ifdef WIN32
+extern void IN_Accumulate (void);
+#endif
+
 // =======================================================================
 // Internal sound data & structures
 // =======================================================================

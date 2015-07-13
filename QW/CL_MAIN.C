@@ -145,11 +145,15 @@ cvar_t	console_old_complete = {"console_old_complete", "0", true, false , "Use l
 cvar_t	developer = {"developer","0", false, false, "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Extremely verbose msgs - 65536\n  * Extremely verbose gamespy msgs - 131072\n"};
 cvar_t	con_show_description = {"con_show_description", "1", true, false, "Show descriptions for CVARs."}; // FS
 cvar_t	con_show_dev_flags = {"con_show_dev_flags", "1", true, false, "Show developer flag options."}; // FS
-cvar_t	cl_master_server_ip = {"cl_master_server_ip", CL_MASTER_ADDR, true, false, "GameSpy Master Server IP."}; // FS
-cvar_t	cl_master_server_port = {"cl_master_server_port", CL_MASTER_PORT, true, false, "GameSpy Master Server Port."}; // FS
+
+/* FS: GameSpy CVARs */
+cvar_t	cl_master_server_ip = {"cl_master_server_ip", CL_MASTER_ADDR, true, false, "GameSpy Master Server IP."};
+cvar_t	cl_master_server_port = {"cl_master_server_port", CL_MASTER_PORT, true, false, "GameSpy Master Server Port."};
 cvar_t	cl_master_server_queries = {"cl_master_server_queries", "10", true, false, "Number of sockets to allocate for GameSpy."};
 cvar_t	cl_master_server_timeout = {"cl_master_server_timeout", "3000", true, false, "Timeout (in milliseconds) to give up on pinging a server."};
-cvar_t	snd_gamespy_sounds = {"snd_gamespy_sounds", "0", true, false, "Play the complete.wav and abort.wav from GameSpy3D if it exists in sounds/gamespy."}; // FS
+cvar_t	cl_master_server_retries = {"cl_master_server_retries", "20", true, false, "Number of retries to attempt for receiving the server list.  Formula is 50ms + 10ms for each retry."};
+cvar_t	snd_gamespy_sounds = {"snd_gamespy_sounds", "0", true, false, "Play the complete.wav and abort.wav from GameSpy3D if it exists in sounds/gamespy."};
+
 cvar_t	cl_ogg_music = {"cl_ogg_music", "1", true, false, "Play OGG tracks in the format of music/trackXX.ogg if they exist."}; // FS
 
 int         fps_count;
@@ -1328,11 +1332,15 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&cl_downloadrate_hack); // FS
 	Cvar_RegisterVariable (&con_show_description); // FS
 	Cvar_RegisterVariable (&con_show_dev_flags); // FS
-	Cvar_RegisterVariable (&cl_master_server_ip); // FS: Gamespy
-	Cvar_RegisterVariable (&cl_master_server_port); // FS: Gamespy
-	Cvar_RegisterVariable (&cl_master_server_queries); // FS: Gamespy
-	Cvar_RegisterVariable (&cl_master_server_timeout); // FS: Gamespy
+
+	/* FS: GameSpy CVARs */
+	Cvar_RegisterVariable (&cl_master_server_ip);
+	Cvar_RegisterVariable (&cl_master_server_port);
+	Cvar_RegisterVariable (&cl_master_server_queries);
+	Cvar_RegisterVariable (&cl_master_server_timeout);
+	Cvar_RegisterVariable (&cl_master_server_retries);
 	Cvar_RegisterVariable (&snd_gamespy_sounds); // FS: Gamespy
+
 	Cvar_RegisterVariable (&cl_ogg_music); // FS: For OGG
 
 	Cmd_AddCommand ("version", CL_Version_f);

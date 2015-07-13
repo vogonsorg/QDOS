@@ -1,10 +1,8 @@
-* Find out the cause of 1600x1200 crashing when jumping into the water.
+* Fix 1600x1200 water warping crash.
 * Finish up dstring
-* Address Book in multiplayer menu -- Preliminary work has begun...
 * AddCommand after host has been initialized
 * Fix GUS Initialization
 * Windows 9x support (requires fixing real2ptr crap)
-* MP3/OGG (up in the air if I really want this)
 * IRC via multiplayer menu
 * Darkplaces Downloading support
 * Nehahra

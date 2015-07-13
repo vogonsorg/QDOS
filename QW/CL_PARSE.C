@@ -1463,8 +1463,10 @@ void CL_ParseServerMessage (void)
 	int		cmd;
 	char	*s;
 	char	*fversion; // FS
+#ifdef OGG_SUPPORT
 	char	name[MAX_OSPATH]; // FS: For OGG
 	int		fileHandle; // FS: For OGG
+#endif
 	int		i, j;
 
 	received_framecount = host_framecount;

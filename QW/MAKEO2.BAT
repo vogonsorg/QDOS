@@ -1,3 +1,4 @@
 @echo off
-make clean
+CALL setenv.bat
+make -f makefile.o2 clean
 make -f makefile.o2
