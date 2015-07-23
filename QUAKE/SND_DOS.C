@@ -441,12 +441,12 @@ qboolean BLASTER_Init(void)
 		shm->samplebits = 8;	 
 	}
 
-		  if(!host_initialized) // FS: SND_RESTART
-		  {
-					 Cmd_AddCommand("sbinfo", SB_Info_f);
-		  }
+	if(!host_initialized) // FS: SND_RESTART
+	{
+		Cmd_AddCommand("sbinfo", SB_Info_f);
+	}
 
-		  size = 4096;
+	size = SND_BUFFER_SIZE;
 
 // allocate 8k and get a 4k-aligned buffer from it
 	dma_dosadr = dos_getmemory(size*2); // sezero
@@ -470,7 +470,6 @@ qboolean BLASTER_Init(void)
 	shm->samplepos = 0;
 	shm->submission_chunk = 1;
 	shm->buffer = (unsigned char *) dma_buffer;
-	shm->samples = size/(shm->samplebits/8);
 
 	StartDMA();
 	StartSB();

@@ -16,11 +16,31 @@ void Com_sprintf( char *dest, int size, const char *fmt, ... )
 	va_end(argptr);
 }
 
+static char	timestampMsg[MAXPRINTMSG];
+char *Con_Timestamp (char *msg)
+{
+	/* FS: Timestamp code */
+	struct tm       *local = NULL;
+	time_t          utc = 0;
+	const char *timefmt = NULL;
+	char            st[80];
+
+	utc = time (NULL);
+	local = localtime (&utc);
+	if (Timestamp > 1)
+		timefmt = "[%m/%d/%y @ %H:%M:%S %p] ";
+	else
+		timefmt = "[%m/%d/%y @ %I:%M:%S %p] ";
+	strftime (st, sizeof (st), timefmt, local);
+	Com_sprintf(timestampMsg,sizeof(timestampMsg), "%s%s", st, msg);
+
+	return timestampMsg;
+}
+
 void Con_DPrintf (const char *fmt, ...)
 {
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];
-	char		timestampMsg[MAXPRINTMSG];
 
 	if (!Debug)	// don't confuse non-developers with techie stuff...
 		return;
@@ -30,27 +50,10 @@ void Con_DPrintf (const char *fmt, ...)
 	DK_vsnprintf(msg, sizeof(msg), fmt, argptr);	// Knightmare 10/28/12- buffer-safe version
 	va_end (argptr);
 
-	/* FS: Timestamp code */
-	if(Timestamp)
-	{
-        struct tm       *local = NULL;
-        time_t          utc = 0;
-        const char *timefmt = NULL;
-        char            st[80];
-
-        utc = time (NULL);
-        local = localtime (&utc);
-		if (Timestamp > 1)
-			timefmt = "[%m/%d/%y @ %H:%M:%S %p] ";
-		else
-			timefmt = "[%m/%d/%y @ %I:%M:%S %p] ";
-        strftime (st, sizeof (st), timefmt, local);
-		Com_sprintf(timestampMsg,sizeof(timestampMsg), "%s%s", st, msg);
-//		strncpy(msg,va("%s%s", st, msg),sizeof(msg)-1);
-		printf("%s", timestampMsg);
-	}
+	if (Timestamp)
+		printf("%s", Con_Timestamp(msg));
 	else
-		printf ("%s", msg);
+		printf("%s", msg);
 }
 
 

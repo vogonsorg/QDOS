@@ -81,12 +81,11 @@ cvar_t volume = {"volume", "0.7", true};
 cvar_t nosound = {"nosound", "0"};
 cvar_t precache = {"precache", "1"};
 cvar_t loadas8bit = {"loadas8bit", "0"};
-cvar_t bgmbuffer = {"bgmbuffer", "4096"};
 cvar_t ambient_level = {"ambient_level", "0.3"};
 cvar_t ambient_fade = {"ambient_fade", "100"};
 cvar_t snd_noextraupdate = {"snd_noextraupdate", "0"};
 cvar_t snd_show = {"snd_show", "0"};
-cvar_t _snd_mixahead = {"_snd_mixahead", "0.1", true};
+cvar_t _snd_mixahead = {"_snd_mixahead", "0.2", true};
 cvar_t s_khz = {"s_khz","", true};	// FS: S_KHZ
 #ifdef OGG_SUPPORT	// Knightmare added
 cvar_t	s_musicvolume = {"s_musicvolume", "1", true};
@@ -204,13 +203,12 @@ void S_Init (void)
 	Cvar_RegisterVariable(&precache);
 	Cvar_RegisterVariable(&loadas8bit);
 	Cvar_RegisterVariable(&bgmvolume);
-	Cvar_RegisterVariable(&bgmbuffer);
 	Cvar_RegisterVariable(&ambient_level);
 	Cvar_RegisterVariable(&ambient_fade);
 	Cvar_RegisterVariable(&snd_noextraupdate);
 	Cvar_RegisterVariable(&snd_show);
 	Cvar_RegisterVariable(&_snd_mixahead);
-	Cvar_RegisterVariable (&s_khz);		// FS: S_KHZ
+	Cvar_RegisterVariable(&s_khz);		// FS: S_KHZ
 #ifdef OGG_SUPPORT
 	Cvar_RegisterVariable (&s_musicvolume); // Knightmare: added
 #endif	
@@ -251,6 +249,7 @@ void S_Init (void)
 		shm->submission_chunk = 1;
 		shm->buffer = Hunk_AllocName(1<<16, "shmbuf");
 	}
+
 	if (shm) //FS: GPF no BLASTER set Fix (QIP)
 		Con_Printf ("Sound sampling rate: %i\n", shm->speed);
 
@@ -324,10 +323,12 @@ sfx_t *S_FindName (char *name)
 
 // see if already loaded
 	for (i=0 ; i < num_sfx ; i++)
+	{
 		if (!Q_strcmp(known_sfx[i].name, name))
 		{
 			return &known_sfx[i];
 		}
+	}
 
 	if (num_sfx == MAX_SFX)
 		Sys_Error ("S_FindName: out of sfx_t");
@@ -399,11 +400,13 @@ channel_t *SND_PickChannel(int entnum, int entchannel)
 	life_left = 0x7fffffff;
 	for (ch_idx=NUM_AMBIENTS ; ch_idx < NUM_AMBIENTS + MAX_DYNAMIC_CHANNELS ; ch_idx++)
 	{
-	#ifdef OGG_SUPPORT	//  Knightmare added
+#ifdef OGG_SUPPORT	//  Knightmare added
 		// Don't let game sounds override streaming sounds
 		if (channels[ch_idx].streaming)  // Q2E
+		{
 			continue;
-	#endif
+		}
+#endif
 		if (entchannel != 0		// channel 0 never overrides
 				&& channels[ch_idx].entnum == entnum
 				&& (channels[ch_idx].entchannel == entchannel || entchannel == -1))
@@ -414,7 +417,9 @@ channel_t *SND_PickChannel(int entnum, int entchannel)
 
 		// don't let monster sounds override player sounds
 		if (channels[ch_idx].entnum == cl.viewentity && entnum != cl.viewentity && channels[ch_idx].sfx)
+		{
 			continue;
+		}
 
 		if (channels[ch_idx].end - paintedtime < life_left)
 		{

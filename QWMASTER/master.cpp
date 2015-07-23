@@ -161,6 +161,7 @@ SERVICE_STATUS_HANDLE   MyServiceStatusHandle;
 
 void SetQ2MasterRegKey(char* name, char *value);
 void GetQ2MasterRegKey(char* name, char *value);
+#define selectsocket select
 
 #else
 
@@ -174,11 +175,13 @@ void GetQ2MasterRegKey(char* name, char *value);
 #include <netinet/in.h>
 #include <errno.h>
 #include <unistd.h>
-#include <tcp.h> // FS: TODO: Is this WATT32 only?
+#include <tcp.h>
 
 #ifndef __DJGPP__
 	#include <sys/signal.h>
-#endif // __DJGPP__
+#else
+	#include <signal.h>
+#endif /* __DJGPP__ */
 
 #include <arpa/inet.h>
 #include <netdb.h>
@@ -190,7 +193,16 @@ void GetQ2MasterRegKey(char* name, char *value);
 enum {FALSE, TRUE};
 
 // stuff not defined in sys/socket.h
+#ifndef SOCKET
 #define SOCKET unsigned int
+#endif /* SOCKET */
+
+#ifdef __DJGPP__
+#define selectsocket select_s
+extern int	_watt_do_exit;	/* in sock_ini.h, but not in public headers. */
+#else
+#define selectsocket select
+#endif /* __DJGPP__ */
 
 #ifndef SOCKET_ERROR
 	#define SOCKET_ERROR -1
@@ -199,14 +211,12 @@ enum {FALSE, TRUE};
 #define TIMEVAL struct timeval
 
 // portability, rename or delete functions
-#define WSAGetLastError() errno
 #define _strnicmp strncasecmp
 #define My_Main main
 #define closesocket close // FS
 #define SetQ2MasterRegKey(x,y)
 #define	GetQ2MasterRegKey(x,y)
 #define WSACleanup()
-#define Sleep(x)	sleep((x/1000))
 void signal_handler(int sig);
 
 #endif
@@ -246,8 +256,7 @@ WSADATA ws;
 fd_set set;
 #ifdef NEW_PARSE
 fd_set master; // FS
-#endif
-//fd_set tcpSet; // FS
+#endif /* WIN32 */
 
 char incoming[MAX_INCOMING_LEN];
 char incomingTcpValidate[MAX_INCOMING_LEN]; // FS
@@ -266,6 +275,8 @@ int load_Serverlist = 0;
 
 int validate_newserver_immediately = 0; // FS
 int validation_required = 0; // FS
+int motd = 0; // FS
+int logTCP = 0;
 unsigned int minimumHeartbeats = 2; // FS: Minimum amount of heartbeats required before we're added to the list, used to verify it's a real server.
 double lastHTTPDL = 0; // FS
 
@@ -280,12 +291,197 @@ const char *challengeHeader = "\\basic\\\\secure\\"; // FS: This is the start of
 int Rcon (struct sockaddr_in *from, char *queryString);
 void HTTP_DL_List(void);
 
+/* FS: Set a socket to be non-blocking */
+#ifdef _WIN32
+#define TCP_BLOCKING_ERROR WSAEWOULDBLOCK
+static int Set_Non_Blocking_Socket (SOCKET socket) {
+	u_long _true = true;
+
+	return ioctlsocket( socket, FIONBIO, &_true);
+}
+
+static __inline int Get_Last_Error(void) {
+	return WSAGetLastError();
+}
+#else
+#define TCP_BLOCKING_ERROR EWOULDBLOCK
+static int Set_Non_Blocking_Socket (SOCKET socket) {
+	int _true = true;
+	return ioctlsocket( socket, FIONBIO, IOCTLARG_T &_true);
+}
+
+static __inline int Get_Last_Error(void) {
+	return errno;
+}
+#endif
+
+void msleep(unsigned long msec)
+{
+#ifndef _WIN32
+	usleep(msec * 1000);
+#else
+	Sleep(msec);
+#endif
+}
+
+static char *NET_ErrorString(void)
+{
+#if _WIN32
+	int		code;
+
+	code = WSAGetLastError ();
+	switch (code)
+	{
+	case WSAEINTR: return "WSAEINTR";
+	case WSAEBADF: return "WSAEBADF";
+	case WSAEACCES: return "WSAEACCES";
+	case WSAEDISCON: return "WSAEDISCON";
+	case WSAEFAULT: return "WSAEFAULT";
+	case WSAEINVAL: return "WSAEINVAL";
+	case WSAEMFILE: return "WSAEMFILE";
+	case WSAEWOULDBLOCK: return "WSAEWOULDBLOCK";
+	case WSAEINPROGRESS: return "WSAEINPROGRESS";
+	case WSAEALREADY: return "WSAEALREADY";
+	case WSAENOTSOCK: return "WSAENOTSOCK";
+	case WSAEDESTADDRREQ: return "WSAEDESTADDRREQ";
+	case WSAEMSGSIZE: return "WSAEMSGSIZE";
+	case WSAEPROTOTYPE: return "WSAEPROTOTYPE";
+	case WSAENOPROTOOPT: return "WSAENOPROTOOPT";
+	case WSAEPROTONOSUPPORT: return "WSAEPROTONOSUPPORT";
+	case WSAESOCKTNOSUPPORT: return "WSAESOCKTNOSUPPORT";
+	case WSAEOPNOTSUPP: return "WSAEOPNOTSUPP";
+	case WSAEPFNOSUPPORT: return "WSAEPFNOSUPPORT";
+	case WSAEAFNOSUPPORT: return "WSAEAFNOSUPPORT";
+	case WSAEADDRINUSE: return "WSAEADDRINUSE";
+	case WSAEADDRNOTAVAIL: return "WSAEADDRNOTAVAIL";
+	case WSAENETDOWN: return "WSAENETDOWN";
+	case WSAENETUNREACH: return "WSAENETUNREACH";
+	case WSAENETRESET: return "WSAENETRESET";
+	case WSAECONNABORTED: return "WSWSAECONNABORTEDAEINTR";
+	case WSAECONNRESET: return "WSAECONNRESET";
+	case WSAENOBUFS: return "WSAENOBUFS";
+	case WSAEISCONN: return "WSAEISCONN";
+	case WSAENOTCONN: return "WSAENOTCONN";
+	case WSAESHUTDOWN: return "WSAESHUTDOWN";
+	case WSAETOOMANYREFS: return "WSAETOOMANYREFS";
+	case WSAETIMEDOUT: return "WSAETIMEDOUT";
+	case WSAECONNREFUSED: return "WSAECONNREFUSED";
+	case WSAELOOP: return "WSAELOOP";
+	case WSAENAMETOOLONG: return "WSAENAMETOOLONG";
+	case WSAEHOSTDOWN: return "WSAEHOSTDOWN";
+	case WSASYSNOTREADY: return "WSASYSNOTREADY";
+	case WSAVERNOTSUPPORTED: return "WSAVERNOTSUPPORTED";
+	case WSANOTINITIALISED: return "WSANOTINITIALISED";
+	case WSAHOST_NOT_FOUND: return "WSAHOST_NOT_FOUND";
+	case WSATRY_AGAIN: return "WSATRY_AGAIN";
+	case WSANO_RECOVERY: return "WSANO_RECOVERY";
+	case WSANO_DATA: return "WSANO_DATA";
+	default: return "NO ERROR";
+	}
+#else
+	return strerror (errno);
+#endif
+}
+
+void Log_Sucessful_TCP_Connections(char *logbuffer)
+{
+	FILE *f = fopen("gspytcp.log", "a+");
+
+	if(!f)
+		return;
+
+	fseek(f, 0, SEEK_END);
+
+	if(Timestamp)
+	{
+		char timestampLogBuffer[MAXPRINTMSG];
+
+		Com_sprintf(timestampLogBuffer, sizeof(timestampLogBuffer), "%s", Con_Timestamp(logbuffer));
+		fputs(timestampLogBuffer, f);
+	}
+	else
+	{
+		fputs(logbuffer, f);
+	}
+
+	fflush(f);
+
+	fclose(f);
+}
+
+int UDP_OpenSocket (int port)
+{
+	int newsocket;
+	struct sockaddr_in address;
+
+	if ((newsocket = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == INVALID_SOCKET)
+	{
+		printf("[E] UDP_OpenSocket: socket: %s", NET_ErrorString());
+		return -1;
+	}
+
+	// make it non-blocking
+	if (Set_Non_Blocking_Socket(newsocket) == SOCKET_ERROR)
+	{
+		printf("[E] UDP_OpenSocket: ioctl FIONBIO: %s\n", NET_ErrorString());
+		return -1;
+	}
+
+	address.sin_family = AF_INET;
+	address.sin_addr.s_addr = INADDR_ANY;
+	address.sin_port = htons(port);
+	if( bind (newsocket, (struct sockaddr *)&address, sizeof(address)) == -1)
+		goto ErrorReturn;
+
+	return newsocket;
+
+ErrorReturn:
+	closesocket (newsocket);
+	return -1;
+}
+
+void NET_Init (void)
+{
+	int err;
+#ifdef WIN32
+	// overhead to tell Windows we're using TCP/IP.
+	err = WSAStartup ((WORD)MAKEWORD (1,1), &ws);
+	if (err)
+	{
+		printf("Error loading Windows Sockets! Error: %i\n",err);
+//		return;
+		exit(err);
+	}
+#elif __DJGPP__
+	int i;
+
+/*	dbug_init();*/
+
+	i = _watt_do_exit;
+	_watt_do_exit = 0;
+	err = sock_init();
+	_watt_do_exit = i;
+
+	if (err != 0)
+	{
+		printf("[E] WATTCP initialization failed (%s)", sock_init_err(err));
+	}
+	else
+	{
+		printf("[I] WATTCP Initialized\n");
+	}
+#else
+return;
+#endif
+}
+
 //
 // This becomes main for Linux
 // In Windows, main is in service.c and it decides if we're going to see a console or not
 // this function gets called when we have decided if we are a server or a console app.
 //
-int My_Main (int argc, char *argv[])
+//int My_Main (int argc, char *argv[])
+int My_Main (int argc, char **argv)
 {
 	int len, err;
 //	unsigned int fromlen;
@@ -295,19 +491,12 @@ int My_Main (int argc, char *argv[])
 #endif
 	struct sockaddr_in from;
 
+	err = 0; // FS: Warning
+
 	printf ("QWDOS-GSPY-Master v%s.\nBased on Q2-Master 1.1 originally GloomMaster.\n(c) 2002-2003 r1ch.net, modifications by QwazyWabbit 2007.\n", VERSION);
 	printf ("Built: %s at %s.\n\n", __DATE__, __TIME__);
 	numservers = 0;
 
-#ifdef WIN32
-	// overhead to tell Windows we're using TCP/IP.
-	err = WSAStartup ((WORD)MAKEWORD (1,1), &ws);
-	if (err)
-	{
-		printf("Error loading Windows Sockets! Error: %i\n",err);
-		return (err);
-	}
-#endif
 
 #ifndef WIN32	// Already done in ServiceStart() if Windows
 	ParseCommandLine(argc, argv);
@@ -321,6 +510,8 @@ int My_Main (int argc, char *argv[])
 	printf("Minimum Heartbeats Required: %u\n", minimumHeartbeats); // FS
 	printf("Timestamps: %i\n", Timestamp); // FS
 	printf("HTTP Disabled: %i\n", httpDisable); // FS
+	printf("MOTD: %i\n", motd);
+	printf("Log TCP connections: %i\n", logTCP);
 
 	listener = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	listenerTCP = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP); // FS
@@ -367,7 +558,6 @@ int My_Main (int argc, char *argv[])
 
 	FD_ZERO(&set);
 	FD_SET (listener, &set);
-//	FD_SET (listenerTCP, &tcpSet); // FS
 	
 	fromlen = (unsigned)sizeof(from);
 	memset (&servers, 0, sizeof(servers));
@@ -384,35 +574,38 @@ int My_Main (int argc, char *argv[])
 			Debug = 1;
 		}
 	}
+	#endif // __DJGPP__
 	
 	if (!Debug) 
 	{
+#ifndef __DJGPP__
 		signal(SIGCHLD, SIG_IGN); /* ignore child */
 		signal(SIGTSTP, SIG_IGN); /* ignore tty signals */
 		signal(SIGTTOU, SIG_IGN);
 		signal(SIGTTIN, SIG_IGN);
+#endif
 		signal(SIGHUP, signal_handler); /* catch hangup signal */
 		signal(SIGTERM, signal_handler); /* catch terminate signal */
 	}
-	#endif // __DJGPP__
 #endif // WIN32
-
-	if(load_Serverlist)
-	{
-		Add_Servers_From_List(serverlist_filename);
-	}
 
 #ifdef NEW_PARSE
 	FD_ZERO(&master);
 	FD_SET(listener, &master);
 	maxConnections = listener + listenerTCP;
 #endif
+
 	CURL_HTTP_Init();
 	HTTP_DL_List();
 
+	if(load_Serverlist)
+	{
+		Add_Servers_From_List(serverlist_filename);
+	}
+
 	while (runmode == SRV_RUN) // 1 = running, 0 = stop, -1 = stopped.
 	{
-		delay.tv_sec = 1;
+		delay.tv_sec = 0;
 		delay.tv_usec = 0;
 
 		CURL_HTTP_Update();
@@ -425,7 +618,7 @@ int My_Main (int argc, char *argv[])
 #ifdef OLDER_STYLE_PARSE
 		FD_ZERO(&set);
 		FD_SET (listener, &set);
-		retval = select(listener + 1, &set, NULL, NULL, &delay);
+		retval = selectsocket(listener + 1, &set, NULL, NULL, &delay);
 		if (retval == 1)
 		{
 			len = recvfrom (listener, incoming, sizeof(incoming), 0, (struct sockaddr *)&from, &fromlen);
@@ -451,17 +644,17 @@ int My_Main (int argc, char *argv[])
 			} 
 			else 
 			{
-				Con_DPrintf ("[E] UDP socket error during select from %s:%d (%d)\n", 
+				Con_DPrintf ("[E] UDP socket error during select from %s:%d (%s)\n", 
 					inet_ntoa (from.sin_addr), 
 					ntohs(from.sin_port), 
-					WSAGetLastError());
+					NET_ErrorString());
 			}
 		}
 
 		FD_SET (listenerTCP, &set); // FS
 
 		// FS: Now do the Gamespy TCP handshake shit
-		if(select(listenerTCP + 1, &set, NULL, NULL, &delay) == 0)
+		if(selectsocket(listenerTCP + 1, &set, NULL, NULL, &delay) == 0)
 		{
 			tcpRetval = 0;
 		}
@@ -481,13 +674,13 @@ int My_Main (int argc, char *argv[])
 		FD_ZERO(&master);
 		FD_SET(listener, &master);
 		set = master;
-		for(i = 0; i <= maxConnections; i++)
+		for(i = 0; i < maxConnections; i++)
 		{
 			if (FD_ISSET(i, &set))
 			{ // we got one!!
 				if (i == listener)
 				{
-					retval = select(maxConnections + 1, &set, NULL, NULL, &delay);
+					retval = selectsocket(maxConnections + 1, &set, NULL, NULL, &delay);
 					if (retval == 1)
 					{
 						len = recvfrom (i, incoming, sizeof(incoming), 0, (struct sockaddr *)&from, &fromlen);
@@ -511,10 +704,10 @@ int My_Main (int argc, char *argv[])
 						}
 						else
 						{
-							Con_DPrintf ("[E] UDP socket error during select from %s:%d (%d)\n", 
+							Con_DPrintf ("[E] UDP socket error during select from %s:%d (%s)\n", 
 								inet_ntoa (from.sin_addr), 
 								ntohs(from.sin_port), 
-								WSAGetLastError());
+								NET_ErrorString());
 						}
 					} // retval
 					FD_CLR(newConnection, &master);
@@ -526,21 +719,23 @@ int My_Main (int argc, char *argv[])
 		FD_SET(listenerTCP, &master);
 		set = master;
 
-		for(j = 0; j <= maxConnections; j++)
+		for(j = 0; j < maxConnections; j++)
 		{
 			if (FD_ISSET(j, &set))
 			{
 				if (j == listenerTCP)
 				{
 					// FS: Now do the Gamespy TCP handshake shit
-					if(select(maxConnections + 1, &set, NULL, NULL, &delay) == 0)
+					if(selectsocket(maxConnections + 1, &set, NULL, NULL, &delay) == 0)
 					{
 						tcpRetval = 0;
 					}
 					else
 					{
 						if (FD_ISSET(listenerTCP, &set))
+						{
 							tcpRetval = accept(listenerTCP, (struct sockaddr *)&from, &fromlen);
+						}
 					}
 					if (tcpRetval > 0 )
 					{
@@ -563,30 +758,18 @@ int My_Main (int argc, char *argv[])
 
 	WSACleanup();	// Windows Sockets cleanup
 	runmode = SRV_STOPPED;
-	err = 0; // FS: Warning
 	return(err);
 }
 
 // FS
 void Close_TCP_Socket_On_Error (int socket, struct sockaddr_in *from)
 {
-	Con_DPrintf ("[E] TCP socket error during accept from %s:%d (%d)\n",
+	Con_DPrintf ("[E] TCP socket error during accept from %s:%d (%s)\n",
 		inet_ntoa (from->sin_addr),
 		ntohs(from->sin_port),
-		WSAGetLastError());
+		NET_ErrorString());
 	closesocket(socket);
 	socket = INVALID_SOCKET;
-}
-
-// FS: Set the TCP port for non-blocking so assholes can't just send send a packet then bail, holding up the server.
-int TCP_Set_Non_Blocking (int socket)
-{
-	int error = 0;
-	unsigned long _true = true;
-
-	error = ioctlsocket( socket, FIONBIO,IOCTLARG_T &_true);
-
-	return error;
 }
 
 //
@@ -646,6 +829,7 @@ void DropServer (server_t *server)
 int AddServer (struct sockaddr_in *from, int normal, unsigned short queryPort, char *gamename, char *hostnameIp)
 {
 	server_t	*server = &servers;
+	int len;
 	int			preserved_heartbeats = 0;
 	struct sockaddr_in addr;
 	char validateString[MAX_GSPY_VAL];
@@ -769,7 +953,11 @@ int AddServer (struct sockaddr_in *from, int normal, unsigned short queryPort, c
 	validateStringLen = DG_strlen(validateString);
 	validateString[validateStringLen] = '\0';
 
-	sendto (listener, validateString, validateStringLen, 0, (struct sockaddr *)&addr, sizeof(addr)); // FS: Gamespy sends this after a heartbeat.
+	FD_ZERO(&master);
+	FD_SET(listener, &master);
+
+	len = sendto (listener, validateString, validateStringLen, 0, (struct sockaddr *)&addr, sizeof(addr)); // FS: Gamespy sends this after a heartbeat.
+	printf("sendto len: %i\n", len);
 	return TRUE;
 }
 
@@ -937,7 +1125,7 @@ void SendServerListToClient (struct sockaddr_in *from)
 
 	if ((sendto (listener, buff, buflen, 0, (struct sockaddr *)from, sizeof(*from))) == SOCKET_ERROR)
 	{
-		Con_DPrintf ("[E] list socket error on send! code %d.\n", WSAGetLastError());
+		Con_DPrintf ("[E] list socket error on send! code %s.\n", NET_ErrorString());
 	}
 	
 	Con_DPrintf ("[I] sent server list to client %s, servers: %u of %u\n", 
@@ -1042,7 +1230,7 @@ void SendGamespyListToClient (int socket, char *gamename, struct sockaddr_in *fr
 
 	if(send(socket, buff, buflen, 0) == SOCKET_ERROR)
 	{
-		Con_DPrintf ("[E] TCP list socket error on send! code %d.\n", WSAGetLastError());
+		Con_DPrintf ("[E] TCP list socket error on send! code %s.\n", NET_ErrorString());
 	}
 	
 	Con_DPrintf ("[I] sent TCP gamespy list to client %s, servers: %u of %u\n", 
@@ -1259,7 +1447,7 @@ int ParseResponse (struct sockaddr_in *from, char *data, int dglen)
 	return status;
 }
 
-void ParseCommandLine(int argc, char *argv[])
+void ParseCommandLine(int argc, char **argv)
 {
 	int i = 0;
 	
@@ -1270,7 +1458,7 @@ void ParseCommandLine(int argc, char *argv[])
 
 	for (i = 1; i < argc; i++) 
 	{
-		if (Debug == 3) 
+		if (Debug == 3)
 		{
 			if(_strnicmp(argv[i] + 1,"debug", 5) == 0)
 			{
@@ -1298,12 +1486,20 @@ void ParseCommandLine(int argc, char *argv[])
 
 		if(_strnicmp((char*)argv[i] + 1,"validationrequired", 18) == 0) // FS
 		{
+#ifdef __DJGPP__
+			validation_required = atoi((char*)argv[i+1]);
+#else
 			validation_required = atoi((char*)argv[i]+20);
+#endif
 		}
 		
 		if(_strnicmp((char*)argv[i] + 1,"timestamp", 9) == 0) // FS
 		{
+#ifdef __DJGPP__
+			Timestamp = atoi((char*)argv[i+1]);
+#else
 			Timestamp = atoi((char*)argv[i]+11);
+#endif
 		}
 
 		if(_strnicmp((char*)argv[i] + 1,"httpdisable", 11) == 0) // FS
@@ -1313,14 +1509,21 @@ void ParseCommandLine(int argc, char *argv[])
 
 		if(_strnicmp((char*)argv[i] + 1,"rconpassword", 12) == 0) // FS
 		{
+#ifdef __DJGPP__
 			DG_strlcpy(rconPassword, (char*)argv[i]+14, sizeof(rconPassword));
+#else
+			DG_strlcpy(rconPassword, (char*)argv[i+1], sizeof(rconPassword));
+#endif
 			printf("[I] rcon password set to %s\n", rconPassword);
 		}
 
 		if(_strnicmp((char*)argv[i] + 1, "heartbeatinterval", 17) == 0)
 		{
+#ifdef __DJGPP__
+			heartbeatInterval = atol((char*)argv[i+1]);
+#else
 			heartbeatInterval = atol((char*)argv[i]+19);
-
+#endif
 			if(heartbeatInterval < 1)
 			{
 				printf("[W] Heartbeat interval less than one minute!  Setting to one minute.\n");
@@ -1332,7 +1535,11 @@ void ParseCommandLine(int argc, char *argv[])
 
 		if(_strnicmp((char*)argv[i] + 1, "minimumheartbeats", 17) == 0)
 		{
+#ifdef __DJGPP__
+			minimumHeartbeats = atoi((char*)argv[i+1]);
+#else
 			minimumHeartbeats = atoi((char*)argv[i]+19);
+#endif
 
 			if(minimumHeartbeats < 1)
 			{
@@ -1344,28 +1551,54 @@ void ParseCommandLine(int argc, char *argv[])
 		if(_strnicmp((char*)argv[i] + 1,"ip", 2) == 0)
 		{
 			//bind_ip, a specific host ip if desired
+#ifdef __DJGPP__
+			DG_strlcpy(bind_ip, (char*)argv[i+1], sizeof(bind_ip));
+#else
 			DG_strlcpy(bind_ip, (char*)argv[i] + 4, sizeof(bind_ip));
+#endif
 			SetQ2MasterRegKey(REGKEY_BIND_IP, bind_ip);
 		}
 		
 		if(_strnicmp((char*)argv[i] + 1,"port", 4) == 0)
 		{
 			//bind_port, if other than default port
+#ifdef __DJGPP__
 			DG_strlcpy(bind_port, (char*)argv[i] + 6, sizeof(bind_port));
+#else
+			DG_strlcpy(bind_port, (char*)argv[i+1], sizeof(bind_port));
+#endif
 			SetQ2MasterRegKey(REGKEY_BIND_PORT, bind_port);
 		}
 
 		if(_strnicmp((char*)argv[i] + 1,"tcpport", 7) == 0) // FS
 		{
 			//bind_port_tcp, if other than default TCP port
+#ifdef __DJGPP__
+			DG_strlcpy(bind_port_tcp, (char*)argv[i+1], sizeof(bind_port_tcp));
+#else
 			DG_strlcpy(bind_port_tcp, (char*)argv[i] + 9, sizeof(bind_port_tcp));
+#endif
 			SetQ2MasterRegKey(REGKEY_BIND_PORT_TCP, bind_port_tcp);
 		}
 
 		if(_strnicmp((char*)argv[i] + 1,"serverlist", 10) == 0) // FS
 		{
+#ifdef __DJGPP__
+			DG_strlcpy(serverlist_filename, (char *)argv[i+1], sizeof(serverlist_filename));
+#else
 			DG_strlcpy(serverlist_filename, (char *)argv[i] + 12, sizeof(serverlist_filename));
+#endif
 			load_Serverlist = 1;
+		}
+
+		if(_strnicmp((char*)argv[i] + 1,"motd", 4) == 0) /* FS: Added motd.txt support */
+		{
+			motd = 1;
+		}
+
+		if(_strnicmp((char*)argv[i] + 1, "logtcp", 6) == 0) /* FS: Write out successful gamespy TCP requests */
+		{
+			logTCP = 1;
 		}
 	}
 }
@@ -1390,7 +1623,7 @@ void ServiceCtrlHandler (DWORD Opcode)
 		{
 			int i = 0;
 			
-			Sleep(500);	// SCM times out in 3 secs.
+			msleep(500);	// SCM times out in 3 secs.
 			i++;		// we check twice per sec.
 
 			if(i >=	6)	// hopefully we beat the SCM timer
@@ -1541,7 +1774,6 @@ void GetQ2MasterRegKey(char* name, char *value)
 //
 void signal_handler(int sig)
 {
-#ifndef __DJGPP__
 	switch(sig)
 	{
 	case SIGHUP:
@@ -1552,7 +1784,7 @@ void signal_handler(int sig)
 		{
 			int i = 0;
 			
-			Sleep(500);	// 500 ms
+			msleep(500);	// 500 ms
 			i++;		// we check twice per sec.
 
 			if(i >=	6)
@@ -1564,10 +1796,102 @@ void signal_handler(int sig)
 		ExitNicely();
 		break;
 	}
-#endif
 }
 
 #endif
+
+void Gamespy_Send_MOTD(char *gamename, struct sockaddr_in *from)
+{
+	int motdSocket = UDP_OpenSocket(27905);
+	char motd[MOTD_SIZE];
+	struct sockaddr_in addr;
+	unsigned short motdPort = Gamespy_Get_MOTD_Port(gamename);
+	FILE *f;
+	long fileSize;
+	size_t toEOF = 0;
+	size_t fileBufferLen = 0;
+	char *fileBuffer = NULL;
+
+	if(motd == 0)
+	{
+		return;
+	}
+
+	if(!motdPort)
+	{
+		return;
+	}
+
+	if(motdSocket == -1)
+	{
+		return;
+	}
+
+	f = fopen("motd.txt", "r+");
+
+	if(!f)
+	{
+		Con_DPrintf("[E] Couldn't open motd.txt!\n");
+		return;
+	}
+
+	fseek(f, 0, SEEK_END);
+	fileSize = ftell(f);
+
+	// FS: If the file size is less than 3 (an emtpy serverlist file) then don't waste time.
+	if (fileSize < 3)
+	{
+		printf("[E] File 'motd.txt' is emtpy!\n");
+		fclose(f);
+		return;
+	}
+	else
+	{
+		fseek(f, fileSize-1, SEEK_SET);
+	}
+
+	rewind(f);
+	fileBuffer = (char *)malloc(sizeof(char)*(fileSize+2)); // FS: In case we have to add a newline terminator
+	assert(fileBuffer);
+
+	if(!fileBuffer)
+	{
+		printf("[E] Out of memory!\n");
+		return;
+	}
+
+	toEOF = fread(fileBuffer, sizeof(char), fileSize, f); // FS: Copy it to a buffer
+	fclose(f);
+
+	if(toEOF <= 0)
+	{
+		printf("[E] Cannot read file 'motd.txt' into memory!\n");
+		return;
+	}
+
+	// FS: Add newline terminator for some paranoia
+	fileBuffer[toEOF] = '\n';
+	fileBuffer[toEOF+1] = '\0';
+
+	fileBufferLen = DG_strlen(fileBuffer);
+
+	if(fileBufferLen >= MOTD_SIZE)
+	{
+		printf("[W] 'motd.txt' greater than %d bytes!  Truncating...\n", MOTD_SIZE);
+	}
+
+	memcpy (&addr.sin_addr, &from->sin_addr, sizeof(addr.sin_addr));
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(motdPort);
+	memset (&addr.sin_zero, 0, sizeof(addr.sin_zero));
+	
+	Com_sprintf(motd, sizeof(motd), OOB_SEQ"print\n\x02%s", fileBuffer);
+
+	sendto(motdSocket, motd, DG_strlen(motd), 0, (struct sockaddr *)&addr, sizeof(addr));
+	free(fileBuffer);
+	closesocket(motdSocket);
+	motdSocket = INVALID_SOCKET;
+}
 
 // FS
 void Gamespy_Parse_List_Request(char *querystring, int socket, struct sockaddr_in *from)
@@ -1575,6 +1899,7 @@ void Gamespy_Parse_List_Request(char *querystring, int socket, struct sockaddr_i
 	char *gamename = NULL;
 	char *tokenPtr = NULL;
 	char seperators[] = "\\";
+	char logBuffer[2048];
 	int basic = 0;
 
 	if(!querystring || !strstr(querystring, "\\list\\") || !strstr(querystring, "\\gamename\\"))
@@ -1622,6 +1947,14 @@ error:
 	}
 
 	DK_strlwr(gamename); // FS: Some games (mainly sin) stupidly send it partially uppercase
+
+	Gamespy_Send_MOTD(gamename, from); /* FS: Send a MOTD */
+
+	if(logTCP)
+	{
+		Com_sprintf(logBuffer, sizeof(logBuffer), "Sucessful GameSpy request for %s from %s:%d\n", gamename, inet_ntoa(from->sin_addr), ntohs(from->sin_port));
+		Log_Sucessful_TCP_Connections(logBuffer);
+	}
 
 	SendGamespyListToClient(socket, gamename, from, basic);
 }
@@ -1739,7 +2072,7 @@ void Gamespy_Parse_TCP_Packet (int socket, struct sockaddr_in *from)
 	challengeKeyLen = DG_strlen(challengeKey);
 	challengeKey[challengeKeyLen] = '\0'; // FS: Gamespy null terminates the end
 
-	if(TCP_Set_Non_Blocking(socket) == SOCKET_ERROR)
+	if(Set_Non_Blocking_Socket(socket) == SOCKET_ERROR)
 	{
 		Con_DPrintf("[E] TCP socket failed to set non-blocking.\n");
 		goto closeTcpSocket;
@@ -1764,13 +2097,13 @@ retryIncomingTcpValidate:
 
 	if (len == SOCKET_ERROR)
 	{
-		lastWSAError = WSAGetLastError();
+		lastWSAError = Get_Last_Error();
 
-		if(lastWSAError == WSAEWOULDBLOCK && (retry < totalRetry)) // FS: Yeah, yeah; this sucks.  But, it works OK for our purpose.  If you don't like this, redo it and send me the code.
+		if(lastWSAError == TCP_BLOCKING_ERROR && (retry < totalRetry)) // FS: Yeah, yeah; this sucks.  But, it works OK for our purpose.  If you don't like this, redo it and send me the code.
 		{
 			retry++;
 			Con_DPrintf("[W] Retrying Gamespy TCP Validate Request, Attempt %i of %i.\n", retry, totalRetry);
-			Sleep(sleepMs);
+			msleep(sleepMs);
 			sleepMs = sleepMs + 10;
 			goto retryIncomingTcpValidate;
 		}
@@ -1832,11 +2165,11 @@ retryIncomingTcpList:
 
 	if (len == SOCKET_ERROR)
 	{
-		if(lastWSAError == WSAEWOULDBLOCK && (retry < totalRetry)) // FS: Yeah, yeah; this sucks.  But, it works OK for our purpose.  If you don't like this, redo it and send me the code.
+		if(lastWSAError == TCP_BLOCKING_ERROR && (retry < totalRetry)) // FS: Yeah, yeah; this sucks.  But, it works OK for our purpose.  If you don't like this, redo it and send me the code.
 		{
 			retry++;
 			Con_DPrintf("[W] Retrying Gamespy TCP List Request, Attempt %i of %i.\n", retry, totalRetry);
-			Sleep(sleepMs);
+			msleep(sleepMs);
 			sleepMs = sleepMs + 10;
 			goto retryIncomingTcpList;
 		}
@@ -1882,10 +2215,10 @@ retryIncomingTcpList:
 	}
 	else
 	{
-		Con_DPrintf ("[E] TCP socket error during select from %s:%d (%d)\n",
+		Con_DPrintf ("[E] TCP socket error during select from %s:%d (%s)\n",
 			inet_ntoa (from->sin_addr),
 			ntohs(from->sin_port),
-			WSAGetLastError());
+			NET_ErrorString());
 	}
 closeTcpSocket:
 	//reset for next packet

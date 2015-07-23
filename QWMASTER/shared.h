@@ -34,6 +34,10 @@
 #define MAX_SERVERLIST_LINE MAX_DNS_NAMELEN+1+MAX_PORT_LEN+1+MAX_GAMENAME_LEN // FS: 1 == ',' separator
 #define MAX_GSPY_VAL 89 // FS: See gsmalg.cpp
 
+#define MOTD_SIZE 1024
+
+#define MAX_QUERY_SOCKETS 30
+
 // FS: From HoT: For ioctl sockets
 #ifdef __DJGPP__
 #define	IOCTLARG_T	(char*) // FS: Some WATT32 stuff

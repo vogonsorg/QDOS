@@ -449,8 +449,6 @@ void ini_fgets(FILE *f, const char *section, const char *field, char *s)
 #define WORD unsigned short
 #define DWORD unsigned long
 
-#define BUFFER_SIZE 4096
-
 #define CODEC_ADC_INPUT_CONTROL_LEFT	0x00
 #define CODEC_ADC_INPUT_CONTROL_RIGHT	0x01
 #define CODEC_AUX1_INPUT_CONTROL_LEFT	0x02
@@ -1141,13 +1139,12 @@ qboolean GUS_Init(void)
 			}
 		}
 
-	
 		// Always do 16 bit stereo
 		shm->channels = 2;
 		shm->samplebits = 16;
 	
 		// allocate buffer twice the size we need so we can get aligned buffer
-		dma_dosadr = dos_getmemory(BUFFER_SIZE*2);
+		dma_dosadr = dos_getmemory(SND_BUFFER_SIZE*2);
 		if (dma_dosadr==NULL)  // sezero
 		{
 			Con_Printf("Couldn't allocate sound dma buffer");
@@ -1155,11 +1152,11 @@ qboolean GUS_Init(void)
 		}
 
 		RealAddr = ptr2real(dma_dosadr);
-		RealAddr = (RealAddr + BUFFER_SIZE) & ~(BUFFER_SIZE-1);
+		RealAddr = (RealAddr + SND_BUFFER_SIZE) & ~(SND_BUFFER_SIZE-1);
 		dma_buffer = (short *) real2ptr(RealAddr);
 
 		// Zero off DMA buffer
-		memset(dma_buffer, 0, BUFFER_SIZE);
+		memset(dma_buffer, 0, SND_BUFFER_SIZE);
 
 		shm->soundalive = true;
 		shm->splitbuffer = false;
@@ -1167,10 +1164,10 @@ qboolean GUS_Init(void)
 		shm->samplepos = 0;
 		shm->submission_chunk = 1;
 		shm->buffer = (unsigned char *) dma_buffer;
-		shm->samples = BUFFER_SIZE/(shm->samplebits/8);
+		shm->samples = SND_BUFFER_SIZE/(shm->samplebits/8);
 
-		GUS_StartDMA(DmaChannel,dma_buffer,BUFFER_SIZE);
-		GUS_StartCODEC(BUFFER_SIZE,FSVal);
+		GUS_StartDMA(DmaChannel,dma_buffer,SND_BUFFER_SIZE);
+		GUS_StartCODEC(SND_BUFFER_SIZE,FSVal);
 	}
 	else
 	{
@@ -1223,7 +1220,7 @@ qboolean GUS_Init(void)
 		shm->samplebits = 16;
 
 		// allocate buffer twice the size we need so we can get aligned buffer
-		dma_dosadr = dos_getmemory(BUFFER_SIZE*2);
+		dma_dosadr = dos_getmemory(SND_BUFFER_SIZE*2);
 		if (dma_dosadr==NULL)
 		{
 			Con_Printf("Couldn't allocate sound dma buffer");
@@ -1231,11 +1228,11 @@ qboolean GUS_Init(void)
 		}
 
 		RealAddr = ptr2real(dma_dosadr);
-		RealAddr = (RealAddr + BUFFER_SIZE) & ~(BUFFER_SIZE-1);
+		RealAddr = (RealAddr + SND_BUFFER_SIZE) & ~(SND_BUFFER_SIZE-1);
 		dma_buffer = (short *) real2ptr(RealAddr);
 
 		// Zero off DMA buffer
-		memset(dma_buffer, 0, BUFFER_SIZE);
+		memset(dma_buffer, 0, SND_BUFFER_SIZE);
 
 		shm->soundalive = true;
 		shm->splitbuffer = false;
@@ -1243,15 +1240,15 @@ qboolean GUS_Init(void)
 		shm->samplepos = 0;
 		shm->submission_chunk = 1;
 		shm->buffer = (unsigned char *) dma_buffer;
-		shm->samples = BUFFER_SIZE/(shm->samplebits/8);
+		shm->samples = SND_BUFFER_SIZE/(shm->samplebits/8);
 
-		GUS_StartDMA(DmaChannel,dma_buffer,BUFFER_SIZE);
+		GUS_StartDMA(DmaChannel,dma_buffer,SND_BUFFER_SIZE);
 		SetGf116(SET_DMA_ADDRESS,0x0000);
 		if (DmaChannel<=3)
 			SetGf18(DMA_CONTROL,0x41);
 		else
 			SetGf18(DMA_CONTROL,0x45);
-		GUS_StartGf1(BUFFER_SIZE,Voices);
+		GUS_StartGf1(SND_BUFFER_SIZE,Voices);
 	}
 	return(true);
 }
@@ -1296,7 +1293,7 @@ int GUS_GetDMAPos(void)
 		// data we are playing, position is in 16 bit samples
 		if (GetGf18(DMA_CONTROL) & 0x40)
 		{
-			GUS_StartDMA(DmaChannel,dma_buffer,BUFFER_SIZE);
+			GUS_StartDMA(DmaChannel,dma_buffer,SND_BUFFER_SIZE);
 			SetGf116(SET_DMA_ADDRESS,0x0000);
 			if (DmaChannel<=3)
 				SetGf18(DMA_CONTROL,0x41);
@@ -1345,13 +1342,14 @@ void GUS_Shutdown (void)
 }
 void GUS_ClearDMA (void) // FS: This stops the constant clicking sound during map loads and pause screens
 {
-	memset(dma_buffer, 0, BUFFER_SIZE);
+	memset(dma_buffer, 0, SND_BUFFER_SIZE);
 	shm->soundalive = true;
 	shm->splitbuffer = false;
 	shm->samplepos = 0;
 	shm->submission_chunk = 1;
 	shm->buffer = (unsigned char *) dma_buffer;
-	shm->samples = BUFFER_SIZE/(shm->samplebits/8);
+	shm->samples = SND_BUFFER_SIZE/(shm->samplebits/8);
+
 	if (HaveCodec) // FS: GUS MAX, AMD InterWave/GUS PnP
 	{
 		dos_outportb(CodecRegisterSelect,CODEC_INTERFACE_CONFIG);
@@ -1371,10 +1369,12 @@ void GUS_ClearDMA (void) // FS: This stops the constant clicking sound during ma
 		SetGf18(DMA_CONTROL,0x00);
 		GetGf18(DMA_CONTROL);
 	}
-	GUS_StartDMA(DmaChannel,dma_buffer,BUFFER_SIZE);
+
+	GUS_StartDMA(DmaChannel,dma_buffer,SND_BUFFER_SIZE);
+
 	if (HaveCodec) // FS: GUS MAX, AMD InterWave/GUS PnP
 	{
-		GUS_StartCODEC(BUFFER_SIZE,extCodecVoices);
+		GUS_StartCODEC(SND_BUFFER_SIZE,extCodecVoices);
 	}
 	else // FS: GUS "Classic", ACE, or compatible OEM CLONE
 	{
@@ -1383,7 +1383,7 @@ void GUS_ClearDMA (void) // FS: This stops the constant clicking sound during ma
 			SetGf18(DMA_CONTROL,0x41);
 		else
 			SetGf18(DMA_CONTROL,0x45);
-		GUS_StartGf1(BUFFER_SIZE,extVoices);
+		GUS_StartGf1(SND_BUFFER_SIZE,extVoices);
 	}
         Con_DPrintf(DEVELOPER_MSG_SOUND, "Cleared GUS DMA Buffer!\n");
 }

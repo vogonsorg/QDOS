@@ -31,6 +31,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define DEFAULT_SOUND_PACKET_VOLUME 255
 #define DEFAULT_SOUND_PACKET_ATTENUATION 1.0
 
+#define SND_BUFFER_SIZE	32768 /* FS: Was 4096 */
+#define	PAINTBUFFER_SIZE	2048 /* FS: Was 512 */
+
 // !!! if this is changed, it much be changed in asm_i386.h too !!!
 typedef struct
 {
@@ -117,7 +120,7 @@ typedef struct
 	int		dataofs;		// chunk starts this many bytes from file start
 } wavinfo_t;
 
-#define	MAX_RAW_SAMPLES	8192 // FS: Quake 2 RAW shit
+#define	MAX_RAW_SAMPLES	8192 // FS: Quake 2 raw samples for streaming
 extern	portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 
 void S_Init (void);

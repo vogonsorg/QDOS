@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <conio.h>
 #include <crt0.h> // FS: Fake Mem Fix (QIP)
 
-int _crt0_startup_flags = _CRT0_FLAG_UNIX_SBRK; // FS: Fake Mem Fix (QIP)
+int _crt0_startup_flags = _CRT0_FLAG_NONMOVE_SBRK; // FS: Fake Mem Fix (QIP)
 
 #include "quakedef.h"
 #include "dosisms.h"

@@ -32,7 +32,7 @@ Fax(714)549-0757
 #ifndef _WIN32
 #include <sys/ioctl.h>
 #endif
-extern char *NET_ErrorString (void);
+//extern char *NET_ErrorString (void);
 
 #define MSHOST	"maraakate.org" // FS: Gamespy dead "master.gamespy.com"
 #define MSPORT	28900
@@ -131,7 +131,7 @@ static GError InitUpdateList(GServerList serverlist)
 		// FS: Set non-blocking sockets
 		if (ioctlsocket( serverlist->updatelist[i].s, FIONBIO,IOCTLARG_T &_true) == SOCKET_ERROR)
 		{
-			Con_Printf("ERROR: InitUpdateList: ioctl FIOBNIO:%s\n", NET_ErrorString());
+//			Con_Printf("ERROR: InitUpdateList: ioctl FIOBNIO:%s\n", NET_ErrorString());
 			return GE_NOSOCKET;
 		}
 
@@ -598,7 +598,7 @@ static GError ServerListQueryLoop(GServerList serverlist)
 			}
 			else
 			{
-				Con_DPrintf(DEVELOPER_MSG_GAMESPY, "Error pinging server: %s\n", NET_ErrorString());
+//				Con_DPrintf(DEVELOPER_MSG_GAMESPY, "Error pinging server: %s\n", NET_ErrorString());
 				serverlist->updatelist[i].serverindex = -1; // reuse the update index
 			}
 
@@ -640,7 +640,7 @@ retry:
 					}
 					else // FS: If we got didn't get EWOULDBLOCK or if it just kept going past the server_timeout threshold then just give up.
 					{
-						Con_DPrintf(DEVELOPER_MSG_GAMESPY, "Error during gamespy recv %s\n", NET_ErrorString());
+//						Con_DPrintf(DEVELOPER_MSG_GAMESPY, "Error during gamespy recv %s\n", NET_ErrorString());
 						serverlist->updatelist[i].serverindex = -1; //reuse the updatelist
 					}
 				}

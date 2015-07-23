@@ -19,13 +19,10 @@ CURL_LIB = libcurl.a
 all: $(OBJ_DIR) ../include/curl/curlbuild.h $(CURL_LIB)
 
 $(CURL_LIB): $(OBJECTS)
-	ar rs $@ $?
+	$(AR) rs $@ $?
 
 # FS: FIXME should be in all for building but i guess CP has changed?
 config.h: config.dos
-	cp $^ $@
-
-../include/curl/curlbuild.h: ../include/curl/curlbuild.h.dist
 	cp $^ $@
 
 clean:
