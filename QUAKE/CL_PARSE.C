@@ -22,6 +22,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include <string.h>
 
+ /* FS: Prototypes */
+void CL_PlayBackgroundTrack (int track);
+extern char *Con_Quakebar (int len);
+extern void Con_LogCenterPrint (char *str);
+
+qboolean warn_about_nehahra_protocol; //johnfitz
+extern vec3_t	v_punchangles[2]; //johnfitz
+
 void SHOWLMP_Decodeshow (void)
 {
 	char lmplabel[256], picname[256];
@@ -55,9 +63,6 @@ void Sky_LoadSkyBox (char *name)
 {
 	return;
 }
-
-extern char *Con_Quakebar (int len); // FS: Prototpye it
-extern void Con_LogCenterPrint (char *str); // FS: Prototpye it
 
 char *svc_strings[] =
 {
@@ -122,10 +127,6 @@ char *svc_strings[] =
 	"", // 49
 //johnfitz
 };
-
-qboolean warn_about_nehahra_protocol; //johnfitz
-
-extern vec3_t	v_punchangles[2]; //johnfitz
 
 //=============================================================================
 
@@ -1191,39 +1192,16 @@ void CL_ParseServerMessage (void)
 				break;
 
 			case svc_cdtrack:
-				// FS: Change to allow BGM via WAV
 				cl.cdtrack = MSG_ReadByte ();
 				cl.looptrack = MSG_ReadByte ();
 
 				if ( (cls.demoplayback || cls.demorecording) && (cls.forcetrack != -1) )
 				{
-#ifdef OGG_SUPPORT
-					// Knightmare
-					// If an OGG file exists play it, otherwise fall back to CD audio
-					sprintf (name, /*sizeof(name),*/ "music/track%02i.ogg", cls.forcetrack);
-					if ( (COM_OpenFile(name, &fileHandle) != -1) && cl_ogg_music.value )
-					{
-						Con_DPrintf (DEVELOPER_MSG_CD, "CL_PlayBackgroundTrack: playing track %s\n", name);	// debug
-						S_StartBackgroundTrack(name, name);
-					}
-					else
-#endif // OGG_SUPPORT
-						CDAudio_Play((byte)cls.forcetrack, true);
+					CL_PlayBackgroundTrack(cls.forcetrack);
 				}
 				else
 				{
-#ifdef OGG_SUPPORT
-					// Knightmare
-					// If an OGG file exists play it, otherwise fall back to CD audio
-					sprintf (name, /*sizeof(name),*/ "music/track%02i.ogg", cl.cdtrack);
-					if ( (COM_OpenFile(name, &fileHandle) != -1) && cl_ogg_music.value )
-					{
-						Con_DPrintf (DEVELOPER_MSG_CD, "CL_PlayBackgroundTrack: playing track %s\n", name);	// debug
-						S_StartBackgroundTrack(name, name);
-					}
-					else
-#endif // OGG_SUPPORT
-						CDAudio_Play ((byte)cl.cdtrack, true);
+					CL_PlayBackgroundTrack(cl.cdtrack);
 				}
 				break;
 
@@ -1301,3 +1279,60 @@ void CL_ParseServerMessage (void)
 		lastcmd = cmd; //johnfitz
 	}
 }
+
+/*
+=================
+CL_PlayBackgroundTrack
+=================
+*/
+void CL_PlayBackgroundTrack (int track)
+{
+#define BGMUSIC_WAV (1<<0)
+#define BGMUSIC_OGG (1<<1)
+
+	char	name[MAX_QPATH], *p;
+	int	have_extmusic;
+
+	Con_DPrintf(DEVELOPER_MSG_CD, "CL_PlayBackgroundTrack\n");
+
+	if (track == 0)
+	{	// Stop any playing track
+		Con_DPrintf(DEVELOPER_MSG_CD, "CL_PlayBackgroundTrack: stopping\n");
+		CDAudio_Stop();
+		S_StopBackgroundTrack();
+		return;
+	}
+
+	/* If an external music file exists play it, otherwise fall back to CD audio */
+	have_extmusic = 0;
+//	Com_sprintf (name, sizeof(name), "music/track%02i.", CL_MissionPackCDTrack(track));
+	sprintf(name, "music/track%02i.", track);
+
+	p = name + strlen(name);
+	strcpy (p, "wav");
+	if (COM_LoadFile(name, NULL) != -1)
+		have_extmusic |= BGMUSIC_WAV;
+#ifdef OGG_SUPPORT
+	strcpy (p, "ogg");
+	if (COM_LoadFile(name, NULL) != -1)
+		have_extmusic |= BGMUSIC_OGG;
+#endif
+
+	/* play whatever is found */
+	if ((have_extmusic&BGMUSIC_WAV) && (cl_wav_music.intValue || !(have_extmusic&BGMUSIC_OGG))) {
+		CDAudio_Stop();
+		strcpy (p, "wav");
+		S_StartWAVBackgroundTrack(name, name);
+	}
+#ifdef OGG_SUPPORT
+	else if (have_extmusic&BGMUSIC_OGG) {
+		CDAudio_Stop();
+		strcpy (p, "ogg");
+		S_StartOGGBackgroundTrack(name, name);
+	}
+#endif
+	else {
+		CDAudio_Play((byte)track, true);
+	}
+}
+// end Knightmare
