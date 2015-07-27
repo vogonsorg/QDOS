@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <conio.h>
 #include <crt0.h> // FS: Fake Mem Fix (QIP)
 
-int _crt0_startup_flags = _CRT0_FLAG_NONMOVE_SBRK; // FS: Fake Mem Fix (QIP)
+int _crt0_startup_flags = _CRT0_FLAG_UNIX_SBRK; /* FS: Fake Mem Fix for Win9x (QIP) */
 
 #include "quakedef.h"
 #include "dosisms.h"
@@ -835,6 +835,8 @@ int main (int c, char **v)
 	quakeparms.basedir = cwd; //"f:/quake";
 
 	isDedicated = (COM_CheckParm ("-dedicated") != 0);
+
+	_crt0_startup_flags &= ~_CRT0_FLAG_UNIX_SBRK; /* FS: We walked through all the data, now remove the sbrk flag so Win9x doesn't barf. */
 
 	Sys_Init ();
 

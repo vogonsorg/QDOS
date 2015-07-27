@@ -25,6 +25,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "errno.h"
 #include "fcntl.h"
 #include <limits.h>
+#include <direct.h>
+#include <conio.h>
+#include <io.h>
 
 #define MINIMUM_WIN_MEMORY	0x2000000 // FS: Was 0c00000
 #define MAXIMUM_WIN_MEMORY	0x4000000 // FS: Was 1000000
@@ -47,8 +50,6 @@ static HANDLE		hinput, houtput;
 HANDLE		qwclsemaphore;
 
 static HANDLE	tevent;
-
-void Sys_InitFloatTime (void);
 
 void MaskExceptions (void);
 void Sys_PopFPCW (void);
@@ -95,10 +96,10 @@ int		findhandle (void)
 
 /*
 ================
-filelength
+fileLength
 ================
 */
-int filelength (FILE *f)
+int fileLength (FILE *f)
 {
 	int		pos;
 	int		end;
@@ -142,7 +143,7 @@ int Sys_FileOpenRead (char *path, int *hndl)
 	{
 		sys_handles[i] = f;
 		*hndl = i;
-		retval = filelength(f);
+		retval = fileLength(f);
 	}
 
 	VID_ForceLockState (t);
@@ -218,8 +219,6 @@ Sys_Init
 */
 void Sys_Init (void)
 {
-	LARGE_INTEGER	PerformanceFreq;
-	unsigned int	lowpart, highpart;
 	OSVERSIONINFO	vinfo;
 
 #ifdef ONEINSTANCE
@@ -272,7 +271,6 @@ void Sys_Init (void)
 void Sys_Error (const char *error, ...)
 {
 	va_list		argptr;
-	DWORD		dummy;
     static dstring_t    *string; // FS: New school dstring
 
     if (!string)
@@ -299,7 +297,6 @@ void Sys_Printf (const char *fmt, ...)
 	// FS: New school Dstrings
 	va_list		argptr;
 	static		dstring_t *text;
-	DWORD		dummy;
 	
 	if (!text)
 		text = dstring_new ();
@@ -332,7 +329,6 @@ double Sys_DoubleTime (void)
 	static DWORD starttime;
 	static qboolean first = true;
 	DWORD now;
-	double t;
 
 	now = timeGetTime();
 
@@ -351,107 +347,7 @@ double Sys_DoubleTime (void)
 	return (now - starttime) / 1000.0;
 }
 
-char *Sys_ConsoleInput (void)
-{
-	static char	text[256];
-	static int		len;
-	INPUT_RECORD	recs[1024];
-	int		count;
-	int		i, dummy;
-	int		ch, numread, numevents;
-	HANDLE	th;
-	char	*clipText, *textCopied;
-
-	for ( ;; )
-	{
-		if (!GetNumberOfConsoleInputEvents (hinput, &numevents))
-			Sys_Error ("Error getting # of console events");
-
-		if (numevents <= 0)
-			break;
-
-		if (!ReadConsoleInput(hinput, recs, 1, &numread))
-			Sys_Error ("Error reading console input");
-
-		if (numread != 1)
-			Sys_Error ("Couldn't read console input");
-
-		if (recs[0].EventType == KEY_EVENT)
-		{
-			if (!recs[0].Event.KeyEvent.bKeyDown)
-			{
-				ch = recs[0].Event.KeyEvent.uChar.AsciiChar;
-
-				switch (ch)
-				{
-					case '\r':
-						WriteFile(houtput, "\r\n", 2, &dummy, NULL);	
-
-						if (len)
-						{
-							text[len] = 0;
-							len = 0;
-							return text;
-						}
-						break;
-
-					case '\b':
-						WriteFile(houtput, "\b \b", 3, &dummy, NULL);	
-						if (len)
-						{
-							len--;
-							putch('\b');
-						}
-						break;
-
-					default:
-						Con_Printf("Stupid: %d\n", recs[0].Event.KeyEvent.dwControlKeyState);
-						if (((ch=='V' || ch=='v') && (recs[0].Event.KeyEvent.dwControlKeyState & 
-							(LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED))) || ((recs[0].Event.KeyEvent.dwControlKeyState 
-							& SHIFT_PRESSED) && (recs[0].Event.KeyEvent.wVirtualKeyCode
-							==VK_INSERT))) {
-							if (OpenClipboard(NULL)) {
-								th = GetClipboardData(CF_TEXT);
-								if (th) {
-									clipText = GlobalLock(th);
-									if (clipText) {
-										textCopied = malloc(GlobalSize(th)+1);
-										strcpy(textCopied, clipText);
-/* Substitutes a NULL for every token */strtok(textCopied, "\n\r\b");
-										i = strlen(textCopied);
-										if (i+len>=256)
-											i=256-len;
-										if (i>0) {
-											textCopied[i]=0;
-											text[len]=0;
-											strcat(text, textCopied);
-											len+=dummy;
-											WriteFile(houtput, textCopied, i, &dummy, NULL);
-										}
-										free(textCopied);
-									}
-									GlobalUnlock(th);
-								}
-								CloseClipboard();
-							}
-						} else if (ch >= ' ')
-						{
-							WriteFile(houtput, &ch, 1, &dummy, NULL);	
-							text[len] = ch;
-							len = (len + 1) & 0xff;
-						}
-
-						break;
-
-				}
-			}
-		}
-	}
-
-	return NULL;
-}
-
-void Sys_Sleep (void)
+void Sys_Sleep (int ms)
 {
 }
 
@@ -509,7 +405,6 @@ HWND		hwnd_dialog;
 
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    MSG				msg;
 	quakeparms_t	parms;
 	double			time, oldtime, newtime;
 	MEMORYSTATUS	lpBuffer;

@@ -59,11 +59,6 @@ static int                              keybuf_tail=0;
 
 static quakeparms_t     quakeparms;
 int                                     sys_checksum;
-//static double           curtime = 0.0; // FS: Win9X/Fast PC Fix (QIP)
-//static double           lastcurtime = 0.0; // FS: Win9X/Fast PC Fix (QIP)
-//static double           oldtime = 0.0; // FS: Win9X/Fast PC Fix (QIP)
-
-qboolean                isDedicated;
 
 static int                      minmem;
 
@@ -119,15 +114,8 @@ byte        shiftscantokey[128] =
 
 void TrapKey(void)
 {
-//      static int ctrl=0;
 	keybuf[keybuf_head] = dos_inportb(0x60);
 	dos_outportb(0x20, 0x20);
-	/*
-	if (scantokey[keybuf[keybuf_head]&0x7f] == K_CTRL)
-		ctrl=keybuf[keybuf_head]&0x80;
-	if (ctrl && scantokey[keybuf[keybuf_head]&0x7f] == 'c')
-		Sys_Error("ctrl-c hit\n");
-	*/
 	keybuf_head = (keybuf_head + 1) & (KEYBUF_SIZE-1);
 }
 
@@ -140,7 +128,6 @@ void TrapKey(void)
 #define SC_RIGHTARROW   0x4d
 
 void MaskExceptions (void);
-//void Sys_InitFloatTime (void);
 void Sys_PushFPCW_SetHigh (void);
 void Sys_PopFPCW (void);
 
@@ -382,68 +369,15 @@ void Sys_mkdir (char *path)
 }
 
 
-void Sys_Sleep(void)
+void Sys_Sleep(int ms)
 {
-}
-
-
-char *Sys_ConsoleInput(void)
-{
-	static char     text[256];
-	static int      len = 0;
-	char            ch;
-
-	if (!isDedicated)
-		return NULL;
-
-	if (! kbhit())
-		return NULL;
-
-	ch = getche();
-
-	switch (ch)
-	{
-		case '\r':
-			putch('\n');
-			if (len)
-			{
-				text[len] = 0;
-				len = 0;
-				return text;
-			}
-			break;
-
-		case '\b':
-			putch(' ');
-			if (len)
-			{
-				len--;
-				putch('\b');
-			}
-			break;
-
-		default:
-			text[len] = ch;
-			len = (len + 1) & 0xff;
-			break;
-	}
-
-	return NULL;
 }
 
 void Sys_Init(void)
 {
-
 	MaskExceptions ();
 
 	Sys_SetFPCW ();
-
-    //dos_outportb(0x43, 0x34); // set system timer to mode 2
-    //dos_outportb(0x40, 0);    // for the Sys_FloatTime() function
-    //dos_outportb(0x40, 0);
-// FS: From HoT
-
-	//  Sys_InitFloatTime ();
 
 	_go32_interrupt_stack_size = 4 * 1024;
 	_go32_rmcb_stack_size = 4 * 1024;
@@ -451,8 +385,7 @@ void Sys_Init(void)
 
 void Sys_Shutdown(void)
 {
-	if (!isDedicated)
-		dos_restoreintr(9);
+	dos_restoreintr(9);
 
 	if (unlockmem)
 	{
@@ -461,7 +394,6 @@ void Sys_Shutdown(void)
 		dos_unlockmem (quakeparms.membase, quakeparms.memsize);
 	}
 }
-
 
 #define SC_RSHIFT       0x36 
 #define SC_LSHIFT       0x2a 
@@ -668,50 +600,15 @@ void Sys_MakeCodeWriteable (unsigned long startaddr, unsigned long length)
 	// it's always writeable
 }
 
-
-/*
-================
-Sys_FloatTime
-================
-*/
-double Sys_FloatTime (void)
-{
-	return (double) uclock() / (double) UCLOCKS_PER_SEC; //FS: Accurate Clock (QIP)
-}
-
 /*
 ================
 Sys_DoubleTime
 ================
-JASON: THIS IS FROM LinuxQuakeWorld
 */
 double Sys_DoubleTime (void)
 {
-/*	struct timeval tp;
-	struct timezone tzp; 
-	static int      secbase; 
-    
-	gettimeofday(&tp, &tzp);  
-
-	if (!secbase)
-	{
-		secbase = tp.tv_sec;
-		return tp.tv_usec/1000000.0;
-	}
-
-    return (tp.tv_sec - secbase) + tp.tv_usec/1000000.0;
-*/
 	return (double) uclock() / (double) UCLOCKS_PER_SEC; //FS: Accurate Clock (QIP)
 }
-
-
-
-/*
-================
-Sys_InitFloatTime
-================
-*/
-
 
 /*
 ================
@@ -843,7 +740,7 @@ main
 int main (int c, char **v)
 {
 	double                  time, oldtime, newtime;
-        extern void (*dos_error_func)(const char *, ...);
+	extern void (*dos_error_func)(const char *, ...);
 	static  char    cwd[1024];
 
 	printf ("Quake v%4.2f\n", VERSION);
@@ -877,33 +774,22 @@ int main (int c, char **v)
 		cwd[Q_strlen(cwd)-1] = 0;
 	quakeparms.basedir = cwd; //"f:/quake";
 
-	isDedicated = (COM_CheckParm ("-dedicated") != 0);
+	_crt0_startup_flags &= ~_CRT0_FLAG_UNIX_SBRK; /* FS: We walked through all the data, now remove the sbrk flag so Win9x doesn't barf. */
 
 	Sys_Init ();
 
-	if (!isDedicated)
-		dos_registerintr(9, TrapKey);
+	dos_registerintr(9, TrapKey);
 
-//Sys_InitStackCheck ();
-	
 	Host_Init(&quakeparms);
 
-//Sys_StackCheck ();
-
-//Con_Printf ("Top of stack: 0x%x\n", &time);
-	oldtime = Sys_DoubleTime(); //Sys_FloatTime ();
+	oldtime = Sys_DoubleTime();
 	while (1)
 	{
-		newtime = Sys_DoubleTime();//FloatTime ();
+		newtime = Sys_DoubleTime();
 		time = newtime - oldtime;
-
-//      QW Clients aren't dedicated servers
-//              if (cls.state == ca_dedicated && (time<sys_ticrate.value))
-//                      continue;
 
 		Host_Frame (time);
 
-//Sys_StackCheck ();
 
 		oldtime = newtime;
 	}

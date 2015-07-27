@@ -1682,7 +1682,6 @@ void M_Menu_Gamespy_f(void)
 
 void M_Gamespy_Draw() // FS: Extended
 {
-	float	r;
 	qpic_t  *p;
 
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );

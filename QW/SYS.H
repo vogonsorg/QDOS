@@ -59,12 +59,9 @@ void Sys_Printf (const char *fmt, ...)  __attribute__((format(printf,1,2))); // 
 
 void Sys_Quit (void);
 
-double Sys_FloatTime (void); // FS: -Werror
-double Sys_DoubleTime (void);
+double Sys_DoubleTime (void); // FS: -Werror
 
-char *Sys_ConsoleInput (void);
-
-void Sys_Sleep (void);
+void Sys_Sleep (int ms);
 // called to yield for a little bit so as
 // not to hog cpu when paused or debugging
 

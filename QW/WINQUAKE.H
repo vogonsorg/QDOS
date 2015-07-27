@@ -111,4 +111,8 @@ struct hostent FAR * (PASCAL FAR *pgethostbyaddr)(const char FAR * addr,
 												  int len, int type);
 int (PASCAL FAR *pgetsockname)(SOCKET s, struct sockaddr FAR *name,
 							   int FAR * namelen);
-#endif
+
+void SCR_UpdateWholeScreen(void);
+void IN_ClearStates (void);
+
+#endif // _WIN32
