@@ -1292,6 +1292,7 @@ void CL_PlayBackgroundTrack (int track)
 
 	char	name[MAX_QPATH], *p;
 	int	have_extmusic;
+	int	fakeHandle;
 
 	Con_DPrintf(DEVELOPER_MSG_CD, "CL_PlayBackgroundTrack\n");
 
@@ -1310,12 +1311,18 @@ void CL_PlayBackgroundTrack (int track)
 
 	p = name + strlen(name);
 	strcpy (p, "wav");
-	if (COM_LoadFile(name, NULL) != -1)
+	if (COM_OpenFile(name, &fakeHandle) != -1)
+	{
+		COM_CloseFile(fakeHandle);
 		have_extmusic |= BGMUSIC_WAV;
+	}
 #ifdef OGG_SUPPORT
 	strcpy (p, "ogg");
-	if (COM_LoadFile(name, NULL) != -1)
+	if (COM_OpenFile(name, &fakeHandle) != -1)
+	{
+		COM_CloseFile(fakeHandle);
 		have_extmusic |= BGMUSIC_OGG;
+	}
 #endif
 
 	/* play whatever is found */

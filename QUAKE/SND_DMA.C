@@ -405,13 +405,12 @@ channel_t *SND_PickChannel(int entnum, int entchannel)
 	life_left = 0x7fffffff;
 	for (ch_idx=NUM_AMBIENTS ; ch_idx < NUM_AMBIENTS + MAX_DYNAMIC_CHANNELS ; ch_idx++)
 	{
-#ifdef OGG_SUPPORT	//  Knightmare added
 		// Don't let game sounds override streaming sounds
 		if (channels[ch_idx].streaming)  // Q2E
 		{
 			continue;
 		}
-#endif
+
 		if (entchannel != 0		// channel 0 never overrides
 				&& channels[ch_idx].entnum == entnum
 				&& (channels[ch_idx].entchannel == entchannel || entchannel == -1))
@@ -1146,7 +1145,7 @@ void S_RawSamples (int samples, int rate, int width, int channels, byte *data, q
 	int		i;
 	int		src, dst;
 	float	scale;
-	int		snd_vol;	// Knightmare added
+	float		snd_vol;	// Knightmare added
 
 	if (!sound_started)
 		return;
@@ -1154,10 +1153,10 @@ void S_RawSamples (int samples, int rate, int width, int channels, byte *data, q
 // Knightmare added
 #ifdef OGG_SUPPORT
 	if (music)
-		snd_vol = (int)(s_musicvolume.value);
+		snd_vol = (s_musicvolume.value);
 	else
 #endif
-		snd_vol = (int)(volume.value);
+		snd_vol = (volume.value);
 
 // end Knightmare
 	if (s_rawend < paintedtime)
