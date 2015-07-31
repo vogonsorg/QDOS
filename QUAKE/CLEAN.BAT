@@ -1,4 +1,5 @@
 @echo off
+del /s *.o
 del /s gas2masm.exe
 del /s *.ncb
 del /s *.opt

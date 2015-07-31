@@ -27,11 +27,8 @@ LIBS  += -lwatt
 endif
 ifeq ($(USE_OGG),yes)
 CFLAGS+= -DOGG_SUPPORT
-CFLAGS+= -I../libogg/include
-CFLAGS+= -I../libvorb/inc
-LDFLAGS += -L../libogg/lib -logg
-LDFLAGS += -L../libvorb/lib
-LIBS  += -lvorbisenc -lvorbisfile -lvorbis -logg
+CFLAGS+= -I../3rdparty/include
+LIBS  += -L../3rdparty/lib -lvorbisfile -lvorbis -logg
 endif
 LIBS+= -lm
 
@@ -132,6 +129,7 @@ $(O)/snd_mem.o  \
 $(O)/glob.o  \
 $(O)/sys_find.o  \
 $(O)/snd_strm.o  \
+$(O)/snd_wavstream.o  \
 $(O)/in_dos.o   \
 $(O)/vid_vga.o  \
 $(O)/vid_ext.o  \

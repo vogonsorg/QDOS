@@ -949,8 +949,6 @@ void CL_ParseServerMessage (void)
 	int			cmd;
 	int			i;
 	char		*fversion, *str; // FS
-	char		name[MAX_OSPATH]; // FS: For OGG
-	int			fileHandle; // FS: For OGG
 	int			total, j;
 	int			lastcmd = 0; //johnfitz
 //
