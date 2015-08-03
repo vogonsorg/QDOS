@@ -37,10 +37,7 @@ static char		**wav_filelist;		// List of WAV files
 static int			wav_numfiles;		// Number of WAV files
 static int			wav_loopcounter;
 
-//static cvar_t		*wav_loopcount;
-//static cvar_t		*wav_ambient_track;
-
-static cvar_t	wav_loopcount = {"wav_ambient_track", "5", true};
+static cvar_t	wav_loopcount = {"wav_loopcount", "5", true};
 static cvar_t	wav_ambient_track = {"wav_ambient_track", "track11", true};
 
 static void S_WAV_LoadFileList (void);
