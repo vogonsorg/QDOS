@@ -582,6 +582,7 @@ int SNDDMA_Init(void)
 		Cmd_AddCommand ("snd_restart", snd_restart_f); // FS
 		Cmd_AddCommand ("snd_shutdown", snd_shutdown_f); // FS
 	}
+
 	/* Init DirectSound */
 	if (!wavonly)
 	{
@@ -696,7 +697,7 @@ void SNDDMA_Submit(void)
 	{
 		if ( snd_completed == snd_sent )
 		{
-			Con_DPrintf (DEVELOPER_MSG_SOUND, "Sound overrun\n");
+			Con_DPrintf(DEVELOPER_MSG_SOUND, "Sound overrun\n");
 			break;
 		}
 
@@ -750,6 +751,7 @@ void snd_shutdown_f (void) // FS: SND_SHUTDOWN
 	Con_Printf("\nSound Disabled.\n");
 	Cache_Flush();
 }
+
 void snd_restart_f (void) // FS: SND_RESTART
 {
 	S_StopAllSounds(true);

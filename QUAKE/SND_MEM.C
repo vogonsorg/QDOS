@@ -103,11 +103,7 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 	float	stepscale;
 	sfxcache_t	*sc;
 	byte	stackbuf[1*1024];		// avoid dirtying the cache heap
-/*
-	FILE	*fdata; // FS
-	long	lSize; // FS
-	size_t	result; // FS
-*/
+
 // see if still in memory
 	sc = Cache_Check (&s->cache);
 	if (sc)
@@ -119,72 +115,13 @@ sfxcache_t *S_LoadSound (sfx_t *s)
     Q_strcat(namebuffer, s->name);
 
 //	Con_Printf ("loading %s\n",namebuffer);
-/*
-	if(strstr(namebuffer, "cdtracks"))
-	{
-		fdata = fopen(va("%s/%s",com_gamedir,namebuffer), "r");
-
-		if(!fdata)
-		{
-			Con_Printf("Couldn't load music track %s\n", namebuffer);
-			return NULL;
-		}
-
-		// obtain file size:
-		fseek (fdata , 0 , SEEK_END);
-		lSize = ftell (fdata);
-		rewind (fdata);
-
-		// allocate memory to contain the whole file:
-		data = (char*) malloc (sizeof(char)*lSize);
-
-		if (data == NULL)
-		{
-			Con_Printf("Out of mem\n");
-			return NULL;
-		}
-
-		// copy the file into the buffer:
-		result = fread (data,1,lSize,fdata);
-		info = GetWavinfo(s->name, data, lSize);
-		Con_Printf("Offset: %i\n", info.dataofs);
-
-	if (info.channels != 1)
-	{
-		Con_DPrintf (DEVELOPER_MSG_SOUND, "%s is a stereo sample\n",s->name); // FS: Testing
-	}
-
-	stepscale = (float)info.rate / shm->speed;	
-	len = info.samples / stepscale;
-
-	len = len * info.width * info.channels;
-
-	sc = Cache_Alloc ( &s->cache, len + sizeof(sfxcache_t), s->name);
-	if (!sc)
-		return NULL;
 	
-	sc->length = info.samples;
-	sc->loopstart = info.loopstart;
-//	sc->speed = info.rate;
-	sc->speed = info.rate * info.channels;	//CDawg changed
-	sc->width = info.width;
-	sc->stereo = info.channels;
-	S_RawSamples(sc->length,sc->speed, sc->width,sc->stereo, data + info.dataofs);
-	ResampleSfx (s, sc->speed, sc->width, data + info.dataofs);
+	data = COM_LoadStackFile(namebuffer, stackbuf, sizeof(stackbuf));
 
-	return sc;
-
-
-	}
-	else */
+	if (!data)
 	{
-		data = COM_LoadStackFile(namebuffer, stackbuf, sizeof(stackbuf));
-
-		if (!data)
-		{
-			Con_Printf ("Couldn't load %s\n", namebuffer);
-			return NULL;
-		}
+		Con_Printf ("Couldn't load %s\n", namebuffer);
+		return NULL;
 	}
 
 	info = GetWavinfo (s->name, data, com_filesize);
@@ -199,6 +136,7 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 		Con_Printf ("%s has an invalid number of channels\n", s->name);
 		return NULL;
 	}
+
 	stepscale = (float)info.rate / shm->speed;	
 	len = info.samples / stepscale;
 

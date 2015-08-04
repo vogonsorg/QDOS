@@ -23,11 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define __SOUND__
 
 #ifdef OGG_SUPPORT	// Knightmare added- vorbis support
-#include "include/ogg/vorbisfile.h"
-#include "include/al/altypes.h"
 #include "snd_ogg.h"
 #endif
-
 #include "snd_wavstream.h" /* FS: Added */
 
 #define WAV_FORMAT_PCM	1

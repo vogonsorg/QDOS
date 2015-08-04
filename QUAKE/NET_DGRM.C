@@ -539,13 +539,16 @@ static void Test_Poll(void)
 	int		connectTime;
 	byte	playerNumber;
 
+	char map[64];
+	byte users, maxusers, recvByte;
+
 	net_landriverlevel = testDriver;
 
-	while (1)
+	while ((len = dfunc.Read (testSocket, net_message.data, net_message.maxsize, &clientaddr)) > 0)
 	{
-		len = dfunc.Read (testSocket, net_message.data, net_message.maxsize, &clientaddr);
+//		len = dfunc.Read (testSocket, net_message.data, net_message.maxsize, &clientaddr);
 		if (len < sizeof(int))
-			break;
+			continue;
 
 		net_message.cursize = len;
 
@@ -553,14 +556,16 @@ static void Test_Poll(void)
 		control = BigLong(*((int *)net_message.data));
 		MSG_ReadLong();
 		if (control == -1)
-			break;
+			continue;
 		if ((control & (~NETFLAG_LENGTH_MASK)) !=  NETFLAG_CTL)
-			break;
+			continue;
 		if ((control & NETFLAG_LENGTH_MASK) != len)
-			break;
+			continue;
 
+#if 0
 		if (MSG_ReadByte() != CCREP_PLAYER_INFO)
-			Sys_Error("Unexpected repsonse to Player Info request\n");
+			continue;
+//			Sys_Error("Unexpected repsonse to Player Info request\n");
 
 		playerNumber = MSG_ReadByte();
 		Q_strcpy(name, MSG_ReadString());
@@ -571,7 +576,26 @@ static void Test_Poll(void)
 
 		Con_Printf("[%uc]%s\n  frags:%3i  colors:%u %u  time:%u\n  %s\n", playerNumber, name, frags, colors >> 4, colors & 0x0f, connectTime / 60, address);
 	}
+#else
+		recvByte = MSG_ReadByte();
+		if (recvByte != CCREP_SERVER_INFO)
+		{
+			Con_Printf("Got byte: %uc.  Expected %uc\n", recvByte, CCREP_SERVER_INFO);
+			continue;
+		}
+//			Sys_Error("Unexpected repsonse to Server Info request\n");
 
+		dfunc.GetAddrFromName(MSG_ReadString(), &clientaddr);
+
+		// add it
+		Q_strcpy(name, MSG_ReadString());
+		Q_strcpy(map, MSG_ReadString());
+		users = MSG_ReadByte();
+		maxusers = MSG_ReadByte();
+
+		Con_Printf("Name: %s. Map: %s. Players: %uc/%uc.\n", name, map, users, maxusers);
+	}
+#endif
 	testPollCount--;
 	if (testPollCount)
 	{
@@ -584,12 +608,16 @@ static void Test_Poll(void)
 	}
 }
 
+char queryString[12] = "\x80\x00\x00\x0C\x02\x51\x55\x41\x4b\x45\x00\x03"; /* FS: Raw data that's sent down for a "QUAKE" query string */
+
 static void Test_f (void)
 {
 	char	*host;
 	int		n;
+	int		x;
 	int		max = MAX_SCOREBOARD;
 	struct qsockaddr sendaddr;
+	FILE	*f;
 
 	if (testInProgress)
 		return;
@@ -633,17 +661,36 @@ JustDoIt:
 	testPollCount = 20;
 	testDriver = net_landriverlevel;
 
+	f = fopen("testnet.txt", "wb");
 	for (n = 0; n < max; n++)
 	{
 		SZ_Clear(&net_message);
 		// save space for the header, filled in later
+#if 0
 		MSG_WriteLong(&net_message, 0);
 		MSG_WriteByte(&net_message, CCREQ_PLAYER_INFO);
 		MSG_WriteByte(&net_message, n);
 		*((int *)net_message.data) = BigLong(NETFLAG_CTL | 	(net_message.cursize & NETFLAG_LENGTH_MASK));
+#else
+/*		// save space for the header, filled in later
+		MSG_WriteLong(&net_message, 0);
+		MSG_WriteByte(&net_message, CCREQ_SERVER_INFO);
+		MSG_WriteString(&net_message, "QUAKE");
+		MSG_WriteByte(&net_message, NET_PROTOCOL_VERSION);
+		*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+*/
+		for (x = 0; x < 12; x++)
+		{
+			MSG_WriteByte(&net_message, queryString[x]);
+		}
+#endif
+		if((f) && (n == 0))
+			fwrite(net_message.data, net_message.cursize, 1, f);
 		dfunc.Write (testSocket, net_message.data, net_message.cursize, &sendaddr);
 	}
 	SZ_Clear(&net_message);
+	if(f)
+		fclose(f);
 	SchedulePollProcedure(&testPollProcedure, 0.1);
 }
 

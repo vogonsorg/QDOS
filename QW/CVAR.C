@@ -193,7 +193,8 @@ void Cvar_Set (char *var_name, char *value)
 	var->string = Z_Malloc (Q_strlen(value)+1);
 	Q_strcpy (var->string, value);
 	var->value = Q_atof (var->string);
-	var->intValue = Q_atoi (var->string); // FS: Added
+	var->intValue = Q_atoi (var->string); /* FS: Added */
+	var->modified = true; /* FS: Added */
 }
 
 /*

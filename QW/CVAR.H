@@ -60,10 +60,11 @@ typedef struct cvar_s
 	char    *string;
 	qboolean archive;		// set to true to cause it to be saved to vars.rc
 	qboolean info;			// added to serverinfo or userinfo when changed
-	const char *description; // FS
+	const char *description; /* FS: Added */
 	float	value;
-	int		intValue; // FS
-	const char *defaultString; // FS
+	int		intValue; /* FS: Added */
+	const char *defaultString; /* FS: Added */
+	qboolean modified; /* FS: Added */
 	struct cvar_s *next;
 } cvar_t;
 

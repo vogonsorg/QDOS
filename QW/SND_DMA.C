@@ -87,16 +87,14 @@ cvar_t volume = {"volume", "0.7", true};
 cvar_t nosound = {"nosound", "0"};
 cvar_t precache = {"precache", "1"};
 cvar_t loadas8bit = {"loadas8bit", "0"};
-cvar_t bgmbuffer = {"bgmbuffer", "4096"};
 cvar_t ambient_level = {"ambient_level", "0.3"};
 cvar_t ambient_fade = {"ambient_fade", "100"};
 cvar_t snd_noextraupdate = {"snd_noextraupdate", "0"};
 cvar_t snd_show = {"snd_show", "0"};
-cvar_t _snd_mixahead = {"_snd_mixahead", "0.1", true};
+cvar_t _snd_mixahead = {"_snd_mixahead", "0.2", true};
 cvar_t s_khz = {"s_khz","", true};	// FS: S_KHZ
-#ifdef OGG_SUPPORT	// Knightmare added
 cvar_t	s_musicvolume = {"s_musicvolume", "1", true};
-#endif
+cvar_t	cl_wav_music = {"cl_wav_music", "1", true};
 
 // ====================================================================
 // User-setable variables
@@ -200,25 +198,25 @@ void S_Init (void)
 	Cmd_AddCommand("stopsound", S_StopAllSoundsC);
 	Cmd_AddCommand("soundlist", S_SoundList);
 	Cmd_AddCommand("soundinfo", S_SoundInfo_f);
-	#ifdef OGG_SUPPORT
-		Cmd_AddCommand("ogg_restart", S_OGG_Restart); // Knightmare added
-	#endif
+#ifdef OGG_SUPPORT
+	Cmd_AddCommand("ogg_restart", S_OGG_Restart); // Knightmare added
+#endif
+	Cmd_AddCommand("wav_restart", S_WAV_Restart); /* FS: Added */
 
 	Cvar_RegisterVariable(&nosound);
 	Cvar_RegisterVariable(&volume);
 	Cvar_RegisterVariable(&precache);
 	Cvar_RegisterVariable(&loadas8bit);
 	Cvar_RegisterVariable(&bgmvolume);
-	Cvar_RegisterVariable(&bgmbuffer);
 	Cvar_RegisterVariable(&ambient_level);
 	Cvar_RegisterVariable(&ambient_fade);
 	Cvar_RegisterVariable(&snd_noextraupdate);
 	Cvar_RegisterVariable(&snd_show);
 	Cvar_RegisterVariable(&_snd_mixahead);
-	Cvar_RegisterVariable (&s_khz);		// FS: S_KHZ
-#ifdef OGG_SUPPORT
-	Cvar_RegisterVariable (&s_musicvolume); // Knightmare: added
-#endif	
+	Cvar_RegisterVariable(&s_khz); /* FS: Added */
+	Cvar_RegisterVariable(&s_musicvolume); // Knightmare: added
+	Cvar_RegisterVariable(&cl_wav_music); /* FS: Added */
+
 	if (host_parms.memsize < 0x800000)
 	{
 		Cvar_Set ("loadas8bit", "1");
@@ -256,6 +254,7 @@ void S_Init (void)
 		shm->submission_chunk = 1;
 		shm->buffer = Hunk_AllocName(1<<16, "shmbuf");
 	}
+
 	if (shm) //FS: GPF no BLASTER set Fix (QIP)
 		Con_Printf ("Sound sampling rate: %i\n", shm->speed);
 
@@ -268,9 +267,12 @@ void S_Init (void)
 	ambient_sfx[AMBIENT_SKY] = S_PrecacheSound ("ambience/wind2.wav");
 
 #ifdef OGG_SUPPORT
-//	Com_DPrintf ("S_Init: calling S_OGG_Init\n");	// debug
-	S_OGG_Init(); // Knightmare added
+	if(!COM_CheckParm("-noogg"))
+		S_OGG_Init(); // Knightmare added
 #endif
+
+	if(!COM_CheckParm("-nowavstream"))
+		S_WAV_Init(); /* FS: Added */
 
 	S_StopAllSounds (true);
 }
@@ -292,6 +294,8 @@ void S_Shutdown(void)
 //	Com_DPrintf ("S_Shutdown: calling S_OGG_Shutdown\n");	// debug
 	S_OGG_Shutdown(); // Knightmare added
 #endif
+
+	S_WAV_Shutdown(); /* FS: Added */
 
 	if (shm)
 		shm->gamealive = 0;
@@ -329,10 +333,12 @@ sfx_t *S_FindName (char *name)
 
 // see if already loaded
 	for (i=0 ; i < num_sfx ; i++)
+	{
 		if (!Q_strcmp(known_sfx[i].name, name))
 		{
 			return &known_sfx[i];
 		}
+	}
 
 	if (num_sfx == MAX_SFX)
 		Sys_Error ("S_FindName: out of sfx_t");
@@ -404,11 +410,12 @@ channel_t *SND_PickChannel(int entnum, int entchannel)
 	life_left = 0x7fffffff;
 	for (ch_idx=NUM_AMBIENTS ; ch_idx < NUM_AMBIENTS + MAX_DYNAMIC_CHANNELS ; ch_idx++)
 	{
-	#ifdef OGG_SUPPORT	//  Knightmare added
 		// Don't let game sounds override streaming sounds
 		if (channels[ch_idx].streaming)  // Q2E
+		{
 			continue;
-	#endif
+		}
+
 		if (entchannel != 0		// channel 0 never overrides
 				&& channels[ch_idx].entnum == entnum
 				&& (channels[ch_idx].entchannel == entchannel || entchannel == -1))
@@ -419,7 +426,9 @@ channel_t *SND_PickChannel(int entnum, int entchannel)
 
 		// don't let monster sounds override player sounds
 		if (channels[ch_idx].entnum == cl.viewentity && entnum != cl.viewentity && channels[ch_idx].sfx)
+		{
 			continue;
+		}
 
 		if (channels[ch_idx].end - paintedtime < life_left)
 		{
@@ -538,7 +547,7 @@ void S_StartSound(int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float f
 		return;         // couldn't load the sound's data
 	}
 
-	if (sfx->isCDtrack == 1) // FS: Loop
+	if (sfx->isCDtrack) // FS: Loop
 	{
 		sc->loopstart = 0;
 	}
@@ -600,11 +609,7 @@ void S_StopAllSounds(qboolean clear)
 
 	Q_memset(channels, 0, MAX_CHANNELS * sizeof(channel_t));
 
-#ifdef OGG_SUPPORT
-	// Stop background track
-//	Com_DPrintf ("S_StopAllSounds: calling S_StopBackgroundTrack\n");	// debug
 	S_StopBackgroundTrack (); // Knightmare added
-#endif
 
 	if (clear)
 		S_ClearBuffer ();
@@ -747,6 +752,12 @@ void S_UpdateAmbientSounds (void)
 	if (!cl.worldmodel)
 		return;
 
+	if (volume.modified)
+	{
+		SND_InitScaletable();
+		volume.modified = false;
+	}
+
 	l = Mod_PointInLeaf (listener_origin, cl.worldmodel);
 	if (!l || !ambient_level.value)
 	{
@@ -816,7 +827,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 	{
 		if (!ch->sfx)
 			continue;
-		if (ch->sfx->isCDtrack == 1)  // FS: Fucks up tunes if we allow spatial
+		if (ch->sfx->isCDtrack)  // FS: Fucks up tunes if we allow spatial
 		{
 			ch->leftvol = ch->master_vol;
 			ch->rightvol = ch->master_vol;
@@ -886,6 +897,8 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 	S_UpdateBackgroundTrack ();	//  Knightmare added
 #endif
 
+	S_UpdateWavTrack(); /* FS: Added */
+
 // mix some sound
 	S_Update_();
 }
@@ -951,12 +964,8 @@ void S_Update_(void)
 
 // mix ahead of current position
 	endtime = soundtime + _snd_mixahead.value * shm->speed;
-#if 0
-	samps = shm->samples >> (shm->channels-1);
-	if (endtime - soundtime > samps)
-		endtime = soundtime + samps;
-#endif
-	// mix to an even submission block size
+
+// mix to an even submission block size
 	endtime = (endtime + shm->submission_chunk-1) & ~(shm->submission_chunk-1);
 	samps = shm->samples >> (shm->channels-1);
 	if (endtime - soundtime > samps)
@@ -1118,7 +1127,7 @@ void S_RawSamples (int samples, int rate, int width, int channels, byte *data, q
 	int		i;
 	int		src, dst;
 	float	scale;
-	int		snd_vol;	// Knightmare added
+	float		snd_vol;	// Knightmare added
 
 	if (!sound_started)
 		return;
@@ -1126,10 +1135,11 @@ void S_RawSamples (int samples, int rate, int width, int channels, byte *data, q
 // Knightmare added
 #ifdef OGG_SUPPORT
 	if (music)
-		snd_vol = (int)(s_musicvolume.value);
+		snd_vol = (s_musicvolume.value);
 	else
 #endif
-		snd_vol = (int)(volume.value);
+		snd_vol = (volume.value);
+
 // end Knightmare
 	if (s_rawend < paintedtime)
 		s_rawend = paintedtime;
@@ -1210,4 +1220,13 @@ void S_RawSamples (int samples, int rate, int width, int channels, byte *data, q
 			s_rawsamples[dst].right = ( (((byte *)data)[src]-128) << 8 ) * snd_vol;	// << 16; // Knightmare- changed to use snd_vol
 		}
 	}
+}
+
+/* FS: So we can suport both */
+void S_StopBackgroundTrack(void)
+{
+	S_StopWAVBackgroundTrack();
+#ifdef OGG_SUPPORT
+	S_StopOGGBackgroundTrack();
+#endif
 }

@@ -23,10 +23,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define __SOUND__
 
 #ifdef OGG_SUPPORT	// Knightmare added- vorbis support
-#include "include/ogg/vorbisfile.h"
-#include "include/al/altypes.h"
 #include "snd_ogg.h"
 #endif
+#include "snd_wavstream.h" /* FS: Added */
+
+#define WAV_FORMAT_PCM	1
+
+#define DEFAULT_SOUND_PACKET_VOLUME 255
+#define DEFAULT_SOUND_PACKET_ATTENUATION 1.0
+
+#define SND_BUFFER_SIZE	32768 /* FS: Was 4096 */
+#define	PAINTBUFFER_SIZE	2048 /* FS: Was 512 */
+
 // !!! if this is changed, it much be changed in asm_i386.h too !!!
 typedef struct
 {
@@ -70,6 +78,13 @@ typedef struct {
 	void				*vorbisFile;
 } bgTrack_t;
 
+// generic status for any background music stream format
+typedef enum {
+	BGM_PLAY,
+	BGM_PAUSE,
+	BGM_STOP
+} bgm_status_t;
+
 typedef struct
 {
 	qboolean		gamealive;
@@ -98,9 +113,7 @@ typedef struct
 	vec3_t	origin;			// origin of sound effect
 	vec_t	dist_mult;		// distance multiplier (attenuation/clipK)
 	int		master_vol;		// 0-255 master volume
-#ifdef OGG_SUPPORT	// Knightmare added
 	int		streaming;
-#endif
 } channel_t;
 
 typedef struct
@@ -113,7 +126,7 @@ typedef struct
 	int		dataofs;		// chunk starts this many bytes from file start
 } wavinfo_t;
 
-#define	MAX_RAW_SAMPLES	8192 // FS: Quake 2 RAW shit
+#define	MAX_RAW_SAMPLES	8192 // FS: Quake 2 raw samples for streaming
 extern	portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 
 void S_Init (void);
@@ -126,7 +139,6 @@ void S_StopAllSounds(qboolean clear);
 void S_ClearBuffer (void);
 void S_Update (vec3_t origin, vec3_t v_forward, vec3_t v_right, vec3_t v_up);
 void S_ExtraUpdate (void);
-//void S_RawSamples (int samples, int rate, int width, int channels, byte *data);
 void S_RawSamples (int samples, int rate, int width, int channels, byte *data, qboolean music);	// Knightmare changed
 
 sfx_t *S_PrecacheSound (char *sample);
@@ -176,7 +188,7 @@ extern	int			total_channels;
 extern qboolean 		fakedma;
 extern int 			fakedma_updates;
 extern int		paintedtime;
-extern	int		s_rawend; // FS: Quake 2 RAW shit
+extern int		s_rawend; /* FS: Quake 2 raw wav streaming */
 
 extern vec3_t listener_origin;
 extern vec3_t listener_forward;
@@ -186,21 +198,20 @@ extern volatile dma_t *shm;
 extern volatile dma_t sn;
 extern vec_t sound_nominal_clip_dist;
 
-extern	cvar_t loadas8bit;
-extern	cvar_t bgmvolume;
-extern	cvar_t volume;
-extern  cvar_t s_khz; // FS: S_KHZ
-#ifdef OGG_SUPPORT
-extern	cvar_t	s_musicvolume; // FS
-#endif
+extern	cvar_t	loadas8bit;
+extern	cvar_t	bgmvolume;
+extern	cvar_t	volume;
+extern  cvar_t	s_khz; // FS: S_KHZ
+extern	cvar_t	s_musicvolume; /* FS: Added */
+extern	cvar_t	cl_wav_music; /* FS: Added */
 
 extern qboolean	snd_initialized;
 
 extern int		snd_blocked;
 
 void S_LocalSound (char *s);
-void S_GamespySound (char *s); // FS
-void S_MusicPlay (int cdtrack); // FS
+void S_GamespySound (char *s); /* FS: Added */
+void S_MusicPlay (int cdtrack); /* FS: Added */
 sfxcache_t *S_LoadSound (sfx_t *s);
 
 wavinfo_t GetWavinfo (char *name, byte *wav, int wavlength);
@@ -210,5 +221,7 @@ void SNDDMA_Submit(void);
 
 void S_AmbientOff (void);
 void S_AmbientOn (void);
+
+void S_StopBackgroundTrack(void); /* FS: So we can suport both */
 
 #endif

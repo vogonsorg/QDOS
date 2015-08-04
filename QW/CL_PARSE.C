@@ -105,8 +105,10 @@ int	oldparsecountmod;
 int	parsecountmod;
 double	parsecounttime;
 
+/* FS: Prototypes */
 int		cl_spikeindex, cl_playerindex, cl_flagindex;
-void	CL_ShowChat (char *name, int val); // FS: Prototype it
+void	CL_ShowChat (char *name, int val);
+void CL_PlayBackgroundTrack (int track);
 
 //=============================================================================
 
@@ -1463,10 +1465,6 @@ void CL_ParseServerMessage (void)
 	int		cmd;
 	char	*s;
 	char	*fversion; // FS
-#ifdef OGG_SUPPORT
-	char	name[MAX_OSPATH]; // FS: For OGG
-	int		fileHandle; // FS: For OGG
-#endif
 	int		i, j;
 
 	received_framecount = host_framecount;
@@ -1684,20 +1682,11 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_cdtrack:
-			// FS: Change to allow BGM via WAV
+			/* FS: Stream from WAV or OGG if we can */
 			cl.cdtrack = MSG_ReadByte ();
-#ifdef OGG_SUPPORT
-			// Knightmare
-			// If an OGG file exists play it, otherwise fall back to CD audio
-			sprintf (name, /*sizeof(name),*/ "music/track%02i.ogg", cl.cdtrack);
-			if ( (COM_OpenFile(name, &fileHandle) != -1) && cl_ogg_music.value )
-			{
-				Con_DPrintf (DEVELOPER_MSG_CD, "CL_PlayBackgroundTrack: playing track %s\n", name);	// debug
-				S_StartBackgroundTrack(name, name);
-			}
-			else
-#endif // OGG_SUPPORT
-				CDAudio_Play ((byte)cl.cdtrack, true);
+
+			CL_PlayBackgroundTrack(cl.cdtrack);
+
 			break;
 
 		case svc_intermission:
@@ -1818,3 +1807,66 @@ void CL_ParseServerMessage (void)
 }
 
 
+/*
+=================
+CL_PlayBackgroundTrack
+=================
+*/
+void CL_PlayBackgroundTrack (int track)
+{
+#define BGMUSIC_WAV (1<<0)
+#define BGMUSIC_OGG (1<<1)
+
+	char	name[MAX_QPATH], *p;
+	int	have_extmusic;
+	int	fakeHandle;
+
+	Con_DPrintf(DEVELOPER_MSG_CD, "CL_PlayBackgroundTrack\n");
+
+	if (track == 0)
+	{	// Stop any playing track
+		Con_DPrintf(DEVELOPER_MSG_CD, "CL_PlayBackgroundTrack: stopping\n");
+		CDAudio_Stop();
+		S_StopBackgroundTrack();
+		return;
+	}
+
+	/* If an external music file exists play it, otherwise fall back to CD audio */
+	have_extmusic = 0;
+//	Com_sprintf (name, sizeof(name), "music/track%02i.", CL_MissionPackCDTrack(track));
+	sprintf(name, "music/track%02i.", track);
+
+	p = name + strlen(name);
+	strcpy (p, "wav");
+	if (COM_OpenFile(name, &fakeHandle) != -1)
+	{
+		Sys_FileClose(fakeHandle);
+		have_extmusic |= BGMUSIC_WAV;
+	}
+#ifdef OGG_SUPPORT
+	strcpy (p, "ogg");
+	if (COM_OpenFile(name, &fakeHandle) != -1)
+	{
+		Sys_FileClose(fakeHandle);
+		have_extmusic |= BGMUSIC_OGG;
+	}
+#endif
+
+	/* play whatever is found */
+	if ((have_extmusic&BGMUSIC_WAV) && (cl_wav_music.intValue || !(have_extmusic&BGMUSIC_OGG))) {
+		CDAudio_Stop();
+		strcpy (p, "wav");
+		S_StartWAVBackgroundTrack(name, name);
+	}
+#ifdef OGG_SUPPORT
+	else if (have_extmusic&BGMUSIC_OGG) {
+		CDAudio_Stop();
+		strcpy (p, "ogg");
+		S_StartOGGBackgroundTrack(name, name);
+	}
+#endif
+	else {
+		CDAudio_Play((byte)track, true);
+	}
+}
+// end Knightmare

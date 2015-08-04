@@ -12,14 +12,10 @@ LIBS= -lwatt
 
 ifeq ($(USE_OGG),yes)
 CFLAGS+= -DOGG_SUPPORT
-CFLAGS+= -I../libogg/include
-CFLAGS+= -I../libvorb/inc
-LDFLAGS += -L../libogg/lib -logg
-LDFLAGS += -L../libvorb/lib
-LIBS  += -lvorbisenc -lvorbisfile -lvorbis -logg
+CFLAGS+= -I../3rdparty/include
+LIBS  += -L../3rdparty/lib -lvorbisfile -lvorbis -logg
 endif
-
-LIBS  += -lm
+LIBS+= -lm
 
 # subdirectory for objects
 O=dos
@@ -92,6 +88,7 @@ CLIENT = $(O)/cd_audio.o  \
 	$(O)/glob.o  \
 	$(O)/sys_find.o  \
 	$(O)/snd_strm.o  \
+	$(O)/snd_wavstream.o  \
 	$(O)/dos_v2.o   \
 	$(O)/in_dos.o   \
 	$(O)/vid_vga.o  \
@@ -138,7 +135,7 @@ clean:
 	rm -f DOS/Goa/CEngine/*.o
 
 qw.exe: $(OBJECTS)
-	$(CC) $(LDFLAGS) $(OBJECTS) -o dqw.exe $(LIBS)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJECTS) -o dqw.exe $(LIBS)
 	del  qw.exe
 	copy dqw.exe qw.exe
 	$(STRIP) qw.exe

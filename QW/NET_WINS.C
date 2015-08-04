@@ -168,6 +168,7 @@ qboolean NET_GetPacket (void)
 	int 	ret;
 	struct sockaddr_in	from;
 	int		fromlen;
+	int		errno;
 
 	fromlen = sizeof(from);
 	ret = recvfrom (net_socket, (char *)net_message_buffer, sizeof(net_message_buffer), 0, (struct sockaddr *)&from, &fromlen);
@@ -175,7 +176,7 @@ qboolean NET_GetPacket (void)
 
 	if (ret == -1)
 	{
-		int errno = WSAGetLastError();
+		errno = WSAGetLastError();
 
 		if (errno == WSAEWOULDBLOCK)
 			return false;

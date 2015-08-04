@@ -209,7 +209,7 @@ void S_Init (void)
 	Cvar_RegisterVariable(&snd_show);
 	Cvar_RegisterVariable(&_snd_mixahead);
 	Cvar_RegisterVariable(&s_khz); /* FS: Added */
-	Cvar_RegisterVariable (&s_musicvolume); // Knightmare: added
+	Cvar_RegisterVariable(&s_musicvolume); // Knightmare: added
 	Cvar_RegisterVariable(&cl_wav_music); /* FS: Added */
 
 	if (host_parms.memsize < 0x800000)
@@ -669,12 +669,12 @@ void S_ClearBuffer (void)
 		Q_memset(shm->buffer, clear, shm->samples * shm->samplebits/8);
 	}
 #ifndef _WINDOWS
-		if(havegus)
-		{
-			Con_DPrintf(DEVELOPER_MSG_SOUND, "Clearing GUS DMA Buffer!\n");
-         GUS_ClearDMA();
-		}
-      Con_DPrintf(DEVELOPER_MSG_SOUND, "Cleared GUS DMA buffer!\n"); // FS: Hjalp me GUS
+	if(havegus)
+	{
+		Con_DPrintf(DEVELOPER_MSG_SOUND, "Clearing GUS DMA Buffer!\n");
+		GUS_ClearDMA();
+	}
+	Con_DPrintf(DEVELOPER_MSG_SOUND, "Cleared GUS DMA buffer!\n"); // FS: Hjalp me GUS
 #endif
 }
 

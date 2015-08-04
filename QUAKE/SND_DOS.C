@@ -414,10 +414,10 @@ qboolean BLASTER_Init(void)
 	shm->speed = 11025;
 	rc = COM_CheckParm("-sspeed");
 
-		  if (s_khz.value > 0) // FS: S_KHZ
-		  {
-					 shm->speed = s_khz.value;
-		  }
+	if (s_khz.value > 0) // FS: S_KHZ
+	{
+		shm->speed = s_khz.value;
+	}
 
 	if (rc)
 		shm->speed = Q_atoi(com_argv[rc+1]);
@@ -573,7 +573,6 @@ void snd_shutdown_f (void) // FS: SND_SHUTDOWN
 	Cache_Flush();
 }
 
-
 void snd_restart_f (void) // FS: SND_RESTART
 {
 	SNDDMA_Shutdown();
@@ -622,7 +621,7 @@ qboolean SNDDMA_Init(void)
 	}
 	if (BLASTER_Init ())
 	{
-		  Con_DPrintf(DEVELOPER_MSG_SOUND, "BLASTER_Init\n");
+        Con_DPrintf(DEVELOPER_MSG_SOUND, "BLASTER_Init\n");
 		dmacard = dma_blaster;
 		return true;
 	}

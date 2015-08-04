@@ -354,10 +354,10 @@ Returns false if nothing is found.
 */
 qboolean BLASTER_Init(void)
 {
-	int     size;
-	int     realaddr;
-	int     rc;
-	int             p;
+	int	size;
+	int	realaddr;
+	int	rc;
+	int	p;
 	
 	shm = 0;
 	rc = 0;
@@ -371,7 +371,7 @@ qboolean BLASTER_Init(void)
 		"The BLASTER environment variable\n"
 		"is not set, sound effects are\n"
 		"disabled.  See README.TXT for help.\n"
-		);                      
+		);							 
 		return 0;
 	}
 
@@ -406,7 +406,7 @@ qboolean BLASTER_Init(void)
 			Con_Printf ("Can't -dsp %i on v%i hardware\n", p, dsp_version);
 		else
 			dsp_version = p;
-	}       
+	}		 
 
 
 // everyone does 11khz sampling rate unless told otherwise
@@ -414,10 +414,10 @@ qboolean BLASTER_Init(void)
 	shm->speed = 11025;
 	rc = COM_CheckParm("-sspeed");
 
-        if (s_khz.value > 0) // FS: S_KHZ
-        {
-                shm->speed = s_khz.value;
-        }
+	if (s_khz.value > 0) // FS: S_KHZ
+	{
+		shm->speed = s_khz.value;
+	}
 
 	if (rc)
 		shm->speed = Q_atoi(com_argv[rc+1]);
@@ -432,13 +432,13 @@ qboolean BLASTER_Init(void)
 	else if (dsp_version == 3)
 	{
 		shm->channels = 2;
-		shm->samplebits = 8;    
+		shm->samplebits = 8;	 
 	}
 // v2 cards do 8 bit mono
 	else
 	{
 		shm->channels = 1;
-		shm->samplebits = 8;    
+		shm->samplebits = 8;	 
 	}
 
 	if(!host_initialized) // FS: SND_RESTART
@@ -446,7 +446,7 @@ qboolean BLASTER_Init(void)
 		Cmd_AddCommand("sbinfo", SB_Info_f);
 	}
 
-        size = 4096;
+	size = SND_BUFFER_SIZE;
 
 // allocate 8k and get a 4k-aligned buffer from it
 	dma_dosadr = dos_getmemory(size*2); // sezero
@@ -470,7 +470,6 @@ qboolean BLASTER_Init(void)
 	shm->samplepos = 0;
 	shm->submission_chunk = 1;
 	shm->buffer = (unsigned char *) dma_buffer;
-	shm->samples = size/(shm->samplebits/8);
 
 	StartDMA();
 	StartSB();
@@ -570,7 +569,6 @@ INTERFACE
 void snd_shutdown_f (void) // FS: SND_SHUTDOWN
 {
 	SNDDMA_Shutdown();
-//	S_Shutdown();
 	Con_Printf("\nSound Disabled.\n");
 	Cache_Flush();
 }
@@ -578,10 +576,8 @@ void snd_shutdown_f (void) // FS: SND_SHUTDOWN
 void snd_restart_f (void) // FS: SND_RESTART
 {
 	SNDDMA_Shutdown();
-//	S_Shutdown();
 	Con_Printf("\nSound Restarting\n");
 	Cache_Flush();
-//	S_Startup();
 	SNDDMA_Init();
 	S_StopAllSoundsC(); // FS: For GUS Buffer Clear Fix
 	Con_Printf ("Sound sampling rate: %i\n", shm->speed);
@@ -594,7 +590,7 @@ typedef enum
 	dma_gus
 } dmacard_t;
 
-dmacard_t       dmacard;
+dmacard_t		 dmacard;
 
 /*
 ==================
