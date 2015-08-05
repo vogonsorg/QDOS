@@ -110,8 +110,11 @@
   #define USE_OPENSSL            1
 #endif
 
+#if 0
 /* to disable LDAP */
 #define CURL_DISABLE_LDAP        1
+#endif
+#define HTTP_ONLY                1 /* quake2 needs no other */
 
 #define in_addr_t  u_long
 #define socklen_t  int
@@ -127,7 +130,7 @@
  */
 #if defined(DJGPP)
   #define HAVE_BASENAME   1
-  #define HAVE_STRCASECMP 1
+  #define HAVE_STRNICMP   1
   #define HAVE_SIGACTION  1
   #define HAVE_SIGSETJMP  1
   #define HAVE_SYS_TIME_H 1
@@ -153,4 +156,3 @@
 #undef byte
 
 #endif  /* _CURL_CONFIG_DOS_H */
-

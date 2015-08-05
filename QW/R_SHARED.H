@@ -30,8 +30,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MAXWORKINGVERTS	(MAXVERTS+4)	// max points in an intermediate
 										//  polygon (while processing)
 // !!! if this is changed, it must be changed in d_ifacea.h too !!!
-#define MAXHEIGHT               1200
-#define MAXWIDTH                1600
+#define MAXHEIGHT               4000 /* FS: Was 1024 */
+#define MAXWIDTH                4000 /* FS: Was 1280 */
 #define MAXDIMENSION	((MAXHEIGHT > MAXWIDTH) ? MAXHEIGHT : MAXWIDTH)
 
 #define SIN_BUFFER_SIZE	(MAXDIMENSION+CYCLE)
@@ -62,7 +62,7 @@ extern	vec3_t	vpn, base_vpn;
 extern	vec3_t	vright, base_vright;
 extern	entity_t		*currententity;
 
-#define NUMSTACKEDGES		2000
+#define NUMSTACKEDGES		2400
 #define	MINEDGES			NUMSTACKEDGES
 #define NUMSTACKSURFACES	1000
 #define MINSURFACES			NUMSTACKSURFACES
