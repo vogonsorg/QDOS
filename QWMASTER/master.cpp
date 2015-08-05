@@ -959,7 +959,7 @@ int AddServer (struct sockaddr_in *from, int normal, unsigned short queryPort, c
 	{
 		int x;
 
-		for(x = 0; x < sizeof(quake1string); x++)
+		for(x = 0; x < (int)sizeof(quake1string); x++)
 			validateString[x] = quake1string[x];
 	}
 	else
@@ -1025,7 +1025,7 @@ void QueueShutdown (struct sockaddr_in *from, server_t *myserver)
 		{
 			int x;
 
-			for(x = 0; x < sizeof(quake1string); x++)
+			for(x = 0; x < (int)sizeof(quake1string); x++)
 				validateString[x] = quake1string[x];
 		}
 		else
@@ -1100,7 +1100,7 @@ void RunFrame (void)
 				{
 					int x;
 
-					for(x = 0; x < sizeof(quake1string); x++)
+					for(x = 0; x < (int)sizeof(quake1string); x++)
 						validateString[x] = quake1string[x];
 				}
 				else

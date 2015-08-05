@@ -23,11 +23,13 @@ struct server_s
 	char	hostnameIp[MAX_DNS_NAMELEN+1]; // FS: If server was added from a list
 };
 
+#if 0
 struct querySocket_s
 {
 	SOCKET	socket;
 	pingstate state;
 };
+#endif
 
 void RunFrame (void);
 void ExitNicely (void);
