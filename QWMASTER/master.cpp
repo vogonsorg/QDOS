@@ -281,12 +281,14 @@ unsigned int minimumHeartbeats = 2; // FS: Minimum amount of heartbeats required
 double lastHTTPDL = 0; // FS
 
 // FS: For gamespy list
-const char *listheader = "\\";
-const char *finalstring = "final\\";
-const char *finalstringerror = "\\final\\";
-const char *statusstring = "\xff\xff\xff\xffstatus";
+const char listheader[] = "\\";
+const char finalstring[] = "final\\";
+const char finalstringerror[] = "\\final\\";
+const char statusstring[] = "\xff\xff\xff\xffstatus";
+const char quake1string[13] = "\x80\x00\x00\x0C\x02QUAKE\x00\x03"; /* FS: Raw data that's sent down for a "QUAKE" query string */
+
 // FS: Daikatana needs \\secure\\ then a key to encode with.
-const char *challengeHeader = "\\basic\\\\secure\\"; // FS: This is the start of the handshake
+const char challengeHeader[] = "\\basic\\\\secure\\"; // FS: This is the start of the handshake
 
 int Rcon (struct sockaddr_in *from, char *queryString);
 void HTTP_DL_List(void);
@@ -452,6 +454,10 @@ void NET_Init (void)
 //		return;
 		exit(err);
 	}
+	else
+	{
+		printf("[I] Winsock Initialized\n");
+	}
 #elif __DJGPP__
 	int i;
 
@@ -497,6 +503,7 @@ int My_Main (int argc, char **argv)
 	printf ("Built: %s at %s.\n\n", __DATE__, __TIME__);
 	numservers = 0;
 
+	NET_Init();
 
 #ifndef WIN32	// Already done in ServiceStart() if Windows
 	ParseCommandLine(argc, argv);
@@ -948,9 +955,21 @@ int AddServer (struct sockaddr_in *from, int normal, unsigned short queryPort, c
 		sendto (listener, OOB_SEQ"ack", 7, 0, (struct sockaddr *)&addr, sizeof(addr));
 	}
 
-	Com_sprintf(validateString, sizeof(validateString), "%s", statusstring);
+	if(!strcmp(server->gamename, "quake1")) /* FS: Special hack for ancient Quake 1 protocol */
+	{
+		int x;
 
-	validateStringLen = DG_strlen(validateString);
+		for(x = 0; x < sizeof(quake1string); x++)
+			validateString[x] = quake1string[x];
+	}
+	else
+		Com_sprintf(validateString, sizeof(validateString), "%s", statusstring);
+
+	if(!strcmp(server->gamename, "quake1"))
+		validateStringLen = sizeof(quake1string)-1;
+	else
+		validateStringLen = DG_strlen(validateString);
+
 	validateString[validateStringLen] = '\0';
 
 	FD_ZERO(&master);
@@ -1002,9 +1021,22 @@ void QueueShutdown (struct sockaddr_in *from, server_t *myserver)
 
 		Con_DPrintf ("[I] shutdown queued %s:%u \n", inet_ntoa (myserver->ip.sin_addr), htons(server->port));
 
-		Com_sprintf(validateString, sizeof(validateString), "%s", statusstring);
-		validateStringLen = DG_strlen(validateString);
-		validateString[validateStringLen] = '\0'; // FS: Gamespy null terminates the end
+		if(!strcmp(server->gamename, "quake1")) /* FS: Special hack for ancient Quake 1 protocol */
+		{
+			int x;
+
+			for(x = 0; x < sizeof(quake1string); x++)
+				validateString[x] = quake1string[x];
+		}
+		else
+			Com_sprintf(validateString, sizeof(validateString), "%s", statusstring);
+
+		if(!strcmp(server->gamename, "quake1"))
+			validateStringLen = sizeof(quake1string)-1;
+		else
+			validateStringLen = DG_strlen(validateString);
+
+		validateString[validateStringLen] = '\0';
 
 		sendto (listener, validateString, validateStringLen, 0, (struct sockaddr *)&addr, sizeof(addr));
 		return;
@@ -1063,9 +1095,24 @@ void RunFrame (void)
 				server->challengeKey[6] = '\0'; // FS: Gamespy null terminates the end
 //				Con_DPrintf ("[I] ping %s:%u\n", inet_ntoa (server->ip.sin_addr), htons(server->port));
 				Con_DPrintf ("[I] ping %s(%s):%u\n", server->hostnameIp, inet_ntoa(addr.sin_addr), htons(server->port)); // FS: New ping message
-				Com_sprintf(validateString, sizeof(validateString), "%s", statusstring);
-				validateStringLen = DG_strlen(validateString);
-				validateString[validateStringLen] = '\0'; // FS: Gamespy null terminates the end
+
+				if(!strcmp(server->gamename, "quake1")) /* FS: Special hack for ancient Quake 1 protocol */
+				{
+					int x;
+
+					for(x = 0; x < sizeof(quake1string); x++)
+						validateString[x] = quake1string[x];
+				}
+				else
+					Com_sprintf(validateString, sizeof(validateString), "%s", statusstring);
+
+				if(!strcmp(server->gamename, "quake1"))
+					validateStringLen = sizeof(quake1string)-1;
+				else
+					validateStringLen = DG_strlen(validateString);
+
+				validateString[validateStringLen] = '\0';
+
 				sendto (listener, validateString, validateStringLen, 0, (struct sockaddr *)&addr, sizeof(addr)); // FS: gamespy sends a status
 			}
 		}
