@@ -78,6 +78,7 @@ void D_SpriteDrawSpans (sspan_t *pspan);
 
 void D_DrawSkyScans8 (espan_t *pspan);
 void D_DrawSkyScans16 (espan_t *pspan);
+void D_SetParticleSize (void); /* FS: Because particles like blood and bullet dust/spray/dunno the term look funny in high res */
 
 void R_ShowSubDiv (void);
 void (*prealspandrawer)(void);
@@ -109,3 +110,8 @@ extern float	d_scalemip[3];
 
 extern void (*d_drawspans) (espan_t *pspan);
 
+/* FS: Particle size control */
+extern cvar_t	sw_particle_size_override;
+extern cvar_t	sw_particle_size_min;
+extern cvar_t	sw_particle_size_max;
+extern cvar_t	sw_particle_size;

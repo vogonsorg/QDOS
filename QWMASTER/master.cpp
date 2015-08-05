@@ -1032,7 +1032,7 @@ void QueueShutdown (struct sockaddr_in *from, server_t *myserver)
 		else
 			validateStringLen = DG_strlen(validateString);
 
-		validateString[validateStringLen] = '\0';
+		validateString[validateStringLen] = '\0'; // FS: Gamespy null terminates the end
 
 		sendto (listener, validateString, validateStringLen, 0, (struct sockaddr *)&addr, sizeof(addr));
 		return;
@@ -1107,7 +1107,7 @@ void RunFrame (void)
 				else
 					validateStringLen = DG_strlen(validateString);
 
-				validateString[validateStringLen] = '\0';
+				validateString[validateStringLen] = '\0'; // FS: Gamespy null terminates the end
 
 				sendto (listener, validateString, validateStringLen, 0, (struct sockaddr *)&addr, sizeof(addr)); // FS: gamespy sends a status
 			}
