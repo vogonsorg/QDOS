@@ -497,8 +497,6 @@ int My_Main (int argc, char **argv)
 #endif
 	struct sockaddr_in from;
 
-	err = 0; // FS: Warning
-
 	printf ("QWDOS-GSPY-Master v%s.\nBased on Q2-Master 1.1 originally GloomMaster.\n(c) 2002-2003 r1ch.net, modifications by QwazyWabbit 2007.\n", VERSION);
 	printf ("Built: %s at %s.\n\n", __DATE__, __TIME__);
 	numservers = 0;
@@ -560,7 +558,7 @@ int My_Main (int argc, char **argv)
 		return 1;
 	}
 
-	delay.tv_sec = 1;
+	delay.tv_sec = 0;
 	delay.tv_usec = 0;
 
 	FD_ZERO(&set);
@@ -681,7 +679,7 @@ int My_Main (int argc, char **argv)
 		FD_ZERO(&master);
 		FD_SET(listener, &master);
 		set = master;
-		for(i = 0; i < maxConnections; i++)
+		for(i = 0; i <= maxConnections; i++)
 		{
 			if (FD_ISSET(i, &set))
 			{ // we got one!!
@@ -726,7 +724,7 @@ int My_Main (int argc, char **argv)
 		FD_SET(listenerTCP, &master);
 		set = master;
 
-		for(j = 0; j < maxConnections; j++)
+		for(j = 0; j <= maxConnections; j++)
 		{
 			if (FD_ISSET(j, &set))
 			{
@@ -765,6 +763,7 @@ int My_Main (int argc, char **argv)
 
 	WSACleanup();	// Windows Sockets cleanup
 	runmode = SRV_STOPPED;
+	err = 0; // FS: Warning
 	return(err);
 }
 
@@ -971,9 +970,6 @@ int AddServer (struct sockaddr_in *from, int normal, unsigned short queryPort, c
 		validateStringLen = DG_strlen(validateString);
 
 	validateString[validateStringLen] = '\0';
-
-	FD_ZERO(&master);
-	FD_SET(listener, &master);
 
 	len = sendto (listener, validateString, validateStringLen, 0, (struct sockaddr *)&addr, sizeof(addr)); // FS: Gamespy sends this after a heartbeat.
 	printf("sendto len: %i\n", len);
