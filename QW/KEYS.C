@@ -53,7 +53,7 @@ extern char *Sort_Possible_Cmds (char *partial); /* FS: Added */
 
 typedef struct
 {
-        char    *name;
+	char	*name;
 	int		keynum;
 } keyname_t;
 
@@ -135,10 +135,26 @@ keyname_t keynames[] =
 	{"AUX31", K_AUX31},
 	{"AUX32", K_AUX32},
 
-	{"PAUSE", K_PAUSE},
+	{"KP_HOME",			K_KP_HOME },
+	{"KP_UPARROW",		K_KP_UPARROW },
+	{"KP_PGUP",			K_KP_PGUP },
+	{"KP_LEFTARROW",	K_KP_LEFTARROW },
+	{"KP_5",			K_KP_5 },
+	{"KP_RIGHTARROW",	K_KP_RIGHTARROW },
+	{"KP_END",			K_KP_END },
+	{"KP_DOWNARROW",	K_KP_DOWNARROW },
+	{"KP_PGDN",			K_KP_PGDN },
+	{"KP_ENTER",		K_KP_ENTER },
+	{"KP_INS",			K_KP_INS },
+	{"KP_DEL",			K_KP_DEL },
+	{"KP_SLASH",		K_KP_SLASH },
+	{"KP_MINUS",		K_KP_MINUS },
+	{"KP_PLUS",			K_KP_PLUS },
 
 	{"MWHEELUP", K_MWHEELUP},
 	{"MWHEELDOWN", K_MWHEELDOWN},
+
+	{"PAUSE", K_PAUSE},
 
 	{"SEMICOLON", ';'},	// because a raw semicolon seperates commands
 
@@ -162,17 +178,22 @@ qboolean CheckForCommand (void)
 	s = key_lines[edit_line]+1;
 
 	for (i=0 ; i<127 ; i++)
+	{
 		if (s[i] <= ' ')
 			break;
 		else
 			command[i] = s[i];
+	}
+
 	command[i] = 0;
 
 	cmd = Cmd_CompleteCommand (command);
+
 	if (!cmd || strcmp (cmd, command))
 		cmd = Cvar_CompleteVariable (command);
 	if (!cmd  || strcmp (cmd, command) )
 		return false;		// just a chat message
+
 	return true;
 }
 
@@ -218,8 +239,56 @@ void Key_Console (int key)
 #endif
 extern	cvar_t	console_old_complete;
 
-	if (key == K_ENTER)
-	{	// backslash text are commands, else chat
+	/* FS: From Quake 2*/
+	switch ( key )
+	{
+	case K_KP_SLASH:
+		key = '/';
+		break;
+	case K_KP_MINUS:
+		key = '-';
+		break;
+	case K_KP_PLUS:
+		key = '+';
+		break;
+	case K_KP_HOME:
+		key = '7';
+		break;
+	case K_KP_UPARROW:
+		key = '8';
+		break;
+	case K_KP_PGUP:
+		key = '9';
+		break;
+	case K_KP_LEFTARROW:
+		key = '4';
+		break;
+	case K_KP_5:
+		key = '5';
+		break;
+	case K_KP_RIGHTARROW:
+		key = '6';
+		break;
+	case K_KP_END:
+		key = '1';
+		break;
+	case K_KP_DOWNARROW:
+		key = '2';
+		break;
+	case K_KP_PGDN:
+		key = '3';
+		break;
+	case K_KP_INS:
+		key = '0';
+		break;
+	case K_KP_DEL:
+		key = '.';
+		break;
+	}
+
+	if ( (key == K_ENTER) || (key == K_KP_ENTER) )
+	{
+		// backslash text are commands, else chat
 		if (key_lines[edit_line][1] == '\\' || key_lines[edit_line][1] == '/')
 			Cbuf_AddText (key_lines[edit_line]+2);	// skip the >
 		else if (CheckForCommand())
@@ -242,12 +311,12 @@ extern	cvar_t	console_old_complete;
 			Cmd_ChatInfo(EZQ_CHAT_AFK);/* FS: EZQ Chat */
 
 		if (cls.state == ca_disconnected)
-                        SCR_UpdateScreen ();    // force an update, because the command
+			SCR_UpdateScreen ();    // force an update, because the command
                 							// may take some time
-                return;
+		return;
 	}
 
-	if (key == 'r') /* FS: Reconnect */
+	if ( key == 'r' ) /* FS: Reconnect */
 	{
 		if (keydown[K_CTRL])
 		{
@@ -272,8 +341,9 @@ extern	cvar_t	console_old_complete;
 		}
 	}
 
-	if (key == K_TAB)
-	{	// command completion
+	if ( key == K_TAB )
+	{
+		// command completion
 		if(!console_old_complete.value) /* FS: Added */
 		{
 			Sort_Possible_Cmds(key_lines[edit_line]+1);
@@ -285,7 +355,7 @@ extern	cvar_t	console_old_complete;
 		return;
 	}
 
-	if (key == K_BACKSPACE || key == K_LEFTARROW)
+	if ( (key == K_BACKSPACE) || (key == K_LEFTARROW) || (key == K_KP_LEFTARROW) )
 	{
 		if (key_linepos > 1)
 			key_linepos--;
@@ -298,7 +368,7 @@ extern	cvar_t	console_old_complete;
 		Cmd_ChatInfo(EZQ_CHAT_AFK_TYPING); /* FS: EZQ Chat */
 
 
-	if (key == K_UPARROW)
+	if ( (key == K_UPARROW) || (key == K_KP_UPARROW) )
 	{
 		do
 		{
@@ -312,7 +382,7 @@ extern	cvar_t	console_old_complete;
 		return;
 	}
 
-	if (key == K_DOWNARROW)
+	if ( (key == K_DOWNARROW) || (key == K_KP_DOWNARROW) )
 	{
 		if (history_line == edit_line) return;
 		do
@@ -334,13 +404,13 @@ extern	cvar_t	console_old_complete;
 		return;
 	}
 
-	if (key == K_PGUP || key==K_MWHEELUP)
+	if ( (key == K_PGUP) || (key == K_KP_PGUP) || (key==K_MWHEELUP) )
 	{
 		con->display -= 2;
 		return;
 	}
 
-	if (key == K_PGDN || key==K_MWHEELDOWN)
+	if ( (key == K_PGDN) || (key == K_KP_PGDN) || (key==K_MWHEELDOWN) )
 	{
 		con->display += 2;
 		if (con->display > con->current)
@@ -348,13 +418,13 @@ extern	cvar_t	console_old_complete;
 		return;
 	}
 
-	if (key == K_HOME)
+	if ( (key == K_HOME) || (key == K_KP_HOME) )
 	{
 		con->display = con->current - con_totallines + 10;
 		return;
 	}
 
-	if (key == K_END)
+	if ( (key == K_END) || (key == K_KP_END) )
 	{
 		con->display = con->current;
 		return;
@@ -713,19 +783,36 @@ void Key_Init (void)
 	for (i=32 ; i<128 ; i++)
 		consolekeys[i] = true;
 	consolekeys[K_ENTER] = true;
+	consolekeys[K_KP_ENTER] = true;
 	consolekeys[K_TAB] = true;
 	consolekeys[K_LEFTARROW] = true;
+	consolekeys[K_KP_LEFTARROW] = true;
 	consolekeys[K_RIGHTARROW] = true;
+	consolekeys[K_KP_RIGHTARROW] = true;
 	consolekeys[K_UPARROW] = true;
+	consolekeys[K_KP_UPARROW] = true;
 	consolekeys[K_DOWNARROW] = true;
+	consolekeys[K_KP_DOWNARROW] = true;
 	consolekeys[K_BACKSPACE] = true;
 	consolekeys[K_HOME] = true;
+	consolekeys[K_KP_HOME] = true;
 	consolekeys[K_END] = true;
+	consolekeys[K_KP_END] = true;
 	consolekeys[K_PGUP] = true;
+	consolekeys[K_KP_PGUP] = true;
 	consolekeys[K_PGDN] = true;
+	consolekeys[K_KP_PGDN] = true;
 	consolekeys[K_SHIFT] = true;
+	consolekeys[K_INS] = true;
+	consolekeys[K_KP_INS] = true;
+	consolekeys[K_KP_DEL] = true;
+	consolekeys[K_KP_SLASH] = true;
+	consolekeys[K_KP_PLUS] = true;
+	consolekeys[K_KP_MINUS] = true;
+	consolekeys[K_KP_5] = true;
 	consolekeys[K_MWHEELUP] = true;
 	consolekeys[K_MWHEELDOWN] = true;
+
 	consolekeys['`'] = false;
 	consolekeys['~'] = false;
 
@@ -800,17 +887,27 @@ void Key_Event (int key, qboolean down)
 	if (down)
 	{
 		key_repeats[key]++;
-/* FS: TODO Make this a CVAR */
-/*		if (key != K_BACKSPACE 
-			&& key != K_PAUSE 
-			&& key != K_PGUP 
-			&& key != K_PGDN
-			&& key_repeats[key] > 1)
-			return;	// ignore most autorepeats
-*/
+
+		if (!cl_autorepeat_allkeys.intValue) /* FS: Added */
+		{
+			if (key != K_BACKSPACE 
+				&& key != K_PAUSE 
+				&& key != K_PGUP 
+				&& key != K_KP_PGUP 
+				&& key != K_PGDN
+				&& key != K_KP_PGDN
+				&& key_repeats[key] > 1)
+			{
+				return;	// ignore most autorepeats
+			}
+		}
 			
 		if (key >= 200 && !keybindings[key])
 			Con_Printf ("%s is unbound, hit F4 to set.\n", Key_KeynumToString (key) );
+	}
+	else
+	{
+		key_repeats[key] = 0;
 	}
 
 	if (key == K_SHIFT)

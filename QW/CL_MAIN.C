@@ -150,6 +150,7 @@ cvar_t	con_show_dev_flags = {"con_show_dev_flags", "1", true, false, "Show devel
 
 cvar_t	cl_ogg_music = {"cl_ogg_music", "1", true, false, "Play OGG tracks in the format of id1/music/trackXX.ogg if they exist."}; /* FS: Added */
 cvar_t	cl_wav_music = {"cl_wav_music", "1", true, false, "Play WAV tracks in the format of id1/music/trackXX.wav if they exist."}; /* FS: Added */
+cvar_t	cl_autorepeat_allkeys = {"cl_autorepeat_allkeys", "0", true, false, "Allow to autorepeat any key, not just Backspace, Pause, PgUp, and PgDn keys."}; /* FS: So I can autorepeat whatever I want, hoss. */
 
 int         fps_count;
 
@@ -1321,9 +1322,13 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&cl_pext_floatcoords);
 #endif
 
-	Cvar_RegisterVariable (&cl_downloadrate_hack); /* FS: Added */
-	Cvar_RegisterVariable (&con_show_description); /* FS: Added */
-	Cvar_RegisterVariable (&con_show_dev_flags); /* FS: Added */
+	/* FS: New stuff */
+	Cvar_RegisterVariable (&cl_downloadrate_hack);
+	Cvar_RegisterVariable (&con_show_description);
+	Cvar_RegisterVariable (&con_show_dev_flags);
+	Cvar_RegisterVariable (&cl_ogg_music);
+	Cvar_RegisterVariable (&cl_wav_music);
+	Cvar_RegisterVariable (&cl_autorepeat_allkeys);
 
 	/* FS: GameSpy CVARs */
 	Cvar_RegisterVariable (&cl_master_server_ip);
@@ -1332,9 +1337,6 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&cl_master_server_timeout);
 	Cvar_RegisterVariable (&cl_master_server_retries);
 	Cvar_RegisterVariable (&snd_gamespy_sounds);
-
-	Cvar_RegisterVariable (&cl_ogg_music); /* FS: Added */
-	Cvar_RegisterVariable(&cl_wav_music); /* FS: Added */
 
 	Cmd_AddCommand ("version", CL_Version_f);
 	Cmd_AddCommand ("cl_flashlight", CL_Flashlight_f); /* FS: Flashlight */

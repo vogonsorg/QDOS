@@ -392,6 +392,8 @@ extern	cvar_t	snd_gamespy_sounds;
 extern	cvar_t	cl_ogg_music; /* FS: Added */
 extern	cvar_t	cl_wav_music; /* FS: Added */
 
+extern	cvar_t	cl_autorepeat_allkeys; /* FS: Added */
+
 #define	MAX_STATIC_ENTITIES	128			// torches, etc
 
 extern	client_state_t	cl;
