@@ -1266,6 +1266,9 @@ void M_Draw (void)
 	case m_extended:  // FS: Extended
 		M_Extended_Draw ();
 		break;        
+
+	case m_gamespy: /* FS: Unfinished */
+		break;
 	}
 
 	if (m_entersound)
@@ -1278,7 +1281,6 @@ void M_Draw (void)
 	S_ExtraUpdate ();
 	VID_LockBuffer ();
 }
-
 
 void M_Keydown (int key)
 {
@@ -1360,7 +1362,11 @@ void M_Keydown (int key)
 		return;
 	case m_extended: // FS: Extended
 		M_Extended_Key (key);
- 	return;        
+		return;
+
+	case m_gamespy: /* FS: Unfinished */
+		return;
+
 	}
 }
 

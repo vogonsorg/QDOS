@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "darray.h" 
+#include "..\..\sys.h" /* FS: For Sys_Error */
 
 #define DEF_GROWBY 8
 

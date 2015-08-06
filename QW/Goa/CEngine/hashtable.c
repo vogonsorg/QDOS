@@ -14,6 +14,7 @@
 #include <string.h>
 #include "darray.h"
 #include "hashtable.h"
+#include "..\..\sys.h" /* FS: For Sys_Error */
 
 struct HashImplementation
 {

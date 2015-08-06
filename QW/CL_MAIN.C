@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "cfgfile.h" // FS: Parse CFG early -- sezero
 #include <ctype.h> // FS: -Werror fix
 
-#include "Goa/CEngine/goaceng.h" // FS: For Gamespy
+#include "Goa/CEngine/goaceng.h" /* FS: For Gamespy */
 
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
@@ -146,14 +146,6 @@ cvar_t	developer = {"developer","0", false, false, "Enable the use of developer 
 cvar_t	con_show_description = {"con_show_description", "1", true, false, "Show descriptions for CVARs."}; // FS
 cvar_t	con_show_dev_flags = {"con_show_dev_flags", "1", true, false, "Show developer flag options."}; // FS
 
-/* FS: GameSpy CVARs */
-cvar_t	cl_master_server_ip = {"cl_master_server_ip", CL_MASTER_ADDR, true, false, "GameSpy Master Server IP."};
-cvar_t	cl_master_server_port = {"cl_master_server_port", CL_MASTER_PORT, true, false, "GameSpy Master Server Port."};
-cvar_t	cl_master_server_queries = {"cl_master_server_queries", "10", true, false, "Number of sockets to allocate for GameSpy."};
-cvar_t	cl_master_server_timeout = {"cl_master_server_timeout", "3000", true, false, "Timeout (in milliseconds) to give up on pinging a server."};
-cvar_t	cl_master_server_retries = {"cl_master_server_retries", "20", true, false, "Number of retries to attempt for receiving the server list.  Formula is 50ms + 10ms for each retry."};
-cvar_t	snd_gamespy_sounds = {"snd_gamespy_sounds", "0", true, false, "Play the complete.wav and abort.wav from GameSpy3D if it exists in sounds/gamespy."};
-
 cvar_t	cl_ogg_music = {"cl_ogg_music", "1", true, false, "Play OGG tracks in the format of music/trackXX.ogg if they exist."}; // FS
 
 int         fps_count;
@@ -161,15 +153,24 @@ qboolean bFlashlight = false; // FS: Flashlight
 
 void CL_Flashlight_f (void); // FS: Prototype it
 
+/* FS: Gamespy CVARs */
+cvar_t	cl_master_server_ip = {"cl_master_server_ip", CL_MASTER_ADDR, true, false, "GameSpy Master Server IP."};
+cvar_t	cl_master_server_port = {"cl_master_server_port", CL_MASTER_PORT, true, false, "GameSpy Master Server Port."};
+cvar_t	cl_master_server_queries = {"cl_master_server_queries", "10", true, false, "Number of sockets to allocate for GameSpy."};
+cvar_t	cl_master_server_timeout = {"cl_master_server_timeout", "3000", true, false, "Timeout (in milliseconds) to give up on pinging a server."};
+cvar_t	cl_master_server_retries = {"cl_master_server_retries", "20", true, false, "Number of retries to attempt for receiving the server list.  Formula is 50ms + 10ms for each retry."};
+cvar_t	snd_gamespy_sounds = {"snd_gamespy_sounds", "0", true, false, "Play the complete.wav and abort.wav from GameSpy3D if it exists in sounds/gamespy."};
+
 /* FS: Gamespy prototypes */
-static    GServerList serverlist; // FS: Moved outside so we can abort whenever we need to
-static int gspyCur;
-gamespyBrowser_t browserList[MAX_SERVERS];
-static void CL_Gspystop_f (void);
+static	GServerList	serverlist = NULL;
+static	int		gspyCur;
+gamespyBrowser_t browserList[MAX_SERVERS]; /* FS: Browser list for active servers */
+gamespyBrowser_t browserListAll[MAX_SERVERS]; /* FS: Browser list for ALL servers */
 static void GameSpy_Async_Think(void);
 static void ListCallBack(GServerList serverlist, int msg, void *instance, void *param1, void *param2);
-void CL_PingNetServers_f (void);
-void CL_PrintBrowserList_f (void);
+static void CL_Gspystop_f (void);
+       void CL_PingNetServers_f (void);
+static void CL_PrintBrowserList_f (void);
 
 jmp_buf  host_abort;
 
@@ -1388,15 +1389,16 @@ void CL_Init (void)
 	Cmd_AddCommand ("windows", CL_Windows_f);
 #endif
 
-	/* FS: Gamespy commands */
+	/* FS: Gamespy stuff */
 	Cmd_AddCommand ("slist2", CL_PingNetServers_f);
 	Cmd_AddCommand ("srelist", CL_PrintBrowserList_f);
 	Cmd_AddCommand ("gspystop", CL_Gspystop_f);
 
+	memset(&browserList, 0, sizeof(browserList));
+	memset(&browserListAll, 0, sizeof(browserListAll));
+
 	specbool = spectator.value; // FS
 	dstring_delete(version);
-
-	memset(&browserList, 0, sizeof(browserList));
 }
 
 
@@ -1760,8 +1762,7 @@ void CL_Flashlight_f (void) // FS: Flashlight
 		bFlashlight = 1;
 }
 
-//GAMESPY
-
+/* FS: Gamespy Stuff */
 static void CL_Gamespy_Check_Error(GServerList lst, int error)
 {
 	if (error != GE_NOERROR) /* FS: Grab the error code */
@@ -1811,43 +1812,69 @@ static void CL_Gspystop_f (void)
 	}
 }
 
-void CL_PrintBrowserList_f (void)
+static void CL_PrintBrowserList_f (void)
 {
-	int i = 0;
+	int i;
+	int num_active_servers = 0;
+	qboolean showAll = false;
 
-	for ( i = 0; i <= MAX_SERVERS; i++)
+	if(Cmd_Argc() > 1)
+	{
+		showAll = true;
+	}
+
+	for (i = 0; i < MAX_SERVERS; i++)
 	{
 		if(browserList[i].hostname[0] != 0)
 		{
-//			Con_Printf("%02d:  %s:%d [%d] %s %d/%d %s\n", i+1, browserList[i].ip, browserList[i].port, browserList[i].ping, browserList[i].hostname, browserList[i].curPlayers, browserList[i].maxPlayers, browserList[i].mapname);
-			Con_Printf("%02d:  %s:%d [%d] %s ", i+ 1, browserList[i].ip, browserList[i].port, browserList[i].ping, browserList[i].hostname);
-			Con_Printf ("\x02%d", browserList[i].curPlayers);
-			Con_Printf ("/%d %s\n", browserList[i].maxPlayers, browserList[i].mapname);
+			if (browserList[i].curPlayers > 0)
+			{
+				Con_Printf("%02d:  %s:%d [%d] %s ", num_active_servers+1, browserList[i].ip, browserList[i].port, browserList[i].ping, browserList[i].hostname);
+				Con_Printf("\x02%d", browserList[i].curPlayers); /* FS: Show the current players number in the green font */
+				Con_Printf("/%d %s\n", browserList[i].maxPlayers, browserList[i].mapname);
+				num_active_servers++;
+			}
 		}
-		else // FS: if theres nothing there the rest of the list is old garbage, bye.
+		else /* FS: if theres nothing there the rest of the list is old garbage, bye. */
 		{
 			break;
 		}
 	}
+
+	if (showAll)
+	{
+		int skip = 0;
+
+		for (i = 0; i < MAX_SERVERS; i++)
+		{
+			if(browserListAll[i].hostname[0] != 0)
+			{
+				Con_Printf("%02d:  %s:%d [%d] %s %d/%d %s\n", (i+num_active_servers+1)-(skip), browserListAll[i].ip, browserListAll[i].port, browserListAll[i].ping, browserListAll[i].hostname, browserListAll[i].curPlayers, browserListAll[i].maxPlayers, browserListAll[i].mapname);
+			}
+			else /* FS: The next one could be 0 if we skipped over it previously in GameSpy_Sort_By_Ping.  So increment the number of skips counter so the server number shows sequentially */
+			{
+				skip++;
+				continue;
+			}
+		}
+	}
 }
 
-static void ListCallBack(GServerList serverlist, int msg, void *instance, void *param1, void *param2)
+static void GameSpy_Sort_By_Ping(GServerList lst)
 {
-	GServer server;
-	int numplayers = 0; // FS
-	int percent;
+	int i;
+	gspyCur = 0;
 
-	if (msg == LIST_PROGRESS)
+	for (i = 0; i < cls.gamespytotalservers; i++)
 	{
-		server = (GServer)param1;
-
-		numplayers = ServerGetIntValue(server,"numplayers",0);
-
-		if(cls.gamespyupdate == SHOW_POPULATED_SERVERS && numplayers > 0) // FS: Only show populated servers
+		GServer server = ServerListGetServer(lst, i);
+		if (server)
 		{
-			Con_Printf ( "%s:%d [%d] %s ",ServerGetAddress(server),ServerGetQueryPort(server), ServerGetPing(server), ServerGetStringValue(server, "hostname","(NONE)"));
-			Con_Printf ("\x02%d", numplayers);
-			Con_Printf ("/%d %s\n", ServerGetIntValue(server,"maxclients",0), ServerGetStringValue(server,"map","(NO MAP)"));
+			if(ServerGetIntValue(server, "numplayers", 0) <= 0)
+				continue;
+
+			if(i == MAX_SERVERS)
+				break;
 
 			DG_strlcpy(browserList[gspyCur].ip, ServerGetAddress(server), sizeof(browserList[gspyCur].ip));
 			browserList[gspyCur].port = ServerGetQueryPort(server);
@@ -1859,28 +1886,64 @@ static void ListCallBack(GServerList serverlist, int msg, void *instance, void *
 
 			gspyCur++;
 		}
+	}
+
+	for (i = 0; i < cls.gamespytotalservers; i++)
+	{
+		GServer server = ServerListGetServer(lst, i);
+
+		if (server)
+		{
+			if(ServerGetIntValue(server, "numplayers", 0) > 0) /* FS: We already added this so skip it */
+			{
+				continue;
+			}
+
+			if(Q_strncmp(ServerGetStringValue(server, "hostname","(NONE)"), "(NONE)", 6) == 0) /* FS: A server that timed-out or we aborted early */
+			{
+				continue;
+			}
+
+			if(i == MAX_SERVERS)
+				break;
+
+			DG_strlcpy(browserListAll[i].ip, ServerGetAddress(server), sizeof(browserListAll[i].ip));
+			browserListAll[i].port = ServerGetQueryPort(server);
+			browserListAll[i].ping = ServerGetPing(server);
+			DG_strlcpy(browserListAll[i].hostname, ServerGetStringValue(server, "hostname","(NONE)"), sizeof(browserListAll[i].hostname));
+			DG_strlcpy(browserListAll[i].mapname, ServerGetStringValue(server,"map","(NO MAP)"), sizeof(browserListAll[i].mapname));
+			browserListAll[i].curPlayers = ServerGetIntValue(server,"numplayers",0);
+			browserListAll[i].maxPlayers = ServerGetIntValue(server,"maxclients",0);
+		}
+	}
+}
+
+static void ListCallBack(GServerList lst, int msg, void *instance, void *param1, void *param2)
+{
+	GServer server;
+	int percent;
+	int numplayers;
+
+	if (msg == LIST_PROGRESS)
+	{
+		server = (GServer)param1;
+		numplayers = ServerGetIntValue(server,"numplayers",0);
+
+		if(numplayers > 0) /* FS: Only show populated servers */
+		{
+			if (key_dest != key_menu) /* FS: Only print this from an slist2 command, not the server browser. */
+			{
+				Con_Printf("%s:%d [%d] %s ", ServerGetAddress(server), ServerGetQueryPort(server), ServerGetPing(server), ServerGetStringValue(server, "hostname","(NONE)"));
+				Con_Printf("\x02%d", numplayers); /* FS: Show the current players number in the green font */
+				Con_Printf("/%d %s\n", ServerGetIntValue(server,"maxclients",0), ServerGetStringValue(server,"map","(NO MAP)"));
+			}
+		}
 		else if (cls.gamespyupdate == SHOW_ALL_SERVERS)
 		{
-			Con_Printf ( "%s:%d [%d] %s ",ServerGetAddress(server),ServerGetQueryPort(server), ServerGetPing(server), ServerGetStringValue(server, "hostname","(NONE)"));
-			if (numplayers > 0)
+			if (key_dest != key_menu) /* FS: Only print this from an slist2 command, not the server browser. */
 			{
-				DG_strlcpy(browserList[gspyCur].ip, ServerGetAddress(server), sizeof(browserList[gspyCur].ip));
-				browserList[gspyCur].port = ServerGetQueryPort(server);
-				browserList[gspyCur].ping = ServerGetPing(server);
-				DG_strlcpy(browserList[gspyCur].hostname, ServerGetStringValue(server, "hostname","(NONE)"), sizeof(browserList[gspyCur].hostname));
-				DG_strlcpy(browserList[gspyCur].mapname, ServerGetStringValue(server,"map","(NO MAP)"), sizeof(browserList[gspyCur].mapname));
-				browserList[gspyCur].curPlayers = ServerGetIntValue(server,"numplayers",0);
-				browserList[gspyCur].maxPlayers = ServerGetIntValue(server,"maxclients",0);
-
-				Con_Printf ("\x02%d", numplayers);
-
-				gspyCur++;
+				Con_Printf("%s:%d [%d] %s %d/%d %s\n", ServerGetAddress(server), ServerGetQueryPort(server), ServerGetPing(server), ServerGetStringValue(server, "hostname","(NONE)"), ServerGetIntValue(server,"numplayers",0), ServerGetIntValue(server,"maxclients",0), ServerGetStringValue(server,"map","(NO MAP)"));
 			}
-			else
-			{
-				Con_Printf ("%d", numplayers);
-			}
-			Con_Printf ("/%d %s\n", ServerGetIntValue(server,"maxclients",0), ServerGetStringValue(server,"map","(NO MAP)"));
 		}
 
 		if(param2)
@@ -1889,21 +1952,35 @@ static void ListCallBack(GServerList serverlist, int msg, void *instance, void *
 			cls.gamespypercent = percent;
 		}
 	}
+	else if (msg == LIST_STATECHANGED)
+	{
+		switch(ServerListState(lst))
+		{
+			case sl_idle:
+				ServerListSort(lst, true, "ping", cm_int);
+				GameSpy_Sort_By_Ping(lst);
+				break;
+			default:
+				break;
+		}
+	}
 }
 
 void CL_PingNetServers_f (void)
 {
-	char goa_secret_key[256];
-	int error = 0; // FS: Grab the error code
-	int allocatedSockets; // FS
+	char goa_secret_key[7];
+	int error;
+	int allocatedSockets;
 
-	if (Cmd_Argc() > 2)
+	if(cls.gamespyupdate)
 	{
-		Con_Printf ("Usage: slist2 <value>.  Set <value> to 1 or higher to show all servers, not just populated ones.\n");
+		Con_Printf("Error: Already querying the GameSpy Master!\n");
 		return;
 	}
 
+	gspyCur = 0;
 	memset(&browserList, 0, sizeof(browserList));
+	memset(&browserListAll, 0, sizeof(browserListAll));
 
 	goa_secret_key[0] = 'F';
 	goa_secret_key[1] = 'U';
@@ -1911,11 +1988,11 @@ void CL_PingNetServers_f (void)
 	goa_secret_key[3] = 'V';
 	goa_secret_key[4] = 'q';
 	goa_secret_key[5] = 'n';
-	goa_secret_key[6] = '\0';
+	goa_secret_key[6] = '\0'; /* FS: Gamespy requires a null terminator at the end of the secret key */
 
-	if (Cmd_Argc() == 1)
+	if ((Cmd_Argc() == 1) || (key_dest == key_menu))
 	{
-		cls.gamespyupdate = SHOW_POPULATED_SERVERS;
+		cls.gamespyupdate = SHOW_POPULATED_SERVERS;;
 		Con_Printf("\x02Grabbing populated server list from GameSpy master. . .\n");
 	}
 	else
@@ -1924,17 +2001,16 @@ void CL_PingNetServers_f (void)
 		Con_Printf("\x02Grabbing all servers from GameSpy master. . .\n");
 	}
 
-	gspyCur = 0;
 	cls.gamespypercent = 0;
-	cls.gamespytotalservers = 0;
 	cls.gamespystarttime = (int)Sys_DoubleTime();
-
-	SCR_UpdateScreen(); // FS: Force an update so the percentage bar shows some progress
+	cls.gamespytotalservers = 0;
 
 	allocatedSockets = bound(5, cl_master_server_queries.intValue, 100);
 
+	SCR_UpdateScreen(); /* FS: Force an update so the percentage bar shows some progress */
+
 	serverlist = ServerListNew("quakeworld","quakeworld",goa_secret_key,allocatedSockets,ListCallBack,GCALLBACK_FUNCTION,NULL);
-    error = ServerListUpdate(serverlist,true); /* FS: Use Async now! */
+	error = ServerListUpdate(serverlist,true); /* FS: Use Async now! */
 
 	CL_Gamespy_Check_Error(serverlist, error);
 }
