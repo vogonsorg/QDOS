@@ -161,10 +161,13 @@ qboolean bFlashlight = false; // FS: Flashlight
 
 void CL_Flashlight_f (void); // FS: Prototype it
 
+/* FS: Gamespy prototypes */
 static    GServerList serverlist; // FS: Moved outside so we can abort whenever we need to
 static int gspyCur;
 gamespyBrowser_t browserList[MAX_SERVERS];
-void ListCallBack(GServerList serverlist, int msg, void *instance, void *param1, void *param2);
+static void CL_Gspystop_f (void);
+static void GameSpy_Async_Think(void);
+static void ListCallBack(GServerList serverlist, int msg, void *instance, void *param1, void *param2);
 void CL_PingNetServers_f (void);
 void CL_PrintBrowserList_f (void);
 
@@ -405,21 +408,21 @@ CL_Connect_f
 */
 void CL_Connect_f (void)
 {
-   char  *server;
+	char  *server;
 
-   if (Cmd_Argc() != 2)
-   {
-      Con_Printf ("usage: connect <server>\n");
-      return;  
-   }
+	if (Cmd_Argc() != 2)
+	{
+		Con_Printf ("usage: connect <server>\n");
+		return;  
+	}
    
-   server = Cmd_Argv (1);
+	server = Cmd_Argv (1);
 
-   CL_Disconnect ();
+	CL_Disconnect ();
 
-        //strncpy (cls.servername->str, server, sizeof(cls.servername->str)-1);
-        dstring_copystr (cls.servername, server); // taniwha
-        CL_BeginServerConnect();
+	//strncpy (cls.servername->str, server, sizeof(cls.servername->str)-1);
+	dstring_copystr (cls.servername, server); // taniwha
+	CL_BeginServerConnect();
 }
 
 
@@ -571,15 +574,6 @@ void CL_Disconnect (void)
 
 	key_dest = 0; // FS: Fix so main menu still works after disconnect
 	cl.intermission = 0; // FS: Baker fix
-
-	if(serverlist != NULL) // FS: Immediately abort gspy scans
-	{
-		Con_Printf("\x02Server scan aborted!\n");
-		cls.gamespyupdate = 0;
-		cls.gamespypercent = 0;
-		S_GamespySound ("gamespy/abort.wav");
-		ServerListHalt( serverlist );
-	}
 }
 
 void CL_Disconnect_f (void)
@@ -1394,8 +1388,10 @@ void CL_Init (void)
 	Cmd_AddCommand ("windows", CL_Windows_f);
 #endif
 
+	/* FS: Gamespy commands */
 	Cmd_AddCommand ("slist2", CL_PingNetServers_f);
 	Cmd_AddCommand ("srelist", CL_PrintBrowserList_f);
+	Cmd_AddCommand ("gspystop", CL_Gspystop_f);
 
 	specbool = spectator.value; // FS
 	dstring_delete(version);
@@ -1538,8 +1534,10 @@ void Host_Frame (float time)
    oldrealtime = realtime;
    if (host_frametime > 0.2)
       host_frametime = 0.2;
-      
-   // get new key events
+
+	GameSpy_Async_Think();
+
+	// get new key events
    Sys_SendKeyEvents ();
 
    // allow mice or other external controllers to add commands
@@ -1763,6 +1761,56 @@ void CL_Flashlight_f (void) // FS: Flashlight
 }
 
 //GAMESPY
+
+static void CL_Gamespy_Check_Error(GServerList lst, int error)
+{
+	if (error != GE_NOERROR) /* FS: Grab the error code */
+	{
+		Con_Printf("\x02GameSpy Error: ");
+		Con_Printf("%s.\n", ServerListErrorDesc(lst, error));
+	}
+}
+
+static void GameSpy_Async_Think(void)
+{
+	int error;
+
+	if(!serverlist)
+		return;
+
+	if(ServerListState(serverlist) == sl_idle && cls.gamespyupdate)
+	{
+		if (key_dest != key_menu) /* FS: Only print this from an slist2 command, not the server browser. */
+		{
+			Con_Printf("Found %i active servers out of %i in %i seconds.\n", gspyCur, cls.gamespytotalservers, (((int)Sys_DoubleTime()-cls.gamespystarttime)) );
+		}
+		else
+		{
+//			Update_Gamespy_Menu();
+		}
+		cls.gamespyupdate = 0;
+		cls.gamespypercent = 0;
+		ServerListClear(serverlist);
+		ServerListFree(serverlist);
+		serverlist = NULL; /* FS: This is on purpose so future ctrl+c's won't try to close empty serverlists */
+	}
+	else
+	{
+		error = ServerListThink(serverlist);
+		CL_Gamespy_Check_Error(serverlist, error);
+	}
+}
+
+static void CL_Gspystop_f (void)
+{
+	if(serverlist != NULL && cls.gamespyupdate) /* FS: Immediately abort gspy scans */
+	{
+		Con_Printf("\x02Server scan aborted!\n");
+		S_GamespySound ("gamespy/abort.wav");
+		ServerListHalt(serverlist);
+	}
+}
+
 void CL_PrintBrowserList_f (void)
 {
 	int i = 0;
@@ -1783,7 +1831,7 @@ void CL_PrintBrowserList_f (void)
 	}
 }
 
-void ListCallBack(GServerList serverlist, int msg, void *instance, void *param1, void *param2)
+static void ListCallBack(GServerList serverlist, int msg, void *instance, void *param1, void *param2)
 {
 	GServer server;
 	int numplayers = 0; // FS
@@ -1849,12 +1897,6 @@ void CL_PingNetServers_f (void)
 	int error = 0; // FS: Grab the error code
 	int allocatedSockets; // FS
 
-	if(cls.state != ca_disconnected)
-	{
-		Con_Printf("You must be disconnected to use this command!\n");
-		return;
-	}
-
 	if (Cmd_Argc() > 2)
 	{
 		Con_Printf ("Usage: slist2 <value>.  Set <value> to 1 or higher to show all servers, not just populated ones.\n");
@@ -1892,20 +1934,7 @@ void CL_PingNetServers_f (void)
 	allocatedSockets = bound(5, cl_master_server_queries.intValue, 100);
 
 	serverlist = ServerListNew("quakeworld","quakeworld",goa_secret_key,allocatedSockets,ListCallBack,GCALLBACK_FUNCTION,NULL);
-    error = ServerListUpdate(serverlist,false);
+    error = ServerListUpdate(serverlist,true); /* FS: Use Async now! */
 
-	if (error != GE_NOERROR) // FS: Grab the error code
-	{
-		Con_Printf("\x02GameSpy Error: %s.\n", ServerListErrorDesc(serverlist, error));
-	}
-	else
-	{
-		Con_Printf("Found %i active servers out of %i in %i seconds.\n", gspyCur, cls.gamespytotalservers, (((int)Sys_DoubleTime()-cls.gamespystarttime)) );
-	}
-
-	cls.gamespyupdate = 0;
-	cls.gamespypercent = 0;
-	ServerListClear( serverlist );
-    ServerListFree(serverlist);
-	serverlist = NULL; // FS: This is on purpose so future ctrl+c's won't try to close empty serverlists
+	CL_Gamespy_Check_Error(serverlist, error);
 }

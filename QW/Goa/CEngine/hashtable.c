@@ -16,7 +16,7 @@
 #include "darray.h"
 #include "hashtable.h"
 
-struct HashImplementation 
+struct HashImplementation
 {
 	DArray *buckets;
 	int nbuckets;
@@ -26,9 +26,9 @@ struct HashImplementation
 };
 
 
-HashTable TableNew(int elemSize, int nBuckets, 
-                   TableHashFn hashFn, TableCompareFn compFn, 
- 					 TableElementFreeFn freeFn)
+HashTable TableNew(int elemSize, int nBuckets,
+                   TableHashFn hashFn, TableCompareFn compFn,
+                   TableElementFreeFn freeFn)
 {
 	HashTable table;
 	int i;
@@ -53,7 +53,6 @@ HashTable TableNew(int elemSize, int nBuckets,
 	return table;
 }
 
-
 void TableFree(HashTable table)
 {
 	int i;
@@ -72,22 +71,20 @@ void TableFree(HashTable table)
 	table = NULL;
 }
 
-
 int TableCount(HashTable table)
 {
 	int i, count = 0;
-	
+
 	for (i = 0 ; i < table->nbuckets ; i++)
 		count += ArrayLength(table->buckets[i]);
-	
+
 	return count;
 }
-
 
 void TableEnter(HashTable table, const void *newElem)
 {
 	int hash, itempos;
-	
+
 	hash = table->hashfn(newElem, table->nbuckets);
 	itempos = ArraySearch(table->buckets[hash], newElem, table->compfn, 0,
 						  0);
@@ -97,11 +94,10 @@ void TableEnter(HashTable table, const void *newElem)
 		ArrayReplaceAt(table->buckets[hash], newElem, itempos);
 }
 
-
 void *TableLookup(HashTable table, const void *elemKey)
 {
 	int hash, itempos;
-	
+
 	hash = table->hashfn(elemKey, table->nbuckets);
 	itempos = ArraySearch(table->buckets[hash], elemKey, table->compfn, 0,
 						  0);
@@ -111,7 +107,6 @@ void *TableLookup(HashTable table, const void *elemKey)
 		return ArrayNth(table->buckets[hash], itempos);
 }
 
-
 void TableMap(HashTable table, TableMapFn fn, void *clientData)
 {
 	int i;
@@ -120,5 +115,4 @@ void TableMap(HashTable table, TableMapFn fn, void *clientData)
 	
 	for (i = 0 ; i < table->nbuckets ; i++)
 		ArrayMap(table->buckets[i], fn, clientData);
-	
 }

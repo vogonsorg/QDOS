@@ -255,12 +255,18 @@ extern	cvar_t	console_old_complete;
 		}
 	}
 
-	if (key == 'c') // FS: Disconnect
+	if( key == 'c' ) /* FS: Added */
 	{
-		if (keydown[K_CTRL])
+		if ( keydown[K_CTRL] )
 		{
-			Cbuf_AddText("disconnect\n");
-			Cbuf_Execute(); // FS: Fire immediately because of gamespy crap
+			if(cls.gamespyupdate)
+			{
+				Cbuf_AddText("gspystop\n");
+			}
+			else
+			{
+				Cbuf_AddText ("disconnect\n");
+			}
 			return;
 		}
 	}

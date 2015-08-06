@@ -1,7 +1,7 @@
 /******
 gserverlist.c
 GameSpy C Engine SDK
-  
+
 Copyright 1999 GameSpy Industries, Inc
 
 Suite E-204
@@ -16,6 +16,7 @@ Fax(714)549-0757
  information
 
 ******/
+
 #include "goaceng.h"
 #include "gserver.h"
 #include "darray.h"
@@ -35,24 +36,20 @@ Fax(714)549-0757
 
 extern char *NET_ErrorString (void);
 
-#define MSHOST	"maraakate.org" /* FS: Gamespy dead: "master.gamespy.com" */
-#define MSPORT	28900
 #define SERVER_GROWBY 32
-#define LAN_SEARCH_TIME 3000 //3 sec
+#define LAN_SEARCH_TIME 3000 /* 3 sec */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
 //todo: check state changes on error
-typedef struct 
+typedef struct
 {
 	SOCKET s;
 	int serverindex;
 	unsigned long starttime;
 } UpdateInfo;
-
 
 
 struct GServerListImplementation
@@ -74,36 +71,34 @@ struct GServerListImplementation
 	unsigned long lanstarttime;
 };
 
-GServerList g_sortserverlist; //global serverlist for sorting info!!
-int totalRetry = 20; /* FS: Total retry attempts waiting for the gamespy validate stuff */
+static GServerList g_sortserverlist; /* global serverlist for sorting info */
+static int totalRetry = 20; /* FS: Total retry attempts waiting for the gamespy validate stuff */
 
 /* FS: Set a socket to be non-blocking */
-int Set_Non_Blocking_Socket (unsigned int socket)
-{
-	int error = 0;
-	qboolean _true = true;
+#ifdef _WIN32
+#define TCP_BLOCKING_ERROR WSAEWOULDBLOCK
+static int Set_Non_Blocking_Socket (SOCKET socket) {
+	u_long _true = true;
 
-	error = ioctlsocket( socket, FIONBIO,IOCTLARG_T &_true);
-
-	return error;
+	return ioctlsocket( socket, FIONBIO, &_true);
 }
 
-#ifdef WIN32
-	#define TCP_BLOCKING_ERROR WSAEWOULDBLOCK
-#else
-	#define TCP_BLOCKING_ERROR EWOULDBLOCK
-#endif
-
-int Get_Last_Error(void)
-{
-#ifdef WIN32
+static __inline int Get_Last_Error(void) {
 	return WSAGetLastError();
+}
 #else
-	return errno;
-#endif
+#define TCP_BLOCKING_ERROR EWOULDBLOCK
+static int Set_Non_Blocking_Socket (SOCKET socket) {
+	int _true = true;
+	return ioctlsocket( socket, FIONBIO, IOCTLARG_T &_true);
 }
 
-void Close_TCP_Socket(unsigned int socket)
+static __inline int Get_Last_Error(void) {
+	return errno;
+}
+#endif
+
+static void Close_TCP_Socket(unsigned int socket)
 {
 	closesocket(socket);
 	socket = INVALID_SOCKET;
@@ -131,7 +126,7 @@ GServerList ServerListNew (char *gamename, char *enginename, char *seckey, int m
 	list->instance = instance;
 	list->sortkey = "";
 	SocketStartUp();
-	return list;	
+	return list;
 }
 
 /* ServerListFree
@@ -149,7 +144,7 @@ void ServerListFree(GServerList serverlist)
 	SocketShutDown();
 }
 
- //create update sockets and init structures
+//create update sockets and init structures
 static GError InitUpdateList(GServerList serverlist)
 {
 	int i;
@@ -188,8 +183,6 @@ static GError FreeUpdateList(GServerList serverlist)
 		closesocket(serverlist->updatelist[i].s);
 	}
 	return 0;
-
-
 }
 
 //create and connect a server list socket
@@ -263,8 +256,6 @@ static GError CreateServerListLANSocket(GServerList serverlist)
 
 	//else we are ready to broadcast
 	return 0;
-
-
 }
 
 //trigger the callback and set the new mode
@@ -272,7 +263,6 @@ static void ServerListModeChange(GServerList serverlist, GServerListState newsta
 {
 	serverlist->state = newstate;
 	serverlist->CallBackFn(serverlist, LIST_STATECHANGED, serverlist->instance, NULL, NULL);
-
 }
 
 
@@ -354,9 +344,6 @@ static GError SendBroadcastRequest(GServerList serverlist, int startport, int en
 	ServerListModeChange(serverlist, sl_lanlist);
 	serverlist->lanstarttime = current_time();
 	return 0;
-
-
-
 }
 
 //just wait for the server list to become idle
@@ -366,9 +353,7 @@ static void DoSyncLoop(GServerList serverlist)
 	{
 		ServerListThink(serverlist);
 		msleep(10);
-		
 	}
-	
 }
 
 /* ServerListUpdate
@@ -436,7 +421,7 @@ static void ServerListAddServer(GServerList serverlist, char *ip, int port)
 	GServer server;
 	server =  ServerNew(ip, port);
 	ArrayAppend(serverlist->servers,&server);
- //printf("%d %s:%d\n",++count, ip,port);
+	//printf("%d %s:%d\n",++count, ip,port);
 }
 
 
@@ -444,7 +429,7 @@ static GError ServerListLANList(GServerList serverlist)
 {
 	struct timeval timeout = {0,0};
 	fd_set set;
-	char indata[1500];
+	char indata[GS_MSGLEN];
 	struct   sockaddr_in saddr;
 	int saddrlen = sizeof(saddr);
 	int error;
@@ -470,24 +455,29 @@ static GError ServerListLANList(GServerList serverlist)
 		ServerListModeChange(serverlist, sl_querying);
 	}
 	return 0;
-
 }
-							 
+
 //reads the server list from the socket and parses it
 static GError ServerListReadList(GServerList serverlist)
 {
-	static char data[2048]; //static input buffer
+	static char data[4096]; //static input buffer
 	int len, oldlen;
 	char *p, ip[32], port[16],*q, *lastip;
 	int retry = 0;
 	int error = 0;
 	int sleepMs = 50;
 
-//append to data
+	if(serverlist->abortupdate)
+	{
+		goto abort;
+	}
+
+	//append to data
 	oldlen = strlen(data);
 
 retryRecv:
 	len = recv(serverlist->slsocket, data + oldlen, sizeof(data) - oldlen - 1, 0);
+
 	if (len == SOCKET_ERROR || len == 0)
 	{
 		error = Get_Last_Error();
@@ -503,7 +493,10 @@ retryRecv:
 		}
 		else
 		{
+abort:
 			Close_TCP_Socket(serverlist->slsocket);
+			data[0] = 0;
+			ServerListModeChange(serverlist, sl_idle);
 			return GE_NOCONNECT;
 		}
 	}
@@ -544,11 +537,9 @@ retryRecv:
 	}
 	memmove(data,lastip,strlen(lastip) + 1); //shift it over
 	return 0;
-
 }
 
 //loop through pending queries and send out new ones
-#define OOB_SEQ "\xff\xff\xff\xff" //32 bit integer (-1) as string sequence for out of band data
 #define STATUS "\xff\xff\xff\xffstatus"
 
 /* FS: Redone.  Now works properly at the same speed in DOS and WIN32 */
@@ -557,7 +548,7 @@ static GError ServerListQueryLoop(GServerList serverlist)
 	int i, error;
 	fd_set read_fd;
 	struct timeval timeout = {0,0};
-	char indata[1500];
+	char indata[GS_MSGLEN];
 	struct sockaddr_in saddr;
 	int saddrlen = sizeof(saddr);
 	int server_timeout = bound(100, cl_master_server_timeout.intValue, 9000); /* FS: Now a CVAR */
@@ -571,11 +562,6 @@ static GError ServerListQueryLoop(GServerList serverlist)
 	{
 		for (i = 0 ; i < serverlist->maxupdates; i++)
 		{
-			if (serverlist->abortupdate) /* FS: Check for aborts */
-			{
-				goto abort;
-			}
-
 			FD_SET(serverlist->updatelist[i].s, &read_fd);
 			selectsocket(serverlist->updatelist[i].s + 1, NULL, &read_fd, NULL, &timeout);
 
@@ -601,7 +587,7 @@ static GError ServerListQueryLoop(GServerList serverlist)
 						server->ping = current_time() - serverlist->updatelist[i].starttime;
 					}
 
-					ServerParseKeyVals(server, indata); 
+					ServerParseKeyVals(server, indata);
 					serverlist->CallBackFn(serverlist, 
 										LIST_PROGRESS, 
 										serverlist->instance,
@@ -617,16 +603,13 @@ static GError ServerListQueryLoop(GServerList serverlist)
 //						Con_DPrintf(DEVELOPER_MSG_GAMESPY, "Slow down cowboy..\n");
 						continue;
 					}
-					else /* FS: If we got didn't get WOULDBLOCK or if it just kept going past the server_timeout threshold then just give up. */
+					else /* FS: If we didn't get WOULDBLOCK or if it just kept going past the server_timeout threshold then just give up. */
 					{
 						Con_DPrintf(DEVELOPER_MSG_GAMESPY, "Error during gamespy recv %s.  Removing server from list.\n", NET_ErrorString());
 						serverlist->updatelist[i].serverindex = -1; //reuse the updatelist
 					}
 				}
 			}
-
-			SCR_UpdateScreen(); // FS: Force an update so the percentage bar shows some progress
-			Sys_SendKeyEvents (); /* FS: Check for aborts */
 		}
 	}
 
@@ -637,7 +620,6 @@ static GError ServerListQueryLoop(GServerList serverlist)
 			Con_Printf("\x02Server scan complete!\n");
 			S_GamespySound ("gamespy/complete.wav");
 		}
-abort:
 		cls.gamespytotalservers = ArrayLength(serverlist->servers);
 		firsttime = true;
 		FreeUpdateList(serverlist);
@@ -645,15 +627,8 @@ abort:
 		return 0;
 	}
 
-	i = 0;
-
 	for (i = 0 ; i < serverlist->maxupdates && serverlist->nextupdate < ArrayLength(serverlist->servers) ; i++)
 	{
-		if (serverlist->abortupdate) /* FS: Check for aborts */
-		{
-			goto abort;
-		}
-
 		if (serverlist->updatelist[i].serverindex < 0) //it's available
 		{
 			serverlist->updatelist[i].serverindex = serverlist->nextupdate++;
@@ -690,7 +665,6 @@ For use with Async Updates. This needs to be called every ~10ms for list process
 updating to occur during async server list updates */
 GError ServerListThink(GServerList serverlist)
 {
-
 	switch (serverlist->state)
 	{
 		case sl_idle:
@@ -699,7 +673,6 @@ GError ServerListThink(GServerList serverlist)
 				Con_DPrintf(DEVELOPER_MSG_GAMESPY, "Gamespy ServerListThink: Server List xfer\n");
 				 //read the data
 				return ServerListReadList(serverlist);
-				break;
 		case sl_lanlist:
 				Con_DPrintf(DEVELOPER_MSG_GAMESPY, "Gamespy ServerListThink: Server Lan List Query\n");
 				return ServerListLANList(serverlist);
@@ -707,9 +680,7 @@ GError ServerListThink(GServerList serverlist)
 				//do some queries
 				Con_DPrintf(DEVELOPER_MSG_GAMESPY, "Gamespy ServerListThink: Server List Query Loop\n");
 				return ServerListQueryLoop(serverlist);
-				break;
 	}
-
 
 	return 0;
 }
@@ -719,7 +690,7 @@ GError ServerListThink(GServerList serverlist)
 Halts the current update batch */
 GError ServerListHalt(GServerList serverlist)
 {
-//	if (serverlist->state != sl_idle) /* FS: Immediately abort. */
+	if (serverlist->state != sl_idle)
 		serverlist->abortupdate = 1;
 
 	return 0;
@@ -731,7 +702,6 @@ Clear and free all of the servers from the server list.
 List must be in the sl_idle state */
 GError ServerListClear(GServerList serverlist)
 {
-	
 	if (serverlist->state != sl_idle)
 		return GE_BUSY;
 	//fastest way to clear is kill and recreate
@@ -767,7 +737,6 @@ char *ServerListErrorDesc(GServerList serverlist, GError error)
 		return "Server List is busy";
 	}
 	return "UNKNOWN ERROR CODE";
-
 }
 
 /* ServerListGetServer
@@ -801,12 +770,11 @@ static int IntKeyCompare(const void *entry1, const void *entry2)
 	if (!g_sortserverlist->sortascending) 
 		diff = -diff;
 	return diff;
-	
 }
 
 static int FloatKeyCompare(const void *entry1, const void *entry2)
 {
-    GServer server1 = *(GServer *)entry1, server2 = *(GServer *)entry2;
+	GServer server1 = *(GServer *)entry1, server2 = *(GServer *)entry2;
 	double f = ServerGetFloatValue(server1, g_sortserverlist->sortkey, 0) - 
 			ServerGetFloatValue(server2, g_sortserverlist->sortkey, 0);
 	if (!g_sortserverlist->sortascending) 
@@ -816,9 +784,8 @@ static int FloatKeyCompare(const void *entry1, const void *entry2)
 
 static int StrCaseKeyCompare(const void *entry1, const void *entry2)
 {
-	
-    GServer server1 = *(GServer *)entry1, server2 = *(GServer *)entry2;
-    int diff = strcmp(ServerGetStringValue(server1, g_sortserverlist->sortkey, ""),
+	GServer server1 = *(GServer *)entry1, server2 = *(GServer *)entry2;
+	int diff = strcmp(ServerGetStringValue(server1, g_sortserverlist->sortkey, ""),
 				ServerGetStringValue(server2, g_sortserverlist->sortkey, ""));
 	if (!g_sortserverlist->sortascending) 
 		diff = -diff;
@@ -863,11 +830,8 @@ void ServerListSort(GServerList serverlist, gbool ascending, char *sortkey, GCom
 	serverlist->sortascending = ascending;
 	g_sortserverlist = serverlist;
 	ArraySort(serverlist->servers,comparator);
-
 }
-
 
 #ifdef __cplusplus
 }
 #endif
-

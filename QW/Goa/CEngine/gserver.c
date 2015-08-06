@@ -1,7 +1,7 @@
 /******
 gserver.c
 GameSpy C Engine SDK
-  
+
 Copyright 1999 GameSpy Industries, Inc
 
 Suite E-204
@@ -48,37 +48,50 @@ GServer ServerNew(char *ip, int port)
 	return server;
 }
 
-char *mytok(char *instr, char delim)
+static
+void ServerParsePlayerCount(GServer server, char *savedkeyvals)
 {
-	char *result;
-	static char *thestr;
+	int numplayers = 0;
+	char players[12];
+	char playerSeperators[] = "\n";
+	char *test, *p;
+	GKeyValuePair kvpair;
 
-	if (instr)
-		thestr = instr;
-	result=thestr;
-	while (*thestr && *thestr != delim)
-	{
-		thestr++;
+	numplayers = 0;
+	test = DG_strtok_r(savedkeyvals, playerSeperators, &p);
+	if (test) {
+		test = DG_strtok_r(NULL, playerSeperators, &p);
 	}
-	if (thestr == result)
-		result = NULL;
-	if (*thestr) //not the null term
-		*thestr++ = '\0';
-	return result;
-}
 
+	while (test != NULL)
+	{
+		/* FS: Don't report servers that just have WallFly in them.
+		 * 127.0.0.1 in any player parse is a bot from Alien Arena. */
+		if(!strstr(test, "WallFly[BZZZ]") && !strstr(test, "127.0.0.1"))
+		{
+			numplayers++;
+		}
+
+		test = DG_strtok_r(NULL, playerSeperators, &p);
+	}
+
+	kvpair.key = _strdup("numplayers");
+	sprintf(players, "%i", numplayers);
+	kvpair.value = _strdup(players);
+	TableEnter(server->keyvals, &kvpair);
+}
 
 void ServerParseKeyVals(GServer server, char *keyvals)
 {
-	char *k, *v;
-	char savedkeyvals[MAX_MSGLEN];
+	char *k = NULL;
+	char *v = NULL;
+	char tokenSeperators[] = "\\";
+	char *kPtr = NULL;
+	char savedkeyvals[GS_MSGLEN];
 	GKeyValuePair kvpair;
-	int numplayers = 0;
 
-	if(!keyvals || strlen(keyvals) < 6) // FS: Some kind of bad status packet, forget it.
-	{
+	if(!keyvals || strlen(keyvals) < 6) /* FS: Some kind of bad status packet, forget it. */
 		return;
-	}
 
 /*
 	*keyvals = *keyvals++; // FS: Skip past the OOB_SEQ
@@ -87,51 +100,37 @@ void ServerParseKeyVals(GServer server, char *keyvals)
 	*keyvals = *keyvals++;
 	*keyvals = *keyvals++;
 */
-//	Com_Printf("Keyvals before[%i]: %s\n", strlen(keyvals), keyvals);
-	memmove(keyvals, keyvals+5, strlen(keyvals));
-//	Com_Printf("Keyvals now[%i]: %s\n", strlen(keyvals), keyvals);
+	keyvals += 5;
 
-	Q_strcpy(savedkeyvals, keyvals);
-	savedkeyvals[strlen(keyvals)] = '\0';
+	strncpy(savedkeyvals, keyvals, sizeof(savedkeyvals));
+	savedkeyvals[sizeof(savedkeyvals) - 1] = '\0';
 
-	k = mytok(++keyvals,'\\'); //skip over starting backslash
-	while (!numplayers || k != NULL)
+	k = DG_strtok_r(keyvals, tokenSeperators, &kPtr);
+
+	while (k != NULL)
 	{
-		v = mytok(NULL,'\\');
+		v = DG_strtok_r(NULL, tokenSeperators, &kPtr);
+
 		if (v != NULL)
 		{
 			kvpair.key = _strdup(k);
 			kvpair.value = _strdup(v);
-			if(strstr(kvpair.value, "\n"))
+
+			TableEnter(server->keyvals, &kvpair);
+
+			if(strstr(kvpair.value, "\n")) /* FS: Anything after a newline may contain players.  So don't add them as rules.  Just cut off the newline.  It has to happen at the end or else an important rule, like maxclients could get cut off. */
 			{
 				char *cutoffLen;
 				cutoffLen = strchr(kvpair.value, '\n');
 				kvpair.value[cutoffLen-kvpair.value] = '\0';
-				numplayers++;
+				k = NULL;
 			}
-			TableEnter(server->keyvals, &kvpair);
 		}
-		k = mytok(NULL,'\\');
 
+		k = DG_strtok_r(NULL, tokenSeperators, &kPtr);
 	}
 
-	if (numplayers) // FS: QW sends shit with \n as players and their data :/
-	{
-		dstring_t *players = dstring_new();
-		char *test = strchr(savedkeyvals, '\n');
-
-		while (test != NULL)
-		{
-			numplayers++;
-			test = strchr(test+1, '\n');
-		}
-
-		kvpair.key = _strdup("numplayers");
-		Com_sprintf(players, "%i", numplayers-2);
-		kvpair.value = _strdup(players->str);
-		TableEnter(server->keyvals, &kvpair);
-		dstring_delete(players);
-	}	
+	ServerParsePlayerCount(server, savedkeyvals);
 }
 
 
@@ -164,7 +163,6 @@ GKeyValuePair *ServerRuleLookup(GServer server, char *key)
 	GKeyValuePair kvp;
 	kvp.key = key;
 	return (GKeyValuePair *)TableLookup(server->keyvals, &kvp);
-
 }
 
 /* ServerGet[]Value
@@ -212,25 +210,25 @@ char *ServerGetPlayerStringValue(GServer server, int playernum, char *key, char 
 	sprintf(newkey,"%s_%d",key,playernum);
 	return ServerGetStringValue(server, newkey, sdefault);
 }
+
 int ServerGetPlayerIntValue(GServer server, int playernum, char *key, int idefault)
 {
 	char newkey[32];
 	
 	sprintf(newkey,"%s_%d",key,playernum);
 	return ServerGetIntValue(server, newkey, idefault);
-
 }
+
 double ServerGetPlayerFloatValue(GServer server, int playernum, char *key, double fdefault)
 {
 	char newkey[32];
 	
 	sprintf(newkey,"%s_%d",key,playernum);
 	return ServerGetFloatValue(server, newkey, fdefault);
-
 }
 
 
-/* ServerEnumKeys 
+/* ServerEnumKeys
 -----------------
 Enumerates the keys/values for a given server by calling KeyEnumFn with each
 key/value. The user-defined instance data will be passed to the KeyFn callback */
@@ -254,15 +252,13 @@ void ServerEnumKeys(GServer server, KeyEnumFn KeyFn, void *instance)
 }
 
 
-
-
 /***********
  * UTILITY FUNCTIONS
  **********/
 
 static char safetolower(char ch)
 {
-  return (isascii(ch) ? tolower(ch) : ch);
+	return (isascii(ch) ? tolower(ch) : ch);
 }
 
 /* NonTermHash
@@ -273,24 +269,22 @@ static char safetolower(char ch)
 #define MULTIPLIER -1664117991
 static int KeyValHash(const void *elem, int numbuckets)
 {
-    unsigned int i;
-    unsigned long hashcode = 0;
+	unsigned int i;
+	unsigned long hashcode = 0;
 	char *s = ((GKeyValuePair *)elem)->key;
-    
-    for (i = 0; i < strlen(s); i++)
-	  hashcode = hashcode * MULTIPLIER + safetolower(s[i]);
-    return (hashcode % numbuckets);
-}
 
+	for (i = 0; i < strlen(s); i++)
+		hashcode = hashcode * MULTIPLIER + safetolower(s[i]);
+	return (hashcode % numbuckets);
+}
 
 /* keyval
  * Compares two gkeyvaluepair  (case insensative)
  */
 static int KeyValCompare(const void *entry1, const void *entry2)
 {
-  	
-   	return CaseInsensitiveCompare(&((GKeyValuePair *)entry1)->key, 
-									  &((GKeyValuePair *)entry2)->key);
+	return CaseInsensitiveCompare(&((GKeyValuePair *)entry1)->key, 
+					  &((GKeyValuePair *)entry2)->key);
 }
 
 /* CaseInsensitiveCompare
@@ -302,7 +296,7 @@ static int KeyValCompare(const void *entry1, const void *entry2)
  */
 static int CaseInsensitiveCompare(const void *entry1, const void *entry2)
 {
-    return strcasecmp(*(char **)entry1,*(char **)entry2);
+	return strcasecmp(*(char **)entry1,*(char **)entry2);
 }
 
 /* KeyValFree
@@ -312,5 +306,4 @@ static void KeyValFree(void *elem)
 {
 	free(((GKeyValuePair *)elem)->key);
 	free(((GKeyValuePair *)elem)->value);
-
 }
