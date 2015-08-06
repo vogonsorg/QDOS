@@ -40,8 +40,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 qboolean noclip_anglehack;    // remnant from old quake
 
-int     specbool = 0; /* FS: FIXME: Spectator reconnect hack */
-
 cvar_t	rcon_password = {"rcon_password", "", false};
 
 cvar_t	rcon_address = {"rcon_address", ""};
@@ -69,7 +67,7 @@ cvar_t	cl_predict_players2 = {"cl_predict_players2", "1"};
 cvar_t	cl_solid_players = {"cl_solid_players", "1"};
 
 cvar_t  localid = {"localid", ""};
-cvar_t	net_broadcast_chat = {"net_broadcast_chat", "1", true}; /* FS: EZQ Chat */
+cvar_t	net_broadcast_chat = {"net_broadcast_chat", "1", true, false, "Broadcast EZQ chats."}; /* FS: EZQ Chat */
 
 static	qboolean allowremotecmd = true;
 
@@ -77,16 +75,16 @@ static	qboolean allowremotecmd = true;
 // info mirrors
 //
 cvar_t	password = {"password", "", false, true};
-cvar_t	spectator = {"spectator", "", false, true};
-cvar_t	name = {"name","unnamed", true, true};
+cvar_t	spectator = {"spectator", "0", false, true, "Enables connecting to supported servers as a spectator."};
+cvar_t	name = {"name","unnamed", true, true, "Player name."};
 cvar_t	team = {"team","", true, true};
 cvar_t	skin = {"skin","", true, true};
 cvar_t	topcolor = {"topcolor","0", true, true};
 cvar_t	bottomcolor = {"bottomcolor","0", true, true};
-cvar_t	rate = {"rate","2500", true, true};
+cvar_t	rate = {"rate","2500", true, true, "Connection rate.  Values over 25000 are typically unnecessary."};
 cvar_t	noaim = {"noaim","0", true, true};
 cvar_t	msg = {"msg","1", true, true};
-cvar_t	chat = {"chat", "", false, true}; /* FS: EZQ Chat */
+cvar_t	chat = {"chat", "", false, true, "Internal userinfo CVAR used for EZQ chat notifcations."}; /* FS: EZQ Chat */
 
 extern	cvar_t cl_hightrack;
 
@@ -103,7 +101,7 @@ cvar_t  cl_chunksperframe  = {"cl_chunksperframe", "5"};
 #ifdef FTE_PEXT_FLOATCOORDS
 cvar_t  cl_pext_floatcoords  = {"cl_pext_floatcoords", "1"};
 #endif
-cvar_t	cl_downloadrate_hack = {"cl_downloadrate_hack", "1", true}; /* FS: Gross download hack */
+cvar_t	cl_downloadrate_hack = {"cl_downloadrate_hack", "1", true, false, "Skip rendering a few frames during downloads for faster downloading."}; /* FS: Gross download hack */
 
 client_static_t   cls;
 client_state_t cl;
@@ -142,9 +140,9 @@ netadr_t master_adr;          // address of the master server
 
 cvar_t	host_speeds = {"host_speeds","0"};        // set for running times
 
-cvar_t  show_fps = {"show_fps","0", true}; /* FS: Added */
-cvar_t  show_time = {"show_time","0", true}; /* FS: Added */
-cvar_t  show_uptime = {"show_uptime", "0", true}; /* FS: Added */
+cvar_t  show_fps = {"show_fps","0", true, false, "Show FPS counter on the screen."}; /* FS: Added */
+cvar_t  show_time = {"show_time","0", true, false, "Show current time on the screen,  1 - Military.  2 - AM/PM."}; /* FS: Added */
+cvar_t  show_uptime = {"show_uptime", "0", true, false, "Show current map uptime."}; /* FS: Added */
 cvar_t	console_old_complete = {"console_old_complete", "0", true, false , "Use legacy style tab completion."}; /* FS: Added */
 cvar_t	developer = {"developer","0", false, false, "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Extremely verbose msgs - 65536\n  * Extremely verbose gamespy msgs - 131072\n"};  /* FS: Added Description */
 cvar_t	con_show_description = {"con_show_description", "1", true, false, "Show descriptions for CVARs."}; /* FS: Added */
@@ -1396,7 +1394,6 @@ void CL_Init (void)
 	memset(&browserList, 0, sizeof(browserList));
 	memset(&browserListAll, 0, sizeof(browserListAll));
 
-	specbool = spectator.value; /* FS: Spectator reconnect hack */
 	dstring_delete(version);
 }
 
@@ -1599,9 +1596,9 @@ void Host_Frame (float time)
 					pass1+pass2+pass3, pass1, pass2, pass3);
 	}
 
-	if (specbool != spectator.value) /* FS: Spectator reconnect hack */
+	if (spectator.modified) /* FS: Spectator reconnect hack */
 	{
-		specbool = spectator.value;
+		spectator.modified = false;
 		
 		if (cls.state == ca_active)
 		{
