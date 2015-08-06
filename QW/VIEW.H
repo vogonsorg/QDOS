@@ -21,12 +21,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern	cvar_t		v_gamma;
 extern	cvar_t		lcd_x;
-extern  cvar_t		net_showchat; // FS
-extern  cvar_t		net_showchatgfx; // FS
-extern  cvar_t		v_contentblend; // FS
-extern  cvar_t		show_time; // FS
-extern  cvar_t		show_uptime; // FS
-extern	cvar_t		show_ping; // FS
+extern  cvar_t		net_showchat; /* FS: EZQ Chat */
+extern  cvar_t		net_showchatgfx; /* FS: EZQ Chat */
+extern  cvar_t		v_contentblend; /* FS: Fucking hate palette blends */
+extern  cvar_t		show_time; /* FS: Added */
+extern  cvar_t		show_uptime; /* FS: Added */
+extern	cvar_t		show_ping; /* FS: Added */
 
 void V_Init (void);
 void V_RenderView (void);

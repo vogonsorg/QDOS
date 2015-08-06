@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 #include "winquake.h"
-#include "dstring.h" // FS
+#include "dstring.h"
 
 #define	PM_SPECTATORMAXSPEED	500
 #define	PM_STOPSPEED	100
@@ -120,9 +120,8 @@ void Cam_Unlock(void)
 
 void Cam_Lock(int playernum)
 {
-        // FS: New school dstring
 	MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
-        MSG_WriteString (&cls.netchan.message, va("ptrack %i", playernum));
+	MSG_WriteString (&cls.netchan.message, va("ptrack %i", playernum));
 	spec_track = playernum;
 	cam_forceview = true;
 	locked = false;

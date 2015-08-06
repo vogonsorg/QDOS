@@ -547,7 +547,7 @@ void send_heartbeat(int statechanged)
 	if (!public_server->value)
 		return;		// a private dedicated game
 
-	Com_DPrintf(DEVELOPER_MSG_SERVER, "Sending a heartbeat to the GameSpy Master Server.\n"); // FS
+	Com_DPrintf(DEVELOPER_MSG_SERVER, "Sending a heartbeat to the GameSpy Master Server.\n"); /* FS: Added */
 // SCG[1/16/00]:     sprintf(buf,"\\heartbeat\\%d\\gamename\\%s",qport, gname);
     Com_sprintf(buf,sizeof(buf),"\\heartbeat\\%d\\gamename\\%s",qport, gname);
 	if (statechanged)

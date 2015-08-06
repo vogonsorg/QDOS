@@ -166,7 +166,7 @@ void IN_Init (void)
 	Cvar_RegisterVariable (&aux_look);
 	Cmd_AddCommand ("toggle_auxlook", Toggle_AuxLook_f);
 	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
-	Cmd_AddCommand ("joy_recalibrate", IN_StartupJoystick); // FS: Joystick recalibration.
+	Cmd_AddCommand ("joy_recalibrate", IN_StartupJoystick); /* FS: Joystick recalibration. */
 
 	IN_StartupMouse ();
 	IN_StartupJoystick ();
@@ -303,15 +303,15 @@ void IN_MouseMove (usercmd_t *cmd)
 	mouse_y *= sensitivity.value;
 
 // add mouse X/Y movement to cmd
-        if ( (in_strafe.state & 1) || (lookstrafe.value && ((in_mlook.state & 1) || in_freelook.value ))) // FS: mlook
+        if ( (in_strafe.state & 1) || (lookstrafe.value && ((in_mlook.state & 1) || in_freelook.value ))) /* FS: mlook */
 		cmd->sidemove += m_side.value * mouse_x;
 	else
 		cl.viewangles[YAW] -= m_yaw.value * mouse_x;
 	
-        if (in_mlook.state & 1 || in_freelook.value) // FS: mlook
+        if (in_mlook.state & 1 || in_freelook.value) /* FS: mlook */
 		V_StopPitchDrift ();
 		
-        if ( ((in_mlook.state & 1) && !(in_strafe.state & 1)) || (in_freelook.value && !(in_strafe.state & 1))) //FS: in_mlook
+        if ( ((in_mlook.state & 1) && !(in_strafe.state & 1)) || (in_freelook.value && !(in_strafe.state & 1))) /* FS: mlook */
 	{
 		cl.viewangles[PITCH] += m_pitch.value * mouse_y;
 		if (cl.viewangles[PITCH] > 80)
@@ -367,7 +367,7 @@ void IN_JoyMove (usercmd_t *cmd)
 		cl.viewangles[YAW] = anglemod(cl.viewangles[YAW]);
 	}
 
-        if (in_mlook.state & 1 || in_freelook.value)  // FS: mlook
+        if (in_mlook.state & 1 || in_freelook.value) /* FS: mlook */
 	{
 		if (m_pitch.value < 0)
 			speed *= -1;
@@ -608,7 +608,7 @@ void IN_ExternalMove (usercmd_t *cmd)
 	if (cl.viewangles[PITCH] < -70)
 		cl.viewangles[PITCH] = -70;
 
-        freelook = (extern_control->flags & AUX_FLAG_FREELOOK || aux_look.value || in_mlook.state & 1 || in_freelook.value); // FS: mlook
+        freelook = (extern_control->flags & AUX_FLAG_FREELOOK || aux_look.value || in_mlook.state & 1 || in_freelook.value); /* FS: mlook */
 
 	if (freelook)
 		V_StopPitchDrift ();

@@ -18,10 +18,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-#include <sys/types.h> // FS: -Werror
+#include <sys/types.h>
 
 #ifndef _MSC_VER
-	#include <unistd.h> // FS: -Werror
+	#include <unistd.h>
 #endif
 
 #include "quakedef.h"
@@ -147,9 +147,7 @@ Sends a text message in an out-of-band datagram
 void Netchan_OutOfBandPrint (netadr_t adr, const char *format, ...)
 {
 	va_list		argptr;
-//        static char             string[8192];           // ??? why static?
-
-	static dstring_t *string; // FS: New school dstring
+	static dstring_t *string;
 
 	if(!string)
 		string = dstring_new();

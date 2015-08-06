@@ -775,16 +775,13 @@ SpectatorMove
 */
 void SpectatorMove (void)
 {
-        float   speed, drop, friction, control, newspeed; //accel; // FS: -Werror
+        float   speed, drop, friction, control, newspeed;
 	float	currentspeed, addspeed, accelspeed;
 	int			i;
 	vec3_t		wishvel;
 	float		fmove, smove;
 	vec3_t		wishdir;
 	float		wishspeed;
-#ifndef SERVERONLY
-        //extern float    server_version; // version of server we connected to
-#endif
 
 	// friction
 

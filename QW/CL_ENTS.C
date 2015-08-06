@@ -423,26 +423,28 @@ void CL_ParsePacketEntities (qboolean delta)
          if (word & U_REMOVE)
          {
 #ifdef PROTOCOL_VERSION_FTE
-				if (word & U_MOREBITS && (cls.fteprotocolextensions & FTE_PEXT_ENTITYDBL))
-				{
-					if (MSG_ReadByte() & U_FTE_EVENMORE)
-						MSG_ReadByte();
-				}
+			if (word & U_MOREBITS && (cls.fteprotocolextensions & FTE_PEXT_ENTITYDBL))
+			{
+				if (MSG_ReadByte() & U_FTE_EVENMORE)
+					MSG_ReadByte();
+			}
 #endif // PROTOCOL_VERSION_FTE
             if (full)
             {
 				cl.validsequence = 0;
-				Con_DPrintf(DEVELOPER_MSG_ENTITY, "WARNING: U_REMOVE on full update\n"); // FS: Changed to a dprintf
+				Con_DPrintf(DEVELOPER_MSG_ENTITY, "WARNING: U_REMOVE on full update\n"); /* FS: Now a DPrintf */
 				FlushEntityPacket ();
 				return;
 			}
             continue;
          }
-         if (newindex >= MAX_PACKET_ENTITIES)
-            Host_EndGame ("CL_ParsePacketEntities: newindex == MAX_PACKET_ENTITIES");
-         CL_ParseDelta (&cl_baselines[newnum], &newp->entities[newindex], word);
-         newindex++;
-         continue;
+
+		if (newindex >= MAX_PACKET_ENTITIES)
+			Host_EndGame ("CL_ParsePacketEntities: newindex == MAX_PACKET_ENTITIES");
+
+		CL_ParseDelta (&cl_baselines[newnum], &newp->entities[newindex], word);
+		newindex++;
+		continue;
       }
 
       if (newnum == oldnum)
@@ -874,148 +876,147 @@ for all current players
 */
 void CL_LinkPlayers (void)
 {
-   int            j;
-   player_info_t  *info;
-   player_state_t *state;
-   player_state_t exact;
-   double         playertime;
-   entity_t    *ent;
-   int            msec;
-   frame_t        *frame;
-   int            oldphysent;
-        entity_t                *icontent; // FS
-   playertime = realtime - cls.latency + 0.02;
-   if (playertime > realtime)
-      playertime = realtime;
+	int				j;
+	player_info_t	*info;
+	player_state_t	*state;
+	player_state_t	exact;
+	double			playertime;
+	entity_t		*ent;
+	int				msec;
+	frame_t			*frame;
+	int				oldphysent;
+	entity_t		*icontent; /* FS: EZQ Chat */
 
-   frame = &cl.frames[cl.parsecount&UPDATE_MASK];
+	playertime = realtime - cls.latency + 0.02;
 
-   for (j=0, info=cl.players, state=frame->playerstate ; j < MAX_CLIENTS 
-      ; j++, info++, state++)
-   {
-      if (state->messagenum != cl.parsecount)
-         continue;   // not present this frame
+	if (playertime > realtime)
+		playertime = realtime;
 
+	frame = &cl.frames[cl.parsecount&UPDATE_MASK];
 
+	for (j=0, info=cl.players, state=frame->playerstate ; j < MAX_CLIENTS ; j++, info++, state++)
+	{
+		if (state->messagenum != cl.parsecount)
+			continue;   // not present this frame
 
       // spawn light flashes, even ones coming from invisible objects
-         if ((state->effects & (EF_BLUE | EF_RED)) == (EF_BLUE | EF_RED))
-            CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 3);
-         else if (state->effects & EF_BLUE)
-            CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 1);
-         else if (state->effects & EF_RED)
-            CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 2);
-         else if (state->effects & EF_BRIGHTLIGHT)
-            CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2] + 16, 400 + (rand()&31), 0.1, 0);
-         else if (state->effects & EF_DIMLIGHT)
-            CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 0);
+		if ((state->effects & (EF_BLUE | EF_RED)) == (EF_BLUE | EF_RED))
+			CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 3);
+		else if (state->effects & EF_BLUE)
+			CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 1);
+		else if (state->effects & EF_RED)
+			CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 2);
+		else if (state->effects & EF_BRIGHTLIGHT)
+			CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2] + 16, 400 + (rand()&31), 0.1, 0);
+		else if (state->effects & EF_DIMLIGHT)
+			CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 0);
 
-		 if(!stricmp(cl.players[j].name, Info_ValueForKey(cls.userinfo,"name")) && !stricmp(Info_ValueForKey(cl.players[j].userinfo, "ip"), Info_ValueForKey(cls.userinfo, "ip")) && bFlashlight) 
-            CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2] + 16, 400 + (rand()&31), 0.1, 0);
+		if(!stricmp(cl.players[j].name, Info_ValueForKey(cls.userinfo,"name")) && !stricmp(Info_ValueForKey(cl.players[j].userinfo, "ip"), Info_ValueForKey(cls.userinfo, "ip")) && bFlashlight) 
+			CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2] + 16, 400 + (rand()&31), 0.1, 0);
 
-		if (net_showchatgfx.value) // FS: Cleaned up this EZQ Chat
+		if (net_showchatgfx.value) /* FS: EZQ Chat */
 		{
 			switch (cl.players[j].chatglow)
 			{
-				case 1:
+				case EZQ_CHAT_TYPING:
 					CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2] + 16, 150 + (rand()&61), 0.1, 0);
 					break;
-				case 2:
+				case EZQ_CHAT_AFK:
 					CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2] + 16, 200 + (rand()&61), 0.1, 0);
 					break;
-				case 3:
+				case EZQ_CHAT_AFK_TYPING:
 					CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2] + 16, 300 + (rand()&91), 0.1, 0);
+					break;
+				default:
 					break;
 			}
 		}
 
-      // the player object never gets added
-      if (j == cl.playernum)
-         continue;
+		// the player object never gets added
+		if (j == cl.playernum)
+			continue;
 
-      if (!state->modelindex)
-         continue;
+		if (!state->modelindex)
+			continue;
 
-      if (!Cam_DrawPlayer(j))
-         continue;
+		if (!Cam_DrawPlayer(j))
+			continue;
 
-      // grab an entity to fill in
-      if (cl_numvisedicts == MAX_VISEDICTS)
-         break;      // object list is full
-      ent = &cl_visedicts[cl_numvisedicts];
-      cl_numvisedicts++;
-      ent->keynum = 0;
+		// grab an entity to fill in
+		if (cl_numvisedicts == MAX_VISEDICTS)
+			break;      // object list is full
 
-      ent->model = cl.model_precache[state->modelindex];
-      ent->skinnum = state->skinnum;
-      ent->frame = state->frame;
-      ent->colormap = info->translations;
-      if (state->modelindex == cl_playerindex)
-         ent->scoreboard = info;    // use custom skin
-      else
-         ent->scoreboard = NULL;
+		ent = &cl_visedicts[cl_numvisedicts];
+		cl_numvisedicts++;
+		ent->keynum = 0;
 
-      //
-      // angles
-      //
-      ent->angles[PITCH] = -state->viewangles[PITCH]/3;
-      ent->angles[YAW] = state->viewangles[YAW];
-      ent->angles[ROLL] = 0;
-      ent->angles[ROLL] = V_CalcRoll (ent->angles, state->velocity)*4;
+		ent->model = cl.model_precache[state->modelindex];
+		ent->skinnum = state->skinnum;
+		ent->frame = state->frame;
+		ent->colormap = info->translations;
 
-      // only predict half the move to minimize overruns
-      msec = 500*(playertime - state->state_time);
-      if (msec <= 0 || (!cl_predict_players.value && !cl_predict_players2.value))
-      {
-         VectorCopy (state->origin, ent->origin);
-//			Con_DPrintf(DEVELOPER_MSG_VERBOSE, "nopredict\n");
-      }
-      else
-      {
-         // predict players movement
-         if (msec > 255)
-            msec = 255;
-         state->command.msec = msec;
-//			Con_DPrintf(DEVELOPER_MSG_VERBOSE, "predict: %i\n", msec);
+		if (state->modelindex == cl_playerindex)
+			ent->scoreboard = info;    // use custom skin
+		else
+			ent->scoreboard = NULL;
 
-         oldphysent = pmove.numphysent;
-         CL_SetSolidPlayers (j);
-         CL_PredictUsercmd (state, &exact, &state->command, false);
-         pmove.numphysent = oldphysent;
-         VectorCopy (exact.origin, ent->origin);
-      }
+		/* angles */
+		ent->angles[PITCH] = -state->viewangles[PITCH]/3;
+		ent->angles[YAW] = state->viewangles[YAW];
+		ent->angles[ROLL] = 0;
+		ent->angles[ROLL] = V_CalcRoll (ent->angles, state->velocity)*4;
 
-      if (state->effects & EF_FLAG1)
-         CL_AddFlagModels (ent, 0);
-      else if (state->effects & EF_FLAG2)
-         CL_AddFlagModels (ent, 1);
-
-	if (net_showchatgfx.value)
-	{
-		if (cl.players[j].chatglow > 0) // FS: Redid this EZQ Chat
+		/* only predict half the move to minimize overruns */
+		msec = 500*(playertime - state->state_time);
+		if (msec <= 0 || (!cl_predict_players.value && !cl_predict_players2.value))
 		{
-			icontent = CL_NewTempEntity();
-			switch (cl.players[j].chatglow)
+			VectorCopy (state->origin, ent->origin);
+		}
+		else
+		{
+			// predict players movement
+			if (msec > 255)
+				msec = 255;
+			state->command.msec = msec;
+
+			oldphysent = pmove.numphysent;
+			CL_SetSolidPlayers (j);
+			CL_PredictUsercmd (state, &exact, &state->command, false);
+			pmove.numphysent = oldphysent;
+			VectorCopy (exact.origin, ent->origin);
+		}
+
+		if (state->effects & EF_FLAG1)
+			CL_AddFlagModels (ent, 0);
+		else if (state->effects & EF_FLAG2)
+			CL_AddFlagModels (ent, 1);
+
+		if (net_showchatgfx.value)
+		{
+			if (cl.players[j].chatglow > 0) /* FS: EZQ Chat */
 			{
-				case 2:
+				icontent = CL_NewTempEntity();
+				switch (cl.players[j].chatglow)
+				{
+				case EZQ_CHAT_AFK:
 					icontent->model = Mod_ForName("progs/m_s_key.mdl", false);
 					icontent->angles[1] = realtime * 174;
 					break;
-				case 3:
+				case EZQ_CHAT_AFK_TYPING:
 					icontent->model = Mod_ForName("progs/m_g_key.mdl", false);
 					icontent->angles[1] = realtime * 256;
 					break;
-				case 1:
+				case EZQ_CHAT_TYPING:
 					icontent->model = Mod_ForName("progs/quaddama.mdl", false);
 					icontent->angles[1] = realtime * 64;
 					break;
+				}
+				icontent->skinnum=0;
+				icontent->origin[0] = ent->origin[0];
+				icontent->origin[1] = ent->origin[1];
+				icontent->origin[2] = ent->origin[2] + 32;
 			}
-			icontent->skinnum=0;
-			icontent->origin[0] = ent->origin[0];
-			icontent->origin[1] = ent->origin[1];
-			icontent->origin[2] = ent->origin[2] + 32;
 		}
-	}
 	}
 }
 
@@ -1054,7 +1055,7 @@ void CL_SetSolidEntities (void)
       if ( cl.model_precache[state->modelindex]->hulls[1].firstclipnode 
          || cl.model_precache[state->modelindex]->clipbox )
       {
-		  if (pmove.numphysent == MAX_PHYSENTS) // FS: Limit has been raised, but who knows...
+		  if (pmove.numphysent == MAX_PHYSENTS) /* FS: Limit has been raised, but who knows... */
 		  {
 			  Con_Printf("WARNING: entity physent overflow %i!\n", i);
 			  break;

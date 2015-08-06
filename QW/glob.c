@@ -55,7 +55,7 @@ static int glob_pattern_p(char *pattern)
 	register char c;
 	int open = 0;
 
-	if(!pattern) // FS: Compiler warning
+	if(!pattern) /* FS: Compiler warning */
 		return 0;
 
 	while ((c = *p++) != '\0')
@@ -103,7 +103,7 @@ int glob_match(char *pattern, char *text)
 	register char *p = pattern, *t = text;
 	register char c;
 
-	glob_pattern_p(NULL); // FS: Compiler warning
+	glob_pattern_p(NULL); /* FS: Compiler warning */
 
 	while ((c = *p++) != '\0')
 		switch (c) {

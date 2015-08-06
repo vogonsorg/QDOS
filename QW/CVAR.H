@@ -53,7 +53,7 @@ Cvars are restricted from having the same names as commands to keep this
 interface from being ambiguous.
 */
 
-// FS: Note, if you add anything here add it after the qboolean and whatever is new!  You will goof up setting cvar_t's in the code!
+/* FS: NOTE!!!! If you add anything here... add it after the qboolean modified!  You will goof up setting cvar_t's in the code! */
 typedef struct cvar_s
 {
 	char    *name;
@@ -97,9 +97,9 @@ void 	Cvar_WriteVariables (FILE *f);
 // Writes lines containing "set variable value" for all variables
 // with the archive flag set to true.
 
-cvar_t *Cvar_FindVar (const char *var_name); // FS
-void Cvar_Set_Description (const char *var_name, const char *description); // FS
+cvar_t *Cvar_FindVar (const char *var_name); /* FS: Added */
+void Cvar_Set_Description (const char *var_name, const char *description); /* FS: Added */
 
-void Cvar_Init (void); // FS
+void Cvar_Init (void);
 
 extern cvar_t	*cvar_vars;

@@ -112,7 +112,7 @@ qboolean R_AliasCheckBBox (void)
 // TODO: don't repeat this check when drawing?
 	if ((frame >= pmdl->numframes) || (frame < 0))
 	{
-		Con_DPrintf (DEVELOPER_MSG_VIDEO, "No such frame %d %s\n", frame,  // FS: Don't output this garbage to the console.  Who cares?
+		Con_DPrintf (DEVELOPER_MSG_VIDEO, "No such frame %d %s\n", frame,  /* FS: Don't output this garbage to the client console. */
 		pmodel->name);
 		frame = 0;
 	}

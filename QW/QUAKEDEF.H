@@ -65,14 +65,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "crc.h"
 #include "cdaudio.h"
 #include "pmove.h"
-#include "dstring.h" // FS: I'll forget sooner or later
+#include "dstring.h" /* FS: I'll forget sooner or later */
 
 #ifndef max
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #endif
 
-// FS
+/* FS */
 #define bound(a,b,c) ((a) >= (c) ? (a) : \
 					(b) < (a) ? (a) : (b) > (c) ? (c) : (b))
 
@@ -111,8 +111,8 @@ extern	cvar_t		sys_nostdout;
 extern	cvar_t		developer;
 
 extern	cvar_t	password;
-extern	cvar_t		con_show_description; // FS
-extern	cvar_t		con_show_dev_flags; // FS
+extern	cvar_t		con_show_description; /* FS: Added */
+extern	cvar_t		con_show_dev_flags; /* FS: Added */
 
 extern	qboolean	host_initialized;		// true if into command execution
 extern	double		host_frametime;
@@ -120,15 +120,14 @@ extern	byte		*host_basepal;
 extern	byte		*host_colormap;
 extern	int			host_framecount;	// incremented every frame, never reset
 extern	double		realtime;			// not bounded in any way, changed at
-extern  int             afk; // FS: AFK
 
 // start of every frame, never reset
 void Host_ServerFrame (void);
 void Host_InitCommands (void);
 void Host_Init (quakeparms_t *parms);
 void Host_Shutdown(void);
-void Host_Error (const char *error, ...); // FS: New school dstring
-void Host_EndGame (const char *message, ...); // FS: New school dstring
+void Host_Error (const char *error, ...);
+void Host_EndGame (const char *message, ...);
 qboolean Host_SimulationTime(float time);
 void Host_Frame (float time);
 void Host_Quit_f (void);
@@ -138,7 +137,7 @@ void Host_ShutdownServer (qboolean crash);
 extern qboolean		msg_suppress_1;		// suppresses resolution and cache size console output
 										//  an fullscreen DIB focus gain/loss
 
-// FS: From Q2
+/* FS: From Q2 */
 #define SFF_ARCH    0x01
 #define SFF_HIDDEN  0x02
 #define SFF_RDONLY  0x04

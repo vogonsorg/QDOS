@@ -279,7 +279,7 @@ void M_ToggleMenu_f (void)
 	}
 	else
 	{
-		Cmd_ChatInfo(2); /* FS: EZQ Chat */
+		Cmd_ChatInfo(EZQ_CHAT_AFK); /* FS: EZQ Chat */
 		M_Menu_Main_f ();
 	}
 }
@@ -333,7 +333,7 @@ void M_Main_Key (int key)
 		cls.demonum = m_save_demonum;
 		if (cls.demonum != -1 && !cls.demoplayback && cls.state == ca_disconnected)
 			CL_NextDemo ();
-		Cmd_ChatInfo(0); /* FS: EZQ Chat */
+		Cmd_ChatInfo(EZQ_CHAT_OFF); /* FS: EZQ Chat */
 		break;
 		
 	case K_DOWNARROW:
@@ -578,8 +578,6 @@ void M_Options_Draw (void)
 		M_Print (16, 144, "	 Video Options");
 
 	M_Print (16, 152, "      Extended Options"); /* FS: Extended options unique to QDOS */
-
-
 
 // cursor
 	M_DrawCharacter (200, 32 + options_cursor*8, 12+((int)(realtime*4)&1));
@@ -1578,6 +1576,7 @@ void M_Extended_Key(int k)
 	}
 }
 
+/* FS: FIXME this is somewhat crappy, use Q2DOS version instead */
 void M_Extended_Set_Sound_KHz (int dir, int khz)
 {
 	switch(khz)

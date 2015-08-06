@@ -24,15 +24,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <dos.h>
 #include <string.h>
 #include <dpmi.h>
-// #include <osfcn.h>
 #include <bios.h>
 
 #include "dosisms.h"
-#include "sys.h" // FS: -Werror
+#include "sys.h"
 
 _go32_dpmi_registers hmm;
 
-// globals
+/* globals */
 regs_t regs;
 void (*dos_error_func)(char *msg, ...);
 
@@ -103,10 +102,7 @@ void dos_irqdisable(void)
 	disable();
 }
 
-//
-// Returns 0 on success
-//
-
+/* Returns 0 on success */
 int	dos_int86(int vec)
 {
     int rc;
@@ -124,12 +120,12 @@ int	dos_int386(int vec, regs_t *inregs, regs_t *outregs)
 	return rc || (outregs->x.flags & 1);
 }
 
-//
-// Because of a quirk in dj's alloc-dos-memory wrapper, you need to keep
-// the seginfo structure around for when you free the mem.
-//
+/*
+Because of a quirk in dj's alloc-dos-memory wrapper, you need to keep
+the seginfo structure around for when you free the mem.
+*/
 
-#define MAX_SEGINFO 10 // FS: from HOT
+#define MAX_SEGINFO 10 /* FS: sezero's code from uHexen2 */
 static _go32_dpmi_seginfo seginfo[MAX_SEGINFO];
 
 void *dos_getmemory(int size)
@@ -148,19 +144,21 @@ void *dos_getmemory(int size)
 
 	info.size = (size+15) / 16;
 	rc = _go32_dpmi_allocate_dos_memory(&info);
-	if (rc)
-                return NULL; // FS: from HOT
 
-        for (i=0;i<MAX_SEGINFO;i++)
-        {
-                if (!seginfo[i].rm_segment)  // FS: from HOT
-                {
-                        seginfo[i] = info;
-                        return real2ptr((int) info.rm_segment << 4);
-                }
-        }
-        Sys_Error("Reached MAX_SEGINFO"); // FS: from HOT
-   return NULL; // silence compiler warning
+	if (rc)
+		return NULL; /* FS: sezero's code from uHexen2 */
+
+	for (i=0;i<MAX_SEGINFO;i++)
+	{
+		if (!seginfo[i].rm_segment) /* FS: sezero's code from uHexen2 */
+		{
+			seginfo[i] = info;
+			return real2ptr((int) info.rm_segment << 4);
+		}
+	}
+
+	Sys_Error("Reached MAX_SEGINFO"); /* FS: sezero's code from uHexen2 */
+	return NULL; /* silence compiler warning */
 }
 
 void dos_freememory(void *ptr)
@@ -170,7 +168,7 @@ void dos_freememory(void *ptr)
 	int segment;
 
 	segment = ptr2real(ptr) >> 4;
-        for (i=0 ; i<MAX_SEGINFO ; i++) //FS: from HOT
+        for (i=0 ; i<MAX_SEGINFO ; i++) /* FS: sezero's code from uHexen2 */
         {
 		if (seginfo[i].rm_segment == segment)
 		{
@@ -197,14 +195,14 @@ void	dos_registerintr(int intr, void (*handler)(void))
 
 	oldstuff = &handlerhistory[handlercount];
 
-// remember old handler
+/* remember old handler */
 	_go32_dpmi_get_protected_mode_interrupt_vector(intr, &oldstuff->pm_oldvec);
 	oldstuff->intr = intr;
 
 	info.pm_offset = (int) handler;
 	_go32_dpmi_allocate_iret_wrapper(&info);
 
-// set new protected mode handler
+/* set new protected mode handler */
 	_go32_dpmi_set_protected_mode_interrupt_vector(intr, &info);
 
 	handlercount++;

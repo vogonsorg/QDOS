@@ -83,14 +83,14 @@ float		oldscreensize, oldfov;
 float		oldsbar;
 cvar_t		scr_viewsize = {"viewsize","100", true};
 cvar_t		scr_fov = {"fov","90"}; // 10 - 170
-cvar_t		scr_conspeed = {"scr_conspeed","1000"}; // FS: Was 300
+cvar_t		scr_conspeed = {"scr_conspeed","1000"}; /* FS: Was 300 */
 cvar_t		scr_centertime = {"scr_centertime","2"};
 cvar_t		scr_showram = {"showram","1"};
 cvar_t		scr_showturtle = {"showturtle","0"};
 cvar_t		scr_showpause = {"showpause","1"};
 cvar_t		scr_printspeed = {"scr_printspeed","8"};
 cvar_t		scr_allowsnap = {"scr_allowsnap", "1"};
-cvar_t		show_ping = {"show_ping", "0", true}; // FS
+cvar_t		show_ping = {"show_ping", "0", true}; /* FS: Added */
 
 qboolean	scr_initialized;		// ready to draw
 
@@ -118,7 +118,7 @@ qboolean	block_drawing;
 
 void SCR_ScreenShot_f (void);
 void SCR_RSShot_f (void);
-void SCR_DrawPing (void); // FS
+void SCR_DrawPing (void); /* FS: Added */
 /*
 ===============================================================================
 
@@ -169,7 +169,7 @@ void SCR_EraseCenterString (void)
 		return;
 	}
 
-	if (scr_erase_lines <= 4) // FS and Taniwha: CAx Overflow
+	if (scr_erase_lines <= 4) /* FS and Taniwha: CAx Overflow */
 		y = vid.height*0.35;
 	else
 		y = 48;
@@ -380,7 +380,7 @@ void SCR_Init (void)
 	Cvar_RegisterVariable (&scr_centertime);
 	Cvar_RegisterVariable (&scr_printspeed);
 	Cvar_RegisterVariable (&scr_allowsnap);
-	Cvar_RegisterVariable (&show_ping); // FS
+	Cvar_RegisterVariable (&show_ping); /* FS */
 
 //
 // register our commands
@@ -455,7 +455,7 @@ void SCR_DrawNet (void)
 	Draw_Pic (scr_vrect.x+64, scr_vrect.y, scr_net);
 }
 
-void SCR_DrawUptime (void) // FS: Connection time
+void SCR_DrawUptime (void) /* FS: Connection time */
 {
 	char	str[80];
 	int		minutes, seconds, tens, units;
@@ -465,7 +465,7 @@ void SCR_DrawUptime (void) // FS: Connection time
                 return;
 
 	// time
-        if (show_uptime.value == 1) // FS: Map time or total time playing quake time
+        if (show_uptime.value == 1) /* FS: Map time or total time playing quake time */
                 minutes = cl.time / 60;
         else
                 minutes = realtime / 60;
@@ -476,12 +476,12 @@ void SCR_DrawUptime (void) // FS: Connection time
 	tens = seconds / 10;
 	units = seconds - 10*tens;
         sprintf (str,"%3i:%i%i", minutes, tens, units);
-        x = vid.width - strlen(str) * 8 - 44; // FS: Has to be out of the way of the HUD...
+        x = vid.width - strlen(str) * 8 - 44; /* FS: Has to be out of the way of the HUD... */
         y = vid.height - sb_lines - 24;
         Draw_String(x, y, str);
 }
 
-void SCR_DrawTime (void) // FS: show_time
+void SCR_DrawTime (void) /* FS: show_time */
 {
         int x, y;
         struct tm       *local = NULL;
@@ -508,7 +508,7 @@ void SCR_DrawTime (void) // FS: show_time
 #endif
         strftime (st, sizeof (st), timefmt, local);
 
-        x = vid.width - strlen(st) * 8 - 44; // FS: Has to be out of the way of the HUD...
+        x = vid.width - strlen(st) * 8 - 44; /* FS: Has to be out of the way of the HUD... */
         y = vid.height - sb_lines - 16;
         Draw_String(x, y, st);
 }
@@ -530,14 +530,14 @@ void SCR_DrawFPS (void)
 
 	if ((t - lastframetime) >= 1.0) 
 	{
-		lastfps = fps_count / (t - lastframetime); // FS
+		lastfps = fps_count / (t - lastframetime);
 		fps_count = 0;
 		lastframetime = t;
 	}
 
 	sprintf(st, "%3.1f FPS", lastfps);
      
-	x = vid.width - strlen(st) * 8 - 44; // FS: Has to be out of the way of the HUD...
+	x = vid.width - strlen(st) * 8 - 44; /* FS: Has to be out of the way of the HUD... */
 	y = vid.height - sb_lines - 8;
 	Draw_String(x, y, st);
 }
@@ -578,7 +578,7 @@ void SCR_DrawPing (void)
 
 	sprintf(st, "%i", ping);
      
-    x = vid.width - strlen(st) * 8 - 44; // FS: Has to be out of the way of the HUD...
+    x = vid.width - strlen(st) * 8 - 44; /* FS: Has to be out of the way of the HUD... */
 	y = vid.height - sb_lines - 32;
 	Draw_String(x, y, st);
 
@@ -811,7 +811,7 @@ int MipColor(int r, int g, int b)
 {
 	int i;
 	float dist;
-	int best = 0; // FS: Compiler Warning
+	int best = 0; /* FS: Compiler Warning */
 	float bestdist;
 	int r1, g1, b1;
 	static int lr = -1, lg = -1, lb = -1;
@@ -1102,7 +1102,7 @@ void SCR_UpdateScreen (void)
 	if (scr_disabled_for_loading)
 		return;
 
-	if (cl_downloadrate_hack.intValue && cls.download && cls.downloadpercent%5 != 1) // FS: HACK, don't update as often during downloading.
+	if (cl_downloadrate_hack.intValue && cls.download && cls.downloadpercent%5 != 1) /* FS: HACK, don't update as often during downloading. */
 		return;
 
 #ifdef _WIN32
@@ -1203,12 +1203,12 @@ void SCR_UpdateScreen (void)
 		SCR_DrawTurtle ();
 		SCR_DrawPause ();
 		SCR_CheckDrawCenterString ();
-		if (scr_con_current != vid.height) // FS: Don't draw this if the console is in fullscreen
+		if (scr_con_current != vid.height) /* FS: Don't draw this if the console is in fullscreen */
 		{
-			SCR_DrawUptime (); // FS: show uptime
-			SCR_DrawTime (); // FS: show time
-			SCR_DrawFPS (); // FS: Show FPS
-			SCR_DrawPing (); // FS: show ping
+			SCR_DrawUptime (); /* FS: show uptime */
+			SCR_DrawTime (); /* FS: show time */
+			SCR_DrawFPS (); /* FS: Show FPS */
+			SCR_DrawPing (); /* FS: show ping */
 		}
 		Sbar_Draw ();
 		SCR_DrawConsole ();	

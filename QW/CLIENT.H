@@ -23,13 +23,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 typedef struct
 {
 	char            name[16];
-	//struct dstring_s *name; // FS: Dstring
 	qboolean	failedload;		// the name isn't a valid skin
 	cache_user_t	cache;
 } skin_t;
 
+/* FS: Gamespy stuff */
 #define MAX_SERVERS 400 /* FS: There's barely 350 active servers existing, but OK. */
-/* FS: Gamespy browser */
 typedef struct
 {
 	char ip[15];
@@ -86,7 +85,7 @@ typedef struct player_info_s
 	int		ping;
 	byte	pl;
 
-	int     chatglow; // FS
+	int     chatglow; /* FS: EZQ Chat */
 
 	// skin information
 	int		topcolor;
@@ -153,7 +152,7 @@ typedef struct
 
 
 
-#define MAX_EFRAGS		2048 // FS: 512
+#define MAX_EFRAGS		2048 /* FS: Was 512 */
 
 #define	MAX_DEMOS		8
 #define	MAX_DEMONAME	16
@@ -197,27 +196,30 @@ typedef struct
 	char		userinfo[MAX_INFO_STRING];
 
 //	char            servername[MAX_OSPATH]; // name of server from original connect
-	struct dstring_s *servername; // FS: Dstring
+	struct dstring_s *servername; /* FS: Now a dstring */
 	int			qport;
 
 	FILE		*download;		// file transfer from server
 	//char            downloadtempname[MAX_OSPATH];
 	//char            downloadname[MAX_OSPATH];
-	struct dstring_s *downloadtempname; // FS: Dstring
-	struct dstring_s *downloadname; // FS: Dstring
-	struct dstring_s *downloadurl; // FS: HTTP downloading
+	struct dstring_s *downloadtempname; /* FS: Now a dstring */
+	struct dstring_s *downloadname; /* FS: Now a dstring */
+	struct dstring_s *downloadurl; /* FS: HTTP downloading from QuakeForge */
 	int                      downloadnumber;
 	dltype_t	downloadtype;
 	int			downloadpercent;
-	int			downloadrate; // FS
-	double		downloadstarttime; // FS
+	int			downloadrate; /* FS: Chunked downloads */
+	double		downloadstarttime; /* FS: Chunked downloads */
 
-	int downloadoldrate; // FS
-	int downloadmaxrate; // FS
-	int gamespyupdate; // FS
-	int gamespypercent; // FS
-	int gamespytotalservers; // FS
-	int gamespystarttime; // FS
+	int downloadoldrate; /* FS: Chunked downloads */
+	int downloadmaxrate; /* FS: Chunked downloads */
+
+	/* FS: Gamespy stuff */
+	int gamespyupdate;
+	int gamespypercent;
+	int gamespytotalservers;
+	int gamespystarttime;
+
 #ifdef FTE_PEXT_CHUNKEDDOWNLOADS
 	enum {DL_NONE = 0, DL_QW, DL_QWCHUNKS} downloadmethod;
 #else
@@ -349,8 +351,9 @@ extern	cvar_t	cl_backspeed;
 extern	cvar_t	cl_sidespeed;
 
 extern	cvar_t	cl_movespeedkey;
-extern  cvar_t  cl_unbindall_protection; // FS: unbindall protection
-extern  cvar_t  net_broadcast_chat; // FS
+extern  cvar_t  cl_unbindall_protection; /* FS: unbindall protection */
+extern  cvar_t  net_broadcast_chat; /* FS: EZQ Chat */
+extern  cvar_t  chat; /* FS: EZQ Chat */
 
 extern	cvar_t	cl_yawspeed;
 extern	cvar_t	cl_pitchspeed;
@@ -374,10 +377,10 @@ extern	cvar_t	m_side;
 extern cvar_t	_windowed_mouse;
 
 extern	cvar_t	name;
-extern	cvar_t	show_fps; // FS: why was this not global?
-extern	cvar_t	rate; // FS
+extern	cvar_t	show_fps;
+extern	cvar_t	rate;
 
-extern	cvar_t	cl_downloadrate_hack; // FS
+extern	cvar_t	cl_downloadrate_hack; /* FS: FIXME Shitty download hack */
 
 /* FS: GameSpy CVARs */
 extern	cvar_t	cl_master_server_ip;
@@ -386,7 +389,8 @@ extern	cvar_t	cl_master_server_timeout;
 extern	cvar_t	cl_master_server_retries;
 extern	cvar_t	snd_gamespy_sounds;
 
-extern	cvar_t	cl_ogg_music; // FS: For OGG
+extern	cvar_t	cl_ogg_music; /* FS: Added */
+extern	cvar_t	cl_wav_music; /* FS: Added */
 
 #define	MAX_STATIC_ENTITIES	128			// torches, etc
 
@@ -401,7 +405,8 @@ extern	dlight_t		cl_dlights[MAX_DLIGHTS];
 
 extern	qboolean	nomaster;
 extern float	server_version;	// version of server we connected to
-extern qboolean	bFlashlight; // FS: Flashlight
+
+extern qboolean	bFlashlight; /* FS: Flashlight */
 
 //=============================================================================
 
@@ -440,7 +445,7 @@ typedef struct
 	int		state;			// low bit is down state
 } kbutton_t;
 
-extern  cvar_t		in_freelook; // FS: mlook
+extern  cvar_t		in_freelook; /* FS: mlook */
 extern	kbutton_t	in_mlook, in_klook;
 extern 	kbutton_t 	in_strafe;
 extern 	kbutton_t 	in_speed;
@@ -491,9 +496,9 @@ qboolean CL_IsUploading(void);
 void CL_NextUpload(void);
 void CL_StartUpload (byte *data, int size);
 void CL_StopUpload(void);
-void CL_RequestNextDownload (void); // FS
-void CL_ParseDownload (void); // FS
-void CL_FinishDownload(qboolean rename_files); // FS
+void CL_RequestNextDownload (void);
+void CL_ParseDownload (void);
+void CL_FinishDownload(qboolean rename_files);
 
 #ifdef FTE_PEXT_CHUNKEDDOWNLOADS
 

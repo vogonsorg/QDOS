@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // snd_dma.c -- main control for any streaming sound output device
 
 #include "quakedef.h"
-#include "cfgfile.h" // FS: Parse CFG early -- sezero
+#include "cfgfile.h" /* FS: Parse CFG early -- sezero */
 
 #ifdef _WIN32
 #include "winquake.h"
@@ -36,8 +36,8 @@ void S_StopAllSoundsC(void);
 // QuakeWorld hack...
 #define viewentity	playernum+1
 #ifndef _WINDOWS
-extern void GUS_ClearDMA(void); // FS
-extern int havegus; // FS
+extern void GUS_ClearDMA(void); /* FS: Added */
+extern int havegus; /* FS: Added */
 #endif
 
 #ifdef WIN32
@@ -67,7 +67,9 @@ vec_t		sound_nominal_clip_dist=1000.0;
 
 int		soundtime;	// sample PAIRS
 int		paintedtime;	// sample PAIRS
-int		s_rawend; // FS: Quake 2 RAW shit
+
+ /* FS: Quake 2 raw samples for music streaming */
+int		s_rawend;
 portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 
 #define MAX_SFX		512
@@ -92,9 +94,8 @@ cvar_t ambient_fade = {"ambient_fade", "100"};
 cvar_t snd_noextraupdate = {"snd_noextraupdate", "0"};
 cvar_t snd_show = {"snd_show", "0"};
 cvar_t _snd_mixahead = {"_snd_mixahead", "0.2", true};
-cvar_t s_khz = {"s_khz","", true};	// FS: S_KHZ
+cvar_t s_khz = {"s_khz","", true}; /* FS: Added */
 cvar_t	s_musicvolume = {"s_musicvolume", "1", true};
-cvar_t	cl_wav_music = {"cl_wav_music", "1", true};
 
 // ====================================================================
 // User-setable variables
@@ -184,7 +185,7 @@ void S_Init (void)
 		"s_khz",
 	};
 #define num_readvars	(int)(sizeof(read_vars) / sizeof(read_vars[0]))
-  // FS: Parse CFG early -- sezero
+	/* FS: Parse CFG early -- sezero */
 	Con_Printf("\nSound Initialization\n");
 
 	if (COM_CheckParm("-nosound"))
@@ -215,7 +216,6 @@ void S_Init (void)
 	Cvar_RegisterVariable(&_snd_mixahead);
 	Cvar_RegisterVariable(&s_khz); /* FS: Added */
 	Cvar_RegisterVariable(&s_musicvolume); // Knightmare: added
-	Cvar_RegisterVariable(&cl_wav_music); /* FS: Added */
 
 	if (host_parms.memsize < 0x800000)
 	{
@@ -223,7 +223,6 @@ void S_Init (void)
 		Con_Printf ("loading all sounds as 8bit\n");
 	}
 
- // FS: Parse
 	// perform an early read of config.cfg -- sezero
 	CFG_ReadCvars (read_vars, num_readvars);
 	// check for command line overrides -- sezero
@@ -547,7 +546,7 @@ void S_StartSound(int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float f
 		return;         // couldn't load the sound's data
 	}
 
-	if (sfx->isCDtrack) // FS: Loop
+	if (sfx->isCDtrack) /* FS: Loop */
 	{
 		sc->loopstart = 0;
 	}
@@ -679,7 +678,8 @@ void S_ClearBuffer (void)
 		Con_DPrintf(DEVELOPER_MSG_SOUND, "Clearing GUS DMA Buffer!\n");
 		GUS_ClearDMA();
 	}
-	Con_DPrintf(DEVELOPER_MSG_SOUND, "Cleared GUS DMA buffer!\n"); // FS: Hjalp me GUS
+
+	Con_DPrintf(DEVELOPER_MSG_SOUND, "Cleared GUS DMA buffer!\n"); /* FS: Hjalp me GUS */
 #endif
 }
 
@@ -699,7 +699,7 @@ void S_StaticSound (sfx_t *sfx, vec3_t origin, float vol, float attenuation)
 
 	if (total_channels == MAX_CHANNELS)
 	{
-		Con_DPrintf (DEVELOPER_MSG_SOUND, "total_channels == MAX_CHANNELS\n"); // FS: Now DPrintf
+		Con_DPrintf (DEVELOPER_MSG_SOUND, "total_channels == MAX_CHANNELS\n"); /* FS: Now DPrintf */
 		return;
 	}
 
@@ -827,7 +827,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 	{
 		if (!ch->sfx)
 			continue;
-		if (ch->sfx->isCDtrack)  // FS: Fucks up tunes if we allow spatial
+		if (ch->sfx->isCDtrack)  /* FS: Fucks up tunes if we allow spatial */
 		{
 			ch->leftvol = ch->master_vol;
 			ch->rightvol = ch->master_vol;
@@ -1094,7 +1094,7 @@ void S_LocalSound (char *sound)
 	S_StartSound (cl.viewentity, -1, sfx, vec3_origin, 1, 1);
 }
 
-void S_GamespySound (char *sound) // FS
+void S_GamespySound (char *sound) /* FS: Added */
 {
 	if (snd_gamespy_sounds.intValue)
 		S_LocalSound(sound);

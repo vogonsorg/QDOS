@@ -36,7 +36,7 @@ typedef struct
 } pmtrace_t;
 
 
-#define	MAX_PHYSENTS	(32 + MAX_PACKET_ENTITIES) // FS: Was 32.  Fucking up some maps!
+#define	MAX_PHYSENTS	(32 + MAX_PACKET_ENTITIES) /* FS: Was 32.  Fucking up some maps! */
 typedef struct
 {
 	vec3_t	origin;

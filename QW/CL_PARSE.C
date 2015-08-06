@@ -47,7 +47,7 @@ char *svc_strings[] =
 	"svc_damage",			// [byte] impact [byte] blood [vec3] from
 	
 	"svc_spawnstatic",
-	"svc_fte_spawnstatic2", // FS: FTE extensions
+	"svc_fte_spawnstatic2", /* FS: FTE extensions */
 	"svc_spawnbaseline",
 	
 	"svc_temp_entity",		// <variable>
@@ -85,30 +85,31 @@ char *svc_strings[] =
 
 	"svc_setinfo",
 	"svc_serverinfo",
-	"svc_updatepl", // FS: 53
+	"svc_updatepl", /* FS: 53 */
 	"NEW PROTOCOL",
 	"NEW PROTOCOL",
 	"NEW PROTOCOL",
 	"NEW PROTOCOL",
 	"NEW PROTOCOL",
 	"NEW PROTOCOL",
-	"svc_fte_modellistshort", // FS: 60 -- FTE extensions
+	"svc_fte_modellistshort", /* FS: 60 -- FTE extensions */
 	"NEW PROTOCOL",
 	"NEW PROTOCOL",
 	"NEW PROTOCOL",
 	"NEW PROTOCOL",
-	"svc_fte_spawnbaseline2", // FS: 66 -- FTE extensions
+	"svc_fte_spawnbaseline2", /* FS: 66 -- FTE extensions */
 	"NEW PROTOCOL"
 };
 
-int	oldparsecountmod;
-int	parsecountmod;
+int		oldparsecountmod;
+int		parsecountmod;
 double	parsecounttime;
+int		cl_spikeindex, cl_playerindex, cl_flagindex;
 
 /* FS: Prototypes */
-int		cl_spikeindex, cl_playerindex, cl_flagindex;
-void	CL_ShowChat (char *name, int val);
-void CL_PlayBackgroundTrack (int track);
+void		CL_ShowChat (char *name, int val);
+void		CL_PlayBackgroundTrack (int track);
+qboolean	CL_MaliciousStuffText(char *stufftext); /* FS: Check for malicious stufftext */
 
 //=============================================================================
 
@@ -181,7 +182,7 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 	if (cls.demoplayback)
 		return true;
 
-	dstring_copystr (cls.downloadname, filename); // FS: New school dstring
+	dstring_copystr (cls.downloadname, filename);
 	Con_Printf ("Downloading %s...\n", cls.downloadname->str);
 
 	// download to a temp name, and only rename
@@ -358,8 +359,9 @@ void CL_FinishDownload(qboolean rename_files)
 			Con_DPrintf(DEVELOPER_MSG_IO, "oldn: %s\n", oldn->str);
 			Con_DPrintf(DEVELOPER_MSG_IO, "newn: %s\n", newn->str);
 			r = rename (oldn->str, newn->str);
+
 			if (r)
-				Con_Printf ("failed to rename. r: %i\n", r); // FS
+				Con_Printf ("failed to rename. r: %i\n", r); /* FS: Added */
 		}
 		dstring_delete(oldn);
 		dstring_delete(newn);
@@ -369,7 +371,7 @@ void CL_FinishDownload(qboolean rename_files)
 	cls.downloadpercent = 0;
 	cls.downloadmethod = DL_NONE;
 
-	if (cl_downloadrate_hack.intValue && (rate.intValue > 0 && cls.downloadoldrate > 0)) // FS: Special hack to accelerate the downloading a bit
+	if (cl_downloadrate_hack.intValue && (rate.intValue > 0 && cls.downloadoldrate > 0)) /* FS: FIXME Shitty hack to accelerate the downloading a bit */
 	{
 		oldrate = dstring_new();
 		Com_sprintf(oldrate, "%i", cls.downloadoldrate);
@@ -689,7 +691,7 @@ void CL_ParseDownload (void)
 	// open the file if not opened yet
 	if (!cls.download)
 	{
-		if(!CL_CreateDownload(size, false)) // FS
+		if(!CL_CreateDownload(size, false)) /* FS: Added */
 			return;
 	}
 
@@ -1330,7 +1332,7 @@ void CL_SetInfo (void)
         strncpy (value, MSG_ReadString(), sizeof(value) - 1);
 	key[sizeof(value) - 1] = 0;
 
-	if(!stricmp(key, "chat")) // FS: EZQ Chat
+	if(!stricmp(key, "chat")) /* FS: EZQ Chat */
 	{
 		switch (atoi(value))
 		{
@@ -1353,7 +1355,7 @@ void CL_SetInfo (void)
 	CL_ProcessUserInfo (slot, player);
 }
 
-// FS: For EZQ Chat
+/* FS: EZQ Chat */
 void	CL_ShowChat (char *name, int val)
 {
 	if (net_showchat.value)
@@ -1464,7 +1466,7 @@ void CL_ParseServerMessage (void)
 {
 	int		cmd;
 	char	*s;
-	char	*fversion; // FS
+	char	*fversion; /* FS: f_version reply */
 	int		i, j;
 
 	received_framecount = host_framecount;
@@ -1531,13 +1533,13 @@ void CL_ParseServerMessage (void)
 				con_ormask = 128;
 			}
 			fversion = MSG_ReadString();
-			if (!strncmp(fversion, "Downloading: ", 13)) // FS: MVDSV XE hack
+			if (!strncmp(fversion, "Downloading: ", 13)) /* FS: MVDSV XE hack */
 			{
 				Con_DPrintf(DEVELOPER_MSG_NET, "%s", fversion);
 				con_ormask = 0;
 				break;
 			}
-			Con_Printf("%s", fversion); // FS: F_Version Reply
+			Con_Printf("%s", fversion); /* FS: f_version reply */
 			fversion = strchr(fversion, ':');
 			if (fversion && !strcmp(fversion, ": f_version\n"))
 			{
@@ -1560,12 +1562,10 @@ void CL_ParseServerMessage (void)
 		case svc_stufftext:
 			s = MSG_ReadString ();
 			Con_DPrintf (DEVELOPER_MSG_NET, "stufftext: %s\n", s);
-                        
-			if(!strncmp(s, "fov ", 4) || !strncmp(s, "_snd_mixahead ", 14)) // FS: gross FOV hack
-			{
-				Con_DPrintf (DEVELOPER_MSG_VERBOSE, "CVAR stufftext hack for %s\n", s);
+
+			if(CL_MaliciousStuffText(s)) /* FS: Ignore malicious stufftext */
 				break;
-			}
+
 			Cbuf_AddText (s);
 			break;
 			
@@ -1806,6 +1806,19 @@ void CL_ParseServerMessage (void)
 	CL_SetSolidEntities ();
 }
 
+qboolean CL_MaliciousStuffText(char *stufftext) /* FS: Check for malicious stufftext */
+{
+	if(!stufftext || stufftext[0] == 0)
+		return false;
+
+	if((Q_strncasecmp(stufftext, "fov ", 4) == 0) || (Q_strncasecmp(stufftext, "_snd_mixahead ", 14) == 0) || (Q_strncasecmp(stufftext, "rate ", 5) == 0)) /* FS: Ignore malicious stufftexts */
+	{
+		Con_DPrintf (DEVELOPER_MSG_NET, "Ignoring malicious stufftext: %s\n", stufftext);
+		return true;
+	}
+
+	return false;
+}
 
 /*
 =================

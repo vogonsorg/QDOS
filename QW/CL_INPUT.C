@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 cvar_t	cl_nodelta = {"cl_nodelta","0"};
-cvar_t  in_freelook = {"in_freelook","1",true}; // FS: mlook
+cvar_t  in_freelook = {"in_freelook","1",true}; /* FS: mlook */
 /*
 ===============================================================================
 
@@ -181,7 +181,7 @@ float CL_KeyState (kbutton_t *key)
 	down = key->state & 1;
 	val = 0;
 	
-	if (impulsedown && !impulseup)  // FS: Fixes -Wall warnings
+	if (impulsedown && !impulseup)
 	{
         	if (down)
 				val = 0.5;	// pressed and held this frame
@@ -346,7 +346,6 @@ void CL_FinishMove (usercmd_t *cmd)
 {
 	int		i;
 	int		ms;
-	extern  cvar_t  chat; // FS
 //
 // allways dump the first two message, because it may contain leftover inputs
 // from the last level
@@ -359,10 +358,9 @@ void CL_FinishMove (usercmd_t *cmd)
 
 	if ( in_attack.state & 3 )
 	{
-		if (afk == 2 || chat.value > 1)
+		if (afk == 2 || chat.value > 1) /* FS: Some servers won't let you fire if you're in AFK mode... */
 		{
-			Con_DPrintf(DEVELOPER_MSG_VERBOSE, "Hjalp!\n");
-			Cmd_ChatInfo(0);
+			Cmd_ChatInfo(EZQ_CHAT_OFF);
 		}
 
 		cmd->buttons |= 1;
@@ -449,11 +447,13 @@ void CL_SendCmd (void)
 	buf.data = data;
 */
 
-	SZ_Init (&buf, data, sizeof(data)); // FS: From EZQ
+	SZ_Init (&buf, data, sizeof(data)); /* FS: From EZQ */
 
-	SZ_Write (&buf, cls.cmdmsg.data, cls.cmdmsg.cursize); // FS: From EZQ
+	SZ_Write (&buf, cls.cmdmsg.data, cls.cmdmsg.cursize); /* FS: From EZQ */
+
 	if (cls.cmdmsg.overflowed)
 		Con_DPrintf(DEVELOPER_MSG_NET, "cls.cmdmsg overflowed\n");
+
 	SZ_Clear (&cls.cmdmsg);
 
 	MSG_WriteByte (&buf, clc_move);
@@ -509,10 +509,10 @@ void CL_SendCmd (void)
 }
 
 
-void CL_SendClientCommand(qboolean reliable, char *format, ...) // FS: From JQuake/EZQ/etc
+void CL_SendClientCommand(qboolean reliable, char *format, ...) /* FS: From JQuake/EZQ/etc */
 {
 	va_list		argptr;
-	dstring_t	*string; // FS: New school dstrings
+	dstring_t	*string;
 
 	if (cls.demoplayback)
 		return;	// no point.
@@ -530,23 +530,10 @@ void CL_SendClientCommand(qboolean reliable, char *format, ...) // FS: From JQua
 	}
 	else
 	{
-/*		sizebuf_t	buf;
-		byte data[MAX_MSGLEN];
-
-		memset(&buf, 0, sizeof(buf));
-
-		buf.data = data;
-		buf.cursize = 0;
-		buf.maxsize = sizeof(data);
-
-		MSG_WriteByte (&buf, clc_stringcmd);
-		MSG_WriteString (&buf, string->str);
-		Netchan_Transmit(&cls.netchan, buf.cursize, buf.data);
-		SZ_Clear(&buf);
-*/
 		MSG_WriteByte (&cls.cmdmsg, clc_stringcmd);
 		MSG_WriteString (&cls.cmdmsg, string->str);
 	}
+
 	dstring_delete(string);
 }
 
@@ -594,7 +581,7 @@ void CL_InitInput (void)
 	Cmd_AddCommand ("-mlook", IN_MLookUp);
 
 	Cvar_RegisterVariable (&cl_nodelta);
-        Cvar_RegisterVariable (&in_freelook); // FS: Mlook
+	Cvar_RegisterVariable (&in_freelook); /* FS: Mlook */
 }
 
 /*

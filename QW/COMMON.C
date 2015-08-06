@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <stdio.h>
 #include <stdarg.h>
 
-#define DG_MISC_IMPLEMENTATION // FS: Use caedes special string stuff
+#define DG_MISC_IMPLEMENTATION /* FS: Use caedes special safe string stuff */
 
 #ifdef SERVERONLY 
 #include "qwsvdef.h"
@@ -32,11 +32,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #endif
 
-#include "dstring.h" // FS: DSTRING
-#define VISIBLE // FS: DSTRING
+#include "dstring.h" /* FS: dstrings */
+#define VISIBLE /* FS: dstrings */
 
 #define MAX_NUM_ARGVS	50
-#define NUM_SAFE_ARGVS  7 // FS
+#define NUM_SAFE_ARGVS  7
 
 usercmd_t nullcmd; // guarenteed to be zero
 
@@ -44,7 +44,7 @@ static char	*largv[MAX_NUM_ARGVS + NUM_SAFE_ARGVS + 1];
 static char	*argvdummy = " ";
 
 static char	*safeargvs[NUM_SAFE_ARGVS] =
-        {"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-safevga"}; // FS: -safevga for 320x200
+        {"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-safevga"}; /* FS: Added safevga */
 
 cvar_t	registered = {"registered","0"};
 
@@ -56,7 +56,7 @@ qboolean		msg_suppress_1 = 0;
 
 void COM_InitFilesystem (void);
 void COM_Path_f (void);
-void COM_Type_f (void); // FS: Notepad
+void COM_Type_f (void); /* FS: TODO UNFINISHED Notepad */
 
 
 // if a packfile directory differs from this, it is assumed to be hacked
@@ -276,7 +276,7 @@ float Q_atof (char *str)
 	return val*sign;
 }
 
-// FS: From OpenBSD
+/* FS: From OpenBSD */
 size_t Q_strlcpy (char *dst, const char *src, size_t siz)
 {
 	char *d = dst;
@@ -430,7 +430,7 @@ coorddata MSG_ToCoord(float f, int bytes)	//return value should be treated as (c
 
 #ifdef _WIN32
 #pragma warning(push)
-#pragma warning(disable:4761) // FS: Disable the conversion warning since it's on purpose
+#pragma warning(disable:4761) /* FS: Disable the conversion warning since it's on purpose */
 #endif
 coorddata MSG_ToAngle(float f, int bytes)	//return value is NOT byteswapped.
 {
@@ -803,7 +803,7 @@ void MSG_ReadDeltaUsercmd (usercmd_t *from, usercmd_t *move)
 	move->msec = MSG_ReadByte ();
 }
 
-void MSG_ReadData (void *data, int len) // FS
+void MSG_ReadData (void *data, int len) /* FS */
 {
 	int	i;
 
@@ -813,7 +813,7 @@ void MSG_ReadData (void *data, int len) // FS
 
 //===========================================================================
 
-void SZ_InitEx (sizebuf_t *buf, byte *data, int length, qbool allowoverflow) // FS: From EZQ
+void SZ_InitEx (sizebuf_t *buf, byte *data, int length, qbool allowoverflow) /* FS: From EZQ */
 {
 	memset (buf, 0, sizeof (*buf));
 	buf->data = data;
@@ -821,7 +821,7 @@ void SZ_InitEx (sizebuf_t *buf, byte *data, int length, qbool allowoverflow) // 
 	buf->allowoverflow = allowoverflow;
 }
 
-void SZ_Init (sizebuf_t *buf, byte *data, int length) // FS: From EZQ
+void SZ_Init (sizebuf_t *buf, byte *data, int length) /* FS: From EZQ */
 {
 	SZ_InitEx (buf, data, length, false);
 }
@@ -1202,11 +1202,10 @@ void COM_Init (void)
 
 	Cvar_RegisterVariable (&registered);
 	Cmd_AddCommand ("path", COM_Path_f);
-	Cmd_AddCommand ("type", COM_Type_f); // FS: Notepad
+	Cmd_AddCommand ("type", COM_Type_f); /* FS: Notepad */
 	COM_InitFilesystem ();
 	COM_CheckRegistered ();
 }
-// FS: VA varargs from QF
 
 /*
 ============
@@ -1214,9 +1213,9 @@ va
 
 does a varargs printf into a temp buffer, so I don't need to have
 varargs versions of all text functions.
-FIXME: make this buffer size safe someday
 ============
 */
+/* FS: Save varargs from QuakeForge */
 VISIBLE char *
 va (const char *fmt, ...)
 {
@@ -1285,7 +1284,6 @@ typedef struct pack_s
 {
 	char	filename[MAX_OSPATH];
 	FILE	*handle;
-//	int		handle; // FS
 	int		numfiles;
 	packfile_t	*files;
 } pack_t;
@@ -1310,7 +1308,7 @@ typedef struct
 
 char	com_gamedir[MAX_OSPATH];
 char	com_basedir[MAX_OSPATH];
-char    com_cachedir[MAX_OSPATH]; // FS
+char    com_cachedir[MAX_OSPATH]; /* FS */
 
 typedef struct searchpath_s
 {
@@ -1463,7 +1461,7 @@ void COM_CopyFile (char *netpath, char *cachepath)
 	fclose (out);
 }
 
-// FS: From Q2
+/* FS: From Q2 */
 char **COM_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned canthave )
 {
 	char *s;
@@ -1509,7 +1507,7 @@ char **COM_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned
 	return list;
 }
 
-// FS: From Q2
+/* FS: From Q2 */
 char *COM_NextPath (char *prevpath)
 {
 	searchpath_t	*s;
@@ -1531,7 +1529,7 @@ char *COM_NextPath (char *prevpath)
 	return NULL;
 }
 
-// FS: From Q2
+/* FS: From Q2 */
 void COM_FreeFileList (char **list, int n)
 {
 	int i;
@@ -1547,7 +1545,7 @@ void COM_FreeFileList (char **list, int n)
 	free(list);
 }
 
-// FS: From Q2
+/* FS: From Q2 */
 qboolean COM_ItemInList (char *check, int num, char **list)
 {
 	int		i;
@@ -1687,7 +1685,7 @@ returns a handle and a length
 it may actually be inside a pak file
 ===========
 */
-// FS: From Q1
+/* FS: From Q1 */
 int COM_OpenFile (char *filename, int *handle)
 {
 	return COM_FindFile (filename, handle, NULL);
@@ -1706,8 +1704,7 @@ int file_from_pak; // global indicating file came from pack file ZOID
 int COM_FOpenFile (char *filename, FILE **file)
 {
 	searchpath_t	*search;
-	//char            netpath[MAX_OSPATH];
-	static dstring_t *netpath; // FS: New school dstring
+	static dstring_t *netpath;
 	pack_t		*pak;
 	int			i;
 	int			findtime;
@@ -1832,7 +1829,7 @@ byte *COM_LoadFile (char *path, int usehunk)
 	return buf;
 }
 
-void COM_Type_f (void) // FS: Notepad
+void COM_Type_f (void) /* FS: TODO UNFINISHED Notepad */
 {
 	FILE	*fdata;
 	char	*data;
@@ -2111,7 +2108,7 @@ void COM_InitFilesystem (void)
 	else
 		strcpy (com_basedir, host_parms.basedir);
 
-	com_cachedir[0] = 0; // FS
+	com_cachedir[0] = 0; /* FS */
 
 //
 // start up with id1 by default
@@ -2520,10 +2517,9 @@ int build_number( void )
 	return b;
 }
 
-// FS: Buffer safe sprintf so we aren't va'ing all over the place
+/* FS: Buffer safe sprintf so we aren't va'ing all over the place */
 void Com_sprintf(dstring_t *dst, const char *fmt, ...)
 {
- // FS: New school Dstrings
 	va_list     argptr;
 
 	if(!dst)

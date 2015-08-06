@@ -21,9 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "dstring.h"
 
-#include "DG_misc.h" // FS: Caedes special safe string stuff
+#include "DG_misc.h" /* FS: Caedes special safe string stuff */
 
-#ifdef _MSC_VER // FS: VS6
+#ifdef _MSC_VER /* FS: VS6 */
 	#define __attribute__(x)
 #endif
 
@@ -36,12 +36,12 @@ typedef unsigned char           byte;
 
 typedef enum {false, true}      qboolean;
 
-#define MAX_INFO_STRING 1024 // FS: 196
-#define MAX_SERVERINFO_STRING 2048  // FS: 1024
-//JASON upped from 512 -- Spoike
-#define MAX_LOCALINFO_STRING    32768
+#define MAX_INFO_STRING 1024 /* FS: Was 196 */
+#define MAX_SERVERINFO_STRING 2048  /* FS: Was 1024 */
+#define MAX_LOCALINFO_STRING    32768 /* JASON upped from 512 -- Spoike */
 
-#define qbool qboolean // FS: Tired of importing code from EZQ and getting errors related to this
+#define qbool qboolean /* FS: Tired of importing code from EZQ and getting errors related to this */
+
 //============================================================================
 
 typedef struct sizebuf_s
@@ -53,8 +53,8 @@ typedef struct sizebuf_s
 	int             cursize;
 } sizebuf_t;
 
-void SZ_InitEx (sizebuf_t *buf, byte *data, int length, qbool allowoverflow); // FS: From EZQ
-void SZ_Init (sizebuf_t *buf, byte *data, int length); // FS: From EZQ
+void SZ_InitEx (sizebuf_t *buf, byte *data, int length, qbool allowoverflow); /* FS: From EZQ */
+void SZ_Init (sizebuf_t *buf, byte *data, int length); /* FS: From EZQ */
 void SZ_Clear (sizebuf_t *buf);
 void *SZ_GetSpace (sizebuf_t *buf, int length);
 void SZ_Write (sizebuf_t *buf, void *data, int length);
@@ -109,11 +109,11 @@ extern  float   (*LittleFloat) (float l);
 
 //============================================================================
 
-// FS: GameSpy SLIST2 stuff
+/* FS: Gamespy stuff */
 #define SHOW_POPULATED_SERVERS 1
 #define SHOW_ALL_SERVERS 2
 
-// FS: FIXME TODO HACK HACK HACKKY HACKK.  The MSG_Write/Read for PEXT_FLOATCOORDS is read before protocol.h, so i'm putting it here.
+/* FS: FIXME TODO HACK.  The MSG_Write/Read for PEXT_FLOATCOORDS is read before protocol.h, so i'm putting it here. */
 // fte protocol extensions.
 #define PROTOCOL_VERSION_FTE	(('F'<<0) + ('T'<<8) + ('E'<<16) + ('X' << 24)) //fte extensions.
 
@@ -164,7 +164,7 @@ void MSG_WriteCoord (sizebuf_t *sb, float f);
 void MSG_WriteAngle (sizebuf_t *sb, float f);
 void MSG_WriteAngle16 (sizebuf_t *sb, float f);
 void MSG_WriteDeltaUsercmd (sizebuf_t *sb, struct usercmd_s *from, struct usercmd_s *cmd);
-void MSG_ReadData (void *data, int len); // FS
+void MSG_ReadData (void *data, int len); /* FS: For chunked downloads */
 
 extern  int                     msg_readcount;
 extern  qboolean        msg_badread;            // set if a read goes beyond end of message
@@ -211,7 +211,7 @@ void MSG_ReadDeltaUsercmd (struct usercmd_s *from, struct usercmd_s *cmd);
 
 int     Q_atoi (char *str);
 float Q_atof (char *str);
-size_t Q_strlcpy (char *dst, const char *src, size_t siz); // FS: From OpenBSD
+size_t Q_strlcpy (char *dst, const char *src, size_t siz); /* FS: From OpenBSD */
 
 //============================================================================
 
@@ -249,7 +249,7 @@ struct cache_user_s;
 extern  char    com_gamedir[MAX_OSPATH];
 
 void COM_WriteFile (char *filename, void *data, int len);
-int COM_OpenFile (char *filename, int *hndl); // FS: From Q1
+int COM_OpenFile (char *filename, int *hndl); /* FS: From Q1 */
 int COM_FOpenFile (char *filename, FILE **file);
 
 byte *COM_LoadStackFile (char *path, void *buffer, int bufsize);
@@ -258,10 +258,12 @@ byte *COM_LoadHunkFile (char *path);
 void COM_LoadCacheFile (char *path, struct cache_user_s *cu);
 void COM_CreatePath (char *path);
 void COM_Gamedir (char *dir);
-char *COM_NextPath (char *prevpath); // FS: From Q2
-void COM_FreeFileList (char **list, int n); // FS: From Q2
-qboolean COM_ItemInList (char *check, int num, char **list); // FS: From Q2
-char **COM_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned canthave ); // FS: From Q2
+
+/* FS: From Q2 */
+char *COM_NextPath (char *prevpath);
+void COM_FreeFileList (char **list, int n);
+qboolean COM_ItemInList (char *check, int num, char **list);
+char **COM_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned canthave );
 
 extern  struct cvar_s   registered;
 extern qboolean         standard_quake, rogue, hipnotic;
@@ -279,6 +281,6 @@ byte    COM_BlockSequenceCheckByte (byte *base, int length, int sequence, unsign
 byte    COM_BlockSequenceCRCByte (byte *base, int length, int sequence);
 
 int build_number( void );
-void CompleteCommand (void); // FS
-void Com_sprintf(dstring_t *dst, const char *fmt, ...); // FS
-void Com_strcpy (char *dest, int destSize, const char *src); // FS
+void CompleteCommand (void); /* FS: Autocomplete commands */
+void Com_sprintf(dstring_t *dst, const char *fmt, ...); /* FS: Added */
+void Com_strcpy (char *dest, int destSize, const char *src); /* FS: Added */

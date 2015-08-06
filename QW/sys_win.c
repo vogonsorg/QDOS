@@ -29,8 +29,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <conio.h>
 #include <io.h>
 
-#define MINIMUM_WIN_MEMORY	0x2000000 // FS: Was 0c00000
-#define MAXIMUM_WIN_MEMORY	0x4000000 // FS: Was 1000000
+#define MINIMUM_WIN_MEMORY	0x2000000 /* FS: Was 0x0c00000 */
+#define MAXIMUM_WIN_MEMORY	0x4000000 /* FS: Was 0x1000000 */
 
 #define PAUSE_SLEEP		50				// sleep time on pause or minimization
 #define NOT_FOCUS_SLEEP	20				// sleep time when not focus
@@ -58,8 +58,7 @@ void Sys_PushFPCW_SetHigh (void);
 void Sys_DebugLog(const char *file, const char *fmt, ...)
 {
     va_list argptr; 
-//    static char data[1024];
-	static dstring_t *data; // FS: New school dstrings
+	static dstring_t *data;
     int fd;
     
 	if(!data)
@@ -271,7 +270,7 @@ void Sys_Init (void)
 void Sys_Error (const char *error, ...)
 {
 	va_list		argptr;
-    static dstring_t    *string; // FS: New school dstring
+    static dstring_t    *string;
 
     if (!string)
         string = dstring_new();
@@ -294,7 +293,6 @@ void Sys_Error (const char *error, ...)
 
 void Sys_Printf (const char *fmt, ...)
 {
-	// FS: New school Dstrings
 	va_list		argptr;
 	static		dstring_t *text;
 	

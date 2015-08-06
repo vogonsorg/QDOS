@@ -19,16 +19,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // cl_main.c  -- client main loop
 
+#include <ctype.h>
+
 #include "quakedef.h"
 #include "winquake.h"
+
 #ifdef _WIN32
-#include "winsock.h"
+	#include "winsock.h"
 #else
-#include <netinet/in.h>
+	#include <netinet/in.h>
 #endif
-#include "dstring.h" // FS: Dstring
-#include "cfgfile.h" // FS: Parse CFG early -- sezero
-#include <ctype.h> // FS: -Werror fix
+
+#include "dstring.h" /* FS: Dstring */
+#include "cfgfile.h" /* FS: Parse CFG early -- sezero */
 
 #include "Goa/CEngine/goaceng.h" /* FS: For Gamespy */
 
@@ -37,55 +40,55 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 qboolean noclip_anglehack;    // remnant from old quake
 
-int     specbool = 0; // FS: Spectator reconnect hack
+int     specbool = 0; /* FS: FIXME: Spectator reconnect hack */
 
-cvar_t   rcon_password = {"rcon_password", "", false};
+cvar_t	rcon_password = {"rcon_password", "", false};
 
-cvar_t   rcon_address = {"rcon_address", ""};
+cvar_t	rcon_address = {"rcon_address", ""};
 
-cvar_t   cl_timeout = {"cl_timeout", "60"};
+cvar_t	cl_timeout = {"cl_timeout", "60"};
 
-cvar_t   cl_shownet = {"cl_shownet","0"}; // can be 0, 1, or 2
+cvar_t	cl_shownet = {"cl_shownet","0"}; // can be 0, 1, or 2
 
-cvar_t   cl_sbar     = {"cl_sbar", "0", true};
-cvar_t   cl_hudswap  = {"cl_hudswap", "0", true};
-cvar_t   cl_maxfps   = {"cl_maxfps", "0", true};
+cvar_t	cl_sbar     = {"cl_sbar", "0", true};
+cvar_t	cl_hudswap  = {"cl_hudswap", "0", true};
+cvar_t	cl_maxfps   = {"cl_maxfps", "0", true};
 
-cvar_t   lookspring = {"lookspring","0", true};
-cvar_t   lookstrafe = {"lookstrafe","0", true};
-cvar_t   sensitivity = {"sensitivity","3", true};
+cvar_t	lookspring = {"lookspring","0", true};
+cvar_t	lookstrafe = {"lookstrafe","0", true};
+cvar_t	sensitivity = {"sensitivity","3", true};
 
-cvar_t   m_pitch = {"m_pitch","0.022", true};
-cvar_t   m_yaw = {"m_yaw","0.022"};
-cvar_t   m_forward = {"m_forward","1"};
-cvar_t   m_side = {"m_side","0.8"};
+cvar_t	m_pitch = {"m_pitch","0.022", true};
+cvar_t	m_yaw = {"m_yaw","0.022"};
+cvar_t	m_forward = {"m_forward","1"};
+cvar_t	m_side = {"m_side","0.8"};
 
-cvar_t   entlatency = {"entlatency", "20"};
-cvar_t   cl_predict_players = {"cl_predict_players", "1"};
-cvar_t   cl_predict_players2 = {"cl_predict_players2", "1"};
-cvar_t   cl_solid_players = {"cl_solid_players", "1"};
+cvar_t	entlatency = {"entlatency", "20"};
+cvar_t	cl_predict_players = {"cl_predict_players", "1"};
+cvar_t	cl_predict_players2 = {"cl_predict_players2", "1"};
+cvar_t	cl_solid_players = {"cl_solid_players", "1"};
 
 cvar_t  localid = {"localid", ""};
-cvar_t	net_broadcast_chat = {"net_broadcast_chat", "1", true}; // FS: let user decide
+cvar_t	net_broadcast_chat = {"net_broadcast_chat", "1", true}; /* FS: EZQ Chat */
 
-static qboolean allowremotecmd = true;
+static	qboolean allowremotecmd = true;
 
 //
 // info mirrors
 //
-cvar_t   password = {"password", "", false, true};
-cvar_t   spectator = {"spectator", "", false, true};
-cvar_t   name = {"name","unnamed", true, true};
-cvar_t   team = {"team","", true, true};
-cvar_t   skin = {"skin","", true, true};
-cvar_t   topcolor = {"topcolor","0", true, true};
-cvar_t   bottomcolor = {"bottomcolor","0", true, true};
-cvar_t   rate = {"rate","2500", true, true};
-cvar_t   noaim = {"noaim","0", true, true};
-cvar_t   msg = {"msg","1", true, true};
-cvar_t	chat = {"chat", "", false, true}; // FS: For AFK
+cvar_t	password = {"password", "", false, true};
+cvar_t	spectator = {"spectator", "", false, true};
+cvar_t	name = {"name","unnamed", true, true};
+cvar_t	team = {"team","", true, true};
+cvar_t	skin = {"skin","", true, true};
+cvar_t	topcolor = {"topcolor","0", true, true};
+cvar_t	bottomcolor = {"bottomcolor","0", true, true};
+cvar_t	rate = {"rate","2500", true, true};
+cvar_t	noaim = {"noaim","0", true, true};
+cvar_t	msg = {"msg","1", true, true};
+cvar_t	chat = {"chat", "", false, true}; /* FS: EZQ Chat */
 
-extern cvar_t cl_hightrack;
+extern	cvar_t cl_hightrack;
 
 #ifdef PROTOCOL_VERSION_FTE
 cvar_t  cl_pext_other = {"cl_pext_other", "1"};		// will break demos!
@@ -100,7 +103,7 @@ cvar_t  cl_chunksperframe  = {"cl_chunksperframe", "5"};
 #ifdef FTE_PEXT_FLOATCOORDS
 cvar_t  cl_pext_floatcoords  = {"cl_pext_floatcoords", "1"};
 #endif
-cvar_t	cl_downloadrate_hack = {"cl_downloadrate_hack", "1", true}; // FS
+cvar_t	cl_downloadrate_hack = {"cl_downloadrate_hack", "1", true}; /* FS: Gross download hack */
 
 client_static_t   cls;
 client_state_t cl;
@@ -138,20 +141,23 @@ byte     *host_colormap;
 netadr_t master_adr;          // address of the master server
 
 cvar_t	host_speeds = {"host_speeds","0"};        // set for running times
-cvar_t  show_fps = {"show_fps","0", true}; // FS
-cvar_t  show_time = {"show_time","0", true}; // FS: Show time
-cvar_t  show_uptime = {"show_uptime", "0", true}; // FS: Show uptime
-cvar_t	console_old_complete = {"console_old_complete", "0", true, false , "Use legacy style tab completion."}; // FS
-cvar_t	developer = {"developer","0", false, false, "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Extremely verbose msgs - 65536\n  * Extremely verbose gamespy msgs - 131072\n"};
-cvar_t	con_show_description = {"con_show_description", "1", true, false, "Show descriptions for CVARs."}; // FS
-cvar_t	con_show_dev_flags = {"con_show_dev_flags", "1", true, false, "Show developer flag options."}; // FS
 
-cvar_t	cl_ogg_music = {"cl_ogg_music", "1", true, false, "Play OGG tracks in the format of music/trackXX.ogg if they exist."}; // FS
+cvar_t  show_fps = {"show_fps","0", true}; /* FS: Added */
+cvar_t  show_time = {"show_time","0", true}; /* FS: Added */
+cvar_t  show_uptime = {"show_uptime", "0", true}; /* FS: Added */
+cvar_t	console_old_complete = {"console_old_complete", "0", true, false , "Use legacy style tab completion."}; /* FS: Added */
+cvar_t	developer = {"developer","0", false, false, "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Extremely verbose msgs - 65536\n  * Extremely verbose gamespy msgs - 131072\n"};  /* FS: Added Description */
+cvar_t	con_show_description = {"con_show_description", "1", true, false, "Show descriptions for CVARs."}; /* FS: Added */
+cvar_t	con_show_dev_flags = {"con_show_dev_flags", "1", true, false, "Show developer flag options."}; /* FS: Added */
+
+cvar_t	cl_ogg_music = {"cl_ogg_music", "1", true, false, "Play OGG tracks in the format of id1/music/trackXX.ogg if they exist."}; /* FS: Added */
+cvar_t	cl_wav_music = {"cl_wav_music", "1", true, false, "Play WAV tracks in the format of id1/music/trackXX.wav if they exist."}; /* FS: Added */
 
 int         fps_count;
-qboolean bFlashlight = false; // FS: Flashlight
 
-void CL_Flashlight_f (void); // FS: Prototype it
+ /* FS: Flashlight */
+qboolean bFlashlight = false;
+void CL_Flashlight_f (void);
 
 /* FS: Gamespy CVARs */
 cvar_t	cl_master_server_ip = {"cl_master_server_ip", CL_MASTER_ADDR, true, false, "GameSpy Master Server IP."};
@@ -285,7 +291,6 @@ void CL_SendConnectPacket (
 )
 {
 	netadr_t adr;
-	//char    data[2048]; // FS: New school dstring
 	dstring_t *data;
 	double t1, t2;
 
@@ -334,11 +339,8 @@ void CL_SendConnectPacket (
 	if (cls.fteprotocolextensions) 
 	{
 		char tmp[128];
-		// FS: FIXME USE DSTRING
-//		snprintf(tmp, sizeof(tmp), "0x%x 0x%x\n", PROTOCOL_VERSION_FTE, cls.fteprotocolextensions);
 		sprintf(tmp, "0x%x 0x%x\n", PROTOCOL_VERSION_FTE, cls.fteprotocolextensions);
 		Con_DPrintf(DEVELOPER_MSG_NET, "0x%x is fte protocol ver and 0x%x is fteprotocolextensions\n", PROTOCOL_VERSION_FTE, cls.fteprotocolextensions);
-//		strlcat(data, tmp, sizeof(data));
 		strcat(data->str, tmp);
 	}
 #endif // PROTOCOL_VERSION_FTE 
@@ -356,42 +358,47 @@ Resend a connect message if the last one has timed out
 */
 void CL_CheckForResend (void)
 {
-   netadr_t adr;
-        //char    data[2048]; // FS: New school dstring
-        dstring_t *data;
-        double t1, t2;
+	netadr_t adr;
+	dstring_t *data;
+	double t1, t2;
 
-        if (connect_time == -1)
-         return;
-        if (cls.state != ca_disconnected)
-         return;
-        if (connect_time && realtime - connect_time < 5.0)
-      return;
+	if (connect_time == -1)
+		return;
+	if (cls.state != ca_disconnected)
+		return;
+	if (connect_time && realtime - connect_time < 5.0)
+		return;
 
-   t1 = Sys_DoubleTime ();
-        if (!NET_StringToAdr (cls.servername->str, &adr))
-   {
-      Con_Printf ("Bad server address\n");
-      connect_time = -1;
-      return;
-   }
-   if (!NET_IsClientLegal(&adr))
-   {
-      Con_Printf ("Illegal server address\n");
-      connect_time = -1;
-      return;
-   }
+	t1 = Sys_DoubleTime ();
 
-   if (adr.port == 0)
-      adr.port = BigShort (27500);
-   t2 = Sys_DoubleTime ();
+	if (!NET_StringToAdr (cls.servername->str, &adr))
+	{
+		Con_Printf ("Bad server address\n");
+		connect_time = -1;
+		return;
+	}
 
-   connect_time = realtime+t2-t1;   // for retransmit requests
+	if (!NET_IsClientLegal(&adr))
+	{
+		Con_Printf ("Illegal server address\n");
+		connect_time = -1;
+		return;
+	}
+
+	if (adr.port == 0)
+		adr.port = BigShort (27500);
+
+	t2 = Sys_DoubleTime ();
+
+	connect_time = realtime+t2-t1;   // for retransmit requests
 
 	Con_Printf ("Connecting to %s...\n", cls.servername->str);
+
 	data = dstring_new();
+
 	dsprintf(data, "%c%c%c%cgetchallenge\n", 255, 255, 255, 255);
 	NET_SendPacket (strlen(data->str), data->str, adr);
+
 	dstring_delete(data);
 }
 
@@ -569,12 +576,12 @@ void CL_Disconnect (void)
 
 	CL_StopUpload();
 
-	cls.qport++; // FS: From EZQ-- A hack I picked up from qizmo.
+	cls.qport++; /* FS: From EZQ -- A hack I picked up from qizmo. */
 
-	SZ_Clear(&cls.cmdmsg); // FS: From EZQ
+	SZ_Clear(&cls.cmdmsg); /* FS: From EZQ */
 
-	key_dest = 0; // FS: Fix so main menu still works after disconnect
-	cl.intermission = 0; // FS: Baker fix
+	key_dest = 0; /* FS: Fix so main menu still works after disconnect */
+	cl.intermission = 0; /* FS: Baker fix */
 }
 
 void CL_Disconnect_f (void)
@@ -1166,7 +1173,7 @@ void CL_Download_f (void)
 		return;
 	}
 
-	dlstr = dstring_new(); // FS: Dstrings
+	dlstr = dstring_new();
 	dsprintf (cls.downloadname, "%s/%s", com_gamedir, Cmd_Argv(1));
 	p = cls.downloadname->str;
 	for (;;)
@@ -1182,7 +1189,6 @@ void CL_Download_f (void)
 			break;
 	}
 
-	//strcpy(cls.downloadtempname, cls.downloadname);
 	dstring_copystr (cls.downloadtempname, cls.downloadname->str);
 	cls.download = fopen (cls.downloadname->str, "wb");
 	cls.downloadtype = dl_single;
@@ -1209,13 +1215,6 @@ void CL_Windows_f (void)
 }
 #endif
 
-  // FS: Was used for Sys_Error dstring conversion test
-void CL_ForceError_f (void)
-{
-	Sys_Error("This is a forced error!");
-}
-
-
 /*
 =================
 CL_Init
@@ -1223,9 +1222,9 @@ CL_Init
 */
 void CL_Init (void)
 {
-	extern   cvar_t      baseskin;
-	extern   cvar_t      noskins;
-	dstring_t *version = dstring_new(); // FS: Dstrings
+	extern   cvar_t	   baseskin;
+	extern   cvar_t	   noskins;
+	dstring_t *version = dstring_new();
 	Com_sprintf(version, "QWDOS v%4.2f", VERSION);
 
 	cls.state = ca_disconnected;
@@ -1239,9 +1238,9 @@ void CL_Init (void)
 	Info_SetValueForKey (cls.userinfo, "rate", "2500", MAX_INFO_STRING);
 	Info_SetValueForKey (cls.userinfo, "msg", "1", MAX_INFO_STRING);
 	Info_SetValueForStarKey (cls.userinfo, "*ver", version->str, MAX_INFO_STRING);
-	Info_SetValueForKey (cls.userinfo, "chat", "", MAX_INFO_STRING); // FS: For AFK
+	Info_SetValueForKey (cls.userinfo, "chat", "", MAX_INFO_STRING); /* FS: EZQ Chat */
 
-//	Info_SetValueForStarKey (cls.userinfo, "*cap", "h", MAX_INFO_STRING); // FS: For HTTP
+//	Info_SetValueForStarKey (cls.userinfo, "*cap", "h", MAX_INFO_STRING); /* FS: HTTP downloading from QuakeForge */
 	CL_InitInput ();
 	CL_InitTEnts ();
 	CL_InitPrediction ();
@@ -1252,10 +1251,10 @@ void CL_Init (void)
 // register our commands
 //
 	Cvar_RegisterVariable (&show_fps);
-	Cvar_RegisterVariable (&show_time); // FS: Show Time
-	Cvar_RegisterVariable (&show_uptime); // FS: Show uptime
-	Cvar_RegisterVariable (&console_old_complete); // FS
-	Cvar_RegisterVariable (&net_broadcast_chat); // FS: Broadcast Chat notifications
+	Cvar_RegisterVariable (&show_time); /* FS: Added */
+	Cvar_RegisterVariable (&show_uptime); /* FS: Added */
+	Cvar_RegisterVariable (&console_old_complete); /* FS: Added */
+	Cvar_RegisterVariable (&net_broadcast_chat); /* FS: EZQ Chat */
 	Cvar_RegisterVariable (&host_speeds);
 	Cvar_RegisterVariable (&developer);
 
@@ -1308,7 +1307,7 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&rate);
 	Cvar_RegisterVariable (&msg);
 	Cvar_RegisterVariable (&noaim);
-	Cvar_RegisterVariable (&chat); // FS: For AFK
+	Cvar_RegisterVariable (&chat); /* FS: EZQ Chat */
 
 #ifdef PROTOCOL_VERSION_FTE
 	Cvar_RegisterVariable (&cl_pext_other);
@@ -1324,9 +1323,9 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&cl_pext_floatcoords);
 #endif
 
-	Cvar_RegisterVariable (&cl_downloadrate_hack); // FS
-	Cvar_RegisterVariable (&con_show_description); // FS
-	Cvar_RegisterVariable (&con_show_dev_flags); // FS
+	Cvar_RegisterVariable (&cl_downloadrate_hack); /* FS: Added */
+	Cvar_RegisterVariable (&con_show_description); /* FS: Added */
+	Cvar_RegisterVariable (&con_show_dev_flags); /* FS: Added */
 
 	/* FS: GameSpy CVARs */
 	Cvar_RegisterVariable (&cl_master_server_ip);
@@ -1334,13 +1333,13 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&cl_master_server_queries);
 	Cvar_RegisterVariable (&cl_master_server_timeout);
 	Cvar_RegisterVariable (&cl_master_server_retries);
-	Cvar_RegisterVariable (&snd_gamespy_sounds); // FS: Gamespy
+	Cvar_RegisterVariable (&snd_gamespy_sounds);
 
-	Cvar_RegisterVariable (&cl_ogg_music); // FS: For OGG
+	Cvar_RegisterVariable (&cl_ogg_music); /* FS: Added */
+	Cvar_RegisterVariable(&cl_wav_music); /* FS: Added */
 
 	Cmd_AddCommand ("version", CL_Version_f);
-	Cmd_AddCommand ("force_error", CL_ForceError_f); // FS: was used for Sys_Error dstring conversion test
-	Cmd_AddCommand ("cl_flashlight", CL_Flashlight_f); // FS: Flashlight
+	Cmd_AddCommand ("cl_flashlight", CL_Flashlight_f); /* FS: Flashlight */
 	Cmd_AddCommand ("changing", CL_Changing_f);
 	Cmd_AddCommand ("disconnect", CL_Disconnect_f);
 	Cmd_AddCommand ("record", CL_Record_f);
@@ -1353,7 +1352,7 @@ void CL_Init (void)
 	Cmd_AddCommand ("allskins", Skin_AllSkins_f);
 
 	Cmd_AddCommand ("quit", CL_Quit_f);
-	Cmd_AddCommand ("quit!", CL_Fast_Quit_f); // FS: Fast quit
+	Cmd_AddCommand ("quit!", CL_Fast_Quit_f); /* FS: Fast Quit */
 
 	Cmd_AddCommand ("connect", CL_Connect_f);
 	Cmd_AddCommand ("reconnect", CL_Reconnect_f);
@@ -1397,7 +1396,7 @@ void CL_Init (void)
 	memset(&browserList, 0, sizeof(browserList));
 	memset(&browserListAll, 0, sizeof(browserListAll));
 
-	specbool = spectator.value; // FS
+	specbool = spectator.value; /* FS: Spectator reconnect hack */
 	dstring_delete(version);
 }
 
@@ -1412,8 +1411,7 @@ Call this to drop to a console without exiting the qwcl
 void Host_EndGame (const char *message, ...)
 {
 	va_list      argptr;
-	//char            string[1024];
-	static dstring_t *string; // FS: New school dstring
+	static dstring_t *string;
 
 	if (!string)
 		string = dstring_new ();
@@ -1441,8 +1439,7 @@ This shuts down the client and exits qwcl
 void Host_Error (const char *error, ...)
 {
 	va_list     argptr;
-	//char            string[1024];
-	static dstring_t       *string; // FS: New school dstring
+	static dstring_t       *string;
 	static qboolean inerror = false;
    
 	if(!string)
@@ -1450,6 +1447,7 @@ void Host_Error (const char *error, ...)
 
 	if (inerror)
 		Sys_Error ("Host_Error: recursively entered");
+
 	inerror = true;
    
 	va_start (argptr,error);
@@ -1462,7 +1460,6 @@ void Host_Error (const char *error, ...)
 
 	inerror = false;
 
-// FIXME
 	Sys_Error ("Host_Error: %s\n",string->str);
 }
 
@@ -1507,24 +1504,24 @@ Runs all active servers
 int      nopacketcount;
 void Host_Frame (float time)
 {
-   static double     time1 = 0;
-   static double     time2 = 0;
-   static double     time3 = 0;
-   int         pass1, pass2, pass3;
-   float fps;
+	static double	time1 = 0;
+	static double	time2 = 0;
+	static double	time3 = 0;
+	int				pass1, pass2, pass3;
+	float			fps;
 
-   if (setjmp (host_abort) )
-      return;        // something bad happened, or the server disconnected
+	if (setjmp (host_abort) )
+	return;        // something bad happened, or the server disconnected
 
-   // decide the simulation time
-   realtime += time;
-   if (oldrealtime > realtime)
-      oldrealtime = 0;
+	// decide the simulation time
+	realtime += time;
+	if (oldrealtime > realtime)
+		oldrealtime = 0;
 
-   if (cl_maxfps.intValue)
-      fps = bound(30, cl_maxfps.intValue, 240);//max(30.0, min(cl_maxfps.value, 240.0)); // FS: 240
-   else
-      fps = bound(30, cl_maxfps.intValue, 72);//max(30.0, min(rate.value/80.0, 72.0));
+	if (cl_maxfps.intValue)
+		fps = bound(30, cl_maxfps.intValue, 240);
+	else
+		fps = bound(30, cl_maxfps.intValue, 72);
 
 	if (!cls.timedemo && realtime - oldrealtime < 1.0/fps)
 	{
@@ -1532,77 +1529,77 @@ void Host_Frame (float time)
 	}
 
 
-   host_frametime = realtime - oldrealtime;
-   oldrealtime = realtime;
-   if (host_frametime > 0.2)
-      host_frametime = 0.2;
+	host_frametime = realtime - oldrealtime;
+	oldrealtime = realtime;
+
+	if (host_frametime > 0.2)
+		host_frametime = 0.2;
 
 	GameSpy_Async_Think();
 
 	// get new key events
-   Sys_SendKeyEvents ();
+	Sys_SendKeyEvents ();
 
-   // allow mice or other external controllers to add commands
-   IN_Commands ();
+	// allow mice or other external controllers to add commands
+	IN_Commands ();
 
-   // process console commands
-   Cbuf_Execute ();
+	// process console commands
+	Cbuf_Execute ();
 
-   // fetch results from server
-   CL_ReadPackets ();
+	// fetch results from server
+	CL_ReadPackets ();
 
-   // send intentions now
-   // resend a connection request if necessary
-   if (cls.state == ca_disconnected)
-   {
-      CL_CheckForResend ();
-   }
-   else
-      CL_SendCmd ();
+	// send intentions now
+	// resend a connection request if necessary
+	if (cls.state == ca_disconnected)
+		CL_CheckForResend ();
+	else
+		CL_SendCmd ();
 
-   // Set up prediction for other players
-   CL_SetUpPlayerPrediction(false);
+	// Set up prediction for other players
+	CL_SetUpPlayerPrediction(false);
 
-   // do client side motion prediction
-   CL_PredictMove ();
+	// do client side motion prediction
+	CL_PredictMove ();
 
-   // Set up prediction for other players
-   CL_SetUpPlayerPrediction(true);
+	// Set up prediction for other players
+	CL_SetUpPlayerPrediction(true);
 
-   // build a refresh entity list
-   CL_EmitEntities ();
+	// build a refresh entity list
+	CL_EmitEntities ();
 
-   // update video
-   if (host_speeds.value)
-      time1 = Sys_DoubleTime ();
+	// update video
+	if (host_speeds.value)
+		time1 = Sys_DoubleTime ();
 
-   SCR_UpdateScreen ();
+	SCR_UpdateScreen ();
 
-   if (host_speeds.value)
-      time2 = Sys_DoubleTime ();
+	if (host_speeds.value)
+		time2 = Sys_DoubleTime ();
       
-   // update audio
-   if (cls.state == ca_active)
-   {
-      S_Update (r_origin, vpn, vright, vup);
-      CL_DecayLights ();
-   }
-   else
-      S_Update (vec3_origin, vec3_origin, vec3_origin, vec3_origin);
+	// update audio
+	if (cls.state == ca_active)
+	{
+		S_Update (r_origin, vpn, vright, vup);
+		CL_DecayLights ();
+	}
+	else
+		S_Update (vec3_origin, vec3_origin, vec3_origin, vec3_origin);
    
-   CDAudio_Update();
+	CDAudio_Update();
 
-   if (host_speeds.value)
-   {
-      pass1 = (time1 - time3)*1000;
-      time3 = Sys_DoubleTime ();
-      pass2 = (time2 - time1)*1000;
-      pass3 = (time3 - time2)*1000;
-      Con_Printf ("%3i tot %3i server %3i gfx %3i snd\n",
-               pass1+pass2+pass3, pass1, pass2, pass3);
-   }
+	if (host_speeds.value)
+	{
+		pass1 = (time1 - time3)*1000;
+		time3 = Sys_DoubleTime ();
+		pass2 = (time2 - time1)*1000;
+		pass3 = (time3 - time2)*1000;
 
-	if (specbool != spectator.value) // FS: Spectator reconnect hack
+		Con_Printf ("%3i tot %3i server %3i gfx %3i snd\n",
+					pass1+pass2+pass3, pass1, pass2, pass3);
+	}
+
+	if (specbool != spectator.value) /* FS: Spectator reconnect hack */
 	{
 		specbool = spectator.value;
 		
@@ -1612,8 +1609,8 @@ void Host_Frame (float time)
 		}
 	}
 
-   host_framecount++;
-   fps_count++;
+	host_framecount++;
+	fps_count++;
 }
 
 static void simple_crypt(char *buf, int len)
@@ -1660,12 +1657,14 @@ void Host_Init (quakeparms_t *parms)
 	V_Init ();
 
 	COM_Init ();
-	Cvar_Init (); // FS: CVARLIST
-	CFG_OpenConfig("config.cfg");  // FS: Parse CFG early -- sezero
-	cls.servername = dstring_newstr (); // FS: Dstring
-	cls.downloadtempname = dstring_newstr (); // FS: Dstring
-	cls.downloadname = dstring_newstr(); // FS: Dstring
-	cls.downloadurl = dstring_newstr(); // FS: Dstring
+	Cvar_Init (); /* FS: FIXME Move this -- For cvarlist */
+
+	CFG_OpenConfig("config.cfg"); /* FS: Parse CFG early -- sezero */
+
+	cls.servername = dstring_newstr ();
+	cls.downloadtempname = dstring_newstr ();
+	cls.downloadname = dstring_newstr();
+	cls.downloadurl = dstring_newstr();
 
 	Host_FixupModelNames();
    
@@ -1678,15 +1677,17 @@ void Host_Init (quakeparms_t *parms)
 	M_Init ();  
 	Mod_Init ();
    
-// Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
 	Con_Printf ("%4.1f megs RAM used.\n",parms->memsize/ (1024*1024.0));
    
 	R_InitTextures ();
  
 	host_basepal = (byte *)COM_LoadHunkFile ("gfx/palette.lmp");
+
 	if (!host_basepal)
 		Sys_Error ("Couldn't load gfx/palette.lmp");
+
 	host_colormap = (byte *)COM_LoadHunkFile ("gfx/colormap.lmp");
+
 	if (!host_colormap)
 		Sys_Error ("Couldn't load gfx/colormap.lmp");
 
@@ -1704,7 +1705,7 @@ void Host_Init (quakeparms_t *parms)
 	CL_Init ();
 	IN_Init ();
 
-	if(COM_CheckParm("-safevga")) // FS: Safe VGA mode
+	if(COM_CheckParm("-safevga")) /* FS: Safe VGA Mode */
 	{
 		Con_Printf("Safe VGA mode enabled\n");
 		Cbuf_AddText("vid_mode 0");
@@ -1754,7 +1755,7 @@ void Host_Shutdown(void)
 		VID_Shutdown();
 }
 
-void CL_Flashlight_f (void) // FS: Flashlight
+void CL_Flashlight_f (void) /* FS: Flashlight */
 {
 	if(bFlashlight)
 		bFlashlight = 0;

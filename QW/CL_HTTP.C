@@ -32,7 +32,7 @@
 # include "config.h"
 #endif
 
-#undef HAVE_LIBCURL // FS: Busted
+#undef HAVE_LIBCURL /* FS: TODO: Take DKs HTTP code -- Disabled */
 #ifdef HAVE_LIBCURL
 
 #include <curl/curl.h>

@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-int			afk; // FS: AFK for EZQ
+int			afk; /* EZQ Chat */
 int			con_ormask;
 console_t	con_main;
 console_t	con_chat;
@@ -35,7 +35,7 @@ float		con_cursorspeed = 4;
 
 cvar_t		con_notifytime = {"con_notifytime","3"};		//seconds
 cvar_t		con_logcenterprint = {"con_logcenterprint", "1"}; //johnfitz
-cvar_t		timestamp = {"timestamp", "0"}; // FS: Timestamp
+cvar_t		timestamp = {"timestamp", "0"}; /* FS: Timestamp logs */
 
 char		con_lastcenterstring[1024]; //johnfitz
 
@@ -105,7 +105,7 @@ void Con_ToggleConsole_f (void)
 
 	if (key_dest == key_console)
 	{
-		Cmd_ChatInfo(0); // FS: EZQ Chat
+		Cmd_ChatInfo(EZQ_CHAT_OFF); /* FS: EZQ Chat */
 
 		if (cls.state == ca_active)
 		{
@@ -114,7 +114,7 @@ void Con_ToggleConsole_f (void)
 	}
 	else
 	{
-		Cmd_ChatInfo(2); //FS: EZQ Chat
+		Cmd_ChatInfo(EZQ_CHAT_AFK); /* FS: EZQ Chat */
 		key_dest = key_console;
 	}
 	Con_ClearNotify ();
@@ -173,7 +173,7 @@ Con_MessageMode_f
 */
 void Con_MessageMode_f (void)
 {
-	Cmd_ChatInfo(1); // FS: Text for EZQ
+	Cmd_ChatInfo(EZQ_CHAT_TYPING); /* FS: EZQ Chat */
 	chat_team = false;
 	key_dest = key_message;
 }
@@ -185,7 +185,7 @@ Con_MessageMode2_f
 */
 void Con_MessageMode2_f (void)
 {
-	Cmd_ChatInfo(1); // FS: Text for EZQ
+	Cmd_ChatInfo(EZQ_CHAT_TYPING); /* FS: EZQ Chat */
 	chat_team = true;
 	key_dest = key_message;
 }
@@ -263,25 +263,25 @@ void Con_CheckResize (void)
 	Con_Resize (&con_chat);
 }
 
-void Con_afk_f (void)  // FS: AFK for EZQ
+void Con_afk_f (void) /* FS: EZQ Chat */
 {
 	if (afk < 2)
 	{
-		Cmd_ChatInfo(2); // FS: Text for EZQ
+		Cmd_ChatInfo(EZQ_CHAT_AFK);
 		Con_Printf("AFK Mode ON\n");
-		afk = 2;
+		afk = EZQ_CHAT_AFK;
 	}
 	else
 	{
-		afk = 0;
-		Cmd_ChatInfo(0); // FS: Text for EZQ
+		afk = EZQ_CHAT_OFF;
+		Cmd_ChatInfo(afk);
 		Con_Printf("AFK Mode OFF\n");
 	}
 }
 
-void Con_MemClear_f (void)
+void Con_MemClear_f (void) /* FS: Force clear state */
 {
-	CL_ClearState(); // FS: Force clear state
+	CL_ClearState();
 }
 
 /*
@@ -304,15 +304,15 @@ void Con_Init (void)
 //
 	Cvar_RegisterVariable (&con_notifytime);
 	Cvar_RegisterVariable (&con_logcenterprint); // johnfitz
-	Cvar_RegisterVariable (&timestamp); // FS: Timestamp
+	Cvar_RegisterVariable (&timestamp); /* FS: Timestamp logs */
 
 	Cmd_AddCommand ("toggleconsole", Con_ToggleConsole_f);
 	Cmd_AddCommand ("togglechat", Con_ToggleChat_f);
-	Cmd_AddCommand ("afk", Con_afk_f); // FS
+	Cmd_AddCommand ("afk", Con_afk_f); /* FS: EZQ Chat */
 	Cmd_AddCommand ("messagemode", Con_MessageMode_f);
 	Cmd_AddCommand ("messagemode2", Con_MessageMode2_f);
 	Cmd_AddCommand ("clear", Con_Clear_f);
-	Cmd_AddCommand ("memclear", Con_MemClear_f); // FS
+	Cmd_AddCommand ("memclear", Con_MemClear_f); /* FS: Force clear state */
 
 	con_initialized = true;
 }
@@ -422,7 +422,7 @@ void Con_Printf (const char *fmt, ...)
 {
 	va_list		argptr;
 
-	static dstring_t *msg; // FS: New school dstring
+	static dstring_t *msg;
 	static qboolean	inupdate;
         
 	if (!msg)
@@ -458,24 +458,23 @@ void Con_Printf (const char *fmt, ...)
 		Con_Print(st);
 	}
 	
-// also echo to debugging console
+	// also echo to debugging console
 	Sys_Printf("%s",msg->str); // also echo to debugging console
-	//Sys_Printf(msg);
-// log all messages to file
+
+	// log all messages to file
 	if (con_debuglog)
 		Sys_DebugLog(va("%s/qconsole.log",com_gamedir), "%s", msg->str);
 		
 	if (!con_initialized)
 		return;
 		
-// write it to the scrollable buffer
+	// write it to the scrollable buffer
 	Con_Print (msg->str);
-	//Con_Print (msg);
-// update the screen immediately if the console is displayed
+
+	// update the screen immediately if the console is displayed
 	if (cls.state != ca_active)
 	{
-	// protect against infinite loop if something in SCR_UpdateScreen calls
-	// Con_Printd
+		// protect against infinite loop if something in SCR_UpdateScreen calls Con_Printf
 		if (!inupdate)
 		{
 			inupdate = true;
@@ -493,8 +492,7 @@ Con_Warning -- johnfitz -- prints a warning to the console
 void Con_Warning (const char *fmt, ...)
 {
 	va_list		argptr;
-//	char		msg[MAXPRINTMSG];
-	static dstring_t *msg; // FS: new school dstring
+	static dstring_t *msg;
 
 	if (!msg)
 		msg = dstring_new();
@@ -517,9 +515,8 @@ A Con_Printf that only shows up if the "developer" cvar is set
 void Con_DPrintf (unsigned long developerFlags, const char *fmt, ...)
 {
 	va_list		argptr;
-	//char            msg[MAXPRINTMSG];
-	static dstring_t        *msg; // FS: new school dstring
-	unsigned long	devValue = 0; // FS
+	static dstring_t        *msg;
+	unsigned long	devValue = 0; /* FS: Developer Flags */
 
 	if(!msg)
 		msg = dstring_new();
@@ -824,7 +821,7 @@ void Con_DrawConsole (int lines)
 			Draw_Character ( (i+1)<<3, y, dlbar[i]);
 	}
 
-	if (cls.gamespyupdate) // FS: For gamespy server list
+	if (cls.gamespyupdate) /* FS: Gamespy stuff */
 	{
 		text = "Gamespy";
 
@@ -917,9 +914,8 @@ Okay to call even when the screen can't be updated
 void Con_SafePrintf (const char *fmt, ...)
 {
 	va_list		argptr;
-	//char            msg[1024];
 	int			temp;
-	static dstring_t        *msg;  // FS: New school dstring
+	static dstring_t        *msg;
 
 	if(!msg)
 		msg = dstring_new();

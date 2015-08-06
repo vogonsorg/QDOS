@@ -94,12 +94,11 @@ Returns a pointer to the skin bitmap, or NULL to use the default
 */
 byte	*Skin_Cache (skin_t *skin)
 {
-	//char    name[1024];
-	dstring_t *name; // FS: dstring
+	dstring_t *name;
 	byte	*raw;
 	byte	*out, *pix;
 	pcx_t	*pcx;
-	int		x = 0; // FS: Compiler Warning
+	int		x = 0; /* FS: Compiler warning */
 	int		y;
 	int		dataByte;
 	int		runLength;
@@ -132,14 +131,16 @@ byte	*Skin_Cache (skin_t *skin)
 //
 // load the pic from disk
 //
-	dsprintf (name, "skins/%s.pcx", skin->name); // FS: dstring
-	Con_Printf ("loading %s\n", name->str); // FS: debug
-	raw = COM_LoadTempFile (name->str); // FS: dstring
+	dsprintf (name, "skins/%s.pcx", skin->name);
+
+	Con_DPrintf (DEVELOPER_MSG_IO, "loading %s\n", name->str); /* FS */
+
+	raw = COM_LoadTempFile (name->str);
 	if (!raw)
 	{
-		Con_Printf ("Couldn't load skin %s\n", name->str); // FS: dstring
-		dsprintf (name, "skins/%s.pcx", baseskin.string); // FS: dstring
-		raw = COM_LoadTempFile (name->str); // FS: dstring
+		Con_Printf ("Couldn't load skin %s\n", name->str);
+		dsprintf (name, "skins/%s.pcx", baseskin.string);
+		raw = COM_LoadTempFile (name->str);
 		if (!raw)
 		{
 			skin->failedload = true;
@@ -160,7 +161,7 @@ byte	*Skin_Cache (skin_t *skin)
 		|| pcx->bits_per_pixel != 8
 		|| pcx->xmax >= 320
                 //|| pcx->ymax >= 200)
-		|| pcx->ymax >= MAX_LBM_HEIGHT) // FS: No magic numbers zoid
+		|| pcx->ymax >= MAX_LBM_HEIGHT) /* FS */
 	{
 		skin->failedload = true;
 		Con_Printf ("Bad skin %s\n", name->str);
@@ -168,14 +169,12 @@ byte	*Skin_Cache (skin_t *skin)
 		return NULL;
 	}
 	
-        //out = Cache_Alloc (&skin->cache, 320*200, skin->name);
-	out = Cache_Alloc (&skin->cache, 320*MAX_LBM_HEIGHT, skin->name); // FS: No magic numbers zoid FIXME: so gross
+	out = Cache_Alloc (&skin->cache, 320*MAX_LBM_HEIGHT, skin->name); /* FS */
 	if (!out)
 		Sys_Error ("Skin_Cache: couldn't allocate");
 
 	pix = out;
-//        memset (out, 0, 320*200);
-	memset (out, 0, 320*MAX_LBM_HEIGHT); // FS: No magic numbers zoid FIXME: so gross
+	memset (out, 0, 320*MAX_LBM_HEIGHT); /* FS */
 
 	for (y=0 ; y<pcx->ymax ; y++, pix += 320)
 	{
@@ -221,7 +220,7 @@ byte	*Skin_Cache (skin_t *skin)
 
 	}
 
-	Con_DPrintf(DEVELOPER_MSG_IO, "Skin: %s Size: %d Width: %d\n", name->str, pix, x); // FS: Debug check
+	Con_DPrintf(DEVELOPER_MSG_IO, "Skin: %s Size: %d Width: %d\n", name->str, pix, x); /* FS */
 	
 	if ( raw - (byte *)pcx > com_filesize)
 	{
@@ -306,7 +305,7 @@ void	Skin_Skins_f (void)
 	numskins = 0;
 
 	if (cls.state == ca_disconnected)
-		return; // FS: QuakeForge fix
+		return; /* FS: QuakeForge fix */
 
 	cls.downloadnumber = 0;
 	cls.downloadtype = dl_skin;

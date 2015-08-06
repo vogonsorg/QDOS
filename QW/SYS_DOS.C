@@ -34,15 +34,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <dpmi.h>
 #include <sys/nearptr.h>
 #include <conio.h>
-#include <crt0.h> // FS: Fake Mem Fix (QIP)
+#include <crt0.h> /* FS: Fake Mem Fix (QIP) */
 
-int _crt0_startup_flags = _CRT0_FLAG_UNIX_SBRK; // FS: Fake Mem Fix (QIP)
+int _crt0_startup_flags = _CRT0_FLAG_UNIX_SBRK; /* FS: Fake Mem Fix (QIP) */
 
 #include "quakedef.h"
 #include "dosisms.h"
-#include "dstring.h" // FS: Dstrings
+#include "dstring.h"
 
-//#define MINIMUM_WIN_MEMORY                    0x800000
 #define MINIMUM_WIN_MEMORY                      0xf00000
 #define MINIMUM_WIN_MEMORY_LEVELPAK     (MINIMUM_WIN_MEMORY + 0x100000)
 
@@ -151,7 +150,7 @@ void Sys_DetectWin95 (void)
 	}
 	else
 	{
-		printf("Microsoft Windows detected.  Please run QWDOS in pure MS-DOS for best stability.\n"); // FS: Warning
+		printf("Microsoft Windows detected.  Please run QWDOS in pure MS-DOS for best stability.\n"); /* FS: Added warning */
 		win95 = 1;
 		lockunlockmem = COM_CheckParm ("-winlockunlock");
 
@@ -167,17 +166,15 @@ void Sys_DetectWin95 (void)
 
 void *dos_getmaxlockedmem(int *size)
 {
-	__dpmi_free_mem_info    meminfo;
-	__dpmi_meminfo                  info;
-	int                                             working_size;
-	void                                    *working_memory;
-	int                                             last_locked;
-        //int                                             extra,  i, j, allocsize;
-	int                                     i, j, extra, allocsize; // FS: 2GB Fix
-	static char                             *msg = "Locking data...";
-	// int                                             m, n;
-	byte                                    *x;
-	unsigned long   ul; // FS: 2GB Fix
+	__dpmi_free_mem_info	meminfo;
+	__dpmi_meminfo			info;
+	int						working_size;
+	void					*working_memory;
+	int						last_locked;
+	int						i, j, extra, allocsize; /* FS: 2GB Fix */
+	static char				*msg = "Locking data...";
+	byte					*x;
+	unsigned long			ul; /* FS: 2GB Fix */
 
 // first lock all the current executing image so the locked count will
 // be accurate.  It doesn't hurt to lock the memory multiple times
@@ -198,20 +195,17 @@ void *dos_getmaxlockedmem(int *size)
 
 	if (!win95)             /* Not windows or earlier than Win95 */
 	{
-		//working_size = meminfo.maximum_locked_page_allocation_in_pages * 4096;
-		ul = meminfo.maximum_locked_page_allocation_in_pages * 4096; // FS: 2GB fix
+		ul = meminfo.maximum_locked_page_allocation_in_pages * 4096; /* FS: 2GB Fix */
 	}
 	else
 	{
-//                working_size = meminfo.largest_available_free_block_in_bytes -
-//                                LEAVE_FOR_CACHE;
 		ul = meminfo.largest_available_free_block_in_bytes -
-		LEAVE_FOR_CACHE; // FS: 2GB fix
+		LEAVE_FOR_CACHE; /* FS: 2GB Fix */
 	}
 
-        if (ul > 0x7fffffff)
-                ul = 0x7fffffff; /* limit to 2GB */
-        working_size = (int) ul;
+	if (ul > 0x7fffffff)
+		ul = 0x7fffffff; /* limit to 2GB */
+	working_size = (int) ul;
 	working_size &= ~0xffff;                /* Round down to 64K */
 	working_size += 0x10000;
 
@@ -295,8 +289,8 @@ void *dos_getmaxlockedmem(int *size)
 				goto Locked;
 		}
 
-                Sys_Error ("Can't lock memory; %ld Mb lockable RAM required. "
-				   "Try shrinking smartdrv.", info.size / 0x100000);
+		Sys_Error ("Can't lock memory; %ld Mb lockable RAM required. "
+					"Try shrinking smartdrv.", info.size / 0x100000);
 
 Locked:
 
@@ -328,12 +322,12 @@ UpdateSbrk:
 // doing that, of course, but there's no reason we shouldn't)
 	x = (byte *)working_memory;
 
-        for (j=0 ; j<4 ; j++) // FS: 2GB Fix
+	for (j=0 ; j<4 ; j++) /* FS: 2GB Fix */
 	{
-                for (i=0 ; i<(working_size - 16 * 0x1000) ; i += 4)
+		for (i=0 ; i<(working_size - 16 * 0x1000) ; i += 4)
 		{
-                        sys_checksum += *(int *)&x[i];
-                        sys_checksum += *(int *)&x[i + 16 * 0x1000];
+			sys_checksum += *(int *)&x[i];
+			sys_checksum += *(int *)&x[i + 16 * 0x1000];
 		}
 	}
 
@@ -457,7 +451,6 @@ Sys_Printf
 
 void Sys_Printf (const char *fmt, ...)
 {
- // FS: New school Dstrings
 	va_list     argptr;
 	static dstring_t *text;
 
@@ -523,8 +516,8 @@ void Sys_Quit (void)
 void Sys_Error (const char *error, ...)
 { 
     va_list     argptr;
-    //char        string[1024];
-    static dstring_t    *string; // FS: New school dstring
+    static dstring_t    *string;
+
     if (!string)
         string = dstring_new();
 
@@ -533,8 +526,9 @@ void Sys_Error (const char *error, ...)
     va_end (argptr);
 
 	Host_Shutdown();
-        fprintf(stderr, "Error: %s\n", string->str);
-// Sys_AtExit is called by exit to shutdown the system
+	fprintf(stderr, "Error: %s\n", string->str);
+
+	// Sys_AtExit is called by exit to shutdown the system
 	exit(0);
 } 
 
@@ -630,23 +624,23 @@ void Sys_GetMemory(void)
 		int j;
 		//quakeparms.membase = dos_getmaxlockedmem (&quakeparms.memsize);
 		//I've totally screwed this up.. so I just cheat and force a malloc of 30MB.  sorry all you 16mb users out there.
-		j=32; // FS: changed 30->32
+		j=32; /* FS: Was 30 */
 		quakeparms.memsize = (int) j * 1024 * 1024;
 		quakeparms.membase = malloc (quakeparms.memsize);
 	}
 
 	fprintf(stderr, "malloc'd: %d\n", quakeparms.memsize);
 
-		if (COM_CheckParm ("-noclear")) // FS: Wanted the option
-		{
-			return;
-		}
-		else
-		{
-			printf("Clearing allocated memory...\n");
-			memset(quakeparms.membase,0x0,quakeparms.memsize); // JASON: Clear memory on startup
-			printf("Done!  Continuing to load Quake.\n");
-		}
+	if (COM_CheckParm ("-noclear")) /* FS: Wanted the option */
+	{
+		return;
+	}
+	else
+	{
+		printf("Clearing allocated memory...\n");
+		memset(quakeparms.membase,0x0,quakeparms.memsize); // JASON: Clear memory on startup
+		printf("Done!  Continuing to load Quake.\n");
+	}
 
 	if (COM_CheckParm ("-heapsize"))
 	{

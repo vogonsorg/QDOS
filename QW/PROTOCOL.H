@@ -288,7 +288,7 @@ typedef struct
 	int		flags;			// nolerp, etc
 	vec3_t	origin;
 	vec3_t	angles;
-	int		modelindex; // FS: fitzquake shit
+	int		modelindex; /* FS: From fitzquake */
 	unsigned short	frame;
 	unsigned char	colormap;
 	int		skinnum;
@@ -296,7 +296,7 @@ typedef struct
 } entity_state_t;
 
 
-#define MAX_PACKET_ENTITIES     300 // FS: 64      // doesn't count nails
+#define MAX_PACKET_ENTITIES     300 /* FS: Was 64 */	// doesn't count nails
 typedef struct
 {
 	int		num_entities;

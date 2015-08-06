@@ -38,12 +38,12 @@ extern	int nanmask;
 
 #define	IS_NAN(x) (((*(int *)&x)&nanmask)==nanmask)
 
-#ifndef MAX
-#define MAX(a,b) ( ((a) > (b)) ? (a) : (b)) // FS: For DOS
+#ifndef MAX /* FS: Added */
+#define MAX(a,b) ( ((a) > (b)) ? (a) : (b))
 #endif
 
-#ifndef MIN
-#define MIN(a,b) ( ((a) < (b)) ? (a) : (b)) // FS: For DOS
+#ifndef MIN /* FS: Added */
+#define MIN(a,b) ( ((a) < (b)) ? (a) : (b))
 #endif
 
 #define DotProduct(x,y) (x[0]*y[0]+x[1]*y[1]+x[2]*y[2])

@@ -771,8 +771,7 @@ int CDAudio_Init(void)
 	//if (cls.state == ca_dedicated)
 	//        return -1;
 
-        if (COM_CheckParm("-nocdaudio") || COM_CheckParm("-nocd"))
-        // FS
+	if (COM_CheckParm("-nocdaudio") || COM_CheckParm("-nocd")) /* FS: Added -nocd */
 		return -1;
 
 	if (COM_CheckParm("-cdmediacheck"))
@@ -783,17 +782,13 @@ int CDAudio_Init(void)
 	dos_int86 (0x2f);
 	if (regs.x.bx == 0)
 	{
-             //   Con_NotifyBox (
-             //           "MSCDEX not loaded, music is\n"
-             //           "disabled.  Use \"-nocdaudio\" if you\n"
-             //           "wish to avoid this message in the\n"
-             //           "future.  See README.TXT for help.\n"
-             //          );                      
-             Con_Printf("\nMSCDEX not loaded, music is\ndisabled.  Use \"-nocdaudio\" if you\nwish to avoid this message in the\nfuture.  See README.TXT for help.\n");
-               return -1; // FS: Just warn me, no need for the press any key shit.
+		Con_Printf("\nMSCDEX not loaded, music is\ndisabled.  Use \"-nocdaudio\" if you\nwish to avoid this message in the\nfuture.  See README.TXT for help.\n");
+		return -1; /* FS: Just warn me, no need for the press any key shit. */
 	}
+
 	if (regs.x.bx > 1)
 		Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio_Init: First CD-ROM drive will be used\n");
+
 	cdrom = regs.x.cx;
 
 	regs.x.ax = 0x150c;

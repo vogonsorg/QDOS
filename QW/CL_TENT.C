@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 
 
-#define MAX_BEAMS       32 // FS: Was 8
+#define MAX_BEAMS       32 /* FS: Was 8 */
 typedef struct
 {
 	int		entity;
@@ -33,7 +33,7 @@ typedef struct
 
 beam_t		cl_beams[MAX_BEAMS];
 
-#define MAX_EXPLOSIONS  32 // FS: Was 8
+#define MAX_EXPLOSIONS  32 /* FS: Was 8 */
 typedef struct
 {
 	vec3_t	origin;
@@ -153,8 +153,8 @@ void CL_ParseBeam (model_t *m)
 			return;
 		}
 	}
-	if (developer.value > 1) // FS: verbose
-		Con_DPrintf (DEVELOPER_MSG_NET, "beam list overflow!\n");
+
+	Con_DPrintf (DEVELOPER_MSG_VERBOSE, "beam list overflow!\n");
 }
 
 /*
@@ -351,7 +351,7 @@ CL_UpdateBeams
 void CL_UpdateBeams (void)
 {
 	int			i;
-	int			j; // FS: Nasty shit thanks to Taniwha for fix
+	int			j; /* FS: Nasty shit thanks to Taniwha for fix */
 	beam_t		*b;
 	vec3_t		dist, org;
 	float		d;
@@ -409,7 +409,7 @@ void CL_UpdateBeams (void)
 			ent->angles[1] = yaw;
 			ent->angles[2] = rand()%360;
 
-			for (j=0 ; j<3 ; j++) // FS: Nasty shit thanks to Taniwha for fix
+			for (j=0 ; j<3 ; j++) /* FS: Nasty shit thanks to Taniwha for fix */
 				org[j] += dist[j]*30;
 			d -= 30;
 		}

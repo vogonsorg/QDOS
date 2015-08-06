@@ -47,8 +47,9 @@ qboolean	menubound[256];	// if true, can't be rebound while in menu
 int		keyshift[256];		// key to map to if shift held down in console
 int		key_repeats[256];	// if > 1, it is autorepeating
 qboolean	keydown[256];
-cvar_t cl_unbindall_protection = {"cl_unbindall_protection", "1", false}; // FS: Warning for unbindall
-extern char *Sort_Possible_Cmds (char *partial); // FS
+cvar_t cl_unbindall_protection = {"cl_unbindall_protection", "1", false}; /* FS: Unbindall protection */
+
+extern char *Sort_Possible_Cmds (char *partial); /* FS: Added */
 
 typedef struct
 {
@@ -237,8 +238,8 @@ extern	cvar_t	console_old_complete;
 		key_lines[edit_line][0] = ']';
 		key_linepos = 1;
 
-		if (key_dest == key_console && net_broadcast_chat.value) // FS: AFK for EZQ
-			Cmd_ChatInfo(2); // FS: Text for EZQ
+		if (key_dest == key_console && net_broadcast_chat.value) /* FS: EZQ Chat */
+			Cmd_ChatInfo(EZQ_CHAT_AFK);/* FS: EZQ Chat */
 
 		if (cls.state == ca_disconnected)
                         SCR_UpdateScreen ();    // force an update, because the command
@@ -246,7 +247,7 @@ extern	cvar_t	console_old_complete;
                 return;
 	}
 
-	if (key == 'r') // FS: Reconnect
+	if (key == 'r') /* FS: Reconnect */
 	{
 		if (keydown[K_CTRL])
 		{
@@ -255,7 +256,7 @@ extern	cvar_t	console_old_complete;
 		}
 	}
 
-	if( key == 'c' ) /* FS: Added */
+	if( key == 'c' ) /* FS: Disconnect */
 	{
 		if ( keydown[K_CTRL] )
 		{
@@ -273,7 +274,7 @@ extern	cvar_t	console_old_complete;
 
 	if (key == K_TAB)
 	{	// command completion
-		if(!console_old_complete.value) // FS
+		if(!console_old_complete.value) /* FS: Added */
 		{
 			Sort_Possible_Cmds(key_lines[edit_line]+1);
 		}
@@ -289,12 +290,12 @@ extern	cvar_t	console_old_complete;
 		if (key_linepos > 1)
 			key_linepos--;
 		if (key_linepos <= 1)
-			Cmd_ChatInfo(2); // FS: Text for EZQ
+			Cmd_ChatInfo(EZQ_CHAT_AFK); /* FS: EZQ Chat */
                 return;
 	}
 
-	if (key_linepos >= 1 && key_dest == key_console)  // FS: AFK for EZQ
-		Cmd_ChatInfo(3); // FS: Text for EZQ
+	if (key_linepos >= 1 && key_dest == key_console)  /* FS: EZQ Chat */
+		Cmd_ChatInfo(EZQ_CHAT_AFK_TYPING); /* FS: EZQ Chat */
 
 
 	if (key == K_UPARROW)
@@ -410,9 +411,10 @@ qboolean	chat_team;
 char		chat_buffer[MAXCMDLINE];
 int			chat_bufferlen = 0;
 
-char    chat_buffer_array[MAX_CHAT][MAXCMDLINE]; // FS: Chat history
-int	chat_head = 0, chat_tail = 0; // FS: Chat history
-int	chat_index = 0; // FS: Chat history
+/* FS: Chat history ring array by taniwha */
+char    chat_buffer_array[MAX_CHAT][MAXCMDLINE];
+int	chat_head = 0, chat_tail = 0;
+int	chat_index = 0;
 
 void Key_Message (int key)
 {
@@ -438,11 +440,11 @@ void Key_Message (int key)
 
 		chat_bufferlen = 0;
 		chat_buffer[0] = 0;
-		Cmd_ChatInfo(0); // FS: Text for EZQ
-                return;
+		Cmd_ChatInfo(EZQ_CHAT_OFF); /* FS: EZQ Chat */
+		return;
 	}
 
-	if (key == K_UPARROW || key == K_RIGHTARROW) // FS: Press up to cycle up the index to the first chat msg
+	if (key == K_UPARROW || key == K_RIGHTARROW) /* FS: Press up to cycle up the index to the first chat msg */
 	{
 		key_dest = key_message;
 
@@ -456,7 +458,7 @@ void Key_Message (int key)
 		return;
 	}
 
-	if (key == K_DOWNARROW || key == K_LEFTARROW) // FS: Press down to cycle down the index to the last chat msg
+	if (key == K_DOWNARROW || key == K_LEFTARROW) /* FS: Press down to cycle down the index to the last chat msg */
 	{
 		key_dest = key_message;
 		
@@ -472,10 +474,10 @@ void Key_Message (int key)
 	if (key == K_ESCAPE)
 	{
 		key_dest = key_game;
-		chat_index = chat_head; // FS: Reset to the beginning of the chat history
+		chat_index = chat_head; /* FS: Reset to the beginning of the chat history */
 		chat_bufferlen = 0;
 		chat_buffer[0] = 0;
-		Cmd_ChatInfo(0); // FS: Text for EZQ
+		Cmd_ChatInfo(EZQ_CHAT_OFF); /* EZQ Chat */
 		return;
 	}
 
@@ -763,7 +765,8 @@ void Key_Init (void)
 	Cmd_AddCommand ("bind",Key_Bind_f);
 	Cmd_AddCommand ("unbind",Key_Unbind_f);
 	Cmd_AddCommand ("unbindall",Key_Unbindall_f);
-        Cvar_RegisterVariable(&cl_unbindall_protection); // FS: unbindall protection
+
+	Cvar_RegisterVariable(&cl_unbindall_protection); /* FS: unbindall protection */
 }
 
 /*
@@ -797,13 +800,14 @@ void Key_Event (int key, qboolean down)
 	if (down)
 	{
 		key_repeats[key]++;
+/* FS: TODO Make this a CVAR */
 /*		if (key != K_BACKSPACE 
 			&& key != K_PAUSE 
 			&& key != K_PGUP 
 			&& key != K_PGDN
 			&& key_repeats[key] > 1)
 			return;	// ignore most autorepeats
-*/ // FS: Why?
+*/
 			
 		if (key >= 200 && !keybindings[key])
 			Con_Printf ("%s is unbound, hit F4 to set.\n", Key_KeynumToString (key) );
@@ -812,14 +816,14 @@ void Key_Event (int key, qboolean down)
 	if (key == K_SHIFT)
 		shift_down = down;
 
-        if (key == 'q') // FS: Instant quit
-        {
-                if (keydown[K_CTRL])
-                {
-                        Cbuf_AddText("quit!\n");
-                        return;
-                }
-        }
+	if (key == 'q') /* FS: Instant quit */
+	{
+		if (keydown[K_CTRL])
+		{
+			Cbuf_AddText("quit!\n");
+			return;
+		}
+	}
 
 //
 // handle escape specialy, so the user can never unbind it

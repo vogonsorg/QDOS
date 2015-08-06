@@ -74,14 +74,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 // per-level limits
 //
-#define MAX_EDICTS              2048 // FS: 768                     // FIXME: ouch! ouch! ouch!
+#define MAX_EDICTS              2048 /* FS: Was 768 */
 #define MAX_LIGHTSTYLES 64
-#define MAX_MODELS              512 //FS: 256                      // these are sent over the net as bytes
-#define MAX_SOUNDS              256                      // so they cannot be blindly increased
+#define MAX_MODELS              512 /* FS: Was 256 */	// these are sent over the net as bytes
+#define MAX_SOUNDS              256						// so they cannot be blindly increased
 
-#define CL_MASTER_ADDR	"maraakate.org" // FS: Gamespy dead "master.gamespy.com"
+#define CL_MASTER_ADDR	"maraakate.org" /* FS: Gamespy dead  */
 #define CL_MASTER_PORT "28900"
-#define SV_MASTER_ADDR "maraakate.org" // FS: gamespy dead "master.gamespy.com"
+#define SV_MASTER_ADDR "maraakate.org" /* FS: Gamespy dead  */
 #define SV_MASTER_PORT "27900"
 
 #define SAVEGAME_COMMENT_LENGTH 39

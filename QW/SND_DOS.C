@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "dosisms.h"
 
 int BLASTER_GetDMAPos(void);
-void S_StopAllSoundsC (void); // FS: Proto this for GUS Clear Buffer Fix
+void S_StopAllSoundsC (void); /* FS: Proto this for GUS Clear Buffer Fix */
 
 /*
 ===============================================================================
@@ -34,7 +34,7 @@ GUS SUPPORT
 qboolean GUS_Init (void);
 int GUS_GetDMAPos (void);
 void GUS_Shutdown (void);
-int   havegus = 0; // FS
+int   havegus = 0; /* FS: Added */
 
 
 /*
@@ -414,7 +414,7 @@ qboolean BLASTER_Init(void)
 	shm->speed = 11025;
 	rc = COM_CheckParm("-sspeed");
 
-	if (s_khz.value > 0) // FS: S_KHZ
+	if (s_khz.value > 0) /* FS */
 	{
 		shm->speed = s_khz.value;
 	}
@@ -441,7 +441,7 @@ qboolean BLASTER_Init(void)
 		shm->samplebits = 8;	 
 	}
 
-	if(!host_initialized) // FS: SND_RESTART
+	if(!host_initialized) /* FS: for snd_restart */
 	{
 		Cmd_AddCommand("sbinfo", SB_Info_f);
 	}
@@ -566,20 +566,20 @@ INTERFACE
 ===============================================================================
 */
 
-void snd_shutdown_f (void) // FS: SND_SHUTDOWN
+void snd_shutdown_f (void) /* FS: Added */
 {
 	SNDDMA_Shutdown();
 	Con_Printf("\nSound Disabled.\n");
 	Cache_Flush();
 }
 
-void snd_restart_f (void) // FS: SND_RESTART
+void snd_restart_f (void) /* FS: Added */
 {
 	SNDDMA_Shutdown();
 	Con_Printf("\nSound Restarting\n");
 	Cache_Flush();
 	SNDDMA_Init();
-	S_StopAllSoundsC(); // FS: For GUS Buffer Clear Fix
+	S_StopAllSoundsC(); /* FS: For GUS Clear buffer fix */
 	Con_Printf ("Sound sampling rate: %i\n", shm->speed);
 }
 
@@ -605,8 +605,8 @@ qboolean SNDDMA_Init(void)
 {
 	if (!host_initialized)
 	{
-		Cmd_AddCommand ("snd_restart", snd_restart_f); // FS
-		Cmd_AddCommand ("snd_shutdown", snd_shutdown_f); // FS
+		Cmd_AddCommand ("snd_restart", snd_restart_f); /* FS: Added */
+		Cmd_AddCommand ("snd_shutdown", snd_shutdown_f); /* FS: Added */
 	}
 	if (COM_CheckParm("-nosound"))
 		goto nocard;
@@ -615,8 +615,8 @@ qboolean SNDDMA_Init(void)
 	{
 		Con_DPrintf(DEVELOPER_MSG_SOUND, "GUS_Init\n");
 		dmacard = dma_gus;
-		havegus = 1; // FS
-		S_StopAllSoundsC(); // FS: For GUS Buffer Clear Fix
+		havegus = 1; /* FS: For GUS Clear Buffer Fix */
+		S_StopAllSoundsC(); /* FS: For GUS Clear Buffer Fix */
 		return true;
 	}
 	if (BLASTER_Init ())

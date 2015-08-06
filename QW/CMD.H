@@ -106,5 +106,5 @@ void	Cmd_ForwardToServer (void);
 
 void Cmd_StuffCmds_f (void);
 
-// FS: Chat for EZQ
+/* FS: EZQ Chat */
 void Cmd_ChatInfo (int val);

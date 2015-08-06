@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // return -1 if file is not present
 // the file should be in BINARY mode for stupid OSs that care
 
-#ifdef _MSC_VER // FS: VS6
+#ifdef _MSC_VER /* FS: VS6 */
 	#define __attribute__(x)
 #endif
 
@@ -49,17 +49,17 @@ void Sys_MakeCodeWriteable (unsigned long startaddr, unsigned long length);
 //
 // system IO
 //
-void Sys_DebugLog(const char *file, const char *fmt, ...); // FS: New school dstring
+void Sys_DebugLog(const char *file, const char *fmt, ...);
 
-void Sys_Error (const char *error, ...) __attribute__((format(printf,1,2),noreturn)); // FS
+void Sys_Error (const char *error, ...) __attribute__((format(printf,1,2),noreturn));
 // an error will cause the entire program to exit
 
-void Sys_Printf (const char *fmt, ...)  __attribute__((format(printf,1,2))); // FS
+void Sys_Printf (const char *fmt, ...)  __attribute__((format(printf,1,2)));
 // send text to the console
 
 void Sys_Quit (void);
 
-double Sys_DoubleTime (void); // FS: -Werror
+double Sys_DoubleTime (void); /* FS: -Werror */
 
 void Sys_Sleep (int ms);
 // called to yield for a little bit so as

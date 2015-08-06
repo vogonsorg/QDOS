@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 model_t *loadmodel;
 char    loadname[32];   // for hunk tags
-cvar_t  cl_allownewmap = {"cl_allownewmap", "0",false}; // FS: gross hack for new maps
+cvar_t  cl_allownewmap = {"cl_allownewmap", "0", false}; /* FS: gross hack for new maps */
 
 void Mod_LoadSpriteModel (model_t *mod, void *buffer);
 void Mod_LoadBrushModel (model_t *mod, void *buffer);
@@ -36,7 +36,7 @@ model_t *Mod_LoadModel (model_t *mod, qboolean crash);
 
 byte    mod_novis[MAX_MAP_LEAFS/8];
 
-#define MAX_MOD_KNOWN 2048 // FS: 256
+#define MAX_MOD_KNOWN 2048 /* FS: Was 256 */
 model_t mod_known[MAX_MOD_KNOWN];
 int             mod_numknown;
 
@@ -48,7 +48,7 @@ Mod_Init
 void Mod_Init (void)
 {
 	memset (mod_novis, 0xff, sizeof(mod_novis));
-        Cvar_RegisterVariable(&cl_allownewmap); // FS
+	Cvar_RegisterVariable(&cl_allownewmap); /* FS: gross hack for new maps */
 }
 
 /*
@@ -85,7 +85,7 @@ mleaf_t *Mod_PointInLeaf (vec3_t p, model_t *model)
 	mplane_t        *plane;
 	
 	if (!model || !model->nodes)
-                Sys_Error ("Mod_PointInLeaf: bad model: %s", model->name); // FS: tell me the model
+		Sys_Error ("Mod_PointInLeaf: bad model: %s", model->name); /* FS: tell me the model name*/
 
 	node = model->nodes;
 	while (1)
@@ -1129,12 +1129,12 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 
 	i = LittleLong (header->version);
 	if (i != BSPVERSION)
-        {
-                if (!cl_allownewmap.value)
-                        Sys_Error ("Mod_LoadBrushModel: %s has wrong version number (%i should be %i)", mod->name, i, BSPVERSION);
-                else
-                        Con_Printf ("\nWARNING: %s has wrong version number (%i should be %i).  Error check bypassed.\n", mod->name, i, BSPVERSION); // FS
-        }
+	{
+		if (!cl_allownewmap.value)
+			Sys_Error ("Mod_LoadBrushModel: %s has wrong version number (%i should be %i)", mod->name, i, BSPVERSION);
+		else
+		Con_Printf ("\nWARNING: %s has wrong version number (%i should be %i).  Error check bypassed.\n", mod->name, i, BSPVERSION); /* FS: gross map version hack */
+	}
 // swap all the lumps
 	mod_base = (byte *)header;
 

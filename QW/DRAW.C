@@ -655,10 +655,7 @@ void Draw_ConsoleBackground (int lines)
 	conback = Draw_CachePic ("gfx/conback.lmp");
 
 // hack the version number directly into the pic
-
-	//sprintf (ver, "start commands with a \\ character %4.2f", VERSION);
-
-	if (cls.download || cls.gamespyupdate) // FS: Added gamespy progress bar
+	if (cls.download || cls.gamespyupdate) /* FS: Added gamespy progress bar */
 	{
 		sprintf (ver, "%4.2f", VERSION);
 		dest = conback->data + 320 + 320*186 - 11 - 8*strlen(ver);
@@ -667,7 +664,7 @@ void Draw_ConsoleBackground (int lines)
 	{
 #if defined(__linux__)
 		sprintf (ver, "Linux (%4.2f) QuakeWorld %4.2f", LINUX_VERSION, VERSION);
-#elif defined (__DJGPP) // FS: Display QWDOS if we can
+#elif defined (__DJGPP__) /* FS: Display QWDOS if we can */
 		sprintf (ver, "QuakeWorld DOS %4.2f", VERSION);
 #else
 		sprintf (ver, "QuakeWorld %4.2f", VERSION);
@@ -855,29 +852,30 @@ refresh window.
 */
 void Draw_TileClear (int x, int y, int w, int h)
 {
-	int				width = 0 , height = 0; // FS: Compiler Warning
+	int				width = 0 , height = 0; /* FS: Compiler Warning */
 	int				tileoffsetx, tileoffsety;
 	byte			*psrc;
 	vrect_t			vr;
 
-        /* Taniwha: SCR_EraseCenterPrint Fix */
-        if (x < 0)
-        {
-                width += x;
-                x = 0;
-        }
+	/* Taniwha: SCR_EraseCenterPrint Fix Begin*/
+	if (x < 0)
+	{
+		width += x;
+		x = 0;
+	}
 
-        if (x + w > vid.width)
-                w = vid.width - x;
+	if (x + w > vid.width)
+		w = vid.width - x;
 
-        if (y < 0)
-        {
-                height += y;
-                y = 0;
-        }
+	if (y < 0)
+	{
+		height += y;
+		y = 0;
+	}
 
-        if (y + h > vid.height)
-                h = vid.height - y;
+	if (y + h > vid.height)
+		h = vid.height - y;
+	/* Taniwha: SCR_EraseCenterPrint Fix End */
 
 	r_rectdesc.rect.x = x;
 	r_rectdesc.rect.y = y;

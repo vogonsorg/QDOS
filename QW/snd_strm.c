@@ -243,8 +243,7 @@ void S_StreamBackgroundTrack (void)
 				}
 				else
 				{	// check if it's time to switch to the ambient track
-					if ( (ogg_loopcount.intValue > 0) && (++ogg_loopcounter >= (int)ogg_loopcount.value)
-						/*&& (!cl.configstrings[CS_MAXCLIENTS][0] || !strcmp(cl.configstrings[CS_MAXCLIENTS], "1"))*/ ) // FS: No configstrings in Q1
+					if ( (ogg_loopcount.intValue > 0) && (++ogg_loopcounter >= (int)ogg_loopcount.value))
 					{	// Close the loop track
 						S_CloseBackgroundTrack(&s_bgTrack);
 
@@ -438,9 +437,6 @@ void S_OGG_Shutdown (void)
 		free(ogg_filelist[i]);
 	if (ogg_numfiles > 0)
 		free(ogg_filelist);
-
-	// Remove console commands
-//	Cmd_RemoveCommand("ogg"); // FS: FIXME
 
 	ogg_started = false;
 }

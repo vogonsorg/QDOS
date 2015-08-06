@@ -68,8 +68,8 @@ HINSTANCE hInstDS;
 
 qboolean SNDDMA_InitDirect (void);
 qboolean SNDDMA_InitWav (void);
-void snd_restart_f (void); // FS: SND_RESTART
-void snd_shutdown_f (void); // FS: SND_SHUTDOWN
+void snd_restart_f (void); /* FS: Added */
+void snd_shutdown_f (void); /* FS: Added */
 
 /*
 ==================
@@ -190,7 +190,7 @@ sndinitstat SNDDMA_InitDirect (void)
 	WAVEFORMATEX	format, pformat; 
 	HRESULT			hresult;
 	int				reps;
-	boolean			rc; // FS
+	boolean			rc;
 
 	memset ((void *)&sn, 0, sizeof (sn));
 
@@ -202,7 +202,7 @@ sndinitstat SNDDMA_InitDirect (void)
 	
 	rc = COM_CheckParm("-sspeed");
 
-	if (s_khz.value > 0) // FS: S_KHZ
+	if (s_khz.value > 0) /* FS: Added */
 	{
 		shm->speed = s_khz.value;
 	}
@@ -579,8 +579,8 @@ int SNDDMA_Init(void)
 
 	if (!host_initialized)
 	{
-		Cmd_AddCommand ("snd_restart", snd_restart_f); // FS
-		Cmd_AddCommand ("snd_shutdown", snd_shutdown_f); // FS
+		Cmd_AddCommand ("snd_restart", snd_restart_f); /* FS: Added */
+		Cmd_AddCommand ("snd_shutdown", snd_shutdown_f); /* FS: Added */
 	}
 
 	/* Init DirectSound */
@@ -745,14 +745,14 @@ void SNDDMA_Shutdown(void)
 	FreeSound ();
 }
 
-void snd_shutdown_f (void) // FS: SND_SHUTDOWN
+void snd_shutdown_f (void) /* FS: Added */
 {
 	S_Shutdown();
 	Con_Printf("\nSound Disabled.\n");
 	Cache_Flush();
 }
 
-void snd_restart_f (void) // FS: SND_RESTART
+void snd_restart_f (void) /* FS: Added */
 {
 	S_StopAllSounds(true);
 	S_Shutdown();

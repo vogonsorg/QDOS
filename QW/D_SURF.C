@@ -84,7 +84,7 @@ D_InitCaches
 void D_InitCaches (void *buffer, int size)
 {
 	if (!msg_suppress_1)
-		Con_Printf ("%ik surface cache\n", size/1024); // FS: Was disabled.
+		Con_Printf ("%ik surface cache\n", size/1024); /* FS: Was disabled. */
 
 	sc_size = size - GUARDSIZE;
 	sc_base = (surfcache_t *)buffer;

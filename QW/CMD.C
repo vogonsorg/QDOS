@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void Cmd_ForwardToServer (void);
 
-#define MAX_ALIAS_NAME  64 // FS: Was 32
+#define MAX_ALIAS_NAME  64 /* FS: Was 32 */
 
 typedef struct cmdalias_s
 {
@@ -39,7 +39,7 @@ qboolean	cmd_wait;
 
 cvar_t cl_warncmd = {"cl_warncmd", "0"};
 char *Sort_Possible_Cmds (char *partial);
-qboolean	Sort_Possible_Strtolower (char *partial, char *complete); // FS
+qboolean	Sort_Possible_Strtolower (char *partial, char *complete); /* FS: Added */
 
 //=============================================================================
 
@@ -289,17 +289,20 @@ void Cmd_Exec_f (void)
 
 	// FIXME: is this safe freeing the hunk here???
 	mark = Hunk_LowMark ();
-	if(!strncmp(Cmd_Argv(1),"default.cfg",11)) // FS: unbindall protection gross hack shit
+
+	if(!strncmp(Cmd_Argv(1),"default.cfg",11)) /* FS: unbindall protection hack */
 	{
-		Con_DPrintf (DEVELOPER_MSG_VERBOSE, "default.cfg gross hack shit\n");
-		cl_unbindall_protection.value = 0; // FS: disable the warning if it's default.cfg
+		Con_DPrintf (DEVELOPER_MSG_VERBOSE, "default.cfg unbindall protection hack\n");
+		cl_unbindall_protection.value = 0; /* FS: disable the warning if it's default.cfg */
 	}
+
 	f = (char *)COM_LoadHunkFile (Cmd_Argv(1));
 	if (!f)
 	{
 		Con_Printf ("couldn't exec %s\n",Cmd_Argv(1));
 		return;
 	}
+
 	if (!Cvar_Command () && (cl_warncmd.value || developer.value))
 		Con_Printf ("execing %s\n",Cmd_Argv(1));
 	
@@ -742,9 +745,9 @@ void Cmd_ChatInfo (int val)
 	{
 		switch (val)
 		{
-			case 1:
-			case 2:
-			case 3:
+			case EZQ_CHAT_TYPING:
+			case EZQ_CHAT_AFK:
+			case EZQ_CHAT_AFK_TYPING:
 				Cbuf_AddText( va("setinfo chat %i\n",val) );
 				chat.value = val;
 				afk = val;
@@ -752,23 +755,24 @@ void Cmd_ChatInfo (int val)
 			default:
 				afk = 0;
 				Cbuf_AddText("setinfo chat \"\"\n");
-				chat.value = 0;
+				chat.value = EZQ_CHAT_OFF;
 				break;
 		}
 	}
 }
 
+/* FS: Auto complete cmds */
 #define RETRY_INITIAL	0
 #define RETRY_ONCE		1
 #define RETRY_MULTIPLE	2
 char *Sort_Possible_Cmds (char *partial)
 {
 	cmd_function_t	*cmd;
-	cvar_t			*cvar; // FS
+	cvar_t			*cvar;
 	cmdalias_t		*a;
-	int	foundExactCount = 0; // FS
-	int foundPartialCount = 0; // FS
-	int retryPartialFlag = RETRY_INITIAL; // FS
+	int	foundExactCount = 0;
+	int foundPartialCount = 0;
+	int retryPartialFlag = RETRY_INITIAL;
 
 	if (!partial || partial[0] == 0)
 		return NULL;

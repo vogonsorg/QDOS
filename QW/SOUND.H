@@ -46,8 +46,8 @@ typedef struct sfx_s
 {
 	char 	name[MAX_QPATH];
 	cache_user_t	cache;
-	int		isCDtrack; // FS
-	qboolean	music;			// Knightmare added
+	int		isCDtrack; /* FS */
+	qboolean	music; // Knightmare added
 } sfx_t;
 
 // !!! if this is changed, it much be changed in asm_i386.h too !!!
@@ -126,7 +126,8 @@ typedef struct
 	int		dataofs;		// chunk starts this many bytes from file start
 } wavinfo_t;
 
-#define	MAX_RAW_SAMPLES	8192 // FS: Quake 2 raw samples for streaming
+ /* FS: Quake 2 raw samples for music streaming */
+#define	MAX_RAW_SAMPLES	8192
 extern	portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 
 void S_Init (void);
@@ -201,9 +202,8 @@ extern vec_t sound_nominal_clip_dist;
 extern	cvar_t	loadas8bit;
 extern	cvar_t	bgmvolume;
 extern	cvar_t	volume;
-extern  cvar_t	s_khz; // FS: S_KHZ
+extern  cvar_t	s_khz; /* FS: Added */
 extern	cvar_t	s_musicvolume; /* FS: Added */
-extern	cvar_t	cl_wav_music; /* FS: Added */
 
 extern qboolean	snd_initialized;
 
@@ -212,6 +212,7 @@ extern int		snd_blocked;
 void S_LocalSound (char *s);
 void S_GamespySound (char *s); /* FS: Added */
 void S_MusicPlay (int cdtrack); /* FS: Added */
+
 sfxcache_t *S_LoadSound (sfx_t *s);
 
 wavinfo_t GetWavinfo (char *name, byte *wav, int wavlength);

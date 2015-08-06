@@ -324,7 +324,7 @@ int VID_Suspend (MGLDC *dc, int flags)
 		IN_RestoreOriginalMouseState ();
 		CDAudio_Pause ();
 
-	// keep WM_PAINT from trying to redraw
+		// keep WM_PAINT from trying to redraw
 		in_mode_set = true;
 
 		block_drawing = true;	// so we don't try to draw while switched away
@@ -334,7 +334,7 @@ int VID_Suspend (MGLDC *dc, int flags)
 	else if (flags & MGL_REACTIVATE)
 	{
 		IN_SetQuakeMouseState ();
-	// fix the leftover Alt from any Alt-Tab or the like that switched us away
+		// fix the leftover Alt from any Alt-Tab or the like that switched us away
 		ClearAllStates ();
 		CDAudio_Resume ();
 		S_UnblockSound ();
@@ -347,7 +347,7 @@ int VID_Suspend (MGLDC *dc, int flags)
 
 		return MGL_NO_SUSPEND_APP;
 	}
-	return 0; // FS: Compiler Warning
+	return 0; /* FS: Compiler Warning */
 }
 
 void registerAllDispDrivers(void)
@@ -2135,7 +2135,7 @@ void	VID_Init (unsigned char *palette)
 			*ptmp = bestmatch;
 	}
 
-	if (COM_CheckParm("-startwindowed") || COM_CheckParm("-window") || COM_CheckParm("-windowed")) // FS: Allow a few extra variations
+	if (COM_CheckParm("-startwindowed") || COM_CheckParm("-window") || COM_CheckParm("-windowed")) /* FS: Allow a few extra variations */
 	{
 		startwindowed = 1;
 		vid_default = windowed_default;

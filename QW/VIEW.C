@@ -31,8 +31,8 @@ when crossing a water boudnary.
 
 */
 
-cvar_t  net_showchat = {"net_showchat", "1", true}; // FS
-cvar_t  net_showchatgfx = {"net_showchatgfx", "1", true}; // FS
+cvar_t  net_showchat = {"net_showchat", "1", true}; /* FS: Added */
+cvar_t  net_showchatgfx = {"net_showchatgfx", "1", true}; /* FS: Added */
 cvar_t	cl_rollspeed = {"cl_rollspeed", "200"};
 cvar_t	cl_rollangle = {"cl_rollangle", "2.0"};
 
@@ -336,7 +336,7 @@ void V_ParseDamage (void)
 	if (cl.cshifts[CSHIFT_DAMAGE].percent > 150)
 		cl.cshifts[CSHIFT_DAMAGE].percent = 150;
 
-	if (!v_contentblend.value) // FS
+	if (!v_contentblend.value) /* FS: Ignore palette blends if we want to */
 	{
 		cl.cshifts[CSHIFT_DAMAGE].destcolor[0] = 0;
 		cl.cshifts[CSHIFT_DAMAGE].destcolor[1] = 0;
@@ -388,7 +388,7 @@ V_cshift_f
 */
 void V_cshift_f (void)
 {
-	if(!v_contentblend.value) // FS
+	if(!v_contentblend.value) /* FS: Ignore palette blends if we want to */
 	{
 		cshift_empty.destcolor[0] = 0;
 		cshift_empty.destcolor[1] = 0;
@@ -414,20 +414,20 @@ When you run over an item, the server sends this command
 */
 void V_BonusFlash_f (void)
 {
-        if (!v_contentblend.value) // FS
-        {
-                cl.cshifts[CSHIFT_BONUS].destcolor[0] = 0;
-                cl.cshifts[CSHIFT_BONUS].destcolor[1] = 0;
-                cl.cshifts[CSHIFT_BONUS].destcolor[2] = 0;
-                cl.cshifts[CSHIFT_BONUS].percent = 0;
-        }
-        else
-        {
-                cl.cshifts[CSHIFT_BONUS].destcolor[0] = 215;
-                cl.cshifts[CSHIFT_BONUS].destcolor[1] = 186;
-                cl.cshifts[CSHIFT_BONUS].destcolor[2] = 69;
-                cl.cshifts[CSHIFT_BONUS].percent = 50;
-        }
+	if (!v_contentblend.value) /* FS: Ignore palette blends if we want to */
+	{
+		cl.cshifts[CSHIFT_BONUS].destcolor[0] = 0;
+		cl.cshifts[CSHIFT_BONUS].destcolor[1] = 0;
+		cl.cshifts[CSHIFT_BONUS].destcolor[2] = 0;
+		cl.cshifts[CSHIFT_BONUS].percent = 0;
+	}
+	else
+	{
+		cl.cshifts[CSHIFT_BONUS].destcolor[0] = 215;
+		cl.cshifts[CSHIFT_BONUS].destcolor[1] = 186;
+		cl.cshifts[CSHIFT_BONUS].destcolor[2] = 69;
+		cl.cshifts[CSHIFT_BONUS].percent = 50;
+	}
 }
 
 /*
@@ -439,8 +439,8 @@ Underwater, lava, etc each has a color shift
 */
 void V_SetContentsColor (int contents)
 {
-	if (!v_contentblend.value) 
-	{ // FS
+	if (!v_contentblend.value) /* FS: Ignore palette blends if we want to */
+	{
 		cl.cshifts[CSHIFT_CONTENTS] = cshift_empty;
 		return;
 	}
@@ -448,18 +448,19 @@ void V_SetContentsColor (int contents)
 	switch (contents)
 	{
 	case CONTENTS_EMPTY:
-                cl.cshifts[CSHIFT_CONTENTS] = cshift_empty;
+		cl.cshifts[CSHIFT_CONTENTS] = cshift_empty;
 		break;
 	case CONTENTS_LAVA:
-                        cl.cshifts[CSHIFT_CONTENTS] = cshift_lava;
-                break;
+		cl.cshifts[CSHIFT_CONTENTS] = cshift_lava;
+		break;
 	case CONTENTS_SOLID:
 	case CONTENTS_SLIME:
-                	cl.cshifts[CSHIFT_CONTENTS] = cshift_slime;
-        	break;
+		cl.cshifts[CSHIFT_CONTENTS] = cshift_slime;
+		break;
 	default:
-                        cl.cshifts[CSHIFT_CONTENTS] = cshift_water;
-        }
+		cl.cshifts[CSHIFT_CONTENTS] = cshift_water;
+		break;
+	}
 
 }
 
@@ -922,7 +923,8 @@ void V_Init (void)
 	Cmd_AddCommand ("v_cshift", V_cshift_f);	
 	Cmd_AddCommand ("bf", V_BonusFlash_f);
 	Cmd_AddCommand ("centerview", V_StartPitchDrift);
-        Cmd_AddCommand ("r_blend", R_Blend_f); // FS
+	Cmd_AddCommand ("r_blend", R_Blend_f); /* FS: Added */
+
 	Cvar_RegisterVariable (&v_centermove);
 	Cvar_RegisterVariable (&v_centerspeed);
 
@@ -932,10 +934,6 @@ void V_Init (void)
 	Cvar_RegisterVariable (&v_iyaw_level);
 	Cvar_RegisterVariable (&v_iroll_level);
 	Cvar_RegisterVariable (&v_ipitch_level);
-
-        Cvar_RegisterVariable (&net_showchatgfx); // FS
-        Cvar_RegisterVariable (&net_showchat); // FS
-        Cvar_RegisterVariable (&v_contentblend); // FS
 
 	Cvar_RegisterVariable (&v_idlescale);
 	Cvar_RegisterVariable (&crosshaircolor);
@@ -952,6 +950,10 @@ void V_Init (void)
 	Cvar_RegisterVariable (&v_kicktime);
 	Cvar_RegisterVariable (&v_kickroll);
 	Cvar_RegisterVariable (&v_kickpitch);	
+
+	Cvar_RegisterVariable (&net_showchatgfx); /* FS: EZQ Chat */
+	Cvar_RegisterVariable (&net_showchat); /* FS: EZQ Chat */
+	Cvar_RegisterVariable (&v_contentblend); /* FS: EZQ Chat */
 
 	BuildGammaTable (1.0);	// no gamma yet
 	Cvar_RegisterVariable (&v_gamma);

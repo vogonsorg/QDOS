@@ -188,7 +188,7 @@ qboolean NET_GetPacket (void)
 
 //=============================================================================
 
-void NET_SendPacket (int length, const void *data, netadr_t to) // FS: now Const
+void NET_SendPacket (int length, const void *data, netadr_t to)
 {
 	int ret;
 	struct sockaddr_in	addr;
