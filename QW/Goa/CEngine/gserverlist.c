@@ -23,7 +23,6 @@ Fax(714)549-0757
 #include "../nonport.h"
 #include "../../quakedef.h"
 #include "gutil.h"
-#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -112,17 +111,20 @@ GServerList ServerListNew (char *gamename, char *enginename, char *seckey, int m
 	GServerList list;
 
 	list = (GServerList) malloc(sizeof(struct GServerListImplementation));
-	assert(list != NULL);
+	if(!list)
+		Sys_Error("ServerListNew: list is NULL.");
 	list->state = sl_idle;
 	list->servers = ArrayNew(sizeof(GServer), SERVER_GROWBY, ServerFree);
 	list->maxupdates = maxconcupdates;
 	list->updatelist = calloc(maxconcupdates, sizeof(UpdateInfo));
-	assert(list->updatelist != NULL);
+	if(!list->updatelist)
+		Sys_Error("ServerListNew: list->updatelist is NULL.");
 	strcpy(list->gamename, gamename);
 	strcpy(list->seckey, seckey);
 	strcpy(list->enginename, enginename);
 	list->CallBackFn = CallBackFn;
-	assert(CallBackFn != NULL);
+	if(!CallBackFn)
+		Sys_Error("ServerListNew: CallBackFn is NULL.");
 	list->instance = instance;
 	list->sortkey = "";
 	SocketStartUp();
@@ -299,7 +301,8 @@ retryRecv:
 		}
 	}
 	data[len] = '\0'; //null terminate it
-	
+	Con_DPrintf(DEVELOPER_MSG_GAMESPY, "Gamespy validate server key: %s\n", data);
+
 	ptr = strstr ( data, SECURE ) + strlen(SECURE);
 	gs_encrypt   ( (uchar *) serverlist->seckey, 6, (uchar *)ptr, 6 );
 	gs_encode ( (uchar *)ptr, 6, (uchar *)result );
@@ -307,7 +310,8 @@ retryRecv:
 	//validate to the master
 	sprintf(data, "\\gamename\\%s\\gamever\\%s\\location\\0\\validate\\%s\\final\\\\queryid\\1.1\\",
 			serverlist->enginename, ENGINE_VERSION, result); //validate us		
-	
+	Con_DPrintf(DEVELOPER_MSG_GAMESPY, "Gamespy validate to the master: %s\n", data);
+
 	len = send ( serverlist->slsocket, data, strlen(data), 0 );
 	if (len == SOCKET_ERROR || len == 0)
 	{
@@ -395,7 +399,8 @@ GError ServerListLANUpdate(GServerList serverlist, gbool async, int startsearchp
 {
 	GError error;
 
-	assert(searchdelta > 0);
+	if(searchdelta <= 0)
+		Sys_Error("ServerListLANUpdate: searchdelta <= 0.");
 
 	if (serverlist->state != sl_idle)
 		return GE_BUSY;
@@ -493,6 +498,7 @@ retryRecv:
 		}
 		else
 		{
+			Con_DPrintf(DEVELOPER_MSG_GAMESPY,"Error during TCP List RECV: %s\n", NET_ErrorString());
 abort:
 			Close_TCP_Socket(serverlist->slsocket);
 			data[0] = 0;

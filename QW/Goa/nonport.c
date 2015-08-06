@@ -40,8 +40,6 @@ void SocketStartUp(void)
 	WSADATA data;
 	WSAStartup(0x0101, &data);
 #endif
-
-
 }
 
 void SocketShutDown(void)
