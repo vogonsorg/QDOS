@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 void (*vid_menudrawfn)(void);
 void (*vid_menukeyfn)(int key);
 
-enum {m_none, m_main, m_singleplayer, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_quit, m_serialconfig, m_modemconfig, m_lanconfig, m_gameoptions, m_search, m_slist, m_extended, m_gamespy} m_state; // FS: extended options
+enum {m_none, m_main, m_singleplayer, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_quit, m_serialconfig, m_modemconfig, m_lanconfig, m_gameoptions, m_search, m_slist, m_extended, m_gamespy} m_state;
 
 void M_Menu_Main_f (void);
 	void M_Menu_SinglePlayer_f (void);
@@ -44,7 +44,7 @@ void M_Menu_LanConfig_f (void);
 void M_Menu_GameOptions_f (void);
 void M_Menu_Search_f (void);
 void M_Menu_ServerList_f (void);
-void M_Menu_Extended_f (void); // FS: Extended
+void M_Menu_Extended_f (void); /* FS: Extended options unique to QDOS */
 
 void M_Main_Draw (void);
 	void M_SinglePlayer_Draw (void);
@@ -65,7 +65,7 @@ void M_LanConfig_Draw (void);
 void M_GameOptions_Draw (void);
 void M_Search_Draw (void);
 void M_ServerList_Draw (void);
-void M_Extended_Draw (void); // FS: extended
+void M_Extended_Draw (void); /* FS: Extended options unique to QDOS */
 
 void M_Main_Key (int key);
 	void M_SinglePlayer_Key (int key);
@@ -86,31 +86,31 @@ void M_LanConfig_Key (int key);
 void M_GameOptions_Key (int key);
 void M_Search_Key (int key);
 void M_ServerList_Key (int key);
-void M_Extended_Key (int key); // FS: Extended
-extern void snd_restart_f (void); // FS: SND_RESTART
-void M_Extended_Set_Sound_KHz (int dir, int khz); // FS: Extended
+void M_Extended_Key (int key); /* FS: Extended options unique to QDOS */
+extern void snd_restart_f (void); /* FS: For extended options */
+void M_Extended_Set_Sound_KHz (int dir, int khz); /* FS: Extended options unique to QDOS */
 
-// FS
+/* FS: Gravis Ultrasound stuff */
 #ifdef _WIN32
 int havegus = 0;
 #else
 extern int havegus;
 #endif
 
-qboolean        m_entersound;           // play after drawing a frame, so caching
+qboolean	m_entersound;	   // play after drawing a frame, so caching
 								// won't disrupt the sound
-qboolean        m_recursiveDraw;
+qboolean	m_recursiveDraw;
 
-int                     m_return_state;
-qboolean        m_return_onerror;
-char            m_return_reason [32];
+int		     m_return_state;
+qboolean	m_return_onerror;
+char	    m_return_reason [32];
 
 #define StartingGame    (m_multiplayer_cursor == 1)
-#define JoiningGame             (m_multiplayer_cursor == 0)
+#define JoiningGame	     (m_multiplayer_cursor == 0)
 #define SerialConfig    (m_net_cursor == 0)
 #define DirectConfig    (m_net_cursor == 1)
-#define IPXConfig               (m_net_cursor == 2)
-#define TCPIPConfig             (m_net_cursor == 3)
+#define IPXConfig	       (m_net_cursor == 2)
+#define TCPIPConfig	     (m_net_cursor == 3)
 
 void M_ConfigureNetSubsystem(void);
 
@@ -164,7 +164,7 @@ byte translationTable[256];
 
 void M_BuildTranslationTable(int top, int bottom)
 {
-	int             j;
+	int	     j;
 	byte    *dest, *source;
 
 	for (j = 0; j < 256; j++)
@@ -183,7 +183,7 @@ void M_BuildTranslationTable(int top, int bottom)
 		memcpy (dest + BOTTOM_RANGE, source + bottom, 16);
 	else
 		for (j=0 ; j<16 ; j++)
-			dest[BOTTOM_RANGE+j] = source[bottom+15-j];             
+			dest[BOTTOM_RANGE+j] = source[bottom+15-j];	     
 }
 
 
@@ -196,8 +196,8 @@ void M_DrawTransPicTranslate (int x, int y, qpic_t *pic)
 void M_DrawTextBox (int x, int y, int width, int lines)
 {
 	qpic_t  *p;
-	int             cx, cy;
-	int             n;
+	int	     cx, cy;
+	int	     n;
 
 	// draw left side
 	cx = x;
@@ -279,7 +279,7 @@ void M_ToggleMenu_f (void)
 	}
 	else
 	{
-		Cmd_ChatInfo(2); // FS: EZQ Chat
+		Cmd_ChatInfo(2); /* FS: EZQ Chat */
 		M_Menu_Main_f ();
 	}
 }
@@ -308,7 +308,7 @@ void M_Menu_Main_f (void)
 
 void M_Main_Draw (void)
 {
-	int             f;
+	int	     f;
 	qpic_t  *p;
 
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
@@ -333,7 +333,7 @@ void M_Main_Key (int key)
 		cls.demonum = m_save_demonum;
 		if (cls.demonum != -1 && !cls.demoplayback && cls.state == ca_disconnected)
 			CL_NextDemo ();
-		Cmd_ChatInfo(0); // FS: EZQ Chat
+		Cmd_ChatInfo(0); /* FS: EZQ Chat */
 		break;
 		
 	case K_DOWNARROW:
@@ -348,22 +348,22 @@ void M_Main_Key (int key)
 			m_main_cursor = MAIN_ITEMS - 1;
 		break;
 
-// FS: Menu shortcuts
-                case 's':
-                        M_Menu_SinglePlayer_f ();
-                        break;
-                case 'm':
-                        M_Menu_MultiPlayer_f ();
-                        break;
-                case 'o':
-                        M_Menu_Options_f ();
-                        break;
-                case 'h':
-                        M_Menu_Help_f ();
-                        break;
-                case 'q':
-                        M_Menu_Quit_f ();
-                        break;
+/* FS: Menu shortcuts */
+	case 's':
+		M_Menu_SinglePlayer_f ();
+		break;
+	case 'm':
+		M_Menu_MultiPlayer_f ();
+		break;
+	case 'o':
+		M_Menu_Options_f ();
+		break;
+	case 'h':
+		M_Menu_Help_f ();
+		break;
+	case 'q':
+		M_Menu_Quit_f ();
+		break;
 
 	case K_ENTER:
 		m_entersound = true;
@@ -397,11 +397,11 @@ void M_Main_Key (int key)
 //=============================================================================
 /* OPTIONS MENU */
 
-#define OPTIONS_ITEMS   16 // FS
+#define OPTIONS_ITEMS   16
 
 #define SLIDER_RANGE    10
 
-int             options_cursor;
+int	     options_cursor;
 
 void M_Menu_Options_f (void)
 {
@@ -437,8 +437,8 @@ void M_AdjustSliders (int dir)
 		sensitivity.value += dir * 0.5;
 		if (sensitivity.value < 1)
 			sensitivity.value = 1;
-                if (sensitivity.value > 50) // FS: 11 is so 1997.
-                        sensitivity.value = 50;
+		if (sensitivity.value > 50) /* FS: 11 is so 1997. */
+			sensitivity.value = 50;
 		Cvar_SetValue ("sensitivity", sensitivity.value);
 		break;
 	case 6: // music volume
@@ -463,13 +463,13 @@ void M_AdjustSliders (int dir)
 		{
 			Cvar_SetValue ("cl_forwardspeed", 200);
 			Cvar_SetValue ("cl_backspeed", 200);
-			Cvar_SetValue ("cl_sidespeed", 200); // FS
+			Cvar_SetValue ("cl_sidespeed", 200); /* FS */
 		}
 		else
 		{
 			Cvar_SetValue ("cl_forwardspeed", 400);
 			Cvar_SetValue ("cl_backspeed", 400);
-			Cvar_SetValue ("cl_sidespeed", 400); // FS
+			Cvar_SetValue ("cl_sidespeed", 400); /* FS */
 		}
 		break;
 	
@@ -477,11 +477,11 @@ void M_AdjustSliders (int dir)
 		Cvar_SetValue ("m_pitch", -m_pitch.value);
 		break;
 	
-	case 10:        // lookspring
+	case 10:	// lookspring
 		Cvar_SetValue ("lookspring", !lookspring.value);
 		break;
 	
-	case 11:        // lookstrafe
+	case 11:	// lookstrafe
 		Cvar_SetValue ("lookstrafe", !lookstrafe.value);
 		break;
 
@@ -494,7 +494,7 @@ void M_AdjustSliders (int dir)
 		break;  // JASON
 
 	case 14:
-	case 15: // FS: Extended
+	case 15: /* FS: Extended options */
 		break;
 	}
 }
@@ -525,7 +525,7 @@ void M_DrawCheckbox (int x, int y, int on)
 
 void M_Options_Draw (void)
 {
-	float           r;
+	float	   r;
 	qpic_t  *p;
 	
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
@@ -533,39 +533,39 @@ void M_Options_Draw (void)
 	M_DrawPic ( (320-p->width)/2, 4, p);
 	
 	M_Print (16, 32, "    Customize controls");
-	M_Print (16, 40, "         Go to console");
+	M_Print (16, 40, "	 Go to console");
 	M_Print (16, 48, "     Reset to defaults");
 
-	M_Print (16, 56, "           Screen size");
+	M_Print (16, 56, "	   Screen size");
 	r = (scr_viewsize.value - 30) / (120 - 30);
 	M_DrawSlider (220, 56, r);
 
-	M_Print (16, 64, "            Brightness");
+	M_Print (16, 64, "	    Brightness");
 	r = (1.0 - v_gamma.value) / 0.5;
 	M_DrawSlider (220, 64, r);
 
-	M_Print (16, 72, "           Mouse Speed");
-        r = (sensitivity.value)/50; // FS
+	M_Print (16, 72, "	   Mouse Speed");
+	r = (sensitivity.value)/50; /* FS: Changed from 11 */
 	M_DrawSlider (220, 72, r);
 
 	M_Print (16, 80, "       CD Music Volume");
 	r = bgmvolume.value;
 	M_DrawSlider (220, 80, r);
 
-	M_Print (16, 88, "          Sound Volume");
+	M_Print (16, 88, "	  Sound Volume");
 	r = volume.value;
 	M_DrawSlider (220, 88, r);
 
-	M_Print (16, 96,  "            Always Run");
+	M_Print (16, 96,  "	    Always Run");
 	M_DrawCheckbox (220, 96, cl_forwardspeed.value > 200);
 
-	M_Print (16, 104, "          Invert Mouse");
+	M_Print (16, 104, "	  Invert Mouse");
 	M_DrawCheckbox (220, 104, m_pitch.value < 0);
 
-	M_Print (16, 112, "            Lookspring");
+	M_Print (16, 112, "	    Lookspring");
 	M_DrawCheckbox (220, 112, lookspring.value);
 
-	M_Print (16, 120, "            Lookstrafe");
+	M_Print (16, 120, "	    Lookstrafe");
 	M_DrawCheckbox (220, 120, lookstrafe.value);
 
 	M_Print (16, 128, "    Use old status bar");
@@ -575,9 +575,9 @@ void M_Options_Draw (void)
 	M_DrawCheckbox (220, 136, cl_hudswap.value);
 
 	if (vid_menudrawfn)
-		M_Print (16, 144, "         Video Options");
+		M_Print (16, 144, "	 Video Options");
 
-	M_Print (16, 152, "      Extended Options");  // FS: Extended
+	M_Print (16, 152, "      Extended Options"); /* FS: Extended options unique to QDOS */
 
 
 
@@ -594,12 +594,12 @@ void M_Options_Key (int k)
 		M_Menu_Main_f ();
 		break;
 
-	case 'v': // FS
+	case 'v': /* FS */
 	case 'V':
 		M_Menu_Video_f();
 		break;
 
-	case 'e': // FS
+	case 'e': /* FS */
 	case 'E':
 		M_Menu_Extended_f();
 		break;
@@ -618,10 +618,10 @@ void M_Options_Key (int k)
 		case 2:
 			Cbuf_AddText ("exec default.cfg\n");
 			break;
-                case 14:
+		case 14:
 			M_Menu_Video_f ();
 			break;
-		case 15: // FS: Extended
+		case 15: /* FS: Extended options unique to QDOS */
 			M_Menu_Extended_f ();
 			break;
 		default:
@@ -652,20 +652,21 @@ void M_Options_Key (int k)
 		M_AdjustSliders (1);
 		break;
 	}
-        // FS: Needed to readjust and that Use Mouse shit was getting in the way.
-        if (options_cursor == 17 && vid_menudrawfn == NULL)
+
+	/* FS: Needed to readjust and that Use Mouse shit was getting in the way. */
+	if (options_cursor == 17 && vid_menudrawfn == NULL)
 	{
 		if (k == K_UPARROW)
-                        options_cursor = 16;
+			options_cursor = 16;
 		else
 			options_cursor = 0;
 	}
 
-        if ((options_cursor == 17)) 
-        
+	if ((options_cursor == 17)) 
+	
 	{
 		if (k == K_UPARROW)
-                        options_cursor = 16;
+			options_cursor = 16;
 		else
 			options_cursor = 0;
 	}
@@ -677,30 +678,30 @@ void M_Options_Key (int k)
 
 char *bindnames[][2] =
 {
-{"+attack",             "attack"},
-{"impulse 10",          "change weapon"},
-{"+jump",                       "jump / swim up"},
-{"+forward",            "walk forward"},
-{"+back",                       "backpedal"},
-{"+left",                       "turn left"},
-{"+right",                      "turn right"},
-{"+speed",                      "run"},
-{"+moveleft",           "step left"},
-{"+moveright",          "step right"},
-{"+strafe",             "sidestep"},
-{"+lookup",             "look up"},
-{"+lookdown",           "look down"},
-{"centerview",          "center view"},
-{"+mlook",                      "mouse look"},
-{"+klook",                      "keyboard look"},
-{"+moveup",                     "swim up"},
-{"+movedown",           "swim down"}
+{"+attack",	     "attack"},
+{"impulse 10",	  "change weapon"},
+{"+jump",		       "jump / swim up"},
+{"+forward",	    "walk forward"},
+{"+back",		       "backpedal"},
+{"+left",		       "turn left"},
+{"+right",		      "turn right"},
+{"+speed",		      "run"},
+{"+moveleft",	   "step left"},
+{"+moveright",	  "step right"},
+{"+strafe",	     "sidestep"},
+{"+lookup",	     "look up"},
+{"+lookdown",	   "look down"},
+{"centerview",	  "center view"},
+{"+mlook",		      "mouse look"},
+{"+klook",		      "keyboard look"},
+{"+moveup",		     "swim up"},
+{"+movedown",	   "swim down"}
 };
 
 #define NUMCOMMANDS     (sizeof(bindnames)/sizeof(bindnames[0]))
 
-int             keys_cursor;
-int             bind_grab;
+int	     keys_cursor;
+int	     bind_grab;
 
 void M_Menu_Keys_f (void)
 {
@@ -712,9 +713,9 @@ void M_Menu_Keys_f (void)
 
 void M_FindKeysForCommand (char *command, int *twokeys)
 {
-	int             count;
-	int             j;
-	int             l;
+	int	     count;
+	int	     j;
+	int	     l;
 	char    *b;
 
 	twokeys[0] = twokeys[1] = -1;
@@ -738,8 +739,8 @@ void M_FindKeysForCommand (char *command, int *twokeys)
 
 void M_UnbindCommand (char *command)
 {
-	int             j;
-	int             l;
+	int	     j;
+	int	     l;
 	char    *b;
 
 	l = strlen(command);
@@ -757,10 +758,10 @@ void M_UnbindCommand (char *command)
 
 void M_Keys_Draw (void)
 {
-	int             i; //, l;
-	int             keys[2];
+	int	     i; //, l;
+	int	     keys[2];
 	char    *name;
-	int             x, y;
+	int	     x, y;
 	qpic_t  *p;
 
 	p = Draw_CachePic ("gfx/ttl_cstm.lmp");
@@ -809,7 +810,7 @@ void M_Keys_Draw (void)
 void M_Keys_Key (int k)
 {
 	char    cmd[80];
-	int             keys[2];
+	int	     keys[2];
 	
 	if (bind_grab)
 	{       // defining a key
@@ -820,7 +821,7 @@ void M_Keys_Key (int k)
 		}
 		else if (k != '`')
 		{
-			sprintf (cmd, "bind %s \"%s\"\n", Key_KeynumToString (k), bindnames[keys_cursor][0]);                   
+			sprintf (cmd, "bind %s \"%s\"\n", Key_KeynumToString (k), bindnames[keys_cursor][0]);		   
 			Cbuf_InsertText (cmd);
 		}
 		
@@ -850,7 +851,7 @@ void M_Keys_Key (int k)
 			keys_cursor = 0;
 		break;
 
-	case K_ENTER:           // go into bind mode
+	case K_ENTER:	   // go into bind mode
 		M_FindKeysForCommand (bindnames[keys_cursor][0], keys);
 		S_LocalSound ("misc/menu2.wav");
 		if (keys[1] != -1)
@@ -858,8 +859,8 @@ void M_Keys_Key (int k)
 		bind_grab = true;
 		break;
 
-	case K_BACKSPACE:               // delete bindings
-	case K_DEL:                             // delete bindings
+	case K_BACKSPACE:	       // delete bindings
+	case K_DEL:			     // delete bindings
 		S_LocalSound ("misc/menu2.wav");
 		M_UnbindCommand (bindnames[keys_cursor][0]);
 		break;
@@ -891,7 +892,7 @@ void M_Video_Key (int key)
 //=============================================================================
 /* HELP MENU */
 
-int             help_page;
+int	     help_page;
 #define NUM_HELP_PAGES  6
 
 
@@ -939,9 +940,9 @@ void M_Help_Key (int key)
 //=============================================================================
 /* QUIT MENU */
 
-int             msgNumber;
-int             m_quit_prevstate;
-qboolean        wasInMenus;
+int	     msgNumber;
+int	     m_quit_prevstate;
+qboolean	wasInMenus;
 
 char *quitMessage [] = 
 {
@@ -949,17 +950,17 @@ char *quitMessage [] =
   "  Are you gonna quit    ",
   "  this game just like   ",
   "   everything else?     ",
-  "                        ",
+  "			",
  
   " Milord, methinks that  ",
   "   thou art a lowly     ",
   " quitter. Is this true? ",
-  "                        ",
+  "			",
 
   " Do I need to bust your ",
   "  face open for trying  ",
-  "        to quit?        ",
-  "                        ",
+  "	to quit?	",
+  "			",
 
   " Man, I oughta smack you",
   "   for trying to quit!  ",
@@ -984,7 +985,7 @@ char *quitMessage [] =
   "  If you quit now, I'll ",
   "  throw a blanket-party ",
   "   for you next time!   ",
-  "                        "
+  "			"
 };
 
 void M_Menu_Quit_f (void)
@@ -1019,7 +1020,7 @@ void M_Quit_Key (int key)
 			}
 			break;
 
-		case K_ENTER: // FS: You can press enter to default Y
+		case K_ENTER: /* FS: You can press enter to default Y */
 		case 'Y':
 		case 'y':
 			key_dest = key_console;
@@ -1045,7 +1046,7 @@ void M_SinglePlayer_Draw (void) {
 	M_DrawPic ( (320-p->width)/2, 4, p);
 //      M_DrawTransPic (72, 32, Draw_CachePic ("gfx/sp_menu.lmp") );
 
-	M_DrawTextBox (60, 10*8, 23, 4);        
+	M_DrawTextBox (60, 10*8, 23, 4);	
 	M_PrintWhite (92, 12*8, "QuakeWorld is for");
 	M_PrintWhite (88, 13*8, "Internet play only");
 
@@ -1073,10 +1074,10 @@ void M_MultiPlayer_Draw (void) {
 	M_PrintWhite (72, 10*8, "If you want to find QW  ");
 	M_PrintWhite (72, 11*8, "games, head on over to: ");
 	     M_Print (72, 12*8, "   www.quakeworld.net   ");
-	M_PrintWhite (72, 13*8, "          or            ");
+	M_PrintWhite (72, 13*8, "	  or	    ");
 	     M_Print (72, 14*8, "   www.quakespy.com     ");
 	M_PrintWhite (72, 15*8, "For pointers on getting ");
-	M_PrintWhite (72, 16*8, "        started!        ");
+	M_PrintWhite (72, 16*8, "	started!	");
 }
 
 void M_MultiPlayer_Key (key) {
@@ -1090,7 +1091,7 @@ void M_Quit_Draw (void)
 #define VSTR2(x) VSTR(x)
 	char *cmsg[] = {
 //    0123456789012345678901234567890123456789
-	"0            QuakeWorld",
+	"0	    QuakeWorld",
 	"1    version " VSTR2(VERSION) " by id Software",
 	"0Programming",
 	"1 John Carmack    Michael Abrash",
@@ -1157,7 +1158,7 @@ void M_Init (void)
 	Cmd_AddCommand ("menu_video", M_Menu_Video_f);
 	Cmd_AddCommand ("help", M_Menu_Help_f);
 	Cmd_AddCommand ("menu_quit", M_Menu_Quit_f);
-	Cmd_AddCommand ("menu_extended", M_Menu_Extended_f); // FS: Extended
+	Cmd_AddCommand ("menu_extended", M_Menu_Extended_f); /* FS: Extended options unique to QDOS */
 }
 
 
@@ -1201,11 +1202,11 @@ void M_Draw (void)
 		break;
 
 	case m_load:
-//              M_Load_Draw ();
+//	      M_Load_Draw ();
 		break;
 
 	case m_save:
-//              M_Save_Draw ();
+//	      M_Save_Draw ();
 		break;
 
 	case m_multiplayer:
@@ -1213,11 +1214,11 @@ void M_Draw (void)
 		break;
 
 	case m_setup:
-//              M_Setup_Draw ();
+//	      M_Setup_Draw ();
 		break;
 
 	case m_net:
-//              M_Net_Draw ();
+//	      M_Net_Draw ();
 		break;
 
 	case m_options:
@@ -1241,31 +1242,31 @@ void M_Draw (void)
 		break;
 
 	case m_serialconfig:
-//              M_SerialConfig_Draw ();
+//	      M_SerialConfig_Draw ();
 		break;
 
 	case m_modemconfig:
-//              M_ModemConfig_Draw ();
+//	      M_ModemConfig_Draw ();
 		break;
 
 	case m_lanconfig:
-//              M_LanConfig_Draw ();
+//	      M_LanConfig_Draw ();
 		break;
 
 	case m_gameoptions:
-//              M_GameOptions_Draw ();
+//	      M_GameOptions_Draw ();
 		break;
 
 	case m_search:
-//              M_Search_Draw ();
+//	      M_Search_Draw ();
 		break;
 
 	case m_slist:
-//              M_ServerList_Draw ();
+//	      M_ServerList_Draw ();
 		break;
-	case m_extended:  // FS: Extended
+	case m_extended:  /* FS: Extended options unique to QDOS */
 		M_Extended_Draw ();
-		break;        
+		break;	
 
 	case m_gamespy: /* FS: Unfinished */
 		break;
@@ -1298,11 +1299,11 @@ void M_Keydown (int key)
 		return;
 
 	case m_load:
-//              M_Load_Key (key);
+//	      M_Load_Key (key);
 		return;
 
 	case m_save:
-//              M_Save_Key (key);
+//	      M_Save_Key (key);
 		return;
 
 	case m_multiplayer:
@@ -1310,11 +1311,11 @@ void M_Keydown (int key)
 		return;
 
 	case m_setup:
-//              M_Setup_Key (key);
+//	      M_Setup_Key (key);
 		return;
 
 	case m_net:
-//              M_Net_Key (key);
+//	      M_Net_Key (key);
 		return;
 
 	case m_options:
@@ -1338,29 +1339,29 @@ void M_Keydown (int key)
 		return;
 
 	case m_serialconfig:
-//              M_SerialConfig_Key (key);
+//	      M_SerialConfig_Key (key);
 		return;
 
 	case m_modemconfig:
-//              M_ModemConfig_Key (key);
+//	      M_ModemConfig_Key (key);
 		return;
 
 	case m_lanconfig:
-//              M_LanConfig_Key (key);
+//	      M_LanConfig_Key (key);
 		return;
 
 	case m_gameoptions:
-//              M_GameOptions_Key (key);
+//	      M_GameOptions_Key (key);
 		return;
 
 	case m_search:
-//              M_Search_Key (key);
+//	      M_Search_Key (key);
 		break;
 
 	case m_slist:
-//              M_ServerList_Key (key);
+//	      M_ServerList_Key (key);
 		return;
-	case m_extended: // FS: Extended
+	case m_extended: /* FS: Extended options unique to QDOS */
 		M_Extended_Key (key);
 		return;
 
@@ -1370,12 +1371,13 @@ void M_Keydown (int key)
 	}
 }
 
-int extended_cursor;  // FS: Extended
+/* FS: Extended options unique to QDOS */
+int extended_cursor;
 #define EXTENDED_OPTIONS 11
 extern cvar_t r_waterwarp;
 extern cvar_t scr_fov;
 
-void M_Menu_Extended_f(void) // FS: Extended
+void M_Menu_Extended_f(void)
 {
 	key_dest = key_menu;
 	m_state = m_extended;
@@ -1383,7 +1385,7 @@ void M_Menu_Extended_f(void) // FS: Extended
 
 }
 
-void M_Extended_Draw() // FS: Extended
+void M_Extended_Draw()
 {
 	float	r;
 	qpic_t  *p;
@@ -1392,109 +1394,109 @@ void M_Extended_Draw() // FS: Extended
 	p = Draw_CachePic ("gfx/p_option.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
 
-        M_Print (16, 32, "     Chat Broadcasting");
-        M_DrawCheckbox (220, 32, net_broadcast_chat.value); // FS
+	M_Print (16, 32, "     Chat Broadcasting");
+	M_DrawCheckbox (220, 32, net_broadcast_chat.value);
 
-        M_Print (16, 40, "     Chat Notification");
-        M_DrawCheckbox (220, 40, net_showchat.value); // FS
+	M_Print (16, 40, "     Chat Notification");
+	M_DrawCheckbox (220, 40, net_showchat.value);
 
-        M_Print (16, 48, "         Chat Graphics");
-        M_DrawCheckbox (220, 48, net_showchatgfx.value); // FS
+	M_Print (16, 48, "	 Chat Graphics");
+	M_DrawCheckbox (220, 48, net_showchatgfx.value);
 
-        M_Print (16, 56,  "      Content Blending");
-        M_DrawCheckbox (220, 56, v_contentblend.value); // FS
+	M_Print (16, 56,  "      Content Blending");
+	M_DrawCheckbox (220, 56, v_contentblend.value);
 
-        M_Print (16, 64,  "     Unbindall Protect");
-        M_DrawCheckbox (220, 64, cl_unbindall_protection.value); // FS
+	M_Print (16, 64,  "     Unbindall Protect");
+	M_DrawCheckbox (220, 64, cl_unbindall_protection.value);
 
-        M_Print (16, 72,  "           Show Uptime");
-        M_DrawCheckbox (220, 72, show_uptime.value); // FS
+	M_Print (16, 72,  "	   Show Uptime");
+	M_DrawCheckbox (220, 72, show_uptime.value);
 
-        M_Print (16, 80,  "             Show Time");
-        if (show_time.value < 1 )
-                M_Print (220, 80, "off");
-        else if (show_time.value == 1)
-                M_Print (220, 80, "Military");
-        else if (show_time.value >= 2)
-                M_Print (220, 80, "AM/PM");
+	M_Print (16, 80,  "	     Show Time");
+	if (show_time.value < 1 )
+		M_Print (220, 80, "off");
+	else if (show_time.value == 1)
+		M_Print (220, 80, "Military");
+	else if (show_time.value >= 2)
+		M_Print (220, 80, "AM/PM");
 
-        M_Print (16, 88,  "        Show Framerate");
-        M_DrawCheckbox (220, 88, show_fps.value); // FS
+	M_Print (16, 88,  "	Show Framerate");
+	M_DrawCheckbox (220, 88, show_fps.value);
 
-        M_Print (16, 96,  "        Mouse Freelook");
-        M_DrawCheckbox (220, 96, in_freelook.value); // FS
+	M_Print (16, 96,  "	Mouse Freelook");
+	M_DrawCheckbox (220, 96, in_freelook.value);
 
-        M_Print (16,104,  "       Water View-warp");
-        M_DrawCheckbox (220, 104, r_waterwarp.value); // FS
+	M_Print (16,104,  "       Water View-warp");
+	M_DrawCheckbox (220, 104, r_waterwarp.value);
 
-		M_Print (16, 112, "       Field of Vision");
-		r = (scr_fov.value - 30) / (175 - 30);
-		M_DrawSlider (220, 112, r);
-        M_DrawCharacter (200, 32 + extended_cursor*8, 12+((int)(realtime*4)&1));
+	M_Print (16, 112, "       Field of Vision");
+	r = (scr_fov.value - 30) / (175 - 30);
+	M_DrawSlider (220, 112, r);
+	M_DrawCharacter (200, 32 + extended_cursor*8, 12+((int)(realtime*4)&1));
 
-		M_Print (16, 120, "            Sound Rate");
-		if (s_khz.intValue <= 0)
-			Cvar_SetValue("s_khz", 11025);
-		M_Print (220, 120, s_khz.string);
+	M_Print (16, 120, "	    Sound Rate");
+	if (s_khz.intValue <= 0)
+		Cvar_SetValue("s_khz", 11025);
+	M_Print (220, 120, s_khz.string);
 }
 
 void M_AdjustSliders_Extended (int dir)
 {
 	switch(extended_cursor)
 	{
-        case 0: // FS: NEW_SHOWCHAT
-                Cvar_SetValue ("net_broadcast_chat", !net_broadcast_chat.value);
-                break;
-        case 1: // FS: NEW_SHOWCHAT
-                Cvar_SetValue ("net_showchat", !net_showchat.value);
-                break;
-        case 2: // FS: NET_SHOWCHATGFX
-                Cvar_SetValue ("net_showchatgfx", !net_showchatgfx.value);
-                break;
-        case 3: // FS: V_CONTENTBLEND
-                Cvar_SetValue ("v_contentblend", !v_contentblend.value);
-                break;
-        case 4: // FS: UNBINDALL
-                Cvar_SetValue ("cl_unbindall_protection", !cl_unbindall_protection.value);
-                break;
-        case 5: // FS: SHOW_UPTIME
-                Cvar_SetValue ("show_uptime", !show_uptime.value);
-                break;
-        case 6: // FS: TIME
-                if (show_time.value >= 2)
-                        Cvar_SetValue ("show_time", 0);
-                else if (show_time.value <= 0)
-                        Cvar_SetValue ("show_time", 1);
-                else if (show_time.value == 1)
-                        Cvar_SetValue ("show_time", 2);
-                break;
-        case 7: // FS: FPS
-                Cvar_SetValue ("show_fps", !show_fps.value);
-                break;
-        case 8: // FS: FREELOOK
-                Cvar_SetValue ("in_freelook", !in_freelook.value);
-                break;
-		case 9: // FS: R_WATERWARP
-				Cvar_SetValue ("r_waterwarp", !r_waterwarp.value);
-				break;
-		case 10: // FS: FOV
-			scr_fov.value += dir * 5;
-			if (scr_fov.value < 0)
-				scr_fov.value = 0;
-			if (scr_fov.value > 170)
-				scr_fov.value = 170;
-			Cvar_SetValue ("fov", scr_fov.value);
-			break;
-		case 11: // FS: S_KHZ
-			M_Extended_Set_Sound_KHz(dir, s_khz.intValue);
-			break;
-		default:
-			break;
+	case 0:
+		Cvar_SetValue ("net_broadcast_chat", !net_broadcast_chat.value);
+		break;
+	case 1:
+		Cvar_SetValue ("net_showchat", !net_showchat.value);
+		break;
+	case 2:
+		Cvar_SetValue ("net_showchatgfx", !net_showchatgfx.value);
+		break;
+	case 3:
+		Cvar_SetValue ("v_contentblend", !v_contentblend.value);
+		break;
+	case 4:
+		Cvar_SetValue ("cl_unbindall_protection", !cl_unbindall_protection.value);
+		break;
+	case 5:
+		Cvar_SetValue ("show_uptime", !show_uptime.value);
+		break;
+	case 6:
+		if (show_time.value >= 2)
+			Cvar_SetValue ("show_time", 0);
+		else if (show_time.value <= 0)
+			Cvar_SetValue ("show_time", 1);
+		else if (show_time.value == 1)
+			Cvar_SetValue ("show_time", 2);
+		break;
+	case 7:
+		Cvar_SetValue ("show_fps", !show_fps.value);
+		break;
+	case 8:
+		Cvar_SetValue ("in_freelook", !in_freelook.value);
+		break;
+	case 9:
+		Cvar_SetValue ("r_waterwarp", !r_waterwarp.value);
+		break;
+	case 10:
+		scr_fov.value += dir * 5;
+		if (scr_fov.value < 0)
+			scr_fov.value = 0;
+		if (scr_fov.value > 170)
+			scr_fov.value = 170;
+		Cvar_SetValue ("fov", scr_fov.value);
+		break;
+	case 11:
+		M_Extended_Set_Sound_KHz(dir, s_khz.intValue);
+		break;
+	default:
+		break;
 	}
 	S_LocalSound ("misc/menu3.wav");
 }
 
-void M_Extended_Key(int k) // FS: Extended
+void M_Extended_Key(int k)
 {
     switch (k)
 	{
@@ -1505,7 +1507,7 @@ void M_Extended_Key(int k) // FS: Extended
 			extended_cursor = EXTENDED_OPTIONS;
 		break;
 
-        case K_DOWNARROW:
+	case K_DOWNARROW:
 		S_LocalSound ("misc/menu1.wav");
 		extended_cursor++;
 		if (extended_cursor > EXTENDED_OPTIONS)
@@ -1526,41 +1528,42 @@ void M_Extended_Key(int k) // FS: Extended
 
 	case K_ENTER:
 		m_entersound = true;
+
 		switch (extended_cursor)
 		{
-        case 0: // FS: NEW_SHOWCHAT
-                Cvar_SetValue ("net_broadcast_chat", !net_broadcast_chat.value);
-                break;
-        case 1: // FS: NEW_SHOWCHAT
-                Cvar_SetValue ("net_showchat", !net_showchat.value);
-                break;
-        case 2: // FS: NET_SHOWCHATGFX
-                Cvar_SetValue ("net_showchatgfx", !net_showchatgfx.value);
-                break;
-        case 3: // FS: V_CONTENTBLEND
-                Cvar_SetValue ("v_contentblend", !v_contentblend.value);
-                break;
-        case 4: // FS: UNBINDALL
-                Cvar_SetValue ("cl_unbindall_protection", !cl_unbindall_protection.value);
-                break;
-        case 5: // FS: SHOW_UPTIME
-                Cvar_SetValue ("show_uptime", !show_uptime.value);
-                break;
-        case 6: // FS: TIME
-			if (show_time.value >= 2)
-                        Cvar_SetValue ("show_time", 0);
-			else if (show_time.value <= 0)
-                        Cvar_SetValue ("show_time", 1);
-			else if (show_time.value == 1)
-                        Cvar_SetValue ("show_time", 2);
+		case 0:
+			Cvar_SetValue ("net_broadcast_chat", !net_broadcast_chat.value);
 			break;
-        case 7: // FS: FPS
+		case 1:
+			Cvar_SetValue ("net_showchat", !net_showchat.value);
+			break;
+		case 2:
+			Cvar_SetValue ("net_showchatgfx", !net_showchatgfx.value);
+			break;
+		case 3:
+			Cvar_SetValue ("v_contentblend", !v_contentblend.value);
+			break;
+		case 4:
+			Cvar_SetValue ("cl_unbindall_protection", !cl_unbindall_protection.value);
+			break;
+		case 5:
+			Cvar_SetValue ("show_uptime", !show_uptime.value);
+			break;
+		case 6:
+			if (show_time.value >= 2)
+				Cvar_SetValue ("show_time", 0);
+			else if (show_time.value <= 0)
+				Cvar_SetValue ("show_time", 1);
+			else if (show_time.value == 1)
+				Cvar_SetValue ("show_time", 2);
+			break;
+		case 7:
 			Cvar_SetValue ("show_fps", !show_fps.value);
 			break;
-        case 8: // FS: FREELOOK
+		case 8:
 			Cvar_SetValue ("in_freelook", !in_freelook.value);
 			break;
-		case 9: // FS: R_WATERWARP
+		case 9:
 			Cvar_SetValue ("r_waterwarp", !r_waterwarp.value);
 			break;
 		case 10:
@@ -1569,8 +1572,7 @@ void M_Extended_Key(int k) // FS: Extended
 		case 11:
 			M_AdjustSliders_Extended(1);
 			break;
-        default:
-			Con_Printf("\nShouldn't be here mannn...\n");
+		default:
 			break;
 		}
 	}
@@ -1678,6 +1680,191 @@ void M_Extended_Set_Sound_KHz (int dir, int khz)
 }
 
 /* FS: Gamespy stuff */
+#define	NO_SERVER_STRING	"<no server>"
+#define MAX_GAMESPY_MENU_SERVERS MAX_SERVERS /* FS: Maximum number of servers to show in the browser */
+static char gamespy_server_names[MAX_GAMESPY_MENU_SERVERS][80]; /* FS: GameSpy Browser */
+static char gamespy_connect_string[MAX_GAMESPY_MENU_SERVERS][128]; /* FS: GameSpy Browser: Connect string */
+static int	m_num_gamespy_servers;
+static int	m_num_active_gamespy_servers;
+static int	curPageScale;
+static int	gspyCurPage;
+static int	totalAllowedBrowserPages;
+static void JoinGamespyServer_Redraw(int serverscale);
+
+static void ConnectGamespyServerFunc(int key) /* FS: GameSpy Browser Connect Function */
+{
+	char	buffer[128];
+	int		index;
+
+	index = key + curPageScale;
+
+	if ( stricmp( gamespy_server_names[index], NO_SERVER_STRING ) == 0 )
+	{
+		return;
+	}
+
+	if (index >= m_num_gamespy_servers)
+	{
+		return;
+	}
+
+	sprintf (buffer, "%s\n", gamespy_connect_string[index]);
+	Cbuf_AddText (buffer);
+//	M_ForceMenuOff ();
+}
+
+static void FormatGamespyList (void)
+{
+	int j;
+	int skip = 0;
+
+	m_num_gamespy_servers = 0;
+	m_num_active_gamespy_servers = 0;
+
+	for (j = 0; j< MAX_SERVERS; j++)
+	{
+		if (m_num_gamespy_servers == MAX_GAMESPY_MENU_SERVERS)
+			break;
+
+		if ((browserList[j].hostname[0] != 0)) /* FS: Only show populated servers first */
+		{
+			if(browserList[j].curPlayers > 0)
+			{
+				if(vid.height <= 300) /* FS: Special formatting for low res. */
+				{
+					char buffer[80];
+
+					DG_strlcpy(gamespy_server_names[m_num_gamespy_servers], browserList[j].hostname, 20);
+
+					if(Q_strlen(browserList[j].hostname) >= 20)
+					{
+						Q_strcat(gamespy_server_names[m_num_gamespy_servers], "...");
+					}
+
+					sprintf(buffer, " [%d] %d/%d", browserList[j].ping, browserList[j].curPlayers, browserList[j].maxPlayers);
+					DG_strlcat(gamespy_server_names[m_num_gamespy_servers], buffer, sizeof(gamespy_server_names[m_num_gamespy_servers]));
+				}
+				else
+				{
+					sprintf(gamespy_server_names[m_num_gamespy_servers], "%s [%d] %d/%d", browserList[j].hostname, browserList[j].ping, browserList[j].curPlayers, browserList[j].maxPlayers);
+				}
+				sprintf(gamespy_connect_string[m_num_gamespy_servers], "connect %s:%d", browserList[j].ip, browserList[j].port);
+				m_num_gamespy_servers++;
+				m_num_active_gamespy_servers++;
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	j = 0;
+
+	for(j = 0; j< MAX_SERVERS; j++)
+	{
+		if (m_num_gamespy_servers == MAX_GAMESPY_MENU_SERVERS)
+			break;
+
+		if ((browserListAll[j].hostname[0] != 0))
+		{
+			if(vid.height <= 300) /* FS: Special formatting for low res. */
+			{
+				char buffer[80];
+
+				DG_strlcpy(gamespy_server_names[m_num_gamespy_servers-skip], browserListAll[j].hostname, 20);
+
+				if(Q_strlen(browserListAll[j].hostname) >= 20)
+				{
+					Q_strcat(gamespy_server_names[m_num_gamespy_servers-skip], "...");
+				}
+
+				sprintf(buffer, " [%d] %d/%d", browserListAll[j].ping, browserListAll[j].curPlayers, browserListAll[j].maxPlayers);
+				DG_strlcat(gamespy_server_names[m_num_gamespy_servers-skip], buffer, sizeof(gamespy_server_names[m_num_gamespy_servers-skip]));
+			}
+			else
+			{
+				sprintf(gamespy_server_names[m_num_gamespy_servers-skip], "%s [%d] %d/%d", browserListAll[j].hostname, browserListAll[j].ping, browserListAll[j].curPlayers, browserListAll[j].maxPlayers);
+			}
+			sprintf(gamespy_connect_string[m_num_gamespy_servers-skip], "connect %s:%d", browserListAll[j].ip, browserListAll[j].port);
+			m_num_gamespy_servers++;
+		}
+		else
+		{
+			skip++;
+			continue;
+		}
+	}
+}
+
+static void SearchGamespyGames (void)
+{
+	int		i;
+
+	m_num_gamespy_servers = 0;
+
+	for (i=0 ; i<=MAX_GAMESPY_MENU_SERVERS ; i++)
+	{
+		strcpy (gamespy_server_names[i], NO_SERVER_STRING);
+	}
+
+	// send out info packets
+	CL_PingNetServers_f ();
+}
+
+static int Get_Vidscale(void)
+{
+	/* FS: Special function for some what scaling of the server browser depending on video resolution height. */
+	if (vid.height <= 240)
+		return 18;
+	if (vid.height <= 300)
+		return 21;
+	if (vid.height <= 400)
+		return 25;
+	if (vid.height <= 480)
+		return 30;
+	if (vid.height <= 800)
+		return 36;
+	if (vid.height > 800)
+		return 38;
+	/* FS: We must have some weirdo mode, so 20 should be OK. */
+	return 18;
+}
+
+static void JoinGamespyServer_NextPageFunc (void *unused)
+{
+	int vidscale = Get_Vidscale();
+	int serverscale = Get_Vidscale();
+
+	if((gspyCurPage + 1) > totalAllowedBrowserPages)
+	{
+		return;
+	}
+
+	gspyCurPage++;
+	serverscale = vidscale*gspyCurPage;
+
+	JoinGamespyServer_Redraw(serverscale);
+	curPageScale = serverscale;
+}
+
+static void JoinGamespyServer_PrevPageFunc (void *unused)
+{
+	int vidscale = Get_Vidscale();
+	int serverscale = Get_Vidscale();
+
+	if((gspyCurPage - 1) < 0)
+	{
+		return;
+	}
+
+	gspyCurPage--;
+	serverscale = (vidscale*gspyCurPage);
+
+	JoinGamespyServer_Redraw(serverscale);
+	curPageScale = serverscale;
+}
+
 void M_Menu_Gamespy_f(void)
 {
 	key_dest = key_menu;
@@ -1686,7 +1873,7 @@ void M_Menu_Gamespy_f(void)
 
 }
 
-void M_Gamespy_Draw() // FS: Extended
+void M_Gamespy_Draw()
 {
 	qpic_t  *p;
 
@@ -1694,6 +1881,104 @@ void M_Gamespy_Draw() // FS: Extended
 	p = Draw_CachePic ("gfx/p_option.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
 
-        M_Print (16, 32, "     Refresh Server List");
-        M_DrawCheckbox (220, 32, net_broadcast_chat.value); // FS
+	M_Print (16, 32, "     Query Server List");
+//	M_DrawCheckbox (220, 32, net_broadcast_chat.value);
+}
+
+static void JoinGamespyServer_Redraw( int serverscale )
+{
+	int i, vidscale;
+	qboolean didBreak = false;
+
+#if 0
+	s_joingamespyserver_menu.x = viddef.width * 0.50 - 120;
+	s_joingamespyserver_menu.y = viddef.height * 0.50 - 118;
+	s_joingamespyserver_menu.nitems = 0;
+	s_joingamespyserver_menu.cursor = 0; /* FS: Set the cursor at the top */
+
+	s_joingamespyserver_search_action.generic.type = MTYPE_ACTION;
+	s_joingamespyserver_search_action.generic.name	= "Query server list";
+	s_joingamespyserver_search_action.generic.flags	= QMF_LEFT_JUSTIFY;
+	s_joingamespyserver_search_action.generic.x	= 0;
+	s_joingamespyserver_search_action.generic.y	= 0;
+	s_joingamespyserver_search_action.generic.callback = SearchGamespyGamesFunc;
+	s_joingamespyserver_search_action.generic.statusbar = "search for servers";
+
+	s_joingamespyserver_server_title.generic.type = MTYPE_SEPARATOR;
+	s_joingamespyserver_server_title.generic.name = "connect to...";
+	s_joingamespyserver_server_title.generic.x    = 80;
+	s_joingamespyserver_server_title.generic.y	   = 20;
+#endif
+
+	vidscale = Get_Vidscale();
+
+	for (i = 0; i <= MAX_GAMESPY_MENU_SERVERS; i++)
+	{
+		strcpy (gamespy_server_names[i], NO_SERVER_STRING);
+	}
+
+	i = 0;
+
+	for ( i = 0; i < vidscale; i++ )
+	{
+#if 0
+		s_joingamespyserver_server_actions[i].generic.type	= MTYPE_ACTION;
+		s_joingamespyserver_server_actions[i].generic.name	= gamespy_server_names[i+serverscale];
+		s_joingamespyserver_server_actions[i].generic.flags	= QMF_LEFT_JUSTIFY;
+		s_joingamespyserver_server_actions[i].generic.x		= 0;
+		s_joingamespyserver_server_actions[i].generic.y		= 30 + i*10;
+		s_joingamespyserver_server_actions[i].generic.callback = ConnectGamespyServerFunc;
+		s_joingamespyserver_server_actions[i].generic.statusbar = "press ENTER to connect";
+#endif
+	}
+
+//	Menu_AddItem( &s_joingamespyserver_menu, &s_joingamespyserver_search_action );
+//	Menu_AddItem( &s_joingamespyserver_menu, &s_joingamespyserver_server_title );
+
+	i = 0;
+
+	for ( i = 0; i < vidscale; i++ )
+	{
+		if (i+serverscale > MAX_GAMESPY_MENU_SERVERS)
+		{
+			didBreak = true;
+			break;
+		}
+
+//		Menu_AddItem( &s_joingamespyserver_menu, &s_joingamespyserver_server_actions[i] );
+	}
+
+#if 0
+	s_joingamespyserver_prevpage_action.generic.type = MTYPE_ACTION;
+	s_joingamespyserver_prevpage_action.generic.name	= "<Previous Page>";
+	s_joingamespyserver_prevpage_action.generic.flags	= QMF_LEFT_JUSTIFY;
+	s_joingamespyserver_prevpage_action.generic.x	= 0;
+	s_joingamespyserver_prevpage_action.generic.y	= 30 + i*10;
+	s_joingamespyserver_prevpage_action.generic.callback = JoinGamespyServer_PrevPageFunc;
+	s_joingamespyserver_prevpage_action.generic.statusbar = "continue browsing list";
+#endif
+
+	i++;
+
+#if 0
+	s_joingamespyserver_nextpage_action.generic.type = MTYPE_ACTION;
+	s_joingamespyserver_nextpage_action.generic.name	= "<Next Page>";
+	s_joingamespyserver_nextpage_action.generic.flags	= QMF_LEFT_JUSTIFY;
+	s_joingamespyserver_nextpage_action.generic.x	= 0;
+	s_joingamespyserver_nextpage_action.generic.y	= 30 + i*10;
+	s_joingamespyserver_nextpage_action.generic.callback = JoinGamespyServer_NextPageFunc;
+	s_joingamespyserver_nextpage_action.generic.statusbar = "continue browsing list";
+#endif
+
+	if(serverscale)
+	{
+//		Menu_AddItem (&s_joingamespyserver_menu, &s_joingamespyserver_prevpage_action );
+	}
+
+	if(!didBreak)
+	{
+//		Menu_AddItem (&s_joingamespyserver_menu, &s_joingamespyserver_nextpage_action );
+	}
+
+	FormatGamespyList(); /* FS: Incase we changed resolution or ran slist2 in the console and went back to this menu... */
 }

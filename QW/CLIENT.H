@@ -42,6 +42,7 @@ typedef struct
 }
 gamespyBrowser_t;
 extern gamespyBrowser_t browserList[MAX_SERVERS];
+extern gamespyBrowser_t browserListAll[MAX_SERVERS];
 void CL_PingNetServers_f (void);
 
 // player_state_t is the information needed by a player entity
