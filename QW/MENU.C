@@ -951,17 +951,17 @@ char *quitMessage [] =
   "  Are you gonna quit    ",
   "  this game just like   ",
   "   everything else?     ",
-  "			",
+  "                        ",
  
   " Milord, methinks that  ",
   "   thou art a lowly     ",
   " quitter. Is this true? ",
-  "			",
+  "                        ",
 
   " Do I need to bust your ",
   "  face open for trying  ",
-  "	to quit?	",
-  "			",
+  "        to quit?        ",
+  "                        ",
 
   " Man, I oughta smack you",
   "   for trying to quit!  ",
@@ -986,7 +986,7 @@ char *quitMessage [] =
   "  If you quit now, I'll ",
   "  throw a blanket-party ",
   "   for you next time!   ",
-  "			"
+  "                        ",
 };
 
 void M_Menu_Quit_f (void)
@@ -1075,10 +1075,10 @@ void M_MultiPlayer_Draw (void) {
 	M_PrintWhite (72, 10*8, "If you want to find QW  ");
 	M_PrintWhite (72, 11*8, "games, head on over to: ");
 	     M_Print (72, 12*8, "   www.quakeworld.net   ");
-	M_PrintWhite (72, 13*8, "	  or	    ");
+	M_PrintWhite (72, 13*8, "          or            ");
 	     M_Print (72, 14*8, "   www.quakespy.com     ");
 	M_PrintWhite (72, 15*8, "For pointers on getting ");
-	M_PrintWhite (72, 16*8, "	started!	");
+	M_PrintWhite (72, 16*8, "        started!        ");
 }
 
 void M_MultiPlayer_Key (key) {
@@ -1092,7 +1092,7 @@ void M_Quit_Draw (void)
 #define VSTR2(x) VSTR(x)
 	char *cmsg[] = {
 //    0123456789012345678901234567890123456789
-	"0	    QuakeWorld",
+	"0            QuakeWorld",
 	"1    version " VSTR2(VERSION) " by id Software",
 	"0Programming",
 	"1 John Carmack    Michael Abrash",
