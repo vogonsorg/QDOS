@@ -458,7 +458,7 @@ void M_AdjustSliders (int dir)
 		Cvar_SetValue ("volume", volume.value);
 		break;
 		
-	case 8: // allways run
+	case 8: // always run
 		if (cl_forwardspeed.value > 200)
 		{
 			Cvar_SetValue ("cl_forwardspeed", 200);
@@ -525,47 +525,47 @@ void M_DrawCheckbox (int x, int y, int on)
 
 void M_Options_Draw (void)
 {
-	float	   r;
-	qpic_t  *p;
+	float	r;
+	qpic_t	*p;
 	
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
 	p = Draw_CachePic ("gfx/p_option.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
 	
 	M_Print (16, 32, "    Customize controls");
-	M_Print (16, 40, "	 Go to console");
+	M_Print (16, 40, "         Go to console");
 	M_Print (16, 48, "     Reset to defaults");
 
-	M_Print (16, 56, "	   Screen size");
+	M_Print (16, 56, "           Screen size");
 	r = (scr_viewsize.value - 30) / (120 - 30);
 	M_DrawSlider (220, 56, r);
 
-	M_Print (16, 64, "	    Brightness");
+	M_Print (16, 64, "            Brightness");
 	r = (1.0 - v_gamma.value) / 0.5;
 	M_DrawSlider (220, 64, r);
 
-	M_Print (16, 72, "	   Mouse Speed");
-	r = (sensitivity.value)/50; /* FS: Changed from 11 */
+	M_Print (16, 72, "           Mouse Speed");
+	r = (sensitivity.value)/50; /* FS: Was 11 */
 	M_DrawSlider (220, 72, r);
 
 	M_Print (16, 80, "       CD Music Volume");
 	r = bgmvolume.value;
 	M_DrawSlider (220, 80, r);
 
-	M_Print (16, 88, "	  Sound Volume");
+	M_Print (16, 88, "          Sound Volume");
 	r = volume.value;
 	M_DrawSlider (220, 88, r);
 
-	M_Print (16, 96,  "	    Always Run");
+	M_Print (16, 96,  "            Always Run");
 	M_DrawCheckbox (220, 96, cl_forwardspeed.value > 200);
 
-	M_Print (16, 104, "	  Invert Mouse");
+	M_Print (16, 104, "          Invert Mouse");
 	M_DrawCheckbox (220, 104, m_pitch.value < 0);
 
-	M_Print (16, 112, "	    Lookspring");
+	M_Print (16, 112, "            Lookspring");
 	M_DrawCheckbox (220, 112, lookspring.value);
 
-	M_Print (16, 120, "	    Lookstrafe");
+	M_Print (16, 120, "            Lookstrafe");
 	M_DrawCheckbox (220, 120, lookstrafe.value);
 
 	M_Print (16, 128, "    Use old status bar");
@@ -575,13 +575,16 @@ void M_Options_Draw (void)
 	M_DrawCheckbox (220, 136, cl_hudswap.value);
 
 	if (vid_menudrawfn)
-		M_Print (16, 144, "	 Video Options");
+		M_Print (16, 144, "         Video Options");
 
-	M_Print (16, 152, "      Extended Options"); /* FS: Extended options unique to QDOS */
+	M_Print (16, 152, "      Extended Options");  /* FS: Extended options unique to QDOS */
+
+
 
 // cursor
 	M_DrawCharacter (200, 32 + options_cursor*8, 12+((int)(realtime*4)&1));
 }
+
 
 
 void M_Options_Key (int k)
@@ -1398,7 +1401,7 @@ void M_Extended_Draw()
 	M_Print (16, 40, "     Chat Notification");
 	M_DrawCheckbox (220, 40, net_showchat.value);
 
-	M_Print (16, 48, "	 Chat Graphics");
+	M_Print (16, 48, "         Chat Graphics");
 	M_DrawCheckbox (220, 48, net_showchatgfx.value);
 
 	M_Print (16, 56,  "      Content Blending");
@@ -1407,10 +1410,10 @@ void M_Extended_Draw()
 	M_Print (16, 64,  "     Unbindall Protect");
 	M_DrawCheckbox (220, 64, cl_unbindall_protection.value);
 
-	M_Print (16, 72,  "	   Show Uptime");
+	M_Print (16, 72,  "           Show Uptime");
 	M_DrawCheckbox (220, 72, show_uptime.value);
 
-	M_Print (16, 80,  "	     Show Time");
+	M_Print (16, 80,  "             Show Time");
 	if (show_time.value < 1 )
 		M_Print (220, 80, "off");
 	else if (show_time.value == 1)
@@ -1418,10 +1421,10 @@ void M_Extended_Draw()
 	else if (show_time.value >= 2)
 		M_Print (220, 80, "AM/PM");
 
-	M_Print (16, 88,  "	Show Framerate");
+	M_Print (16, 88,  "        Show Framerate");
 	M_DrawCheckbox (220, 88, show_fps.value);
 
-	M_Print (16, 96,  "	Mouse Freelook");
+	M_Print (16, 96,  "        Mouse Freelook");
 	M_DrawCheckbox (220, 96, in_freelook.value);
 
 	M_Print (16,104,  "       Water View-warp");
@@ -1432,7 +1435,7 @@ void M_Extended_Draw()
 	M_DrawSlider (220, 112, r);
 	M_DrawCharacter (200, 32 + extended_cursor*8, 12+((int)(realtime*4)&1));
 
-	M_Print (16, 120, "	    Sound Rate");
+	M_Print (16, 120, "            Sound Rate");
 	if (s_khz.intValue <= 0)
 		Cvar_SetValue("s_khz", 11025);
 	M_Print (220, 120, s_khz.string);
