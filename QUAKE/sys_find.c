@@ -1,4 +1,4 @@
-// FS: From Q2
+/* FS: From Q2 */
 #ifdef __DJGPP__
 #include <sys/stat.h>
 #include <dirent.h>
@@ -145,7 +145,7 @@ char *Sys_FindFirst (char *path, unsigned musthave, unsigned canthave )
 		Sys_Error ("Sys_FindFirst without close");
 	findhandle = 0;
 
-//	COM_FilePath (path, findbase); // FS: Check this on Windows
+//	COM_FilePath (path, findbase);
 	strcpy(findbase, path);
 
 	findhandle = _findfirst (path, &findinfo);

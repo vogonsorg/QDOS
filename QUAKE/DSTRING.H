@@ -29,7 +29,7 @@
 #ifndef __dstring_h
 #define __dstring_h
 
-#ifdef _MSC_VER // FS: VS6
+#ifdef _MSC_VER /* FS: VS6 */
 	#define __attribute__(x)
 #endif
 /** \defgroup dstring Dynamic Strings

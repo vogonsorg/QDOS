@@ -1188,6 +1188,10 @@ SOURCE=.\d_iface.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\DG_misc.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\dosisms.h
 # End Source File
 # Begin Source File

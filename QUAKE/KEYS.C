@@ -45,8 +45,9 @@ qboolean	menubound[256];	// if true, can't be rebound while in menu
 int		keyshift[256];		// key to map to if shift held down in console
 int		key_repeats[256];	// if > 1, it is autorepeating
 qboolean	keydown[256];
-cvar_t  cl_unbindall_protection = {"cl_unbindall_protection","1",false}; // FS: unbindall protection
-extern char *Sort_Possible_Cmds (char *partial); // FS
+cvar_t cl_unbindall_protection = {"cl_unbindall_protection", "1", false}; /* FS: Unbindall protection */
+
+extern char *Sort_Possible_Cmds (char *partial); /* FS: Added */
 
 typedef struct
 {
@@ -132,10 +133,26 @@ keyname_t keynames[] =
 	{"AUX31", K_AUX31},
 	{"AUX32", K_AUX32},
 
-	{"PAUSE", K_PAUSE},
+	{"KP_HOME",			K_KP_HOME },
+	{"KP_UPARROW",		K_KP_UPARROW },
+	{"KP_PGUP",			K_KP_PGUP },
+	{"KP_LEFTARROW",	K_KP_LEFTARROW },
+	{"KP_5",			K_KP_5 },
+	{"KP_RIGHTARROW",	K_KP_RIGHTARROW },
+	{"KP_END",			K_KP_END },
+	{"KP_DOWNARROW",	K_KP_DOWNARROW },
+	{"KP_PGDN",			K_KP_PGDN },
+	{"KP_ENTER",		K_KP_ENTER },
+	{"KP_INS",			K_KP_INS },
+	{"KP_DEL",			K_KP_DEL },
+	{"KP_SLASH",		K_KP_SLASH },
+	{"KP_MINUS",		K_KP_MINUS },
+	{"KP_PLUS",			K_KP_PLUS },
 
 	{"MWHEELUP", K_MWHEELUP},
 	{"MWHEELDOWN", K_MWHEELDOWN},
+
+	{"PAUSE", K_PAUSE},
 
 	{"SEMICOLON", ';'},	// because a raw semicolon seperates commands
 
@@ -210,14 +227,14 @@ void Key_Console (int key)
 		}
 	}
 	
-	if (key == K_BACKSPACE || key == K_LEFTARROW)
+	if ( (key == K_BACKSPACE) || (key == K_LEFTARROW) || (key == K_KP_LEFTARROW) )
 	{
 		if (key_linepos > 1)
 			key_linepos--;
 		return;
 	}
 
-	if (key == K_UPARROW)
+	if ( (key == K_UPARROW) || (key == K_KP_UPARROW) )
 	{
 		do
 		{
@@ -231,7 +248,7 @@ void Key_Console (int key)
 		return;
 	}
 
-	if (key == K_DOWNARROW)
+	if ( (key == K_DOWNARROW) || (key == K_KP_DOWNARROW) )
 	{
 		if (history_line == edit_line) return;
 		do
@@ -253,7 +270,7 @@ void Key_Console (int key)
 		return;
 	}
 
-	if (key == K_PGUP || key==K_MWHEELUP)
+	if ( (key == K_PGUP) || (key == K_KP_PGUP) || (key==K_MWHEELUP) )
 	{
 		con_backscroll += 2;
 		if (con_backscroll > con_totallines - (vid.height>>3) - 1)
@@ -261,7 +278,7 @@ void Key_Console (int key)
 		return;
 	}
 
-	if (key == K_PGDN || key==K_MWHEELDOWN)
+	if ( (key == K_PGDN) || (key == K_KP_PGDN) || (key==K_MWHEELDOWN) )
 	{
 		con_backscroll -= 2;
 		if (con_backscroll < 0)
@@ -269,13 +286,13 @@ void Key_Console (int key)
 		return;
 	}
 
-	if (key == K_HOME)
+	if ( (key == K_HOME) || (key == K_KP_HOME) )
 	{
 		con_backscroll = con_totallines - (vid.height>>3) - 1;
 		return;
 	}
 
-	if (key == K_END)
+	if ( (key == K_END) || (key == K_KP_END) )
 	{
 		con_backscroll = 0;
 		return;
@@ -334,9 +351,9 @@ void Key_Message (int key)
 		return;
 	}
 
-	if (key == K_UPARROW || key == K_RIGHTARROW) // FS: Press up to cycle up the index to the first chat msg
+	if (key == K_UPARROW || key == K_RIGHTARROW) /* FS: Press up to cycle up the index to the first chat msg */
 	{
-                key_dest = key_message;
+		key_dest = key_message;
 
 		if (chat_index != chat_tail) 
 		{
@@ -348,9 +365,9 @@ void Key_Message (int key)
 		return;
 	}
 
-	if (key == K_DOWNARROW || key == K_LEFTARROW) // FS: Press down to cycle down the index to the last chat msg
+	if (key == K_DOWNARROW || key == K_LEFTARROW) /* FS: Press down to cycle down the index to the last chat msg */
 	{
-                key_dest = key_message;
+		key_dest = key_message;
 		
 		if (chat_index != chat_head) {
 			chat_index = (chat_index + 1) % MAX_CHAT;
@@ -364,7 +381,7 @@ void Key_Message (int key)
 	if (key == K_ESCAPE)
 	{
 		key_dest = key_game;
-		chat_index = chat_head; // FS: Reset to the beginning of the chat history
+		chat_index = chat_head; /* FS: Reset to the beginning of the chat history */
 		chat_bufferlen = 0;
 		chat_buffer[0] = 0;
 		return;
@@ -383,7 +400,7 @@ void Key_Message (int key)
 		return;
 	}
 
-        if (chat_bufferlen == 31) 
+	if (chat_bufferlen == sizeof(chat_buffer)-1)
 		return; // all full
 
 	chat_buffer[chat_bufferlen++] = key;
@@ -506,13 +523,12 @@ void Key_Unbind_f (void)
 void Key_Unbindall_f (void)
 {
 	int		i;
-
-        if(cl_unbindall_protection.value)
+        if (cl_unbindall_protection.value)
         {
                 Con_Warning("unbindall protection enabled.  It is recommended to do exec default.cfg instead!\nUse cl_unbindall_protection 0 to continue.\n");
                 return;
         }
-        for (i=0 ; i<256 ; i++)
+	for (i=0 ; i<256 ; i++)
 		if (keybindings[i])
 			Key_SetBinding (i, "");
         cl_unbindall_protection.value = 1;
@@ -604,19 +620,36 @@ void Key_Init (void)
 	for (i=32 ; i<128 ; i++)
 		consolekeys[i] = true;
 	consolekeys[K_ENTER] = true;
+	consolekeys[K_KP_ENTER] = true;
 	consolekeys[K_TAB] = true;
 	consolekeys[K_LEFTARROW] = true;
+	consolekeys[K_KP_LEFTARROW] = true;
 	consolekeys[K_RIGHTARROW] = true;
+	consolekeys[K_KP_RIGHTARROW] = true;
 	consolekeys[K_UPARROW] = true;
+	consolekeys[K_KP_UPARROW] = true;
 	consolekeys[K_DOWNARROW] = true;
+	consolekeys[K_KP_DOWNARROW] = true;
 	consolekeys[K_BACKSPACE] = true;
-        consolekeys[K_END] = true; // FS
-        consolekeys[K_HOME] = true; // FS
+	consolekeys[K_HOME] = true;
+	consolekeys[K_KP_HOME] = true;
+	consolekeys[K_END] = true;
+	consolekeys[K_KP_END] = true;
 	consolekeys[K_PGUP] = true;
+	consolekeys[K_KP_PGUP] = true;
 	consolekeys[K_PGDN] = true;
+	consolekeys[K_KP_PGDN] = true;
 	consolekeys[K_SHIFT] = true;
+	consolekeys[K_INS] = true;
+	consolekeys[K_KP_INS] = true;
+	consolekeys[K_KP_DEL] = true;
+	consolekeys[K_KP_SLASH] = true;
+	consolekeys[K_KP_PLUS] = true;
+	consolekeys[K_KP_MINUS] = true;
+	consolekeys[K_KP_5] = true;
 	consolekeys[K_MWHEELUP] = true;
 	consolekeys[K_MWHEELDOWN] = true;
+
 	consolekeys['`'] = false;
 	consolekeys['~'] = false;
 
@@ -656,7 +689,8 @@ void Key_Init (void)
 	Cmd_AddCommand ("bind",Key_Bind_f);
 	Cmd_AddCommand ("unbind",Key_Unbind_f);
 	Cmd_AddCommand ("unbindall",Key_Unbindall_f);
-        Cvar_RegisterVariable(&cl_unbindall_protection); // FS: unbindall protection
+
+	Cvar_RegisterVariable(&cl_unbindall_protection); /* FS: unbindall protection */
 }
 
 /*
@@ -688,30 +722,45 @@ void Key_Event (int key, qboolean down)
 	if (down)
 	{
 		key_repeats[key]++;
-/*                if (key != K_BACKSPACE && key != K_PAUSE && key_repeats[key] > 1)
-		{
-			return;	// ignore most autorepeats
-		}
-*/ // FS: No way man
 
+		if (!cl_autorepeat_allkeys.intValue) /* FS: Added */
+		{
+			if (key != K_BACKSPACE 
+				&& key != K_PAUSE 
+				&& key != K_PGUP 
+				&& key != K_KP_PGUP 
+				&& key != K_PGDN
+				&& key != K_KP_PGDN
+				&& key_repeats[key] > 1)
+			{
+				return;	// ignore most autorepeats
+			}
+		}
+			
 		if (key >= 200 && !keybindings[key])
 			Con_Printf ("%s is unbound, hit F4 to set.\n", Key_KeynumToString (key) );
+	}
+	else
+	{
+		key_repeats[key] = 0;
 	}
 
 	if (key == K_SHIFT)
 		shift_down = down;
 
-	if (key == 'q') // FS: Instant Quit
+	if (key == 'q') /* FS: Instant quit */
 	{
-		if(keydown[K_CTRL])
+		if (keydown[K_CTRL])
 		{
 			Cbuf_AddText("quit!\n");
 			return;
 		}
 	}
+
 //
 // handle escape specialy, so the user can never unbind it
 //
+
 	if (key == K_ESCAPE)
 	{
 		if (!down)
@@ -819,7 +868,6 @@ void Key_Event (int key, qboolean down)
 		Sys_Error ("Bad key_dest");
 	}
 }
-
 
 /*
 ===================

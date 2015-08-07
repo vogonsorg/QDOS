@@ -996,11 +996,11 @@ void SCR_UpdateScreen (void)
 		SCR_DrawTurtle ();
 		SCR_DrawPause ();
 		SCR_CheckDrawCenterString ();
-		if (scr_con_current != vid.height) // FS: Don't draw this if the console is in fullscreen
+		if (scr_con_current != vid.height) /* FS: Don't draw this if the console is in fullscreen */
 		{
-			SCR_DrawUptime (); // FS: show uptime
-			SCR_DrawTime (); // FS: show time
-			SCR_DrawFPS (); // FS: show_fps from QRACK
+			SCR_DrawUptime (); /* FS: show uptime */
+			SCR_DrawTime (); /* FS: show time */
+			SCR_DrawFPS (); /* FS: Show FPS */
 		}
 		Sbar_Draw ();
 		SCR_DrawConsole ();

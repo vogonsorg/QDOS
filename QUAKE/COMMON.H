@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "dstring.h"
 
-#include "DG_misc.h" // FS: Caedes special safe string stuff
+#include "DG_misc.h" /* FS: Caedes special safe string stuff */
 
 #if !defined BYTE_DEFINED
 typedef unsigned char 		byte;
@@ -41,9 +41,9 @@ typedef struct sizebuf_s
 {
 	qboolean	allowoverflow;	// if false, do a Sys_Error
 	qboolean	overflowed;		// set to true if the buffer size failed
-	byte	*data;
-	int		maxsize;
-	int		cursize;
+	byte		*data;
+	int			maxsize;
+	int			cursize;
 } sizebuf_t;
 
 void SZ_Alloc (sizebuf_t *buf, int startsize);
@@ -77,26 +77,26 @@ void InsertLinkAfter (link_t *l, link_t *after);
 #define NULL ((void *)0)
 #endif
 
-#define Q_MAXCHAR ((char)0x7f)
-#define Q_MAXSHORT ((short)0x7fff)
+#define Q_MAXCHAR	((char)0x7f)
+#define Q_MAXSHORT	((short)0x7fff)
 #define Q_MAXINT	((int)0x7fffffff)
-#define Q_MAXLONG ((int)0x7fffffff)
-#define Q_MAXFLOAT ((int)0x7fffffff)
+#define Q_MAXLONG	((int)0x7fffffff)
+#define Q_MAXFLOAT	((int)0x7fffffff)
 
-#define Q_MINCHAR ((char)0x80)
-#define Q_MINSHORT ((short)0x8000)
-#define Q_MININT 	((int)0x80000000)
-#define Q_MINLONG ((int)0x80000000)
-#define Q_MINFLOAT ((int)0x7fffffff)
+#define Q_MINCHAR	((char)0x80)
+#define Q_MINSHORT	((short)0x8000)
+#define Q_MININT	((int)0x80000000)
+#define Q_MINLONG	((int)0x80000000)
+#define Q_MINFLOAT	((int)0x7fffffff)
 
 //============================================================================
 
-extern	qboolean		bigendien;
+extern	qboolean	bigendien;
 
 extern	short	(*BigShort) (short l);
 extern	short	(*LittleShort) (short l);
-extern	int	(*BigLong) (int l);
-extern	int	(*LittleLong) (int l);
+extern	int		(*BigLong) (int l);
+extern	int		(*LittleLong) (int l);
 extern	float	(*BigFloat) (float l);
 extern	float	(*LittleFloat) (float l);
 
@@ -143,7 +143,7 @@ int Q_strcasecmp (char *s1, char *s2);
 int Q_strncasecmp (char *s1, char *s2, int n);
 int	Q_atoi (char *str);
 float Q_atof (char *str);
-size_t Q_strlcpy (char *dst, const char *src, size_t siz); // FS: From OpenBSD
+size_t Q_strlcpy (char *dst, const char *src, size_t siz); /* FS: From OpenBSD */
 
 //============================================================================
 
@@ -186,15 +186,14 @@ byte *COM_LoadStackFile (char *path, void *buffer, int bufsize);
 byte *COM_LoadTempFile (char *path);
 byte *COM_LoadHunkFile (char *path);
 void COM_LoadCacheFile (char *path, struct cache_user_s *cu);
-char *COM_NextPath (char *prevpath); // FS: From Q2
-void COM_FreeFileList (char **list, int n); // FS: From Q2
-qboolean COM_ItemInList (char *check, int num, char **list); // FS: From Q2
-char **COM_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned canthave ); // FS: From Q2
-
+/* FS: From Q2 */
+char *COM_NextPath (char *prevpath);
+void COM_FreeFileList (char **list, int n);
+qboolean COM_ItemInList (char *check, int num, char **list);
+char **COM_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned canthave );
 
 extern	struct cvar_s	registered;
-
-extern qboolean         standard_quake, rogue, hipnotic;
+extern	qboolean		standard_quake, rogue, hipnotic;
 extern int              nehahra, extended_mod; // FS: nehahra
-void Com_sprintf(dstring_t *dst, const char *fmt, ...); // FS
-void Com_strcpy (char *dest, int destSize, const char *src); // FS
+void Com_sprintf(dstring_t *dst, const char *fmt, ...); /* FS: Added */
+void Com_strcpy (char *dest, int destSize, const char *src); /* FS: Added */

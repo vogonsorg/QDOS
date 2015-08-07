@@ -116,3 +116,4 @@ void SCR_UpdateWholeScreen(void);
 void IN_ClearStates (void);
 
 #endif // _WIN32
+

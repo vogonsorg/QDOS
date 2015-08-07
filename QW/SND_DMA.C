@@ -827,7 +827,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 	{
 		if (!ch->sfx)
 			continue;
-		if (ch->sfx->isCDtrack)  /* FS: Fucks up tunes if we allow spatial */
+		if (ch->sfx->isCDtrack) /* FS: Fucks up tunes if we allow spatial */
 		{
 			ch->leftvol = ch->master_vol;
 			ch->rightvol = ch->master_vol;

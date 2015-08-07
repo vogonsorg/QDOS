@@ -219,11 +219,10 @@ LTestDone:
 
 	cmpl	$4,%eax
 	ja		LDefault
-
 #ifdef _MSC_VER
 	jmp		DP_EntryTable-4(,%eax,4)
 #else
-	jmp		*DP_EntryTable-4(,%eax,4)
+        jmp             *DP_EntryTable-4(,%eax,4) // FS: Compiler Warning
 #endif
 
 // 1x1

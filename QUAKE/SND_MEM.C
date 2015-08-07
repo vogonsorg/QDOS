@@ -55,10 +55,8 @@ void ResampleSfx (sfx_t *sfx, int inrate, int inwidth, byte *data)
 		sc->width = 1;
 	else
 		sc->width = inwidth;
-//	sc->stereo = 0; // FS: We go stereo now baby
 
 // resample / decimate to the current source rate
-
 	if (stepscale == 1 && inwidth == 1 && sc->width == 1)
 	{
 // fast special case
@@ -125,12 +123,7 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 	}
 
 	info = GetWavinfo (s->name, data, com_filesize);
-/*
-	if (info.channels != 1)
-	{
-		Con_DPrintf (DEVELOPER_MSG_SOUND, "%s is a stereo sample\n",s->name); // FS: Testing
-	}
-*/
+
 	if (info.channels < 1 || info.channels > 2)	//CDawg changed
 	{
 		Con_Printf ("%s has an invalid number of channels\n", s->name);

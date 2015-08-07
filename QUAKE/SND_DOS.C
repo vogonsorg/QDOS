@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "dosisms.h"
 
 int BLASTER_GetDMAPos(void);
-void S_StopAllSoundsC (void); // FS: Proto this for GUS Clear Buffer Fix
+void S_StopAllSoundsC (void); /* FS: Proto this for GUS Clear Buffer Fix */
 
 /*
 ===============================================================================
@@ -34,7 +34,7 @@ GUS SUPPORT
 qboolean GUS_Init (void);
 int GUS_GetDMAPos (void);
 void GUS_Shutdown (void);
-int   havegus = 0; // FS
+int   havegus = 0; /* FS: Added */
 
 
 /*
@@ -45,10 +45,10 @@ BLASTER SUPPORT
 ===============================================================================
 */
 
-static	short *dma_buffer = NULL; // sezero
-static	void  *dma_dosadr = NULL;
-static	int dma_size;
-static	int dma;
+static short *dma_buffer = NULL; // sezero
+static void  *dma_dosadr = NULL;
+static int dma_size;
+static  int dma;
 
 static  int dsp_port;
 static  int irq;
@@ -57,15 +57,15 @@ static  int high_dma;
 static  int mixer_port;
 static  int mpu401_port;
 
-int	dsp_version;
-int	dsp_minor_version;
+int dsp_version;
+int dsp_minor_version;
 
-int	timeconstant=-1;
+int timeconstant=-1;
 
 void PrintBits (byte b)
 {
-	int		i;
-	char	str[9];
+	int     i;
+	char    str[9];
 	
 	for (i=0 ; i<8 ; i++)
 		str[i] = '0' + ((b & (1<<(7-i))) > 0);
@@ -187,7 +187,7 @@ void WriteMixer(int addr, int val)
 	dos_outportb(mixer_port+5, val);
 }
 
-int				 oldmixervalue;
+int             oldmixervalue;
 
 /*
 ================
@@ -197,7 +197,7 @@ StartSB
 */
 void StartSB(void)
 {
-	int	i;
+	int             i;
 
 // version 4.xx startup code
 	if (dsp_version >= 4)
@@ -212,7 +212,7 @@ void StartSB(void)
 
 		WriteDSP(0xb6); // 16-bit output
 		WriteDSP(0x30); // stereo
-		WriteDSP((shm->samples-1) & 0xff);		// # of samples - 1
+		WriteDSP((shm->samples-1) & 0xff);      // # of samples - 1
 		WriteDSP((shm->samples-1) >> 8);
 	}
 // version 3.xx startup code
@@ -224,12 +224,12 @@ void StartSB(void)
 		oldmixervalue = ReadMixer (0xe);
 		WriteMixer (0xe, oldmixervalue | 0x2);// turn on stereo
 
-		WriteDSP(0x14);					  // send one byte
+		WriteDSP(0x14);                 // send one byte
 		WriteDSP(0x0);
 		WriteDSP(0x0);
 
 		for (i=0 ; i<0x10000 ; i++)
-			dos_inportb(dsp_port+0xe);				  // ack the dsp
+			dos_inportb(dsp_port+0xe);              // ack the dsp
 		
 		timeconstant = 65536-(256000000/(shm->channels*shm->speed));
 		WriteDSP(0x40);
@@ -238,7 +238,7 @@ void StartSB(void)
 		WriteMixer (0xe, ReadMixer(0xe) | 0x20);// turn off filter
 
 		WriteDSP(0x48);
-		WriteDSP((shm->samples-1) & 0xff);		// # of samples - 1
+		WriteDSP((shm->samples-1) & 0xff);      // # of samples - 1
 		WriteDSP((shm->samples-1) >> 8);
 
 		WriteDSP(0x90); // high speed 8 bit stereo
@@ -254,7 +254,7 @@ void StartSB(void)
 		WriteDSP(timeconstant>>8);
 
 		WriteDSP(0x48);
-		WriteDSP((shm->samples-1) & 0xff);		// # of samples - 1
+		WriteDSP((shm->samples-1) & 0xff);      // # of samples - 1
 		WriteDSP((shm->samples-1) >> 8);
 
 		WriteDSP(0x1c); // normal speed 8 bit mono
@@ -284,7 +284,7 @@ void StartDMA(void)
 	realaddr = ptr2real(dma_buffer);
 
 // use a high dma channel if specified
-	if (high_dma && dsp_version >= 4)		 // 8 bit snd can never use 16 bit dma
+	if (high_dma && dsp_version >= 4)       // 8 bit snd can never use 16 bit dma
 		dma = high_dma;
 	else
 		dma = low_dma;
@@ -306,13 +306,13 @@ void StartDMA(void)
 		clear_reg = 0xe;
 	}
 
-	dos_outportb(disable_reg, dma|4);		 // disable channel
+	dos_outportb(disable_reg, dma|4);       // disable channel
 	// set mode- see "undocumented pc", p.876
 	mode =  (1<<6)  // single-cycle
-		+(0<<5)			// address increment
-		+(1<<4)			// auto-init dma
-		+(2<<2)			// read
-		+(dma&3);		 // channel #
+		+(0<<5)         // address increment
+		+(1<<4)         // auto-init dma
+		+(2<<2)         // read
+		+(dma&3);       // channel #
 	dos_outportb(mode_reg, mode);
 	
 // set address
@@ -320,27 +320,27 @@ void StartDMA(void)
 	dos_outportb(page_reg[dma], realaddr >> 16);
 
 	if (dma > 3)
-	{		 // address is in words
-		dos_outportb(flipflop_reg, 0);			 // prepare to send 16-bit value
+	{       // address is in words
+		dos_outportb(flipflop_reg, 0);          // prepare to send 16-bit value
 		dos_outportb(addr_reg[dma], (realaddr>>1) & 0xff);
 		dos_outportb(addr_reg[dma], (realaddr>>9) & 0xff);
 
-		dos_outportb(flipflop_reg, 0);			 // prepare to send 16-bit value
+		dos_outportb(flipflop_reg, 0);          // prepare to send 16-bit value
 		dos_outportb(count_reg[dma], ((dma_size>>1)-1) & 0xff);
 		dos_outportb(count_reg[dma], ((dma_size>>1)-1) >> 8);
 	}
 	else
-	{		 // address is in bytes
-		dos_outportb(flipflop_reg, 0);			 // prepare to send 16-bit value
+	{       // address is in bytes
+		dos_outportb(flipflop_reg, 0);          // prepare to send 16-bit value
 		dos_outportb(addr_reg[dma], realaddr & 0xff);
 		dos_outportb(addr_reg[dma], (realaddr>>8) & 0xff);
 
-		dos_outportb(flipflop_reg, 0);			 // prepare to send 16-bit value
+		dos_outportb(flipflop_reg, 0);          // prepare to send 16-bit value
 		dos_outportb(count_reg[dma], (dma_size-1) & 0xff);
 		dos_outportb(count_reg[dma], (dma_size-1) >> 8);
 	}
 
-	dos_outportb(clear_reg, 0);				 // clear write mask
+	dos_outportb(clear_reg, 0);             // clear write mask
 	dos_outportb(disable_reg, dma&~4);
 }
 
@@ -414,7 +414,7 @@ qboolean BLASTER_Init(void)
 	shm->speed = 11025;
 	rc = COM_CheckParm("-sspeed");
 
-	if (s_khz.value > 0) // FS: S_KHZ
+	if (s_khz.value > 0) /* FS */
 	{
 		shm->speed = s_khz.value;
 	}
@@ -441,7 +441,7 @@ qboolean BLASTER_Init(void)
 		shm->samplebits = 8;	 
 	}
 
-	if(!host_initialized) // FS: SND_RESTART
+	if(!host_initialized) /* FS: for snd_restart */
 	{
 		Cmd_AddCommand("sbinfo", SB_Info_f);
 	}
@@ -493,9 +493,9 @@ int BLASTER_GetDMAPos(void)
 // this function is called often.  acknowledge the transfer completions
 // all the time so that it loops
 	if (dsp_version >= 4)
-		dos_inportb(dsp_port+0xf);		// 16 bit audio
+		dos_inportb(dsp_port+0xf);      // 16 bit audio
 	else
-		dos_inportb(dsp_port+0xe);		// 8 bit audio
+		dos_inportb(dsp_port+0xe);      // 8 bit audio
 
 // clear 16-bit reg flip-flop
 // load the current dma count register
@@ -518,7 +518,7 @@ int BLASTER_GetDMAPos(void)
 		count = shm->samples - (count+1);
 	}
 
-//		Con_Printf("DMA pos = 0x%x\n", count);
+//      Con_Printf("DMA pos = 0x%x\n", count);
 
 	shm->samplepos = count & (shm->samples-1);
 	return shm->samplepos;
@@ -539,7 +539,7 @@ void BLASTER_Shutdown(void)
 	}
 	else if (dsp_version == 3)
 	{
-		ResetDSP ();						  // stop high speed mode
+		ResetDSP ();                    // stop high speed mode
 		WriteMixer (0xe, oldmixervalue); // turn stereo off and filter on
 	}
 	else
@@ -550,7 +550,7 @@ void BLASTER_Shutdown(void)
 	WriteDSP(0xd3); // turn off speaker
 	ResetDSP ();
 
-	dos_outportb(disable_reg, dma|4);		 // disable dma channel
+	dos_outportb(disable_reg, dma|4);       // disable dma channel
 
 	dos_freememory(dma_dosadr); // sezero
 	dma_dosadr = NULL; // sezero
@@ -566,20 +566,20 @@ INTERFACE
 ===============================================================================
 */
 
-void snd_shutdown_f (void) // FS: SND_SHUTDOWN
+void snd_shutdown_f (void) /* FS: Added */
 {
 	SNDDMA_Shutdown();
 	Con_Printf("\nSound Disabled.\n");
 	Cache_Flush();
 }
 
-void snd_restart_f (void) // FS: SND_RESTART
+void snd_restart_f (void) /* FS: Added */
 {
 	SNDDMA_Shutdown();
 	Con_Printf("\nSound Restarting\n");
 	Cache_Flush();
 	SNDDMA_Init();
-	S_StopAllSoundsC(); // FS: For GUS Buffer Clear Fix
+	S_StopAllSoundsC(); /* FS: For GUS Clear buffer fix */
 	Con_Printf ("Sound sampling rate: %i\n", shm->speed);
 }
 
@@ -605,8 +605,8 @@ qboolean SNDDMA_Init(void)
 {
 	if (!host_initialized)
 	{
-		Cmd_AddCommand ("snd_restart", snd_restart_f); // FS
-		Cmd_AddCommand ("snd_shutdown", snd_shutdown_f); // FS
+		Cmd_AddCommand ("snd_restart", snd_restart_f); /* FS: Added */
+		Cmd_AddCommand ("snd_shutdown", snd_shutdown_f); /* FS: Added */
 	}
 	if (COM_CheckParm("-nosound"))
 		goto nocard;
@@ -615,8 +615,8 @@ qboolean SNDDMA_Init(void)
 	{
 		Con_DPrintf(DEVELOPER_MSG_SOUND, "GUS_Init\n");
 		dmacard = dma_gus;
-		havegus = 1; // FS
-		S_StopAllSoundsC(); // FS: For GUS Buffer Clear Fix
+		havegus = 1; /* FS: For GUS Clear Buffer Fix */
+		S_StopAllSoundsC(); /* FS: For GUS Clear Buffer Fix */
 		return true;
 	}
 	if (BLASTER_Init ())

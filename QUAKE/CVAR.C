@@ -24,9 +24,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 cvar_t	*cvar_vars;
 char	*cvar_null_string = "";
-void Cvar_ParseDeveloperFlags (void); // FS: Special stuff for showing all the dev flags
+void Cvar_ParseDeveloperFlags (void); /* FS: Special stuff for showing all the dev flags */
 
-// FS: Cvar_List_f from Quakespasm
+/* FS: Cvar_List_f from Quakespasm */
 void Cvar_List_f (void)
 {
 	cvar_t	*cvar;
@@ -188,18 +188,15 @@ Cvar_SetValue
 */
 void Cvar_SetValue (char *var_name, float value)
 {
-/*
-	char	val[32];
-	
-	sprintf (val, "%f",value);
-*/ // FS: New school dstring
 	dstring_t *val;
+
 	val = dstring_new ();
 
-	if (value == (int)value) // FS: Weird zeros fix from QIP
+	if (value == (int)value) /* FS: Weird zeros fix from QIP */
 		dsprintf(val, "%d", (int)value);
 	else
 		dsprintf(val, "%f",value); 
+
 	Cvar_Set (var_name, val->str);
 	dstring_delete (val);
 }
@@ -235,9 +232,9 @@ void Cvar_RegisterVariable (cvar_t *variable)
 	variable->string = Z_Malloc (Q_strlen(variable->string)+1);	
 	Q_strcpy (variable->string, oldstr);
 	variable->value = Q_atof (variable->string);
-	variable->intValue = Q_atoi (variable->string); // FS
-	variable->defaultString = Z_Malloc (Q_strlen(variable->string)+1); // FS
-	Q_strcpy((char *)variable->defaultString, oldstr); // FS
+	variable->intValue = Q_atoi (variable->string); /* FS */
+	variable->defaultString = Z_Malloc (Q_strlen(variable->string)+1); /* FS */
+	Q_strcpy((char *)variable->defaultString, oldstr); /* FS */
 	
 // link the variable in
 	variable->next = cvar_vars;
@@ -260,7 +257,7 @@ qboolean	Cvar_Command (void)
 	if (!v)
 		return false;
 
-	if (!Q_strcmp(v->name, "developer") && con_show_dev_flags.intValue) // FS: Special case for showing enabled flags
+	if (!Q_strcmp(v->name, "developer") && con_show_dev_flags.intValue) /* FS: Special case for showing enabled flags */
 	{
 		if(Q_strlen(Cmd_Argv(1)) > 0)
 			Cvar_Set(developer.name, Cmd_Argv(1));
@@ -299,12 +296,12 @@ void Cvar_WriteVariables (FILE *f)
 			fprintf (f, "%s \"%s\"\n", var->name, var->string);
 }
 
-void Cvar_Init (void) // FS: johnfitz
+void Cvar_Init (void) /* FS: from fitzquake */
 {
 	Cmd_AddCommand ("cvarlist", Cvar_List_f);
 }
 
-void Cvar_Set_Description (const char *var_name, const char *description) // FS
+void Cvar_Set_Description (const char *var_name, const char *description) /* FS: Added */
 {
 	cvar_t	*var;
 	var = Cvar_FindVar (var_name);
@@ -316,7 +313,7 @@ void Cvar_Set_Description (const char *var_name, const char *description) // FS
 	var->description = description;
 }
 
-void Cvar_ParseDeveloperFlags (void) // FS: Special stuff for showing all the dev flags
+void Cvar_ParseDeveloperFlags (void) /* FS: Special stuff for showing all the dev flags */
 {
 	Con_Printf("\"%s\" is \"%s\", Default: \"%s\"\n", developer.name, developer.string, developer.defaultString);
 	if(developer.intValue > 0)
@@ -362,7 +359,7 @@ void Cvar_ParseDeveloperFlags (void) // FS: Special stuff for showing all the de
 	}
 	else
 	{
-		if (developer.description && con_show_description.intValue) // FS
+		if (developer.description && con_show_description.intValue)
 			Con_Printf("Description: %s\n", developer.description);
 	}
 }

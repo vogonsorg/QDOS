@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <conio.h>
 #include <crt0.h> /* FS: Fake Mem Fix (QIP) */
 
-int _crt0_startup_flags = _CRT0_FLAG_UNIX_SBRK; /* FS: Fake Mem Fix (QIP) */
+int _crt0_startup_flags = _CRT0_FLAG_UNIX_SBRK; /* FS: Fake Mem Fix for Win9x (QIP) */
 
 #include "quakedef.h"
 #include "dosisms.h"
@@ -451,8 +451,8 @@ Sys_Printf
 
 void Sys_Printf (const char *fmt, ...)
 {
-	va_list     argptr;
-	static dstring_t *text;
+	va_list	argptr;
+	static	dstring_t *text;
 
 	if (!text)
 		text = dstring_new ();
@@ -601,7 +601,7 @@ Sys_DoubleTime
 */
 double Sys_DoubleTime (void)
 {
-	return (double) uclock() / (double) UCLOCKS_PER_SEC; //FS: Accurate Clock (QIP)
+	return (double) uclock() / (double) UCLOCKS_PER_SEC; /* FS: Accurate Clock (QIP) */
 }
 
 /*
@@ -783,7 +783,6 @@ int main (int c, char **v)
 		time = newtime - oldtime;
 
 		Host_Frame (time);
-
 
 		oldtime = newtime;
 	}

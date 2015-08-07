@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 									// 1 extra for spanpackage that marks end
 
 //#define	SPAN_SIZE	(((DPS_MAXSPANS + 1 + ((CACHE_SIZE - 1) / spanpackage_t_size)) + 1) * spanpackage_t_size)
-#define SPAN_SIZE (1024+1+1+1)*32
+#define SPAN_SIZE (1024+1+1+1)*32 
 
 
 	.data
@@ -847,10 +847,10 @@ LRightEdgeStepped:
 	pushl	%esi
 
 	movl	spanpackage_t_ptex(%esi),%esi
-#ifdef _MSC_VER	
+#ifdef _MSC_VER
 	jmp		aff8entryvec_table(,%eax,4)
 #else
-	jmp		*aff8entryvec_table(,%eax,4)
+        jmp             *aff8entryvec_table(,%eax,4) // FS: Compiler Warning
 #endif
 
 // %bx = count of full and partial loops

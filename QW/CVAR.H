@@ -56,8 +56,8 @@ interface from being ambiguous.
 /* FS: NOTE!!!! If you add anything here... add it after the qboolean modified!  You will goof up setting cvar_t's in the code! */
 typedef struct cvar_s
 {
-	char    *name;
-	char    *string;
+	char	*name;
+	char	*string;
 	qboolean archive;		// set to true to cause it to be saved to vars.rc
 	qboolean info;			// added to serverinfo or userinfo when changed
 	const char *description; /* FS: Added */
@@ -72,10 +72,10 @@ void 	Cvar_RegisterVariable (cvar_t *variable);
 // registers a cvar that allready has the name, string, and optionally the
 // archive elements set.
 
-void    Cvar_Set (char *var_name, char *value);
+void	Cvar_Set (char *var_name, char *value);
 // equivelant to "<name> <variable>" typed at the console
 
-void    Cvar_SetValue (char *var_name, float value);
+void	Cvar_SetValue (char *var_name, float value);
 // expands value to a string and calls Cvar_Set
 
 float	Cvar_VariableValue (char *var_name);

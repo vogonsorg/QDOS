@@ -19,11 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // common.c -- misc functions used in client and server
 
+#define DG_MISC_IMPLEMENTATION /* FS: Use caedes special safe string stuff */
+
 #include "quakedef.h"
 
 #include "dstring.h" // FS: DSTRING
-
-#define DG_MISC_IMPLEMENTATION // FS: Use caedes special string stuff
 
 #define VISIBLE // FS: DSTRING
 

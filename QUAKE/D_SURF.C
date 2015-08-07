@@ -82,7 +82,6 @@ D_InitCaches
 */
 void D_InitCaches (void *buffer, int size)
 {
-
 	if (!msg_suppress_1)
 		Con_Printf ("%ik surface cache\n", size/1024);
 

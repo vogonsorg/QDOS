@@ -468,6 +468,7 @@ int UDP_SetSocketPort (struct qsockaddr *addr, int port)
 	((struct sockaddr_in *)addr)->sin_port = htons(port);
 	return 0;
 }
+
 /*
 ====================
 NET_ErrorString
@@ -477,4 +478,3 @@ char *NET_ErrorString (void)
 {
 	return strerror (errno);
 }
-

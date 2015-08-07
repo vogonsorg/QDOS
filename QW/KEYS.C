@@ -869,8 +869,6 @@ void Key_Event (int key, qboolean down)
 	char	*kb;
 	char	cmd[1024];
 
-//	Con_Printf ("%i : %i\n", key, down); //@@@
-
 	keydown[key] = down;
 
 	if (!down)
@@ -1012,7 +1010,9 @@ void Key_Event (int key, qboolean down)
 		return;		// other systems only care about key down events
 
 	if (shift_down)
+	{
 		key = keyshift[key];
+	}
 
 	switch (key_dest)
 	{
@@ -1044,7 +1044,7 @@ void Key_ClearStates (void)
 	for (i=0 ; i<256 ; i++)
 	{
 		keydown[i] = false;
-		key_repeats[i] = false;
+		key_repeats[i] = 0;
 	}
 }
 

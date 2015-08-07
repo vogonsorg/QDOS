@@ -45,10 +45,18 @@ cvar_t	m_side = {"m_side","0.8", true};
 cvar_t  show_time = {"show_time","0", true, false, "Show current time in the HUD.  1 for military.  2 for AM/PM."}; // FS: Show time
 cvar_t  show_uptime = {"show_uptime","0", true, false, "Show uptime."}; // FS: Show uptime
 cvar_t	console_old_complete = {"console_old_complete", "0", true, false, "Use the legacy style console tab completion."}; // FS
-cvar_t	cl_master_server_ip = {"cl_master_server_ip", CL_MASTER_ADDR, true, false}; // FS
-cvar_t	cl_master_server_port = {"cl_master_server_port", CL_MASTER_PORT, true, false}; // FS
-cvar_t	snd_gamespy_sounds = {"snd_gamespy_sounds", "0", true, false, "Play sounds for GameSpy."}; // FS
-cvar_t	cl_ogg_music = {"cl_ogg_music", "1", true, false, "Play OGG music from /music/trackXX.ogg if it exists."}; // Knightmare
+
+/* FS: Gamespy CVARs */
+cvar_t	cl_master_server_ip = {"cl_master_server_ip", CL_MASTER_ADDR, true, false, "GameSpy Master Server IP."};
+cvar_t	cl_master_server_port = {"cl_master_server_port", CL_MASTER_PORT, true, false, "GameSpy Master Server Port."};
+cvar_t	cl_master_server_queries = {"cl_master_server_queries", "10", true, false, "Number of sockets to allocate for GameSpy."};
+cvar_t	cl_master_server_timeout = {"cl_master_server_timeout", "3000", true, false, "Timeout (in milliseconds) to give up on pinging a server."};
+cvar_t	cl_master_server_retries = {"cl_master_server_retries", "20", true, false, "Number of retries to attempt for receiving the server list.  Formula is 50ms + 10ms for each retry."};
+cvar_t	snd_gamespy_sounds = {"snd_gamespy_sounds", "0", true, false, "Play the complete.wav and abort.wav from GameSpy3D if it exists in sounds/gamespy."};
+
+cvar_t	cl_ogg_music = {"cl_ogg_music", "1", true, false, "Play OGG tracks in the format of id1/music/trackXX.ogg if they exist."}; /* FS: Added */
+cvar_t	cl_wav_music = {"cl_wav_music", "1", true, false, "Play WAV tracks in the format of id1/music/trackXX.wav if they exist."}; /* FS: Added */
+cvar_t	cl_autorepeat_allkeys = {"cl_autorepeat_allkeys", "0", true, false, "Allow to autorepeat any key, not just Backspace, Pause, PgUp, and PgDn keys."}; /* FS: So I can autorepeat whatever I want, hoss. */
 
 client_static_t	cls;
 client_state_t cl;
@@ -724,10 +732,20 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&m_forward);
 	Cvar_RegisterVariable (&m_side);
 	Cvar_RegisterVariable (&console_old_complete); // FS
-	Cvar_RegisterVariable (&cl_master_server_ip); // FS: Gamespy
-	Cvar_RegisterVariable (&cl_master_server_port); // FS: Gamespy
-	Cvar_RegisterVariable (&snd_gamespy_sounds); // FS: Gamespy
-	Cvar_RegisterVariable (&cl_ogg_music); // FS
+
+	/* FS: GameSpy CVARs */
+	Cvar_RegisterVariable (&cl_master_server_ip);
+	Cvar_RegisterVariable (&cl_master_server_port);
+	Cvar_RegisterVariable (&cl_master_server_queries);
+	Cvar_RegisterVariable (&cl_master_server_timeout);
+	Cvar_RegisterVariable (&cl_master_server_retries);
+	Cvar_RegisterVariable (&snd_gamespy_sounds);
+
+
+	/* FS: New stuff */
+	Cvar_RegisterVariable (&cl_ogg_music);
+	Cvar_RegisterVariable (&cl_wav_music);
+	Cvar_RegisterVariable (&cl_autorepeat_allkeys);
 
 	Cmd_AddCommand ("entities", CL_PrintEntities_f);
 	Cmd_AddCommand ("disconnect", CL_Disconnect_f);

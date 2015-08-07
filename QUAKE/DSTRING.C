@@ -25,7 +25,7 @@
 
 */
 
-#define VISIBLE // FS
+#define VISIBLE /* FS */
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif
@@ -36,12 +36,12 @@
 #include <stdio.h>
 #include <limits.h>
 #include <errno.h>
-//#include <libc/file.h> // FS
+//#include <libc/file.h> /* FS: Unneeded in DOS */
 
 #include "sys.h"
 #include "dstring.h"
 
-//#include "compat.h" // FS
+//#include "compat.h" /* FS: Unneeded in DOS */
 
 #ifdef _MSC_VER
 	#define inline __inline
@@ -52,7 +52,7 @@
 #endif
 
 size_t
-strnlen (const char *s, size_t maxlen)  // FS: Fix linkage errors
+strnlen (const char *s, size_t maxlen) /* FS: Fix linkage errors */
 {
 	size_t i;
 	for (i = 0; i < maxlen && s[i]; i++);

@@ -43,8 +43,8 @@
 #ifndef __DG_MISC_H__
 #define __DG_MISC_H__
 
-#include <stdarg.h> // FS
-#if defined(_MSC_VER) && _MSC_VER <= 1400 // FS
+#include <stdarg.h> /* FS */
+#if defined(_MSC_VER) && _MSC_VER <= 1400 /* FS */
 	typedef unsigned int uintptr_t;
 #endif
 
@@ -203,7 +203,7 @@ extern "C" {
 #include <limits.h> // INT_MAX, maybe PATH_MAX
 
 // for uintptr_t:
-#ifdef __DJGPP__ // FS: DJGPP doesn't have this either
+#ifdef __DJGPP__ /* FS: DJGPP doesn't have this either */
 #include "stdint.h"
 #elif !defined (_MSC_VER)
 #include <stdint.h>
@@ -233,7 +233,7 @@ extern "C" {
 #define _DG__DEFINED_PATH_MAX
 #endif
 
-#ifdef USE_DG_FILESYSTEM // FS: DJGPP doesnt have readlink so I don't know what to do.
+#ifdef USE_DG_FILESYSTEM /* FS: DJGPP doesn't need this stuff... */
 static void DG__SetExecutablePath(char* exePath)
 {
 	// !!! this assumes that exePath can hold PATH_MAX chars !!!
@@ -537,7 +537,7 @@ DG_MISC_DEF void* DG_memrchr(const void* buf, unsigned char c, size_t buflen)
  */
 DG_MISC_DEF char* DG_strtok_r(char* str, const char* delim, char** context)
 {
-#if !defined(DG_MISC_NO_GNU_SOURCE) && !defined(_WIN32) && !defined(__DJGPP__) // FS: DJGPP doesn't have it either
+#if !defined(DG_MISC_NO_GNU_SOURCE) && !defined(_WIN32) && !defined(__DJGPP__) /* FS: DJGPP doesn't have it either */
 
 	// I think every interesting platform except for Windows supports strtok_r
 	// (if not, add it above with "&& !defined(_OTHER_CRAPPY_PLATFORM)")
@@ -602,7 +602,7 @@ DG_MISC_DEF size_t DG_strnlen(const char* s, size_t n)
 	DG_MISC_ASSERT((sizeof(uintptr_t) == 4 || sizeof(uintptr_t) == 8), "DG_strnlen() only works for 32bit and 64bit systems!");
 	// these magic numbers are used for the trick:
 
-	// FS: Since we're using this in DOS in straight C bye :(
+	/* FS: Since we're using this in DOS in straight C, bye :( */
 /*
 #if defined(_MSC_VER) && !defined(_WIN64)
 	// some older MSVC versions (tested 6.0) don't support ULL suffixes.. not sure
@@ -731,7 +731,7 @@ DG_MISC_DEF int DG_vsnprintf(char *dst, size_t size, const char *format, va_list
 		// it's also -1 if dst or size were NULL/0, so the user didn't want to write
 		// we want to return the number of characters that would've been
 		// needed, though.. fortunately _vscprintf() calculates that.
-#if !defined (_MSC_VER) // FS
+#if !defined (_MSC_VER) /* FS */
 		ret = _vscprintf(format, ap);
 #endif
 		// NOTE: on ancient MSVC versions you may get an error because

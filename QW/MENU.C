@@ -103,20 +103,20 @@ int havegus = 0;
 extern int havegus;
 #endif
 
-qboolean	m_entersound;	   // play after drawing a frame, so caching
+qboolean	m_entersound;		// play after drawing a frame, so caching
 								// won't disrupt the sound
 qboolean	m_recursiveDraw;
 
-int		     m_return_state;
+int			m_return_state;
 qboolean	m_return_onerror;
-char	    m_return_reason [32];
+char		m_return_reason [32];
 
-#define StartingGame    (m_multiplayer_cursor == 1)
-#define JoiningGame	     (m_multiplayer_cursor == 0)
-#define SerialConfig    (m_net_cursor == 0)
-#define DirectConfig    (m_net_cursor == 1)
-#define IPXConfig	       (m_net_cursor == 2)
-#define TCPIPConfig	     (m_net_cursor == 3)
+#define StartingGame	(m_multiplayer_cursor == 1)
+#define JoiningGame		(m_multiplayer_cursor == 0)
+#define SerialConfig	(m_net_cursor == 0)
+#define DirectConfig	(m_net_cursor == 1)
+#define	IPXConfig		(m_net_cursor == 2)
+#define	TCPIPConfig		(m_net_cursor == 3)
 
 void M_ConfigureNetSubsystem(void);
 
@@ -189,7 +189,7 @@ void M_BuildTranslationTable(int top, int bottom)
 		memcpy (dest + BOTTOM_RANGE, source + bottom, 16);
 	else
 		for (j=0 ; j<16 ; j++)
-			dest[BOTTOM_RANGE+j] = source[bottom+15-j];	     
+			dest[BOTTOM_RANGE+j] = source[bottom+15-j];
 }
 
 
@@ -257,7 +257,7 @@ void M_DrawTextBox (int x, int y, int width, int lines)
 //=============================================================================
 
 int m_save_demonum;
-		
+
 /*
 ================
 M_ToggleMenu_f
@@ -310,7 +310,6 @@ void M_Menu_Main_f (void)
 	m_state = m_main;
 	m_entersound = true;
 }
-				
 
 void M_Main_Draw (void)
 {
@@ -323,9 +322,8 @@ void M_Main_Draw (void)
 	M_DrawTransPic (72, 32, Draw_CachePic ("gfx/mainmenu.lmp") );
 
 	f = (int)(realtime * 10)%6;
-	
+
 	M_DrawTransPic (54, 32 + m_main_cursor * 20,Draw_CachePic( va("gfx/menudot%i.lmp", f+1 ) ) );
-	//M_DrawTransPic (54, 32 + m_main_cursor * 20,Draw_CachePic( va("gfx/menudot1.lmp", f+1 ) ) );
 }
 
 
@@ -341,7 +339,7 @@ void M_Main_Key (int key)
 			CL_NextDemo ();
 		Cmd_ChatInfo(EZQ_CHAT_OFF); /* FS: EZQ Chat */
 		break;
-		
+
 	case K_DOWNARROW:
 		S_LocalSound ("misc/menu1.wav");
 		if (++m_main_cursor >= MAIN_ITEMS)
@@ -465,7 +463,6 @@ void M_AdjustSliders (int dir)
 			volume.value = 1;
 		Cvar_SetValue ("volume", volume.value);
 		break;
-		
 	case 8: // always run
 		if (cl_forwardspeed.value > 200)
 		{
@@ -480,19 +477,15 @@ void M_AdjustSliders (int dir)
 			Cvar_SetValue ("cl_sidespeed", 400); /* FS */
 		}
 		break;
-	
 	case 9: // invert mouse
 		Cvar_SetValue ("m_pitch", -m_pitch.value);
 		break;
-	
 	case 10:	// lookspring
 		Cvar_SetValue ("lookspring", !lookspring.value);
 		break;
-	
 	case 11:	// lookstrafe
 		Cvar_SetValue ("lookstrafe", !lookstrafe.value);
 		break;
-
 	case 12:
 		Cvar_SetValue ("cl_sbar", !cl_sbar.value);
 		break;
@@ -535,7 +528,7 @@ void M_Options_Draw (void)
 {
 	float	r;
 	qpic_t	*p;
-	
+
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
 	p = Draw_CachePic ("gfx/p_option.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
@@ -585,13 +578,11 @@ void M_Options_Draw (void)
 	if (vid_menudrawfn)
 		M_Print (16, 144, "         Video Options");
 
-	M_Print (16, 152, "      Extended Options");  /* FS: Extended options unique to QDOS */
+	M_Print (16, 152, "      Extended Options"); /* FS: Extended options unique to QDOS */
 
 // cursor
 	M_DrawCharacter (200, 32 + options_cursor*8, 12+((int)(realtime*4)&1));
 }
-
-
 
 void M_Options_Key (int k)
 {
@@ -636,7 +627,7 @@ void M_Options_Key (int k)
 			break;
 		}
 		return;
-	
+
 	case K_UPARROW:
 		S_LocalSound ("misc/menu1.wav");
 		options_cursor--;
@@ -649,7 +640,7 @@ void M_Options_Key (int k)
 		options_cursor++;
 		if (options_cursor >= OPTIONS_ITEMS)
 			options_cursor = 0;
-		break;  
+		break;
 
 	case K_LEFTARROW:
 		M_AdjustSliders (-1);
@@ -661,7 +652,7 @@ void M_Options_Key (int k)
 	}
 
 	/* FS: Needed to readjust and that Use Mouse shit was getting in the way. */
-	if (options_cursor == 17 && vid_menudrawfn == NULL)
+	if ( (options_cursor == 17) && (vid_menudrawfn == NULL) )
 	{
 		if (k == K_UPARROW)
 			options_cursor = 16;
@@ -669,7 +660,7 @@ void M_Options_Key (int k)
 			options_cursor = 0;
 	}
 
-	if ((options_cursor == 17)) 
+	if (options_cursor == 17) 
 	
 	{
 		if (k == K_UPARROW)
@@ -679,30 +670,29 @@ void M_Options_Key (int k)
 	}
 }
 
-
 //=============================================================================
 /* KEYS MENU */
 
 char *bindnames[][2] =
 {
-{"+attack",	     "attack"},
-{"impulse 10",	  "change weapon"},
-{"+jump",		       "jump / swim up"},
-{"+forward",	    "walk forward"},
-{"+back",		       "backpedal"},
-{"+left",		       "turn left"},
-{"+right",		      "turn right"},
-{"+speed",		      "run"},
-{"+moveleft",	   "step left"},
-{"+moveright",	  "step right"},
-{"+strafe",	     "sidestep"},
-{"+lookup",	     "look up"},
-{"+lookdown",	   "look down"},
-{"centerview",	  "center view"},
-{"+mlook",		      "mouse look"},
-{"+klook",		      "keyboard look"},
-{"+moveup",		     "swim up"},
-{"+movedown",	   "swim down"}
+{"+attack", 		"attack"},
+{"impulse 10", 		"change weapon"},
+{"+jump", 			"jump / swim up"},
+{"+forward", 		"walk forward"},
+{"+back", 			"backpedal"},
+{"+left", 			"turn left"},
+{"+right", 			"turn right"},
+{"+speed", 			"run"},
+{"+moveleft", 		"step left"},
+{"+moveright", 		"step right"},
+{"+strafe", 		"sidestep"},
+{"+lookup", 		"look up"},
+{"+lookdown", 		"look down"},
+{"centerview", 		"center view"},
+{"+mlook", 			"mouse look"},
+{"+klook", 			"keyboard look"},
+{"+moveup",			"swim up"},
+{"+movedown",		"swim down"}
 };
 
 #define NUMCOMMANDS     (sizeof(bindnames)/sizeof(bindnames[0]))
@@ -778,7 +768,7 @@ void M_Keys_Draw (void)
 		M_Print (12, 32, "Press a key or button for this action");
 	else
 		M_Print (18, 32, "Enter to change, backspace to clear");
-		
+
 // search for known bindings
 	for (i=0 ; i<NUMCOMMANDS ; i++)
 	{
@@ -787,9 +777,9 @@ void M_Keys_Draw (void)
 		M_Print (16, y, bindnames[i][1]);
 
 //		l = strlen (bindnames[i][0]);
-		
+
 		M_FindKeysForCommand (bindnames[i][0], keys);
-		
+
 		if (keys[0] == -1)
 		{
 			M_Print (140, y, "???");
@@ -806,7 +796,7 @@ void M_Keys_Draw (void)
 			}
 		}
 	}
-	
+
 	if (bind_grab)
 		M_DrawCharacter (130, 48 + keys_cursor*8, '=');
 	else
@@ -820,7 +810,8 @@ void M_Keys_Key (int k)
 	int	     keys[2];
 	
 	if (bind_grab)
-	{       // defining a key
+	{
+		// defining a key
 		S_LocalSound ("misc/menu1.wav");
 		if (k == K_ESCAPE)
 		{
@@ -992,7 +983,7 @@ char *quitMessage [] =
   "  If you quit now, I'll ",
   "  throw a blanket-party ",
   "   for you next time!   ",
-  "                        ",
+  "                        "
 };
 
 void M_Menu_Quit_f (void)

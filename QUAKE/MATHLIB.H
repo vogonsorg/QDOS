@@ -42,12 +42,12 @@ extern	int nanmask;
 
 #define CLAMP(min, x, max) ((x) < (min) ? (min) : (x) > (max) ? (max) : (x)) //johnfitz
 
-#ifndef MAX
-#define MAX(a,b) ( ((a) > (b)) ? (a) : (b)) // FS: For DOS
+#ifndef MAX /* FS: Added */
+#define MAX(a,b) ( ((a) > (b)) ? (a) : (b))
 #endif
 
-#ifndef MIN
-#define MIN(a,b) ( ((a) < (b)) ? (a) : (b)) // FS: For DOS
+#ifndef MIN /* FS: Added */
+#define MIN(a,b) ( ((a) < (b)) ? (a) : (b))
 #endif
 
 

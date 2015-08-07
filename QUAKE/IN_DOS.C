@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // in_mouse.c -- dos mouse code
 
+#include <dos.h>
 #include "quakedef.h"
 #include "dosisms.h"
 
@@ -77,12 +78,15 @@ typedef struct
 
 cvar_t	m_filter = {"m_filter","1"};
 
-qboolean	mouse_avail;
-int		mouse_buttons;
-int		mouse_oldbuttonstate;
-int		mouse_buttonstate;
-float	mouse_x, mouse_y;
-float	old_mouse_x, old_mouse_y;
+static qboolean	mouse_avail;
+static qboolean mouseactive;
+static	qboolean	mouse_wheel;
+static	int		mouse_buttons;
+static	int		mouse_oldbuttonstate;
+static	int		mouse_buttonstate;
+static	int		mouse_wheelcounter;
+static	float	mouse_x, mouse_y;
+static	float	old_mouse_x, old_mouse_y;
 
 
 cvar_t	in_joystick = {"joystick","1"};
@@ -124,17 +128,11 @@ void Force_CenterView_f (void)
 	cl.viewangles[PITCH] = 0;
 }
 
-
-/*
-===========
-IN_StartupMouse
-===========
-*/
-void IN_StartupMouse (void)
+static void IN_StartupMouse (void)
 {
-	if ( COM_CheckParm ("-nomouse") ) 
-		return; 
- 
+	if (COM_CheckParm ("-nomouse"))
+		return;
+
 // check for mouse
 	regs.x.ax = 0;
 	dos_int86(0x33);
@@ -144,18 +142,23 @@ void IN_StartupMouse (void)
 		Con_Printf ("No mouse found\n");
 		return;
 	}
-	
+
 	mouse_buttons = regs.x.bx;
 	if (mouse_buttons > 3)
 		mouse_buttons = 3;
 	Con_Printf("%d-button mouse available\n", mouse_buttons);
+	mouseactive = true;
+	if (COM_CheckParm ("-nowheel"))
+		return;
+	regs.x.ax = 0x11;
+	dos_int86(0x33);
+	if (regs.x.ax == 0x574D && regs.h.cl == 1)
+	{
+		mouse_wheel = true;
+		Con_Printf("mouse wheel support available\n");
+	}
 }
 
-/*
-===========
-IN_Init
-===========
-*/
 void IN_Init (void)
 {
 	int i;
@@ -166,7 +169,7 @@ void IN_Init (void)
 	Cvar_RegisterVariable (&aux_look);
 	Cmd_AddCommand ("toggle_auxlook", Toggle_AuxLook_f);
 	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
-	Cmd_AddCommand ("joy_recalibrate", IN_StartupJoystick); // FS: Joystick recalibration.
+	Cmd_AddCommand ("joy_recalibrate", IN_StartupJoystick); /* FS: Joystick recalibration. */
 
 	IN_StartupMouse ();
 	IN_StartupJoystick ();
@@ -179,22 +182,10 @@ void IN_Init (void)
 	}
 }
 
-/*
-===========
-IN_Shutdown
-===========
-*/
 void IN_Shutdown (void)
 {
-
 }
 
-
-/*
-===========
-IN_Commands
-===========
-*/
 void IN_Commands (void)
 {
 	int		i;
@@ -203,23 +194,34 @@ void IN_Commands (void)
 	{
 		regs.x.ax = 3;		// read buttons
 		dos_int86(0x33);
-		mouse_buttonstate = regs.x.bx;
-	
+		mouse_buttonstate = regs.x.bx;	// regs.h.bl
+		mouse_wheelcounter = (signed char) regs.h.bh;
 	// perform button actions
-		for (i=0 ; i<mouse_buttons ; i++)
+		for (i = 0; i < mouse_buttons; i++)
 		{
-			if ( (mouse_buttonstate & (1<<i)) &&
-			!(mouse_oldbuttonstate & (1<<i)) )
+			if ( (mouse_buttonstate & (1<<i)) && !(mouse_oldbuttonstate & (1<<i)) )
 			{
 				Key_Event (K_MOUSE1 + i, true);
 			}
-			if ( !(mouse_buttonstate & (1<<i)) &&
-			(mouse_oldbuttonstate & (1<<i)) )
+			if ( !(mouse_buttonstate & (1<<i)) && (mouse_oldbuttonstate & (1<<i)) )
 			{
 				Key_Event (K_MOUSE1 + i, false);
 			}
-		}	
-		
+		}
+		if (mouse_wheel)
+		{
+			if (mouse_wheelcounter < 0)
+			{
+				Key_Event (K_MWHEELUP, true);
+				Key_Event (K_MWHEELUP, false);
+			}
+			else if (mouse_wheelcounter > 0)
+			{
+				Key_Event (K_MWHEELDOWN, true);
+				Key_Event (K_MWHEELDOWN, false);
+			}
+		}
+
 		mouse_oldbuttonstate = mouse_buttonstate;
 	}
 	
@@ -268,23 +270,22 @@ void IN_Commands (void)
 	
 }
 
+static void IN_ReadMouseMove (int *x, int *y)
+{
+	regs.x.ax = 0x0B;	/* read move */
+	dos_int86(0x33);
+	if (x)	*x = (short) regs.x.cx;
+	if (y)	*y = (short) regs.x.dx;
+}
 
-/*
-===========
-IN_Move
-===========
-*/
 void IN_MouseMove (usercmd_t *cmd)
 {
 	int		mx, my;
 
-	if (!mouse_avail)
+	if (!mouse_avail || !mouseactive)
 		return;
 
-	regs.x.ax = 11;		// read move
-	dos_int86(0x33);
-	mx = (short)regs.x.cx;
-	my = (short)regs.x.dx;
+	IN_ReadMouseMove (&mx, &my);
 
 	if (m_filter.value)
 	{
@@ -303,46 +304,46 @@ void IN_MouseMove (usercmd_t *cmd)
 	mouse_y *= sensitivity.value;
 
 // add mouse X/Y movement to cmd
-        if ( (in_strafe.state & 1) || (lookstrafe.value && ((in_mlook.state & 1) || in_freelook.value ))) // FS: mlook
+	if ( (in_strafe.state & 1) || (lookstrafe.value && ((in_mlook.state & 1) || in_freelook.value ))) /* FS: mlook */
 		cmd->sidemove += m_side.value * mouse_x;
 	else
 		cl.viewangles[YAW] -= m_yaw.value * mouse_x;
 	
-        if (in_mlook.state & 1 || in_freelook.value) // FS: mlook
+	if (in_mlook.state & 1 || in_freelook.value) /* FS: mlook */
 		V_StopPitchDrift ();
 		
-        if ( ((in_mlook.state & 1) && !(in_strafe.state & 1)) || (in_freelook.value && !(in_strafe.state & 1))) //FS: in_mlook
+	if ( ((in_mlook.state & 1) && !(in_strafe.state & 1)) || (in_freelook.value && !(in_strafe.state & 1))) /* FS: mlook */
 	{
 		cl.viewangles[PITCH] += m_pitch.value * mouse_y;
 /*
-                if (cl.viewangles[PITCH] > 80)
+		if (cl.viewangles[PITCH] > 80)
 			cl.viewangles[PITCH] = 80;
 		if (cl.viewangles[PITCH] < -70)
 			cl.viewangles[PITCH] = -70;
 */
-                if (pq_fullpitch.value || cl_fullpitch.value) // FS: RQ shit
-                {
-                        if (cl.viewangles[PITCH] > 90)
-                        {
-                                cl.viewangles[PITCH] = 90;
-                        }
-                        if (cl.viewangles[PITCH] < -90)
-                        {
-                                cl.viewangles[PITCH] = -90;
-                        }
-                }
-                else
-                {
-                        if (cl.viewangles[PITCH] > 80)
-                        {
-                                cl.viewangles[PITCH] = 80;
-                        }
-                        if (cl.viewangles[PITCH] < -70)
-                        {
-                                cl.viewangles[PITCH] = -70;
-                        }
-                }
-        }
+		if (pq_fullpitch.value || cl_fullpitch.value) /* FS: ProQuake server shit */
+		{
+			if (cl.viewangles[PITCH] > 90)
+			{
+				cl.viewangles[PITCH] = 90;
+			}
+			if (cl.viewangles[PITCH] < -90)
+			{
+				cl.viewangles[PITCH] = -90;
+			}
+		}
+		else
+		{
+			if (cl.viewangles[PITCH] > 80)
+			{
+				cl.viewangles[PITCH] = 80;
+			}
+			if (cl.viewangles[PITCH] < -70)
+			{
+				cl.viewangles[PITCH] = -70;
+			}
+		}
+	}
 	else
 	{
 		if ((in_strafe.state & 1) && noclip_anglehack)
@@ -391,7 +392,7 @@ void IN_JoyMove (usercmd_t *cmd)
 		cl.viewangles[YAW] = anglemod(cl.viewangles[YAW]);
 	}
 
-        if (in_mlook.state & 1 || in_freelook.value)  // FS: mlook
+        if (in_mlook.state & 1 || in_freelook.value) /* FS: mlook */
 	{
 		if (m_pitch.value < 0)
 			speed *= -1;
@@ -632,7 +633,7 @@ void IN_ExternalMove (usercmd_t *cmd)
 	if (cl.viewangles[PITCH] < -70)
 		cl.viewangles[PITCH] = -70;
 
-        freelook = (extern_control->flags & AUX_FLAG_FREELOOK || aux_look.value || in_mlook.state & 1 || in_freelook.value); // FS: mlook
+	freelook = (extern_control->flags & AUX_FLAG_FREELOOK || aux_look.value || in_mlook.state & 1 || in_freelook.value); /* FS: mlook */
 
 	if (freelook)
 		V_StopPitchDrift ();

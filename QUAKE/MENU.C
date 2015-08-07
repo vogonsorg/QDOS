@@ -64,7 +64,7 @@ void M_LanConfig_Draw (void);
 void M_GameOptions_Draw (void);
 void M_Search_Draw (void);
 void M_ServerList_Draw (void);
-void M_Extended_Draw (void); // FS: extended
+void M_Extended_Draw (void); /* FS: Extended options unique to QDOS */
 
 void M_Main_Key (int key);
 	void M_SinglePlayer_Key (int key);
@@ -85,11 +85,11 @@ void M_LanConfig_Key (int key);
 void M_GameOptions_Key (int key);
 void M_Search_Key (int key);
 void M_ServerList_Key (int key);
-void M_Extended_Key (int key); // FS: Extended
-extern void snd_restart_f (void); // FS: SND_RESTART
-void M_Extended_Set_Sound_KHz (int dir, int khz); // FS: Extended
+void M_Extended_Key (int key); /* FS: Extended options unique to QDOS */
+extern void snd_restart_f (void); /* FS: For extended options */
+void M_Extended_Set_Sound_KHz (int dir, int khz); /* FS: Extended options unique to QDOS */
 
-// FS
+/* FS: Gravis Ultrasound stuff */
 #ifdef _WIN32
 int havegus = 0;
 #else
@@ -112,12 +112,12 @@ int			m_return_state;
 qboolean	m_return_onerror;
 char		m_return_reason [32];
 
-extern cvar_t scr_fov; // FS
+extern cvar_t scr_fov; /* FS */
 
 #define StartingGame	(m_multiplayer_cursor == 1)
 #define JoiningGame		(m_multiplayer_cursor == 0)
 #define SerialConfig	(m_net_cursor == 0)
-// Nehahra
+/* FS: Nehahra Stuff */
 #define NumberOfNehahraDemos 34
 typedef struct nehahrademonames_s
 {
@@ -168,6 +168,9 @@ static nehahrademonames_t NehahraDemos[NumberOfNehahraDemos] =
 
 void M_ConfigureNetSubsystem(void);
 
+//=============================================================================
+/* Support Routines */
+
 /*
 ================
 M_DrawCharacter
@@ -215,8 +218,8 @@ byte translationTable[256];
 
 void M_BuildTranslationTable(int top, int bottom)
 {
-	int		j;
-	byte	*dest, *source;
+	int	     j;
+	byte    *dest, *source;
 
 	for (j = 0; j < 256; j++)
 		identityTable[j] = j;
@@ -224,7 +227,7 @@ void M_BuildTranslationTable(int top, int bottom)
 	source = identityTable;
 	memcpy (dest, source, 256);
 
-	if (top < 128)	// the artists made some backwards ranges.  sigh.
+	if (top < 128)  // the artists made some backwards ranges.  sigh.
 		memcpy (dest + TOP_RANGE, source + top, 16);
 	else
 		for (j=0 ; j<16 ; j++)
@@ -246,9 +249,9 @@ void M_DrawTransPicTranslate (int x, int y, qpic_t *pic)
 
 void M_DrawTextBox (int x, int y, int width, int lines)
 {
-	qpic_t	*p;
-	int		cx, cy;
-	int		n;
+	qpic_t  *p;
+	int	     cx, cy;
+	int	     n;
 
 	// draw left side
 	cx = x;
@@ -319,6 +322,7 @@ void M_ToggleMenu_f (void)
 			M_Menu_Main_f ();
 			return;
 		}
+
 		key_dest = key_game;
 		m_state = m_none;
 		return;
@@ -408,16 +412,16 @@ void M_Menu_Main_f (void)
 		m_save_demonum = cls.demonum;
 		cls.demonum = -1;
 	}
+
 	key_dest = key_menu;
 	m_state = m_main;
 	m_entersound = true;
 }
 
-
 void M_Main_Draw (void)
 {
-	int		f;
-	qpic_t	*p;
+	int	     f;
+	qpic_t  *p;
 
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
 	p = Draw_CachePic ("gfx/ttl_main.lmp");
@@ -432,19 +436,20 @@ void M_Main_Draw (void)
 
 void M_Main_Key (int key)
 {
-	int i; // FS: For Nehahra
+	int i; /* FS: For Nehahra */
+
 	switch (key)
 	{
 	case K_ESCAPE:
 		key_dest = key_game;
 		m_state = m_none;
-                if (!cl_demos.value || nostartupdemos == 1) // FS: Maybe you disabled startup demos via menu?
-                {
-                        cls.demonum = -1;
-                        break;
-                }
+		if (!cl_demos.value || nostartupdemos == 1) /* FS: Maybe you disabled startup demos via menu? */
+		{
+			cls.demonum = -1;
+			break;
+		}
 		cls.demonum = m_save_demonum;
-                if (cls.demonum != -1 && !cls.demoplayback && cls.state != ca_connected)
+		if (cls.demonum != -1 && !cls.demoplayback && cls.state != ca_connected)
 			CL_NextDemo ();
 		break;
 
@@ -460,7 +465,7 @@ void M_Main_Key (int key)
 			m_main_cursor = MAIN_ITEMS - 1;
 		break;
 
-// FS: Menu shortcuts
+/* FS: Menu shortcuts */
 	case 's':
 		M_Menu_SinglePlayer_f ();
 		break;
@@ -1240,18 +1245,17 @@ again:
 //=============================================================================
 /* OPTIONS MENU */
 
-#define OPTIONS_ITEMS   14 // FS
+#define OPTIONS_ITEMS   14
 
-#define SLIDER_RANGE    10 // FS
+#define SLIDER_RANGE    10
 
-int		options_cursor;
+int	     options_cursor;
 
 void M_Menu_Options_f (void)
 {
 	key_dest = key_menu;
 	m_state = m_options;
 	m_entersound = true;
-
 }
 
 
@@ -1261,7 +1265,7 @@ void M_AdjustSliders (int dir)
 
 	switch (options_cursor)
 	{
-	case 3:	// screen size
+	case 3: // screen size
 		scr_viewsize.value += dir * 10;
 		if (scr_viewsize.value < 30)
 			scr_viewsize.value = 30;
@@ -1269,7 +1273,7 @@ void M_AdjustSliders (int dir)
 			scr_viewsize.value = 120;
 		Cvar_SetValue ("viewsize", scr_viewsize.value);
 		break;
-	case 4:	// gamma
+	case 4: // gamma
 		v_gamma.value -= dir * 0.05;
 		if (v_gamma.value < 0.5)
 			v_gamma.value = 0.5;
@@ -1277,25 +1281,23 @@ void M_AdjustSliders (int dir)
 			v_gamma.value = 1;
 		Cvar_SetValue ("gamma", v_gamma.value);
 		break;
-	case 5:	// mouse speed
+	case 5: // mouse speed
 		sensitivity.value += dir * 0.5;
 		if (sensitivity.value < 1)
 			sensitivity.value = 1;
-                if (sensitivity.value > 50) // FS: 11 is so 1997.
-                        sensitivity.value = 50;
+		if (sensitivity.value > 50) /* FS: 11 is so 1997. */
+			sensitivity.value = 50;
 		Cvar_SetValue ("sensitivity", sensitivity.value);
 		break;
-	case 6:	// music volume
-
+	case 6: // music volume
 		bgmvolume.value += dir * 0.1;
-
 		if (bgmvolume.value < 0)
 			bgmvolume.value = 0;
 		if (bgmvolume.value > 1)
 			bgmvolume.value = 1;
 		Cvar_SetValue ("bgmvolume", bgmvolume.value);
 		break;
-	case 7:	// sfx volume
+	case 7: // sfx volume
 		volume.value += dir * 0.1;
 		if (volume.value < 0)
 			volume.value = 0;
@@ -1303,30 +1305,26 @@ void M_AdjustSliders (int dir)
 			volume.value = 1;
 		Cvar_SetValue ("volume", volume.value);
 		break;
-
-	case 8:	// allways run
+	case 8: // always run
 		if (cl_forwardspeed.value > 200)
 		{
 			Cvar_SetValue ("cl_forwardspeed", 200);
 			Cvar_SetValue ("cl_backspeed", 200);
-			Cvar_SetValue ("cl_sidespeed", 200); // FS
+			Cvar_SetValue ("cl_sidespeed", 200); /* FS */
 		}
 		else
 		{
 			Cvar_SetValue ("cl_forwardspeed", 400);
 			Cvar_SetValue ("cl_backspeed", 400);
-			Cvar_SetValue ("cl_sidespeed", 400); // FS
+			Cvar_SetValue ("cl_sidespeed", 400); /* FS */
 		}
 		break;
-
-	case 9:	// invert mouse
+	case 9: // invert mouse
 		Cvar_SetValue ("m_pitch", -m_pitch.value);
 		break;
-
 	case 10:	// lookspring
 		Cvar_SetValue ("lookspring", !lookspring.value);
 		break;
-
 	case 11:	// lookstrafe
 		Cvar_SetValue ("lookstrafe", !lookstrafe.value);
 		break;
@@ -1344,7 +1342,7 @@ void M_AdjustSliders (int dir)
 
 void M_DrawSlider (int x, int y, float range)
 {
-	int	i;
+	int     i;
 
 	if (range < 0)
 		range = 0;
@@ -1367,13 +1365,13 @@ void M_DrawCheckbox (int x, int y, int on)
 
 void M_Options_Draw (void)
 {
-	float		r;
+	float	r;
 	qpic_t	*p;
 
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
 	p = Draw_CachePic ("gfx/p_option.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
-
+	
 	M_Print (16, 32, "    Customize controls");
 	M_Print (16, 40, "         Go to console");
 	M_Print (16, 48, "     Reset to defaults");
@@ -1387,7 +1385,7 @@ void M_Options_Draw (void)
 	M_DrawSlider (220, 64, r);
 
 	M_Print (16, 72, "           Mouse Speed");
-        r = (sensitivity.value)/50; // FS
+	r = (sensitivity.value)/50; /* FS: Was 11 */
 	M_DrawSlider (220, 72, r);
 
 	M_Print (16, 80, "       CD Music Volume");
@@ -1412,29 +1410,27 @@ void M_Options_Draw (void)
 
 	if (vid_menudrawfn)
 		M_Print (16, 128, "         Video Options");
-	
-	M_Print (16, 136, "      Extended Options"); // FS: Extended
+
+	M_Print (16, 136, "      Extended Options"); /* FS: Extended options unique to QDOS */
 
 // cursor
 	M_DrawCharacter (200, 32 + options_cursor*8, 12+((int)(realtime*4)&1));
 }
 
-
 void M_Options_Key (int k)
 {
-
 	switch (k)
 	{
 	case K_ESCAPE:
 		M_Menu_Main_f ();
 		break;
 
-	case 'v': // FS
-	case 'V': // FS
+	case 'v': /* FS */
+	case 'V':
 		M_Menu_Video_f();
 		break;
 
-	case 'e': // FS
+	case 'e': /* FS */
 	case 'E':
 		M_Menu_Extended_f();
 		break;
@@ -1453,10 +1449,10 @@ void M_Options_Key (int k)
 		case 2:
 			Cbuf_AddText ("exec default.cfg\n");
 			break;
-		case 12: // FS
+		case 12:
 			M_Menu_Video_f ();
 			break;
-        case 13: // FS: Extended
+        case 13: /* FS: Extended options unique to QDOS */
 			M_Menu_Extended_f ();
 			break;
 		default:
@@ -1488,18 +1484,19 @@ void M_Options_Key (int k)
 		break;
 	}
 
-        if (options_cursor == 14 && vid_menudrawfn == NULL)
+	/* FS: Needed to readjust and that Use Mouse shit was getting in the way. */
+	if ( (options_cursor == 14) && (vid_menudrawfn == NULL) )
 	{
 		if (k == K_UPARROW)
-                        options_cursor = 13;
+			options_cursor = 13;
 		else
 			options_cursor = 0;
 	}
 
-        if (options_cursor == 14) // FS
+	if (options_cursor == 14) // FS
 	{
 		if (k == K_UPARROW)
-                        options_cursor = 13;
+			options_cursor = 13;
 		else
 			options_cursor = 0;
 	}
@@ -1530,10 +1527,10 @@ char *bindnames[][2] =
 {"+movedown",		"swim down"}
 };
 
-#define	NUMCOMMANDS	(sizeof(bindnames)/sizeof(bindnames[0]))
+#define NUMCOMMANDS     (sizeof(bindnames)/sizeof(bindnames[0]))
 
-int		keys_cursor;
-int		bind_grab;
+int	     keys_cursor;
+int	     bind_grab;
 
 void M_Menu_Keys_f (void)
 {
@@ -1545,10 +1542,10 @@ void M_Menu_Keys_f (void)
 
 void M_FindKeysForCommand (char *command, int *twokeys)
 {
-	int		count;
-	int		j;
-	int		l;
-	char	*b;
+	int	     count;
+	int	     j;
+	int	     l;
+	char    *b;
 
 	twokeys[0] = twokeys[1] = -1;
 	l = strlen(command);
@@ -1571,9 +1568,9 @@ void M_FindKeysForCommand (char *command, int *twokeys)
 
 void M_UnbindCommand (char *command)
 {
-	int		j;
-	int		l;
-	char	*b;
+	int	     j;
+	int	     l;
+	char    *b;
 
 	l = strlen(command);
 
@@ -1590,11 +1587,11 @@ void M_UnbindCommand (char *command)
 
 void M_Keys_Draw (void)
 {
-	int		i; //, l;
-	int		keys[2];
-	char	*name;
-	int		x, y;
-	qpic_t	*p;
+	int	     i; //, l;
+	int	     keys[2];
+	char    *name;
+	int	     x, y;
+	qpic_t  *p;
 
 	p = Draw_CachePic ("gfx/ttl_cstm.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
@@ -1641,11 +1638,12 @@ void M_Keys_Draw (void)
 
 void M_Keys_Key (int k)
 {
-	char	cmd[80];
-	int		keys[2];
-
+	char    cmd[80];
+	int	     keys[2];
+	
 	if (bind_grab)
-	{	// defining a key
+	{
+		// defining a key
 		S_LocalSound ("misc/menu1.wav");
 		if (k == K_ESCAPE)
 		{
@@ -1656,11 +1654,11 @@ void M_Keys_Key (int k)
 			sprintf (cmd, "bind \"%s\" \"%s\"\n", Key_KeynumToString (k), bindnames[keys_cursor][0]);
 			Cbuf_InsertText (cmd);
 		}
-
+		
 		bind_grab = false;
 		return;
 	}
-
+	
 	switch (k)
 	{
 	case K_ESCAPE:
@@ -1683,7 +1681,7 @@ void M_Keys_Key (int k)
 			keys_cursor = 0;
 		break;
 
-	case K_ENTER:		// go into bind mode
+	case K_ENTER:	   // go into bind mode
 		M_FindKeysForCommand (bindnames[keys_cursor][0], keys);
 		S_LocalSound ("misc/menu2.wav");
 		if (keys[1] != -1)
@@ -1691,8 +1689,8 @@ void M_Keys_Key (int k)
 		bind_grab = true;
 		break;
 
-	case K_BACKSPACE:		// delete bindings
-	case K_DEL:				// delete bindings
+	case K_BACKSPACE:	       // delete bindings
+	case K_DEL:			     // delete bindings
 		S_LocalSound ("misc/menu2.wav");
 		M_UnbindCommand (bindnames[keys_cursor][0]);
 		break;
@@ -1724,8 +1722,8 @@ void M_Video_Key (int key)
 //=============================================================================
 /* HELP MENU */
 
-int		help_page;
-#define	NUM_HELP_PAGES	6
+int	     help_page;
+#define NUM_HELP_PAGES  6
 
 
 void M_Menu_Help_f (void)
@@ -1751,7 +1749,7 @@ void M_Help_Key (int key)
 	case K_ESCAPE:
 		M_Menu_Main_f ();
 		break;
-
+		
 	case K_UPARROW:
 	case K_RIGHTARROW:
 		m_entersound = true;
@@ -1799,8 +1797,8 @@ void M_Credits_Key (int key)
 //=============================================================================
 /* QUIT MENU */
 
-int		msgNumber;
-int		m_quit_prevstate;
+int	     msgNumber;
+int	     m_quit_prevstate;
 qboolean	wasInMenus;
 
 char *quitMessage [] = 
@@ -1925,7 +1923,7 @@ void M_Quit_Key (int key)
 			}
 			break;
 
-		case K_ENTER: // FS: You can press enter to default Y
+		case K_ENTER: /* FS: You can press enter to default Y */
 		case 'Y':
 		case 'y':
 			key_dest = key_console;
@@ -3534,20 +3532,21 @@ void M_ConfigureNetSubsystem(void)
 		net_hostport = lanConfig_port;
 }
 
-int extended_cursor;  // FS: Extended
+/* FS: Extended options unique to QDOS */
+int extended_cursor;
 #define EXTENDED_OPTIONS 10
-extern cvar_t	r_waterwarp;
+extern cvar_t r_waterwarp;
 extern cvar_t scr_fov;
 
-void M_Menu_Extended_f(void) // FS: Extended
+void M_Menu_Extended_f(void)
 {
-        key_dest = key_menu;
-        m_state = m_extended;
+	key_dest = key_menu;
+	m_state = m_extended;
 	m_entersound = true;
 
 }
 
-void M_Extended_Draw() // FS: Extended
+void M_Extended_Draw()
 {
 	float	r;
 	qpic_t  *p;
@@ -3556,102 +3555,97 @@ void M_Extended_Draw() // FS: Extended
 	p = Draw_CachePic ("gfx/p_option.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
 
-        M_Print (16,32,  "      Content Blending");
-        M_DrawCheckbox (220, 32, v_contentblend.value); // FS
+	M_Print (16,32,  "      Content Blending");
+	M_DrawCheckbox (220, 32, v_contentblend.value);
 
-        M_Print (16, 40, "            Full Pitch"); // FS
-        M_DrawCheckbox (220, 40, pq_fullpitch.value);
+	M_Print (16, 40, "            Full Pitch");
+	M_DrawCheckbox (220, 40, pq_fullpitch.value);
 
-        M_Print (16, 48, "         Startup Demos"); // FS
-        M_DrawCheckbox (220, 48, cl_demos.value);
+	M_Print (16, 48, "         Startup Demos");
+	M_DrawCheckbox (220, 48, cl_demos.value);
 
-        M_Print (16,56,  "     Unbindall Protect");
-        M_DrawCheckbox (220, 56, cl_unbindall_protection.value); // FS
+	M_Print (16,56,  "     Unbindall Protect");
+	M_DrawCheckbox (220, 56, cl_unbindall_protection.value);
 
-        M_Print (16,64,  "           Show Uptime");
-        if (show_uptime.value < 1 )
-                M_Print (220, 64, "off");
-        else if (show_uptime.value == 1)
-                M_Print (220, 64, "Server");
-        else if (show_uptime.value >= 2)
-                M_Print (220, 64, "Total");
+	M_Print (16,64,  "           Show Uptime");
+	if (show_uptime.value < 1 )
+		M_Print (220, 64, "off");
+	else if (show_uptime.value == 1)
+		M_Print (220, 64, "Server");
+	else if (show_uptime.value >= 2)
+		M_Print (220, 64, "Total");
 
-        M_Print (16,72,  "             Show Time");
-        if (show_time.value < 1 )
-                M_Print (220, 72, "off");
-        else if (show_time.value == 1)
-                M_Print (220, 72, "Military");
-        else if (show_time.value >= 2)
-                M_Print (220, 72, "AM/PM");
+	M_Print (16,72,  "             Show Time");
+	if (show_time.value < 1 )
+		M_Print (220, 72, "off");
+	else if (show_time.value == 1)
+		M_Print (220, 72, "Military");
+	else if (show_time.value >= 2)
+		M_Print (220, 72, "AM/PM");
 
-        M_Print (16,80,  "        Show Framerate");
-        M_DrawCheckbox (220, 80, show_fps.value); // FS
+	M_Print (16,80,  "        Show Framerate");
+	M_DrawCheckbox (220, 80, show_fps.value);
 
-        M_Print (16,88,  "        Mouse Freelook");
-        M_DrawCheckbox (220, 88, in_freelook.value); // FS
+	M_Print (16,88,  "        Mouse Freelook");
+	M_DrawCheckbox (220, 88, in_freelook.value);
 
-        M_Print (16,96,  "       Water View-warp");
-        M_DrawCheckbox (220, 96, r_waterwarp.value); // FS
+	M_Print (16,96,  "       Water View-warp");
+	M_DrawCheckbox (220, 96, r_waterwarp.value);
 
-		M_Print (16, 104, "       Field of Vision");
-		r = (scr_fov.value - 30) / (175 - 30);
-		M_DrawSlider (220, 104, r);
+	M_Print (16, 104, "       Field of Vision");
+	r = (scr_fov.value - 30) / (175 - 30);
+	M_DrawSlider (220, 104, r);
+	M_DrawCharacter (200, 32 + extended_cursor*8, 12+((int)(realtime*4)&1));
 
-        M_DrawCharacter (200, 32 + extended_cursor*8, 12+((int)(realtime*4)&1));
-		M_Print (16, 112, "            Sound Rate");
-		if (s_khz.intValue <= 0)
-			Cvar_SetValue("s_khz", 11025);
-		M_Print (220, 112, s_khz.string);
+	M_Print (16, 112, "            Sound Rate");
+	if (s_khz.intValue <= 0)
+		Cvar_SetValue("s_khz", 11025);
+	M_Print (220, 112, s_khz.string);
 }
-
 
 void M_AdjustSliders_Extended (int dir)
 {
 	switch(extended_cursor)
 	{
-        case 0: // FS: V_CONTENTBLEND
-                Cvar_SetValue ("v_contentblend", !v_contentblend.value);
-                break;
-        case 1: // FS: PQ_FP
+	case 0:
+		Cvar_SetValue ("v_contentblend", !v_contentblend.value);
+		break;
+	case 1:
 		Cvar_SetValue ("pq_fullpitch", !pq_fullpitch.value);
 		Cvar_SetValue ("cl_fullpitch", pq_fullpitch.value);
 		break;
-
-        case 2: // FS: CL_DEMOS
+	case 2:
 		Cvar_SetValue ("cl_demos", !cl_demos.value);
 		break;
-
-        case 3: // FS: UNBINDALL
-                Cvar_SetValue ("cl_unbindall_protection", !cl_unbindall_protection.value);
-                break;
-
-        case 4: // FS: SHOW_UPTIME
-                if (show_uptime.value >= 2)
-                        Cvar_SetValue ("show_uptime", 0);
-                else if (show_uptime.value <= 0)
-                        Cvar_SetValue ("show_uptime", 1);
-                else if (show_uptime.value == 1)
-                        Cvar_SetValue ("show_uptime", 2);
-                break;
-
-        case 5: // FS: TIME
-                if (show_time.value >= 2)
-                        Cvar_SetValue ("show_time", 0);
-                else if (show_time.value <= 0)
-                        Cvar_SetValue ("show_time", 1);
-                else if (show_time.value == 1)
-                        Cvar_SetValue ("show_time", 2);
-                break;
-        case 6: // FS: FPS
-                Cvar_SetValue ("show_fps", !show_fps.value);
-                break;
-        case 7: // FS: FREELOOK
-                Cvar_SetValue ("in_freelook", !in_freelook.value);
-                break;
-		case 8: // FS: R_WATERWARP
-				Cvar_SetValue ("r_waterwarp", !r_waterwarp.value);
-				break;
-	case 9: // FS: FOV
+	case 3:
+		Cvar_SetValue ("cl_unbindall_protection", !cl_unbindall_protection.value);
+		break;
+	case 4:
+		if (show_uptime.value >= 2)
+			Cvar_SetValue ("show_uptime", 0);
+		else if (show_uptime.value <= 0)
+			Cvar_SetValue ("show_uptime", 1);
+		else if (show_uptime.value == 1)
+			Cvar_SetValue ("show_uptime", 2);
+		break;
+	case 5:
+		if (show_time.value >= 2)
+			Cvar_SetValue ("show_time", 0);
+		else if (show_time.value <= 0)
+			Cvar_SetValue ("show_time", 1);
+		else if (show_time.value == 1)
+			Cvar_SetValue ("show_time", 2);
+		break;
+	case 6:
+		Cvar_SetValue ("show_fps", !show_fps.value);
+		break;
+	case 7:
+		Cvar_SetValue ("in_freelook", !in_freelook.value);
+		break;
+	case 8:
+		Cvar_SetValue ("r_waterwarp", !r_waterwarp.value);
+		break;
+	case 9:
 		scr_fov.value += dir * 5;
 		if (scr_fov.value < 0)
 			scr_fov.value = 0;
@@ -3659,24 +3653,23 @@ void M_AdjustSliders_Extended (int dir)
 			scr_fov.value = 170;
 		Cvar_SetValue ("fov", scr_fov.value);
 		break;
-		case 10: // FS: S_KHZ
-			M_Extended_Set_Sound_KHz(dir, s_khz.intValue);
-			break;
-		default:
-			break;
+	case 10:
+		M_Extended_Set_Sound_KHz(dir, s_khz.intValue);
+		break;
+	default:
+		break;
 	}
 	S_LocalSound ("misc/menu3.wav");
 }
 
-
-void M_Extended_Key(int k) // FS: Extended
+void M_Extended_Key(int k)
 {
     switch (k)
 	{
 	case K_UPARROW:
 		S_LocalSound ("misc/menu1.wav");
 		extended_cursor--;
-        if (extended_cursor < 0)
+		if (extended_cursor < 0)
 			extended_cursor = EXTENDED_OPTIONS;
 		break;
 
@@ -3702,63 +3695,59 @@ void M_Extended_Key(int k) // FS: Extended
 	case K_ENTER:
 		m_entersound = true;
 
-	switch (extended_cursor)
-	{
-        case 0: // FS: V_CONTENTBLEND
-                Cvar_SetValue ("v_contentblend", !v_contentblend.value);
-                break;
-        case 1: // FS: PQ_FP
-		Cvar_SetValue ("pq_fullpitch", !pq_fullpitch.value);
-		Cvar_SetValue ("cl_fullpitch", pq_fullpitch.value);
-		break;
-
-        case 2: // FS: CL_DEMOS
-		Cvar_SetValue ("cl_demos", !cl_demos.value);
-		break;
-
-        case 3: // FS: UNBINDALL
-                Cvar_SetValue ("cl_unbindall_protection", !cl_unbindall_protection.value);
-                break;
-
-        case 4: // FS: SHOW_UPTIME
-                if (show_uptime.value >= 2)
-                        Cvar_SetValue ("show_uptime", 0);
-                else if (show_uptime.value <= 0)
-                        Cvar_SetValue ("show_uptime", 1);
-                else if (show_uptime.value == 1)
+		switch (extended_cursor)
+		{
+		case 0:
+			Cvar_SetValue ("v_contentblend", !v_contentblend.value);
+			break;
+		case 1:
+			Cvar_SetValue ("pq_fullpitch", !pq_fullpitch.value);
+			Cvar_SetValue ("cl_fullpitch", pq_fullpitch.value);
+			break;
+		case 2:
+			Cvar_SetValue ("cl_demos", !cl_demos.value);
+			break;
+		case 3:
+			Cvar_SetValue ("cl_unbindall_protection", !cl_unbindall_protection.value);
+			break;
+		case 4:
+			if (show_uptime.value >= 2)
+				Cvar_SetValue ("show_uptime", 0);
+			else if (show_uptime.value <= 0)
+				Cvar_SetValue ("show_uptime", 1);
+			else if (show_uptime.value == 1)
                         Cvar_SetValue ("show_uptime", 2);
-                break;
-
-        case 5: // FS: TIME
-                if (show_time.value >= 2)
-                        Cvar_SetValue ("show_time", 0);
-                else if (show_time.value <= 0)
-                        Cvar_SetValue ("show_time", 1);
-                else if (show_time.value == 1)
-                        Cvar_SetValue ("show_time", 2);
-                break;
-        case 6: // FS: FPS
-                Cvar_SetValue ("show_fps", !show_fps.value);
-                break;
-        case 7: // FS: FREELOOK
-                Cvar_SetValue ("in_freelook", !in_freelook.value);
-                break;
-		case 8: // FS: R_WATERWARP
-				Cvar_SetValue ("r_waterwarp", !r_waterwarp.value);
-				break;
+			break;
+		case 5:
+			if (show_time.value >= 2)
+				Cvar_SetValue ("show_time", 0);
+			else if (show_time.value <= 0)
+				Cvar_SetValue ("show_time", 1);
+			else if (show_time.value == 1)
+				Cvar_SetValue ("show_time", 2);
+			break;
+        case 6:
+			Cvar_SetValue ("show_fps", !show_fps.value);
+			break;
+        case 7:
+			Cvar_SetValue ("in_freelook", !in_freelook.value);
+			break;
+		case 8:
+			Cvar_SetValue ("r_waterwarp", !r_waterwarp.value);
+			break;
 		case 9:
-				M_AdjustSliders_Extended(1);
-				break;
+			M_AdjustSliders_Extended(1);
+			break;
 		case 10:
 			M_AdjustSliders_Extended(1);
 			break;
-        default:
-                Con_Printf("\nShouldn't be here mannn...\n");
-                break;
-	}
+		default:
+			break;
+		}
 	}
 }
 
+/* FS: FIXME this is somewhat crappy, use Q2DOS version instead */
 void M_Extended_Set_Sound_KHz (int dir, int khz)
 {
 	switch(khz)

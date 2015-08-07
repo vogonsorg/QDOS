@@ -312,7 +312,7 @@ void IN_MouseMove (usercmd_t *cmd)
 	if (in_mlook.state & 1 || in_freelook.value) /* FS: mlook */
 		V_StopPitchDrift ();
 		
-        if ( ((in_mlook.state & 1) && !(in_strafe.state & 1)) || (in_freelook.value && !(in_strafe.state & 1))) /* FS: mlook */
+	if ( ((in_mlook.state & 1) && !(in_strafe.state & 1)) || (in_freelook.value && !(in_strafe.state & 1))) /* FS: mlook */
 	{
 		cl.viewangles[PITCH] += m_pitch.value * mouse_y;
 	}
@@ -605,7 +605,7 @@ void IN_ExternalMove (usercmd_t *cmd)
 	if (cl.viewangles[PITCH] < -70)
 		cl.viewangles[PITCH] = -70;
 
-        freelook = (extern_control->flags & AUX_FLAG_FREELOOK || aux_look.value || in_mlook.state & 1 || in_freelook.value); /* FS: mlook */
+	freelook = (extern_control->flags & AUX_FLAG_FREELOOK || aux_look.value || in_mlook.state & 1 || in_freelook.value); /* FS: mlook */
 
 	if (freelook)
 		V_StopPitchDrift ();

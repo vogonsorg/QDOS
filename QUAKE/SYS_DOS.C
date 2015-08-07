@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <dpmi.h>
 #include <sys/nearptr.h>
 #include <conio.h>
-#include <crt0.h> // FS: Fake Mem Fix (QIP)
+#include <crt0.h> /* FS: Fake Mem Fix (QIP) */
 
 int _crt0_startup_flags = _CRT0_FLAG_UNIX_SBRK; /* FS: Fake Mem Fix for Win9x (QIP) */
 
@@ -115,15 +115,8 @@ byte        shiftscantokey[128] =
 
 void TrapKey(void)
 {
-//      static int ctrl=0;
 	keybuf[keybuf_head] = dos_inportb(0x60);
 	dos_outportb(0x20, 0x20);
-	/*
-	if (scantokey[keybuf[keybuf_head]&0x7f] == K_CTRL)
-		ctrl=keybuf[keybuf_head]&0x80;
-	if (ctrl && scantokey[keybuf[keybuf_head]&0x7f] == 'c')
-		Sys_Error("ctrl-c hit\n");
-	*/
 	keybuf_head = (keybuf_head + 1) & (KEYBUF_SIZE-1);
 }
 
@@ -175,17 +168,15 @@ void Sys_DetectWin95 (void)
 
 void *dos_getmaxlockedmem(int *size)
 {
-	__dpmi_free_mem_info    meminfo;
-	__dpmi_meminfo                  info;
-	int                                             working_size;
-	void                                    *working_memory;
-	int                                             last_locked;
-        //int                                             extra,  i, j, allocsize;
-	int                                     i, j, extra, allocsize; // FS: 2GB Fix
-	static char                             *msg = "Locking data...";
-	// int                                             m, n;
-	byte                                    *x;
-	unsigned long   ul; // FS: 2GB Fix
+	__dpmi_free_mem_info	meminfo;
+	__dpmi_meminfo			info;
+	int						working_size;
+	void					*working_memory;
+	int						last_locked;
+	int						i, j, extra, allocsize; /* FS: 2GB Fix */
+	static char				*msg = "Locking data...";
+	byte					*x;
+	unsigned long			ul; /* FS: 2GB Fix */
 
 // first lock all the current executing image so the locked count will
 // be accurate.  It doesn't hurt to lock the memory multiple times
@@ -206,20 +197,17 @@ void *dos_getmaxlockedmem(int *size)
 
 	if (!win95)             /* Not windows or earlier than Win95 */
 	{
-		//working_size = meminfo.maximum_locked_page_allocation_in_pages * 4096;
-		ul = meminfo.maximum_locked_page_allocation_in_pages * 4096; // FS: 2GB fix
+		ul = meminfo.maximum_locked_page_allocation_in_pages * 4096; /* FS: 2GB Fix */
 	}
 	else
 	{
-//                working_size = meminfo.largest_available_free_block_in_bytes -
-//                                LEAVE_FOR_CACHE;
 		ul = meminfo.largest_available_free_block_in_bytes -
-		LEAVE_FOR_CACHE; // FS: 2GB fix
+		LEAVE_FOR_CACHE; /* FS: 2GB Fix */
 	}
 
-        if (ul > 0x7fffffff)
-                ul = 0x7fffffff; /* limit to 2GB */
-        working_size = (int) ul;
+	if (ul > 0x7fffffff)
+		ul = 0x7fffffff; /* limit to 2GB */
+	working_size = (int) ul;
 	working_size &= ~0xffff;                /* Round down to 64K */
 	working_size += 0x10000;
 
@@ -303,8 +291,8 @@ void *dos_getmaxlockedmem(int *size)
 				goto Locked;
 		}
 
-                Sys_Error ("Can't lock memory; %ld Mb lockable RAM required. "
-				   "Try shrinking smartdrv.", info.size / 0x100000);
+		Sys_Error ("Can't lock memory; %ld Mb lockable RAM required. "
+					"Try shrinking smartdrv.", info.size / 0x100000);
 
 Locked:
 
@@ -336,12 +324,12 @@ UpdateSbrk:
 // doing that, of course, but there's no reason we shouldn't)
 	x = (byte *)working_memory;
 
-        for (j=0 ; j<4 ; j++) // FS: 2GB Fix
+	for (j=0 ; j<4 ; j++) /* FS: 2GB Fix */
 	{
-                for (i=0 ; i<(working_size - 16 * 0x1000) ; i += 4)
+		for (i=0 ; i<(working_size - 16 * 0x1000) ; i += 4)
 		{
-                        sys_checksum += *(int *)&x[i];
-                        sys_checksum += *(int *)&x[i + 16 * 0x1000];
+			sys_checksum += *(int *)&x[i];
+			sys_checksum += *(int *)&x[i + 16 * 0x1000];
 		}
 	}
 
@@ -428,7 +416,6 @@ char *Sys_ConsoleInput(void)
 
 void Sys_Init(void)
 {
-
 	MaskExceptions ();
 
 	Sys_SetFPCW ();
@@ -449,7 +436,6 @@ void Sys_Shutdown(void)
 		dos_unlockmem (quakeparms.membase, quakeparms.memsize);
 	}
 }
-
 
 #define SC_RSHIFT       0x36 
 #define SC_LSHIFT       0x2a 
@@ -513,9 +499,8 @@ Sys_Printf
 
 void Sys_Printf (const char *fmt, ...)
 {
- // FS: New school Dstrings
-	va_list		argptr;
-	static dstring_t *text;
+	va_list	argptr;
+	static	dstring_t *text;
 
 	if (!text)
 		text = dstring_new ();
@@ -579,8 +564,8 @@ void Sys_Quit (void)
 void Sys_Error (const char *error, ...)
 { 
     va_list     argptr;
-    //char        string[1024];
-    static dstring_t    *string; // FS: New school dstring
+    static dstring_t    *string;
+
     if (!string)
         string = dstring_new();
 
@@ -590,7 +575,8 @@ void Sys_Error (const char *error, ...)
 
 	Host_Shutdown();
 	fprintf(stderr, "Error: %s\n", string->str);
-// Sys_AtExit is called by exit to shutdown the system
+
+	// Sys_AtExit is called by exit to shutdown the system
 	exit(0);
 } 
 
@@ -656,7 +642,6 @@ void Sys_MakeCodeWriteable (unsigned long startaddr, unsigned long length)
 	// it's always writeable
 }
 
-
 /*
 ================
 Sys_FloatTime
@@ -664,7 +649,7 @@ Sys_FloatTime
 */
 double Sys_FloatTime (void)
 {
-	return (double) uclock() / (double) UCLOCKS_PER_SEC; // FS: Win9X/Fast PC Fix (QIP)
+	return (double) uclock() / (double) UCLOCKS_PER_SEC; /* FS: Accurate Clock (QIP) */
 }
 
 /*
@@ -687,17 +672,17 @@ void Sys_GetMemory(void)
 		int j;
 		//quakeparms.membase = dos_getmaxlockedmem (&quakeparms.memsize);
 
-		if (extended_mod) // FS: We're not foolin' around with big boy mods...
+		if (extended_mod) /* FS: We're not foolin' around with big boy mods... */
 			j=64;
 		else
-			j=32; // FS: from QW
-		quakeparms.memsize = (int) j * 1024 * 1024; 
+			j=32; /* FS: from QW */
+		quakeparms.memsize = (int) j * 1024 * 1024;
 		quakeparms.membase = malloc (quakeparms.memsize);
 	}
 
 	fprintf(stderr, "malloc'd: %d\n", quakeparms.memsize);
 
-	if (COM_CheckParm ("-noclear")) // FS: Wanted the option
+	if (COM_CheckParm ("-noclear")) /* FS: Wanted the option */
 	{
 		return;
 	}
@@ -843,13 +828,8 @@ int main (int c, char **v)
 	if (!isDedicated)
 		dos_registerintr(9, TrapKey);
 
-//Sys_InitStackCheck ();
-	
 	Host_Init(&quakeparms);
 
-//Sys_StackCheck ();
-
-//Con_Printf ("Top of stack: 0x%x\n", &time);
 	oldtime = Sys_FloatTime ();
 	while (1)
 	{
@@ -860,8 +840,6 @@ int main (int c, char **v)
 			continue;
 
 		Host_Frame (time);
-
-//Sys_StackCheck ();
 
 		oldtime = newtime;
 	}

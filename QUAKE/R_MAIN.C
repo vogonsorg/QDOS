@@ -121,7 +121,7 @@ cvar_t	r_timegraph = {"r_timegraph","0"};
 cvar_t  r_zgraph = {"r_zgraph","0"};
 cvar_t	r_graphheight = {"r_graphheight","10"};
 cvar_t	r_clearcolor = {"r_clearcolor","2"};
-cvar_t	r_waterwarp = {"r_waterwarp","1", true}; // FS: Now saved
+cvar_t  r_waterwarp = {"r_waterwarp","1", true}; /* FS: Save it */
 cvar_t	r_fullbright = {"r_fullbright","0"};
 cvar_t	r_drawentities = {"r_drawentities","1"};
 cvar_t	r_drawviewmodel = {"r_drawviewmodel","1"};
@@ -176,7 +176,7 @@ void	R_InitTextures (void)
 				else
 					*dest++ = 0xff;
 			}
-	}	
+	}
 }
 
 /*
@@ -186,15 +186,15 @@ R_Init
 */
 void R_Init (void)
 {
-	int		dummy;
+	int	dummy;
 	
 // get stack position so we can guess if we are going to overflow
 	r_stack_start = (byte *)&dummy;
 	
 	R_InitTurb ();
 	
-	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);	
-	Cmd_AddCommand ("pointfile", R_ReadPointFile_f);	
+	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);
+	Cmd_AddCommand ("pointfile", R_ReadPointFile_f);
 
 	Cvar_RegisterVariable (&r_draworder);
 	Cvar_RegisterVariable (&r_speeds);
@@ -258,7 +258,7 @@ void R_NewMap (void)
 // FIXME: is this one short?
 	for (i=0 ; i<cl.worldmodel->numleafs ; i++)
 		cl.worldmodel->leafs[i].efrags = NULL;
-		 	
+
 	r_viewleaf = NULL;
 	R_ClearParticles ();
 
@@ -398,9 +398,6 @@ void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect)
 	
 	screenAspect = r_refdef.vrect.width*pixelAspect /
 			r_refdef.vrect.height;
-// 320*200 1.0 pixelAspect = 1.6 screenAspect
-// 320*240 1.0 pixelAspect = 1.3333 screenAspect
-// proper 320*200 pixelAspect = 0.8333333
 
 	verticalFieldOfView = r_refdef.horizontalFieldOfView / screenAspect;
 
@@ -448,28 +445,22 @@ void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect)
 // bottom side clip
 	screenedge[3].normal[0] = 0;
 	screenedge[3].normal[1] = 1.0 / ((1.0-yOrigin)*verticalFieldOfView);
-	screenedge[3].normal[2] = 1;	
+	screenedge[3].normal[2] = 1;
 	screenedge[3].type = PLANE_ANYZ;
 	
 	for (i=0 ; i<4 ; i++)
 		VectorNormalize (screenedge[i].normal);
 
 	res_scale = sqrt ((double)(r_refdef.vrect.width * r_refdef.vrect.height) /
-			          (320.0 * 152.0)) *
+				  (320.0 * 152.0)) *
 			(2.0 / r_refdef.horizontalFieldOfView);
 	r_aliastransition = r_aliastransbase.value * res_scale;
 	r_resfudge = r_aliastransadj.value * res_scale;
 
-/* FOV Gun Model hack
-	if (scr_fov.value <= 90.0)
-		r_fov_greater_than_90 = false;
-	else
-		r_fov_greater_than_90 = true;
-*/
-		r_fov_greater_than_90 = false;
+	r_fov_greater_than_90 = false;
 
 // TODO: collect 386-specific code in one place
-#if	id386
+#if id386
 	if (r_pixbytes == 1)
 	{
 		Sys_MakeCodeWriteable ((long)R_Surf8Start,
@@ -484,7 +475,7 @@ void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect)
 		colormap = vid.colormap16;
 		R_Surf16Patch ();
 	}
-#endif	// id386
+#endif  // id386
 
 	D_ViewChanged ();
 }

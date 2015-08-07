@@ -128,9 +128,13 @@ typedef struct
 	int			td_lastframe;		// to meter out one message a frame
 	int			td_startframe;		// host_framecount at start
 	float		td_starttime;		// realtime at second frame of timedemo
-	int			gamespyupdate; // FS
-	int			gamespypercent; // FS
 
+	/* FS: Gamespy stuff */
+	int gamespyupdate;
+	int gamespypercent;
+	int gamespytotalservers;
+	int gamespystarttime;
+	
 // connection information
 	int			signon;			// 0 to SIGNONS
 	struct qsocket_s	*netcon;
@@ -263,8 +267,18 @@ extern	cvar_t	m_pitch;
 extern	cvar_t	m_yaw;
 extern	cvar_t	m_forward;
 extern	cvar_t	m_side;
-extern	cvar_t	snd_gamespy_sounds; // FS :Gamespy
-extern	cvar_t	cl_ogg_music; // FS
+
+/* FS: GameSpy CVARs */
+extern	cvar_t	cl_master_server_ip;
+extern	cvar_t	cl_master_server_port;
+extern	cvar_t	cl_master_server_timeout;
+extern	cvar_t	cl_master_server_retries;
+extern	cvar_t	snd_gamespy_sounds;
+
+extern	cvar_t	cl_ogg_music; /* FS: Added */
+extern	cvar_t	cl_wav_music; /* FS: Added */
+
+extern	cvar_t	cl_autorepeat_allkeys; /* FS: Added */
 
 #define	MAX_TEMP_ENTITIES	256		//johnfitz -- was 64
 #define	MAX_STATIC_ENTITIES	512		//johnfitz -- was 128

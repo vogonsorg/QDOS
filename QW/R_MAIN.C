@@ -150,10 +150,10 @@ void R_ZGraph (void);
 R_InitTextures
 ==================
 */
-void    R_InitTextures (void)
+void	R_InitTextures (void)
 {
-	int             x,y, m;
-	byte    *dest;
+	int		x,y, m;
+	byte	*dest;
 	
 // create a simple checkerboard texture for the default
 	r_notexture_mip = Hunk_AllocName (sizeof(texture_t) + 16*16+8*8+4*4+2*2, "notexture");
@@ -175,7 +175,7 @@ void    R_InitTextures (void)
 				else
 					*dest++ = 0xff;
 			}
-	}       
+	}
 }
 
 /*
@@ -185,15 +185,15 @@ R_Init
 */
 void R_Init (void)
 {
-	int             dummy;
+	int	dummy;
 	
 // get stack position so we can guess if we are going to overflow
 	r_stack_start = (byte *)&dummy;
 	
 	R_InitTurb ();
 	
-	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);        
-	Cmd_AddCommand ("pointfile", R_ReadPointFile_f);        
+	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);
+	Cmd_AddCommand ("pointfile", R_ReadPointFile_f);
 
 	Cvar_RegisterVariable (&r_draworder);
 	Cvar_RegisterVariable (&r_speeds);
@@ -235,10 +235,10 @@ void R_Init (void)
 	R_InitParticles ();
 
 // TODO: collect 386-specific code in one place
-#if     id386
+#if	id386
 	Sys_MakeCodeWriteable ((long)R_EdgeCodeStart,
 					     (long)R_EdgeCodeEnd - (long)R_EdgeCodeStart);
-#endif  // id386
+#endif	// id386
 
 	D_Init ();
 }
@@ -259,7 +259,7 @@ void R_NewMap (void)
 // FIXME: is this one short?
 	for (i=0 ; i<cl.worldmodel->numleafs ; i++)
 		cl.worldmodel->leafs[i].efrags = NULL;
-			
+
 	r_viewleaf = NULL;
 	R_ClearParticles ();
 
@@ -459,7 +459,7 @@ void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect)
 // bottom side clip
 	screenedge[3].normal[0] = 0;
 	screenedge[3].normal[1] = 1.0 / ((1.0-yOrigin)*verticalFieldOfView);
-	screenedge[3].normal[2] = 1;    
+	screenedge[3].normal[2] = 1;
 	screenedge[3].type = PLANE_ANYZ;
 	
 	for (i=0 ; i<4 ; i++)

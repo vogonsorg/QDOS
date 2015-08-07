@@ -113,7 +113,6 @@ void D_DrawTurbulent8Span (void)
 
 #endif	// !id386
 
-
 /*
 =============
 Turbulent8

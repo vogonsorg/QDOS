@@ -1,16 +1,16 @@
-/* 
+/*
  *
  * File: darray.c
  * ---------------
  *	David Wright
  *	10/8/98
- * 
+ *
  *  See darray.h for function descriptions
  */
-#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include "darray.h" 
+#include "..\..\sys.h" /* FS: For Sys_Error */
 
 #define DEF_GROWBY 8
 
@@ -46,7 +46,8 @@ static void ArrayGrow(DArray array)
 {
 	array->capacity +=  array->growby;
 	array->list = realloc(array->list, array->capacity * array->elemsize);
-	assert(array->list);
+	if(!array->list)
+		Sys_Error("ArrayGrow: array->list is NULL");
 }
 
 /* SetElement
@@ -63,8 +64,10 @@ DArray ArrayNew(int elemSize, int numElemsToAllocate,
 	DArray array;
 
 	array = (DArray) malloc(sizeof(struct DArrayImplementation));
-	assert(array);
-	assert(elemSize);
+	if (!array)
+		Sys_Error("ArrayNew: array is NULL.");
+	if (elemSize <= 0)
+		Sys_Error("ArrayNew: bad elemSize.");
 	if (numElemsToAllocate == 0)
 		numElemsToAllocate = DEF_GROWBY;
 	array->count = 0;
@@ -73,7 +76,8 @@ DArray ArrayNew(int elemSize, int numElemsToAllocate,
 	array->growby = numElemsToAllocate;
 	array->elemfreefn = elemFreeFn;
 	array->list = malloc(array->capacity * array->elemsize);
-	assert(array->list);
+	if(!array->list)
+		Sys_Error("ArrayNew: array->list is NULL.");
 
 	return array;
 }
@@ -82,7 +86,9 @@ void ArrayFree(DArray array)
 {
 	int i;
 	
-	assert(array);
+	if(!array)
+		Sys_Error("ArrayFree: array is NULL.");
+
 	for (i = 0; i < array->count; i++)
 	{
 		FreeElement(array, i);
@@ -99,8 +105,9 @@ int ArrayLength(const DArray array)
 
 void *ArrayNth(DArray array, int n)
 {
-	assert( (n >= 0) && (n < array->count));
-	
+	if (n < 0 || n >= array->count)
+		Sys_Error("ArrayNth: bad index");
+
 	return (char *)array->list + array->elemsize*n;
 }
 
@@ -114,7 +121,8 @@ void ArrayAppend(DArray array, const void *newElem)
 
 void ArrayInsertAt(DArray array, const void *newElem, int n)
 {
-	assert( (n >= 0) && (n <= array->count));
+	if (n < 0 || n > array->count)
+		Sys_Error("ArrayInsertAt: bad index");
 
 	if (array->count == array->capacity)
 		ArrayGrow(array);
@@ -127,7 +135,8 @@ void ArrayInsertAt(DArray array, const void *newElem, int n)
 
 void ArrayDeleteAt(DArray array, int n)
 {
-   	assert( (n >= 0) && (n < array->count));
+	if (n < 0 || n >= array->count)
+		Sys_Error("ArrayDeleteAt: bad index");
 
 	FreeElement(array,n);
 	if (n < array->count - 1) //if not last element
@@ -139,7 +148,8 @@ void ArrayDeleteAt(DArray array, int n)
 
 void ArrayReplaceAt(DArray array, const void *newElem, int n)
 {
-	assert( (n >= 0) && (n < array->count));
+	if (n < 0 || n >= array->count)
+		Sys_Error("ArrayReplaceAt: bad index");
 
 	FreeElement(array, n);
 	SetElement(array, newElem,n);
@@ -160,7 +170,7 @@ int ArraySearch(DArray array, const void *key, ArrayCompareFn comparator,
 	if (array->count == 0)
 		return NOT_FOUND;
 
-   	if (isSorted)
+	if (isSorted)
 		res=bsearch(key, ArrayNth(array,fromIndex),
 					array->count - fromIndex, array->elemsize, comparator);
 	else
@@ -177,11 +187,11 @@ void ArrayMap(DArray array, ArrayMapFn fn, void *clientData)
 {
 	int i;
 
-	assert(fn);
+	if(!fn)
+		Sys_Error("ArrayMap: fn is NULL.");
 
 	for (i = 0; i < array->count; i++)
 		fn(ArrayNth(array,i), clientData);
-		
 }
 
 /* mylsearch

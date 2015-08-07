@@ -1211,7 +1211,7 @@ void SCR_UpdateScreen (void)
 			SCR_DrawPing (); /* FS: show ping */
 		}
 		Sbar_Draw ();
-		SCR_DrawConsole ();	
+		SCR_DrawConsole ();
 		M_Draw ();
 	}
 

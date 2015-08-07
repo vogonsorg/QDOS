@@ -6,6 +6,8 @@ Additional code from sezero, taniwha, spoike, LordHavoc,
    QuakeForge, Fitzquake, Quakespasm, Darkplaces and more.
 ---------------------------------------------------------
 
+* Gamespy Server Browser accessible from Multiplayer Menu.  Adapted from
+  Q2DOS.
 * Scaleable particle sizes for SVGA resolutions.  Use sw_particle_size_override
   and friends to set more custom values.
 * Fixed GameSpy /slist2 command to be a lot faster.

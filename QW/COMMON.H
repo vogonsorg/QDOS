@@ -34,7 +34,7 @@ typedef unsigned char           byte;
 #undef true
 #undef false
 
-typedef enum {false, true}      qboolean;
+typedef enum {false, true}	qboolean;
 
 #define MAX_INFO_STRING 1024 /* FS: Was 196 */
 #define MAX_SERVERINFO_STRING 2048  /* FS: Was 1024 */
@@ -46,11 +46,11 @@ typedef enum {false, true}      qboolean;
 
 typedef struct sizebuf_s
 {
-	qboolean        allowoverflow;  // if false, do a Sys_Error
-	qboolean        overflowed;             // set to true if the buffer size failed
-	byte    *data;
-	int             maxsize;
-	int             cursize;
+	qboolean	allowoverflow;	// if false, do a Sys_Error
+	qboolean	overflowed;		// set to true if the buffer size failed
+	byte		*data;
+	int			maxsize;
+	int			cursize;
 } sizebuf_t;
 
 void SZ_InitEx (sizebuf_t *buf, byte *data, int length, qbool allowoverflow); /* FS: From EZQ */
@@ -58,13 +58,13 @@ void SZ_Init (sizebuf_t *buf, byte *data, int length); /* FS: From EZQ */
 void SZ_Clear (sizebuf_t *buf);
 void *SZ_GetSpace (sizebuf_t *buf, int length);
 void SZ_Write (sizebuf_t *buf, void *data, int length);
-void SZ_Print (sizebuf_t *buf, char *data);     // strcats onto the sizebuf
+void SZ_Print (sizebuf_t *buf, char *data);	// strcats onto the sizebuf
 
 //============================================================================
 
 typedef struct link_s
 {
-	struct link_s   *prev, *next;
+	struct link_s	*prev, *next;
 } link_t;
 
 
@@ -76,7 +76,7 @@ void InsertLinkAfter (link_t *l, link_t *after);
 // (type *)STRUCT_FROM_LINK(link_t *link, type, member)
 // ent = STRUCT_FROM_LINK(link,entity_t,order)
 // FIXME: remove this mess!
-#define STRUCT_FROM_LINK(l,t,m) ((t *)((byte *)l - (int)&(((t *)0)->m)))
+#define	STRUCT_FROM_LINK(l,t,m) ((t *)((byte *)l - (int)&(((t *)0)->m)))
 
 //============================================================================
 
@@ -84,28 +84,28 @@ void InsertLinkAfter (link_t *l, link_t *after);
 #define NULL ((void *)0)
 #endif
 
-#define Q_MAXCHAR ((char)0x7f)
-#define Q_MAXSHORT ((short)0x7fff)
-#define Q_MAXINT        ((int)0x7fffffff)
-#define Q_MAXLONG ((int)0x7fffffff)
-#define Q_MAXFLOAT ((int)0x7fffffff)
+#define Q_MAXCHAR	((char)0x7f)
+#define Q_MAXSHORT	((short)0x7fff)
+#define Q_MAXINT	((int)0x7fffffff)
+#define Q_MAXLONG	((int)0x7fffffff)
+#define Q_MAXFLOAT	((int)0x7fffffff)
 
-#define Q_MINCHAR ((char)0x80)
-#define Q_MINSHORT ((short)0x8000)
-#define Q_MININT        ((int)0x80000000)
-#define Q_MINLONG ((int)0x80000000)
-#define Q_MINFLOAT ((int)0x7fffffff)
+#define Q_MINCHAR	((char)0x80)
+#define Q_MINSHORT	((short)0x8000)
+#define Q_MININT	((int)0x80000000)
+#define Q_MINLONG	((int)0x80000000)
+#define Q_MINFLOAT	((int)0x7fffffff)
 
 //============================================================================
 
-extern  qboolean                bigendien;
+extern	qboolean	bigendien;
 
-extern  short   (*BigShort) (short l);
-extern  short   (*LittleShort) (short l);
-extern  int     (*BigLong) (int l);
-extern  int     (*LittleLong) (int l);
-extern  float   (*BigFloat) (float l);
-extern  float   (*LittleFloat) (float l);
+extern	short	(*BigShort) (short l);
+extern	short	(*LittleShort) (short l);
+extern	int		(*BigLong) (int l);
+extern	int		(*LittleLong) (int l);
+extern	float	(*BigFloat) (float l);
+extern	float	(*LittleFloat) (float l);
 
 //============================================================================
 
@@ -166,8 +166,8 @@ void MSG_WriteAngle16 (sizebuf_t *sb, float f);
 void MSG_WriteDeltaUsercmd (sizebuf_t *sb, struct usercmd_s *from, struct usercmd_s *cmd);
 void MSG_ReadData (void *data, int len); /* FS: For chunked downloads */
 
-extern  int                     msg_readcount;
-extern  qboolean        msg_badread;            // set if a read goes beyond end of message
+extern	int			msg_readcount;
+extern	qboolean	msg_badread;		// set if a read goes beyond end of message
 
 void MSG_BeginReading (void);
 int MSG_GetReadCount(void);
@@ -209,20 +209,20 @@ void MSG_ReadDeltaUsercmd (struct usercmd_s *from, struct usercmd_s *cmd);
 
 #endif
 
-int     Q_atoi (char *str);
+int	Q_atoi (char *str);
 float Q_atof (char *str);
 size_t Q_strlcpy (char *dst, const char *src, size_t siz); /* FS: From OpenBSD */
 
 //============================================================================
 
-extern  char            com_token[1024];
-extern  qboolean        com_eof;
+extern	char		com_token[1024];
+extern	qboolean	com_eof;
 
 char *COM_Parse (char *data);
 
 
-extern  int             com_argc;
-extern  char    **com_argv;
+extern	int		com_argc;
+extern	char	**com_argv;
 
 int COM_CheckParm (char *parm);
 void COM_AddParm (char *parm);
@@ -240,13 +240,12 @@ char	*va(const char *format, ...) __attribute__((format(printf,1,2)));
 // does a varargs printf into a malloced buffer
 char	*nva(const char *format, ...) __attribute__((format(printf,1,2)));
 
-
 //============================================================================
 
 extern int com_filesize;
 struct cache_user_s;
 
-extern  char    com_gamedir[MAX_OSPATH];
+extern	char	com_gamedir[MAX_OSPATH];
 
 void COM_WriteFile (char *filename, void *data, int len);
 int COM_OpenFile (char *filename, int *hndl); /* FS: From Q1 */
@@ -265,8 +264,8 @@ void COM_FreeFileList (char **list, int n);
 qboolean COM_ItemInList (char *check, int num, char **list);
 char **COM_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned canthave );
 
-extern  struct cvar_s   registered;
-extern qboolean         standard_quake, rogue, hipnotic;
+extern	struct cvar_s	registered;
+extern	qboolean		standard_quake, rogue, hipnotic;
 
 char *Info_ValueForKey (char *s, char *key);
 void Info_RemoveKey (char *s, char *key);

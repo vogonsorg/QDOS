@@ -110,7 +110,7 @@ void D_SetParticleSize (void) /* FS: Because particles like blood and bullet dus
 		{
 			d_pix_min = 2;
 		}
-		else if (vid.width >= 640) // FS: Yeah, this seems weird, but honestly it looks way too big in 640x4XX
+		else if (vid.width >= 640) /* FS: Yeah, this seems weird, but honestly it looks way too big in 640x4XX */
 		{
 			d_pix_min = 1;
 		}

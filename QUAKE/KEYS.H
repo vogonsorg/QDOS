@@ -56,6 +56,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	K_HOME			151
 #define	K_END			152
 
+/* FS: From Quake 2 */
+#define K_KP_HOME		160
+#define K_KP_UPARROW	161
+#define K_KP_PGUP		162
+#define	K_KP_LEFTARROW	163
+#define K_KP_5			164
+#define K_KP_RIGHTARROW	165
+#define K_KP_END		166
+#define K_KP_DOWNARROW	167
+#define K_KP_PGDN		168
+#define	K_KP_ENTER		169
+#define K_KP_INS   		170
+#define	K_KP_DEL		171
+#define K_KP_SLASH		172
+#define K_KP_MINUS		173
+#define K_KP_PLUS		174
+
 #define K_PAUSE			255
 
 //

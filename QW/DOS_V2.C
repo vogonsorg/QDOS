@@ -168,15 +168,16 @@ void dos_freememory(void *ptr)
 	int segment;
 
 	segment = ptr2real(ptr) >> 4;
-        for (i=0 ; i<MAX_SEGINFO ; i++) /* FS: sezero's code from uHexen2 */
-        {
+	for (i=0 ; i<MAX_SEGINFO ; i++) /* FS: sezero's code from uHexen2 */
+	{
 		if (seginfo[i].rm_segment == segment)
 		{
 			_go32_dpmi_free_dos_memory(&seginfo[i]);
 			seginfo[i].rm_segment = 0;
                         return;
 		}
-        }
+	}
+
   Sys_Error("Unknown seginfo");
 }
 

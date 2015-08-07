@@ -20,25 +20,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // Z_zone.c
 
 #include "quakedef.h"
-#define DYNAMIC_SIZE 0x100000 //FS: -zone 1024. Per RUNEQ servers.
-//#define DYNAMIC_SIZE    0xc000
 
-#define	ZONEID	0x1d4a11
-#define MINFRAGMENT	64
+#define DYNAMIC_SIZE    0x100000 /* FS: -zone 1024 by default */
+
+#define ZONEID  0x1d4a11
+#define MINFRAGMENT     64
 
 typedef struct memblock_s
 {
-	int		size;           // including the header and possibly tiny fragments
-	int     tag;            // a tag of 0 is a free block
-	int     id;        		// should be ZONEID
-	struct memblock_s       *next, *prev;
+	int		size;			// including the header and possibly tiny fragments
+	int		tag;			// a tag of 0 is a free block
+	int		id;				// should be ZONEID
+	struct	memblock_s		*next, *prev;
 	int		pad;			// pad to 64 bit boundary
 } memblock_t;
 
 typedef struct
 {
-	int		size;		// total bytes malloced, including header
-	memblock_t	blocklist;		// start / end cap for linked list
+	int			size;		// total bytes malloced, including header
+	memblock_t	blocklist;	// start / end cap for linked list
 	memblock_t	*rover;
 } memzone_t;
 
@@ -113,7 +113,8 @@ void Z_Free (void *ptr)
 	
 	other = block->prev;
 	if (!other->tag)
-	{	// merge with previous free block
+	{
+		// merge with previous free block
 		other->size += block->size;
 		other->next = block->next;
 		other->next->prev = other;
@@ -124,7 +125,8 @@ void Z_Free (void *ptr)
 	
 	other = block->next;
 	if (!other->tag)
-	{	// merge the next free block onto the end
+	{
+		// merge the next free block onto the end
 		block->size += other->size;
 		block->next = other->next;
 		block->next->prev = block;
@@ -143,7 +145,7 @@ void *Z_Malloc (int size)
 {
 	void	*buf;
 	
-Z_CheckHeap ();	// DEBUG
+	Z_CheckHeap ();	// DEBUG
 	buf = Z_TagMalloc (size, 1);
 	if (!buf)
 		Sys_Error ("Z_Malloc: failed on allocation of %i bytes",size);
@@ -186,7 +188,8 @@ void *Z_TagMalloc (int size, int tag)
 //
 	extra = base->size - size;
 	if (extra >  MINFRAGMENT)
-	{	// there will be a free fragment after the allocated block
+	{
+		// there will be a free fragment after the allocated block
 		new = (memblock_t *) ((byte *)base + size );
 		new->size = extra;
 		new->tag = 0;			// free block
@@ -590,8 +593,6 @@ void Cache_Move ( cache_system_t *c)
 	new = Cache_TryAlloc (c->size, true);
 	if (new)
 	{
-//		Con_Printf ("cache_move ok\n");
-
 		Q_memcpy ( new+1, c+1, c->size - sizeof(cache_system_t) );
 		new->user = c->user;
 		Q_memcpy (new->name, c->name, sizeof(new->name));
@@ -600,8 +601,6 @@ void Cache_Move ( cache_system_t *c)
 	}
 	else
 	{
-//		Con_Printf ("cache_move failed\n");
-
 		Cache_Free (c->user);		// tough luck...
 	}
 }
@@ -719,7 +718,8 @@ cache_system_t *Cache_TryAlloc (int size, qboolean nobottom)
 		if (!nobottom || cs != cache_head.next)
 		{
 			if ( (byte *)cs - (byte *)new >= size)
-			{	// found space
+			{
+				// found space
 				memset (new, 0, sizeof(*new));
 				new->size = size;
 				
@@ -734,7 +734,7 @@ cache_system_t *Cache_TryAlloc (int size, qboolean nobottom)
 			}
 		}
 
-	// continue looking		
+		// continue looking		
 		new = (cache_system_t *)((byte *)cs + cs->size);
 		cs = cs->next;
 
@@ -890,7 +890,7 @@ void *Cache_Alloc (cache_user_t *c, int size, char *name)
 
 	size = (size + sizeof(cache_system_t) + 15) & ~15;
 
-// find memory for it	
+	// find memory for it	
 	while (1)
 	{
 		cs = Cache_TryAlloc (size, false);
