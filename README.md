@@ -1,4 +1,4 @@
-Quake v1.09 for DOS with WATTCP Stack
+Quake v1.09 and QuakeWorld v2.40 for DOS with WATTCP Stack
 Original Concept and WATTCP import coding by NeoZeed
 Coding by [HCI]Mara'akate
 
@@ -8,18 +8,18 @@ Additional code from sezero, taniwha, spoike, LordHavoc,
 
 Table of Contents
 
-1 - Introduction
-2 - What's New
-3 - Requirements
-4 - Installation
-5 - Known Bugs and Limitations
-6 - Final Thoughts
+1. Introduction
+2. What's New
+3. Requirements
+4. Installation
+5. Known Bugs and Limitations
+6. Final Thoughts
 
 
-1 - Introduction
+1. - Introduction
 ---------------------------------------------------------
 
-Why code for DOS in 2012 you ask?  Pretty much the same reason anybody
+Why code for DOS in 2015 you ask?  Pretty much the same reason anybody
    is coding Quake ports these days... for fun and to learn some programming.
    This is my first serious project as far as programming goes and I have
    learned a lot.  As each day goes by, QDOS and QWDOS grow more and more in
@@ -27,7 +27,7 @@ Why code for DOS in 2012 you ask?  Pretty much the same reason anybody
    all that is sitting between you and Quake is a packet driver, a mouse
    driver and pure DOS. =)
 
-2 - What's New
+2. - What's New
 ---------------------------------------------------------
 
 QDOS has many features, I can't remember each one that me or others have added
@@ -55,8 +55,11 @@ QDOS has many features, I can't remember each one that me or others have added
    previously sent chat messages.  Thanks to Taniwha for more efficient
    code.
 * Gun model is drawn if FOV > 90.
+* Gamespy listings via multiplayer menu and /SLIST2 command (currently QWDOS only).
+* Some FitzQuake extensions in QWDOS, like extended limits and chunked downloads.
 
 New CVARs and CMDs:
+
 * CL_NODEMO -- Startup demos are disabled > 1.
 * CL_UNBINDALL_PROTECTION -- Protects your CVARs from accidentally being
    cleared from UNBINDALL.  Very useful if you use autocomplete and
@@ -82,7 +85,7 @@ New CVARs and CMDs:
 * V_CONTENTBLEND -- This function is like gl_polyblend.  Set to 0
    to disable powerup and damage flashes, etc.
 
-3 - Requirements
+3. - Requirements
 ---------------------------------------------------------
 
 Because QDOS has supports for extended limits and other new features, the
@@ -96,8 +99,8 @@ is required to have at least 64MB of RAM.  Some mods may require more.
 I'd highly recommend allocating at least 96MB if your system can
 support this.  A Pentium 2 processor is also highly recommended.
 
-To play at extreme resolutions with acceptable (i.e. 40FPS) framerates an
-800MHZ processor or higher is recommended.
+To play at extreme SVGA resolutions with acceptable (i.e. >= 40FPS) framerates a
+P3 ~800MHZ processor or higher is recommended.
 
 Online play over TCP/IP will require a NIC with a Packet Driver and a
 properly configured WATTCP.CFG in your root /QUAKE directory.  IPX, 
@@ -111,30 +114,33 @@ NOTE: QDOS tries to allocate 32MB by default so you may need to use -MEM 16 if
 you're on an older machine and trying to play stock Quake.
 
 To summarize:
-*Stock Quake Play:
-  - FPU Processor
-  - 16MB RAM
-  - VGA Videocard
-  - MS-DOS v6.00
-  - Keyboard, Mouse, or Joystick
-  - Sound Blaster compatible or Gravis UltraSound
 
-*Extended Limits:
-  - Pentium 2 (800MHZ processor for high resolution)
-  - 64MB preferred, 96MB strongly recommended.
-  - VESA 2.0 videocard.
-  - MS-DOS v7.00 (Windows 98 with a properly configured MSDOS.SYS and
+**Stock Quake Play:**
+
+  * FPU Processor
+  * 16MB RAM
+  * VGA Videocard
+  * MS-DOS v6.00
+  * Keyboard, Mouse, or Joystick
+  * Sound Blaster compatible or Gravis UltraSound
+
+**Extended Limits:**
+
+  * Pentium 2 (P3 ~800MHZ processor for serious SVGA)
+  * 64MB preferred, 96MB strongly recommended.
+  * VESA 2.0 videocard.
+  * MS-DOS v7.00 (Windows 98 with a properly configured MSDOS.SYS and
     CONFIG.SYS)
 
-4 - Installation
+4. - Installation
 ---------------------------------------------------------
 
-1) Extract to your Quake directory
-2) Load your Packet Driver and Mouse Driver.
-3) Run QDOS.EXE
-4) Frag on!
+1. Extract to your Quake directory
+2. Load your Packet Driver and Mouse Driver.
+3. Run QDOS.EXE
+4. Frag on!
 
-5 - Known Bugs and Limitations
+5. - Known Bugs and Limitations
 ---------------------------------------------------------
 
 * Limited Win9x support.  It will most likely bomb when closing
@@ -151,9 +157,8 @@ To summarize:
    ULTRAMID -Q.  Then run, ULTRAMID -F -Q.  This will initialize your card.
    For a batch script that handles this issue please see:
     http://dk.toastednet.org/QDOS/GUSFIX.ZIP
-* QWDOS /slist2 command for pinging gamespy servers is slow.  Might take up to 3-5 minutes to grab the entire list.  WATTCP has problems with async I/O and reusing sockets. :/
 
-6 - Final Thoughts
+6. - Final Thoughts
 ---------------------------------------------------------
 
 I highly recommend visiting the Utilities section of
