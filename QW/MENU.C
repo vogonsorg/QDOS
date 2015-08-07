@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 void (*vid_menudrawfn)(void);
 void (*vid_menukeyfn)(int key);
 
-enum {m_none, m_main, m_singleplayer, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_quit, m_serialconfig, m_modemconfig, m_lanconfig, m_gameoptions, m_search, m_slist, m_extended, m_gamespy} m_state;
+enum {m_none, m_main, m_singleplayer, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_quit, m_serialconfig, m_modemconfig, m_lanconfig, m_gameoptions, m_search, m_slist, m_extended, m_gamespy, m_gamespy_pages} m_state;
 
 void M_Menu_Main_f (void);
 	void M_Menu_SinglePlayer_f (void);
@@ -93,6 +93,8 @@ void M_Extended_Set_Sound_KHz (int dir, int khz); /* FS: Extended options unique
 /* FS: Gamespy stuff */
 void M_Gamespy_Key (int key);
 static void SearchGamespyGames (void);
+static void JoinGamespyServer_Redraw(int serverscale);
+static int serverscale;
 
 /* FS: Gravis Ultrasound stuff */
 #ifdef _WIN32
@@ -1275,6 +1277,9 @@ void M_Draw (void)
 	case m_gamespy: /* FS: Unfinished */
 		M_Gamespy_Draw();
 		break;
+	case m_gamespy_pages:
+		JoinGamespyServer_Redraw(serverscale);
+		break;
 	}
 
 	if (m_entersound)
@@ -1371,6 +1376,7 @@ void M_Keydown (int key)
 		return;
 
 	case m_gamespy: /* FS: Unfinished */
+	case m_gamespy_pages:
 		M_Gamespy_Key (key);
 		return;
 
@@ -1698,8 +1704,8 @@ static int	gspyCurPage;
 static int	totalAllowedBrowserPages;
 static void JoinGamespyServer_NextPageFunc (void);
 static void JoinGamespyServer_PrevPageFunc (void);
-static void JoinGamespyServer_Redraw(int serverscale);
 static void ConnectGamespyServerFunc(int key);
+static qboolean gamespyInit = true;
 int gamespy_cursor;
 
 void M_Gamespy_Key(int k)
@@ -1723,6 +1729,7 @@ void M_Gamespy_Key(int k)
 		break;
 
 	case K_ESCAPE:
+		gamespyInit = true;
 		M_Menu_Main_f ();
 		break;
 
@@ -1759,7 +1766,8 @@ static void ConnectGamespyServerFunc(int key)
 
 	sprintf (buffer, "%s\n", gamespy_connect_string[index]);
 	Cbuf_AddText (buffer);
-//	M_ForceMenuOff ();
+	key_dest = key_console;
+	m_state = m_none;
 }
 
 static void FormatGamespyList (void)
@@ -1883,13 +1891,14 @@ static int Get_Vidscale(void)
 static void JoinGamespyServer_NextPageFunc (void)
 {
 	int vidscale = Get_Vidscale();
-	int serverscale = Get_Vidscale();
+	serverscale = Get_Vidscale();
 
 	if((gspyCurPage + 1) > totalAllowedBrowserPages)
 	{
 		return;
 	}
 
+	m_state = m_gamespy_pages;
 	gspyCurPage++;
 	serverscale = vidscale*gspyCurPage;
 
@@ -1901,13 +1910,14 @@ static void JoinGamespyServer_NextPageFunc (void)
 static void JoinGamespyServer_PrevPageFunc (void)
 {
 	int vidscale = Get_Vidscale();
-	int serverscale = Get_Vidscale();
+	serverscale = Get_Vidscale();
 
 	if((gspyCurPage - 1) < 0)
 	{
 		return;
 	}
 
+	m_state = m_gamespy_pages;
 	gspyCurPage--;
 	serverscale = (vidscale*gspyCurPage);
 
@@ -1938,46 +1948,49 @@ void M_Gamespy_Draw(void)
 
 	vidscale = Get_Vidscale();
 
-	for (i = 0; i <= MAX_GAMESPY_MENU_SERVERS; i++)
+	if(gamespyInit)
 	{
-		strcpy (gamespy_server_names[i], NO_SERVER_STRING);
-		memset (&gamespy_connect_string, 0, sizeof(gamespy_connect_string));
+		for (i = 0; i <= MAX_GAMESPY_MENU_SERVERS; i++)
+		{
+			strcpy (gamespy_server_names[i], NO_SERVER_STRING);
+			memset (&gamespy_connect_string, 0, sizeof(gamespy_connect_string));
+		}
+		FormatGamespyList(); /* FS: Incase we changed resolution or ran slist2 in the console and went back to this menu... */
+		curPageScale = 0;
+		gspyCurPage = 0;
+		gamespyInit = false;
 	}
 
 	totalAllowedBrowserPages = (MAX_GAMESPY_MENU_SERVERS/vidscale);
-
-	FormatGamespyList(); /* FS: Incase we changed resolution or ran slist2 in the console and went back to this menu... */
 
 	i = 0;
 
 	for ( i = 0; i < vidscale; i++ )
 	{
 		M_PrintWhite(60, 40 + i*8, gamespy_server_names[i]);
-//		Menu_AddItem( &s_joingamespyserver_menu, &s_joingamespyserver_server_actions[i] );
 	}
 
 	i++;
 
 	M_PrintWhite(60, 40 + i*8, "<Next Page>");
-
-	curPageScale = 0;
-	gspyCurPage = 0;
 }
 
 static void JoinGamespyServer_Redraw( int serverscale )
 {
 	int i, vidscale;
+	qpic_t	*p;
 	qboolean didBreak = false;
 
+	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
+	p = Draw_CachePic ("gfx/p_multi.lmp");
+	M_DrawPic ( (320-p->width)/2, 4, p);
+
+	M_Print (60, 32, "Query Server List");
+
+	// cursor
+	M_DrawCharacter (50, 32 + gamespy_cursor*8, 12+((int)(realtime*4)&1));
+
 	vidscale = Get_Vidscale();
-
-	Con_Printf("Redraw it\n");
-	for (i = 0; i <= MAX_GAMESPY_MENU_SERVERS; i++)
-	{
-		strcpy (gamespy_server_names[i], NO_SERVER_STRING);
-	}
-
-	i = 0;
 
 	FormatGamespyList(); /* FS: Incase we changed resolution or ran slist2 in the console and went back to this menu... */
 
@@ -1992,7 +2005,6 @@ static void JoinGamespyServer_Redraw( int serverscale )
 		M_PrintWhite(60, 40 + i*8, gamespy_server_names[i+serverscale]);
 	}
 
-	i++;
 	if(serverscale)
 	{
 		M_PrintWhite(60, 40 + i*8, "<Previous Page>");
@@ -2003,5 +2015,4 @@ static void JoinGamespyServer_Redraw( int serverscale )
 	{
 		M_PrintWhite(60, 40 + i*8, "<Next Page>");
 	}
-
 }
