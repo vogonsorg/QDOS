@@ -1787,7 +1787,7 @@ static void GameSpy_Async_Think(void)
 		}
 		else
 		{
-//			Update_Gamespy_Menu();
+			Update_Gamespy_Menu();
 		}
 		cls.gamespyupdate = 0;
 		cls.gamespypercent = 0;

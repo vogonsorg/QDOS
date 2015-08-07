@@ -359,7 +359,8 @@ void M_Main_Key (int key)
 		M_Menu_SinglePlayer_f ();
 		break;
 	case 'm':
-		M_Menu_MultiPlayer_f ();
+//		M_Menu_MultiPlayer_f ();
+		M_Menu_Gamespy_f ();
 		break;
 	case 'o':
 		M_Menu_Options_f ();
@@ -381,7 +382,8 @@ void M_Main_Key (int key)
 			break;
 
 		case 1:
-			M_Menu_MultiPlayer_f ();
+//			M_Menu_MultiPlayer_f ();
+			M_Menu_Gamespy_f ();
 			break;
 
 		case 2:
@@ -1705,15 +1707,48 @@ static int	totalAllowedBrowserPages;
 static void JoinGamespyServer_NextPageFunc (void);
 static void JoinGamespyServer_PrevPageFunc (void);
 static void ConnectGamespyServerFunc(int key);
+static void FormatGamespyList (void);
+static int Get_Vidscale(void);
 static qboolean gamespyInit = true;
+static int breakPoint = 0;
 int gamespy_cursor;
+
+void Update_Gamespy_Menu(void)
+{
+	FormatGamespyList();
+}
 
 void M_Gamespy_Key(int k)
 {
 	int vidscale = Get_Vidscale() + 2;
 
+	if(breakPoint > 0)
+		vidscale = breakPoint;
+
     switch (k)
 	{
+	case K_PGUP:
+	case K_KP_PGUP:
+		gamespy_cursor = 0;
+		JoinGamespyServer_PrevPageFunc();
+		break;
+	case K_PGDN:
+	case K_KP_PGDN:
+		gamespy_cursor = 0;
+		JoinGamespyServer_NextPageFunc();
+		break;
+	case K_END:
+	case K_KP_END:
+		gamespy_cursor = 0;
+		gspyCurPage = totalAllowedBrowserPages-1;
+		JoinGamespyServer_NextPageFunc();
+		break;
+	case K_HOME:
+	case K_KP_HOME:
+		gamespy_cursor = 0;
+		gamespyInit = true;
+		M_Menu_Gamespy_f();
+		break;
 	case K_UPARROW:
 		S_LocalSound ("misc/menu1.wav");
 		gamespy_cursor--;
@@ -1730,20 +1765,38 @@ void M_Gamespy_Key(int k)
 
 	case K_ESCAPE:
 		gamespyInit = true;
+		gamespy_cursor = 0;
 		M_Menu_Main_f ();
 		break;
 
 	case K_ENTER:
 		m_entersound = true;
 
-		if(gamespy_cursor == 0)
+		if(breakPoint > 0) /* FS: Blah, special case hack for the final page, even though not even that many servers exist... */
+		{
+			if(gamespy_cursor == breakPoint)
+				JoinGamespyServer_PrevPageFunc();
+			else if (gamespy_cursor == 0)
+				SearchGamespyGames();
+			else
+				ConnectGamespyServerFunc(gamespy_cursor-1);
+		}
+		else if(gamespy_cursor == 0)
+		{
 			SearchGamespyGames();
+		}
 		else if(gamespy_cursor == vidscale - 1)
+		{
 			JoinGamespyServer_PrevPageFunc();
+		}
 		else if(gamespy_cursor == vidscale)
+		{
 			JoinGamespyServer_NextPageFunc();
+		}
 		else
+		{
 			ConnectGamespyServerFunc(gamespy_cursor-1);
+		}
 	}
 }
 
@@ -1768,6 +1821,8 @@ static void ConnectGamespyServerFunc(int key)
 	Cbuf_AddText (buffer);
 	key_dest = key_console;
 	m_state = m_none;
+	gamespy_cursor = 0;
+	gamespyInit = true;
 }
 
 static void FormatGamespyList (void)
@@ -1891,37 +1946,34 @@ static int Get_Vidscale(void)
 static void JoinGamespyServer_NextPageFunc (void)
 {
 	int vidscale = Get_Vidscale();
-	serverscale = Get_Vidscale();
 
 	if((gspyCurPage + 1) > totalAllowedBrowserPages)
 	{
 		return;
 	}
 
+	gamespy_cursor = 0;
 	m_state = m_gamespy_pages;
 	gspyCurPage++;
 	serverscale = vidscale*gspyCurPage;
 
-
-	JoinGamespyServer_Redraw(serverscale);
 	curPageScale = serverscale;
 }
 
 static void JoinGamespyServer_PrevPageFunc (void)
 {
 	int vidscale = Get_Vidscale();
-	serverscale = Get_Vidscale();
 
 	if((gspyCurPage - 1) < 0)
 	{
 		return;
 	}
 
+	gamespy_cursor = 0;
 	m_state = m_gamespy_pages;
 	gspyCurPage--;
 	serverscale = (vidscale*gspyCurPage);
 
-	JoinGamespyServer_Redraw(serverscale);
 	curPageScale = serverscale;
 }
 
@@ -1930,6 +1982,7 @@ void M_Menu_Gamespy_f(void)
 	key_dest = key_menu;
 	m_state = m_gamespy;
 	m_entersound = true;
+	gamespyInit = true;
 }
 
 void M_Gamespy_Draw(void)
@@ -1937,14 +1990,13 @@ void M_Gamespy_Draw(void)
 	int i, vidscale;
 	qpic_t  *p;
 
-	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
 	p = Draw_CachePic ("gfx/p_multi.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
 
-	M_Print (60, 32, "Query Server List");
+	M_Print (40, 32, "Query Server List");
 
 	// cursor
-	M_DrawCharacter (50, 32 + gamespy_cursor*8, 12+((int)(realtime*4)&1));
+	M_DrawCharacter (30, 32 + gamespy_cursor*8, 12+((int)(realtime*4)&1));
 
 	vidscale = Get_Vidscale();
 
@@ -1955,10 +2007,10 @@ void M_Gamespy_Draw(void)
 			strcpy (gamespy_server_names[i], NO_SERVER_STRING);
 			memset (&gamespy_connect_string, 0, sizeof(gamespy_connect_string));
 		}
-		FormatGamespyList(); /* FS: Incase we changed resolution or ran slist2 in the console and went back to this menu... */
-		curPageScale = 0;
-		gspyCurPage = 0;
+
+		gamespy_cursor = 0;
 		gamespyInit = false;
+		FormatGamespyList(); /* FS: Incase we changed resolution or ran slist2 in the console and went back to this menu... */
 	}
 
 	totalAllowedBrowserPages = (MAX_GAMESPY_MENU_SERVERS/vidscale);
@@ -1967,12 +2019,16 @@ void M_Gamespy_Draw(void)
 
 	for ( i = 0; i < vidscale; i++ )
 	{
-		M_PrintWhite(60, 40 + i*8, gamespy_server_names[i]);
+		M_PrintWhite(40, 40 + i*8, gamespy_server_names[i]);
 	}
 
 	i++;
 
-	M_PrintWhite(60, 40 + i*8, "<Next Page>");
+	M_PrintWhite(40, 40 + i*8, "<Next Page>");
+
+	curPageScale = 0;
+	gspyCurPage = 0;
+	breakPoint = 0;
 }
 
 static void JoinGamespyServer_Redraw( int serverscale )
@@ -1981,38 +2037,40 @@ static void JoinGamespyServer_Redraw( int serverscale )
 	qpic_t	*p;
 	qboolean didBreak = false;
 
-	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
 	p = Draw_CachePic ("gfx/p_multi.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
 
-	M_Print (60, 32, "Query Server List");
+	M_Print (40, 32, "Query Server List");
 
 	// cursor
-	M_DrawCharacter (50, 32 + gamespy_cursor*8, 12+((int)(realtime*4)&1));
+	M_DrawCharacter (30, 32 + gamespy_cursor*8, 12+((int)(realtime*4)&1));
 
 	vidscale = Get_Vidscale();
 
-	FormatGamespyList(); /* FS: Incase we changed resolution or ran slist2 in the console and went back to this menu... */
-
 	for ( i = 0; i < vidscale; i++ )
 	{
-		if (i+serverscale > MAX_GAMESPY_MENU_SERVERS)
+		if (i+serverscale >= MAX_GAMESPY_MENU_SERVERS)
 		{
 			didBreak = true;
+			breakPoint = i+1;
 			break;
 		}
 
-		M_PrintWhite(60, 40 + i*8, gamespy_server_names[i+serverscale]);
+		M_PrintWhite(40, 40 + i*8, gamespy_server_names[i+serverscale]);
 	}
 
 	if(serverscale)
 	{
-		M_PrintWhite(60, 40 + i*8, "<Previous Page>");
+		M_PrintWhite(40, 40 + i*8, "<Previous Page>");
 	}
 
+
 	i++;
+
 	if(!didBreak)
 	{
-		M_PrintWhite(60, 40 + i*8, "<Next Page>");
+		M_PrintWhite(40, 40 + i*8, "<Next Page>");
+		breakPoint = 0;
 	}
+
 }

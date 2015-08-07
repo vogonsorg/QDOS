@@ -43,6 +43,7 @@ gamespyBrowser_t;
 extern gamespyBrowser_t browserList[MAX_SERVERS];
 extern gamespyBrowser_t browserListAll[MAX_SERVERS];
 void CL_PingNetServers_f (void);
+void Update_Gamespy_Menu(void);
 
 // player_state_t is the information needed by a player entity
 // to do move prediction and to generate a drawable entity
