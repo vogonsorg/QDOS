@@ -5,7 +5,6 @@
 #include <fcntl.h>
 
 #include "quakedef.h"
-#include "dstring.h"
 
 void VID_LockBuffer(void)
 {

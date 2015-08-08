@@ -32,9 +32,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #endif
 
-#include "dstring.h" /* FS: dstrings */
-#define VISIBLE /* FS: dstrings */
-
 #define MAX_NUM_ARGVS	50
 #define NUM_SAFE_ARGVS  7
 

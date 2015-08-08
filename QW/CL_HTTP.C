@@ -38,7 +38,6 @@
 #include <curl/curl.h>
 
 #include "sys.h"
-#include "dstring.h"
 
 #include "cl_http.h"
 #include "client.h"

@@ -30,7 +30,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	#include <netinet/in.h>
 #endif
 
-#include "dstring.h" /* FS: Dstring */
 #include "cfgfile.h" /* FS: Parse CFG early -- sezero */
 
 #include "Goa/CEngine/goaceng.h" /* FS: For Gamespy */

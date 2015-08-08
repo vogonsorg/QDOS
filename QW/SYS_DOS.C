@@ -40,7 +40,6 @@ int _crt0_startup_flags = _CRT0_FLAG_UNIX_SBRK; /* FS: Fake Mem Fix for Win9x (Q
 
 #include "quakedef.h"
 #include "dosisms.h"
-#include "dstring.h"
 
 #define MINIMUM_WIN_MEMORY                      0xf00000
 #define MINIMUM_WIN_MEMORY_LEVELPAK     (MINIMUM_WIN_MEMORY + 0x100000)

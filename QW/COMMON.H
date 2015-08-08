@@ -19,8 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // comndef.h  -- general definitions
 
-#include "dstring.h"
-
 #include "DG_misc.h" /* FS: Caedes special safe string stuff */
 
 #ifdef _MSC_VER /* FS: VS6 */

@@ -36,6 +36,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <setjmp.h>
 #include <time.h>
 
+#ifndef VISIBLE
+#define VISIBLE /* FS: for dstrings */
+#endif
+
+#include "dstring.h"
+
 #include "bothdefs.h"
 
 #include "common.h"
@@ -65,7 +71,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "crc.h"
 #include "cdaudio.h"
 #include "pmove.h"
-#include "dstring.h" /* FS: I'll forget sooner or later */
 
 #ifndef max
 #define max(a,b) ((a) > (b) ? (a) : (b))
