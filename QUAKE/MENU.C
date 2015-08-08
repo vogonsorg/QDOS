@@ -2431,8 +2431,8 @@ void M_ModemConfig_Key (int key)
 /* LAN CONFIG MENU */
 
 int		lanConfig_cursor = -1;
-int		lanConfig_cursor_table [] = {72, 92, 124};
-#define NUM_LANCONFIG_CMDS	3
+int		lanConfig_cursor_table [] = {72, 92, 100, 132}; /* FS: Added gamespy */
+#define NUM_LANCONFIG_CMDS	4 /* FS: Added Gamespy */
 
 int 	lanConfig_port;
 char	lanConfig_portname[6];
@@ -2496,9 +2496,11 @@ void M_LanConfig_Draw (void)
 	if (JoiningGame)
 	{
 		M_Print (basex, lanConfig_cursor_table[1], "Search for local games...");
-		M_Print (basex, 108, "Join game at:");
-		M_DrawTextBox (basex+8, lanConfig_cursor_table[2]-8, 22, 1);
-		M_Print (basex+16, lanConfig_cursor_table[2], lanConfig_joinname);
+		M_Print (basex, lanConfig_cursor_table[2], "Search Gamespy..."); /* FS: Gamespy stuff */
+
+		M_Print (basex, 116, "Join game at:");
+		M_DrawTextBox (basex+8, lanConfig_cursor_table[3]-8, 22, 1);
+		M_Print (basex+16, lanConfig_cursor_table[3], lanConfig_joinname);
 	}
 	else
 	{
@@ -2511,8 +2513,8 @@ void M_LanConfig_Draw (void)
 	if (lanConfig_cursor == 0)
 		M_DrawCharacter (basex+9*8 + 8*strlen(lanConfig_portname), lanConfig_cursor_table [0], 10+((int)(realtime*4)&1));
 
-	if (lanConfig_cursor == 2)
-		M_DrawCharacter (basex+16 + 8*strlen(lanConfig_joinname), lanConfig_cursor_table [2], 10+((int)(realtime*4)&1));
+	if (lanConfig_cursor == 3)
+		M_DrawCharacter (basex+16 + 8*strlen(lanConfig_joinname), lanConfig_cursor_table [3], 10+((int)(realtime*4)&1));
 
 	if (*m_return_reason)
 		M_PrintWhite (basex, 148, m_return_reason);
@@ -2562,7 +2564,13 @@ void M_LanConfig_Key (int key)
 			break;
 		}
 
-		if (lanConfig_cursor == 2)
+		if (lanConfig_cursor == 2) /* FS: Added Gamespy */
+		{
+			M_Menu_Gamespy_f();
+			break;
+		}
+
+		if (lanConfig_cursor == 3)
 		{
 			m_return_state = m_state;
 			m_return_onerror = true;
@@ -2581,7 +2589,7 @@ void M_LanConfig_Key (int key)
 				lanConfig_portname[strlen(lanConfig_portname)-1] = 0;
 		}
 
-		if (lanConfig_cursor == 2)
+		if (lanConfig_cursor == 3)
 		{
 			if (strlen(lanConfig_joinname))
 				lanConfig_joinname[strlen(lanConfig_joinname)-1] = 0;
@@ -2592,7 +2600,7 @@ void M_LanConfig_Key (int key)
 		if (key < 32 || key > 127)
 			break;
 
-		if (lanConfig_cursor == 2)
+		if (lanConfig_cursor == 3)
 		{
 			l = strlen(lanConfig_joinname);
 			if (l < 21)
@@ -2615,7 +2623,7 @@ void M_LanConfig_Key (int key)
 		}
 	}
 
-	if (StartingGame && lanConfig_cursor == 2)
+	if (StartingGame && lanConfig_cursor == 3)
 	{
 		if (key == K_UPARROW)
 		{

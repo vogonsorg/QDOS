@@ -846,7 +846,7 @@ void Con_DrawConsole (int lines)
 			n = 0;
 		else
 			n = y * cls.gamespypercent / 100;
-			
+
 		for (j = 0; j < y; j++)
 			if (j == n)
 				dlbar[i++] = '\x83';
@@ -862,7 +862,6 @@ void Con_DrawConsole (int lines)
 		for (i = 0; i < strlen(dlbar); i++)
 			Draw_Character ( (i+1)<<3, y, dlbar[i]);
 	}
-
 
 // draw the input prompt, user text, and cursor if desired
 	Con_DrawInput ();
