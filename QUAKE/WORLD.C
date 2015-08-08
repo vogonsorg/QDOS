@@ -142,9 +142,10 @@ hull_t *SV_HullForEntity (edict_t *ent, vec3_t mins, vec3_t maxs, vec3_t offset)
 		model = sv.models[ (int)ent->v.modelindex ];
 
 		if (!model || model->type != mod_brush)
-//			Sys_Error ("MOVETYPE_PUSH with a non bsp model");
-			Sys_Error ("SOLID_BSP with a non bsp model"); // FS: Error name fix (QIP)
+			Sys_Error ("SOLID_BSP with a non bsp model"); /* FS: Error name fix (QIP) */
+
 		VectorSubtract (maxs, mins, size);
+
 		if (size[0] < 3)
 			hull = &model->hulls[0];
 		else if (size[0] <= 32)
@@ -315,7 +316,7 @@ void SV_TouchLinks ( edict_t *ent, areanode_t *node )
 		//johnfitz -- the PR_ExecuteProgram above can alter the linked edicts -- fix from tyrquake 
 		if (next != l->next && l->next)
 		{
-			Con_DPrintf (DEVELOPER_MSG_ENTITY, "SV_TouchLinks: next != l->next\n"); // FS: Dprintf
+			Con_DPrintf (DEVELOPER_MSG_ENTITY, "SV_TouchLinks: next != l->next\n");
 			next = l->next;
 		}
 		//johnfitz

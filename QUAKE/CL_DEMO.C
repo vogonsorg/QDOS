@@ -267,8 +267,7 @@ play [demoname]
 */
 void CL_PlayDemo_f (void)
 {
-//	char	name[256];
-	dstring_t *name; // FS: new school dstring
+	dstring_t *name;
 	int c;
 	qboolean neg = false;
 
@@ -295,7 +294,6 @@ void CL_PlayDemo_f (void)
 //
 // open the demo file
 //
-	//strcpy (name, Cmd_Argv(1));
 	dstring_copystr (name, Cmd_Argv(1));
 	
 	COM_DefaultExtension (name->str, ".dem");
@@ -304,7 +302,7 @@ void CL_PlayDemo_f (void)
 	COM_FOpenFile (name->str, &cls.demofile);
 	if (!cls.demofile)
 	{
-    	Con_Printf ("ERROR: couldn't open %s.\n", name->str); // FS: let's know what it is
+    	Con_Printf ("ERROR: couldn't open %s.\n", name->str); /* FS: Tell me the filename, please */
 		cls.demonum = -1;		// stop demo loop
         dstring_delete(name);
 		return;

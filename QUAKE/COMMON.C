@@ -23,22 +23,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-#include "dstring.h" // FS: DSTRING
-
-#define VISIBLE // FS: DSTRING
-
 #define NUM_SAFE_ARGVS  8
 
-static char     *largv[MAX_NUM_ARGVS + NUM_SAFE_ARGVS + 1];
-static char     *argvdummy = " ";
+static char	*largv[MAX_NUM_ARGVS + NUM_SAFE_ARGVS + 1];
+static char	*argvdummy = " ";
 
-static char     *safeargvs[NUM_SAFE_ARGVS] =
-        {"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly", "-safevga"}; // FS: -safevga for 320x200
+static char	*safeargvs[NUM_SAFE_ARGVS] = {"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly", "-safevga"}; /* FS: Added -safevga for 320x200 */
 
 cvar_t  registered = {"registered","0", false, false, "Special internal CVAR for setting Registered game."};
 cvar_t  cmdline = {"cmdline","", false, true, "Adds command line parameters as script statements\nCommands lead with a +, and continue until a - or another +\nquake +prog jctest.qp +cmd amlev1\nquake -nosound +cmd amlev1"};
 
-// FS: For Nehahra
+/* FS: For Nehahra */
 cvar_t	cutscene = {"cutscene", "1", false, false, "Special internal CVAR for Nehara mod."};
 cvar_t	nehx00 = {"nehx00", "0", false, false, "Special internal CVAR for Nehara mod."};
 cvar_t	nehx01 = {"nehx01", "0", false, false, "Special internal CVAR for Nehara mod."};
@@ -73,7 +68,7 @@ int             static_registered = 1;  // only for startup check, then set
 qboolean		msg_suppress_1 = 0;
 
 void COM_InitFilesystem (void);
-void COM_Type_f(void); // FS
+void COM_Type_f(void); /* FS: TODO: Unfinished */
 
 // if a packfile directory differs from this, it is assumed to be hacked
 #define PAK0_COUNT              339
@@ -86,8 +81,8 @@ char	**com_argv;
 #define CMDLINE_LENGTH	256 //johnfitz -- mirrored in cmd.c
 char	com_cmdline[CMDLINE_LENGTH];
 
-qboolean                standard_quake = true, rogue, hipnotic;
-int                     nehahra, extended_mod, warpspasm; // FS: for Nehahra and Warpspasm
+qboolean	standard_quake = true, rogue, hipnotic;
+int			nehahra, extended_mod, warpspasm; /* FS: for Nehahra and Warpspasm */
 
 // this graphic needs to be in the pak file to use registered features
 unsigned short pop[] =
@@ -460,7 +455,7 @@ float Q_atof (char *str)
 	return val*sign;
 }
 
-// FS: From OpenBSD
+/* FS: From OpenBSD */
 size_t Q_strlcpy (char *dst, const char *src, size_t siz)
 {
 	char *d = dst;
@@ -1220,20 +1215,21 @@ void COM_InitArgv (int argc, char **argv)
 		standard_quake = false;
 	}
 
-        if (COM_CheckParm ("-hipnotic") || COM_CheckParm ("-quoth") || COM_CheckParm ("-nehahra") || COM_CheckParm ("-warp")) //johnfitz -- "-quoth" support
+	if (COM_CheckParm ("-hipnotic") || COM_CheckParm ("-quoth") || COM_CheckParm ("-nehahra") || COM_CheckParm ("-warp")) //johnfitz -- "-quoth" support
 	{
-                hipnotic = true;
+		hipnotic = true;
 		standard_quake = false;
 	}
 
-        if (COM_CheckParm ("-warp") || COM_CheckParm ("-nehahra")) // FS: So we get larger RAM by default
-        {
-			if (COM_CheckParm ("-nehahra"))
-				nehahra = 1;
-			if (COM_CheckParm ("-warp"))
-				warpspasm = 1;
-			extended_mod = 1;
-        }
+	if (COM_CheckParm ("-warp") || COM_CheckParm ("-nehahra")) /* FS: So we get larger RAM by default */
+	{
+		if (COM_CheckParm ("-nehahra"))
+			nehahra = 1;
+		else if (COM_CheckParm ("-warp"))
+			warpspasm = 1;
+
+		extended_mod = 1;
+	}
 }
 
 
@@ -1268,7 +1264,7 @@ void COM_Init (char *basedir)
 		LittleFloat = FloatSwap;
 	}
 
-	if (nehahra) // FS: Nehahra
+	if (nehahra) /* FS: For Nehara */
 	{
 		Cvar_RegisterVariable (&cutscene);
 		Cvar_RegisterVariable (&nehx00);
@@ -1295,13 +1291,14 @@ void COM_Init (char *basedir)
 
 	Cvar_RegisterVariable (&registered);
 	Cvar_RegisterVariable (&cmdline);
-	Cmd_AddCommand ("type", COM_Type_f); // FS: notepad
+	Cmd_AddCommand ("type", COM_Type_f); /* FS: TODO: Unfinished */
 	Cmd_AddCommand ("path", COM_Path_f);
 
 	COM_InitFilesystem ();
 	COM_CheckRegistered ();
 }
-// FS: VA varargs from QF
+
+/* FS: VA varargs from QF */
 
 /*
 ============
@@ -1418,7 +1415,7 @@ COM_Path_f
 
 ============
 */
-// FS: From Q2
+/* FS: From Q2 */
 char **COM_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned canthave )
 {
 	char *s;
@@ -1464,7 +1461,7 @@ char **COM_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned
 	return list;
 }
 
-// FS: From Q2
+/* FS: From Q2 */
 char *COM_NextPath (char *prevpath)
 {
 	searchpath_t	*s;
@@ -1486,7 +1483,7 @@ char *COM_NextPath (char *prevpath)
 	return NULL;
 }
 
-// FS: From Q2
+/* FS: From Q2 */
 void COM_FreeFileList (char **list, int n)
 {
 	int i;
@@ -1502,7 +1499,7 @@ void COM_FreeFileList (char **list, int n)
 	free(list);
 }
 
-// FS: From Q2
+/* FS: From Q2 */
 qboolean COM_ItemInList (char *check, int num, char **list)
 {
 	int		i;
@@ -1844,17 +1841,16 @@ byte *COM_LoadFile (char *path, int usehunk)
 	return buf;
 }
 
-void COM_Type_f (void) // FS: Notepad
+void COM_Type_f (void) /* FS: TODO: Unfinished */
 {
-        char *buf;
+	char *buf;
 
-        buf = (char *)COM_LoadTempFile (Cmd_Argv(1));
-        if(!buf)
-        {
-                Con_Warning ("File not found: %s\n", Cmd_Argv(1));
-        }
-        else
-        Con_Printf("%s\n", buf);
+	buf = (char *)COM_LoadTempFile (Cmd_Argv(1));
+
+	if(!buf)
+		Con_Warning ("File not found: %s\n", Cmd_Argv(1));
+	else
+		Con_Printf("%s\n", buf);
 }
 
 byte *COM_LoadHunkFile (char *path)
@@ -2062,24 +2058,28 @@ void COM_InitFilesystem () //johnfitz -- modified based on topaz's tutorial
 		COM_AddGameDirectory (va("%s/rogue", basedir) );
 		com_nummissionpacks++;
 	}
+
 	if (COM_CheckParm ("-hipnotic"))
 	{
 		COM_AddGameDirectory (va("%s/hipnotic", basedir) );
 		com_nummissionpacks++;
 	}
+
 	if (COM_CheckParm ("-quoth"))
 	{
 		COM_AddGameDirectory (va("%s/quoth", basedir) );
 		com_nummissionpacks++;
 	}
-	if (COM_CheckParm ("-nehahra")) // FS: Nehahra
+
+	if (COM_CheckParm ("-nehahra")) /* FS: Nehahra */
 	{
 		COM_AddGameDirectory (va("%s/hipnotic", basedir) );
 		com_nummissionpacks++;
 		COM_AddGameDirectory (va("%s/nehahra", basedir) );
 		com_nummissionpacks++;
 	}
-	if (COM_CheckParm ("-warp")) // FS: Warp Spasm
+
+	if (COM_CheckParm ("-warp")) /* FS: Warpspasm */
 	{
 		COM_AddGameDirectory (va("%s/quoth", basedir) );
 		com_nummissionpacks++;
@@ -2127,10 +2127,9 @@ void COM_InitFilesystem () //johnfitz -- modified based on topaz's tutorial
 		proghack = true;
 }
 
-// FS: Buffer safe sprintf so we aren't va'ing all over the place
+/* FS: Buffer safe sprintf so we aren't va'ing all over the place */
 void Com_sprintf(dstring_t *dst, const char *fmt, ...)
 {
- // FS: New school Dstrings
 	va_list     argptr;
 
 	if(!dst)

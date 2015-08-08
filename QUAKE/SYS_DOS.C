@@ -40,7 +40,6 @@ int _crt0_startup_flags = _CRT0_FLAG_UNIX_SBRK; /* FS: Fake Mem Fix for Win9x (Q
 
 #include "quakedef.h"
 #include "dosisms.h"
-#include "dstring.h" // FS: Dstrings
 
 #define MINIMUM_WIN_MEMORY                      0x800000
 #define MINIMUM_WIN_MEMORY_LEVELPAK     (MINIMUM_WIN_MEMORY + 0x100000)
@@ -132,18 +131,18 @@ void MaskExceptions (void);
 void Sys_PushFPCW_SetHigh (void);
 void Sys_PopFPCW (void);
 
-#define LEAVE_FOR_CACHE (512*1024)              //FIXME: tune
-#define LOCKED_FOR_MALLOC (128*1024)    //FIXME: tune
+#define LEAVE_FOR_CACHE (512*1024)		//FIXME: tune
+#define LOCKED_FOR_MALLOC (128*1024)	//FIXME: tune
 
 
 void Sys_DetectWin95 (void)
 {
-	__dpmi_regs                             r;
+	__dpmi_regs	r;
 
-	r.x.ax = 0x160a;                /* Get Windows Version */
+	r.x.ax = 0x160a;			/* Get Windows Version */
 	__dpmi_int(0x2f, &r);
 
-	if(r.x.ax || r.h.bh < 4)        /* Not windows or earlier than Win95 */
+	if(r.x.ax || r.h.bh < 4)	/* Not windows or earlier than Win95 */
 	{
 		win95 = 0;
 		lockmem = true;
@@ -152,7 +151,7 @@ void Sys_DetectWin95 (void)
 	}
 	else
 	{
-		printf("Microsoft Windows detected.  Please run QDOS in pure MS-DOS for best stability.\n"); // FS: Warning
+		printf("Microsoft Windows detected.  Please run QDOS in pure MS-DOS for best stability.\n"); /* FS: Warning */
 		win95 = 1;
 		lockunlockmem = COM_CheckParm ("-winlockunlock");
 
@@ -195,7 +194,7 @@ void *dos_getmaxlockedmem(int *size)
 
 	__dpmi_get_free_memory_information(&meminfo);
 
-	if (!win95)             /* Not windows or earlier than Win95 */
+	if (!win95)	/* Not windows or earlier than Win95 */
 	{
 		ul = meminfo.maximum_locked_page_allocation_in_pages * 4096; /* FS: 2GB Fix */
 	}
@@ -208,12 +207,12 @@ void *dos_getmaxlockedmem(int *size)
 	if (ul > 0x7fffffff)
 		ul = 0x7fffffff; /* limit to 2GB */
 	working_size = (int) ul;
-	working_size &= ~0xffff;                /* Round down to 64K */
+	working_size &= ~0xffff;			/* Round down to 64K */
 	working_size += 0x10000;
 
 	do
 	{
-		working_size -= 0x10000;                /* Decrease 64K and try again */
+		working_size -= 0x10000;		/* Decrease 64K and try again */
 		working_memory = sbrk(working_size);
 	} while (working_memory == (void *)-1);
 
@@ -240,7 +239,7 @@ void *dos_getmaxlockedmem(int *size)
 		}
 	}
 	else
-	{                       /* Win95 section */
+	{	/* Win95 section */
 		j = COM_CheckParm("-winmem");
 
 		if (standard_quake)

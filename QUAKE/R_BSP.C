@@ -224,7 +224,7 @@ void R_RecursiveClipBPoly (bedge_t *pedges, mnode_t *pnode, msurface_t *psurf)
 		// split into two edges, one on each side, and remember entering
 		// and exiting points
 		// FIXME: share the clip edge by having a winding direction flag?
-			if (numbedges >= (r_maxbmodeledges.value - 1)) // FS: Was MAX_BMODEL_EDGES
+			if (numbedges >= (r_maxbmodeledges.value - 1)) /* FS: Was MAX_BMODEL_EDGES */
 			{
 				Con_Printf ("Out of edges for bmodel\n");
 				return;
@@ -268,7 +268,7 @@ void R_RecursiveClipBPoly (bedge_t *pedges, mnode_t *pnode, msurface_t *psurf)
 // plane to both sides (but in opposite directions)
 	if (makeclippededge)
 	{
-		if (numbedges >= (r_maxbmodeledges.value - 2)) // FS: Changed from MAX_BMODEL_EDGES
+		if (numbedges >= (r_maxbmodeledges.value - 2)) /* FS: Was MAX_BMODEL_EDGES */
 		{
 			Con_Printf ("Out of edges for bmodel\n");
 			return;
@@ -333,7 +333,7 @@ void R_DrawSolidClippedSubmodelPolygons (model_t *pmodel)
 	int			numsurfaces;
 	mplane_t	*pplane;
 	mvertex_t	bverts[MAX_BMODEL_VERTS];
-	bedge_t		bedges[MAX_BMODEL_EDGES], *pbedge; // FS: Fix this
+	bedge_t		bedges[MAX_BMODEL_EDGES], *pbedge; /* FS: FIXME: ? */
 	medge_t		*pedge, *pedges;
 
 // FIXME: use bounding-box-based frustum clipping info?

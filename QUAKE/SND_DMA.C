@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 void S_Play(void);
-void S_Play2(void); // FS: For Nehahra
+void S_Play2(void); /* FS: For Nehahra */
 void S_PlayVol(void);
 void S_SoundList(void);
 void S_Update_();
@@ -253,10 +253,8 @@ void S_Init (void)
 		shm->buffer = Hunk_AllocName(1<<16, "shmbuf");
 	}
 
-	if (shm) //FS: GPF no BLASTER set Fix (QIP)
+	if (shm) /* FS: GPF no BLASTER set Fix (QIP) */
 		Con_Printf ("Sound sampling rate: %i\n", shm->speed);
-
-	// provides a tick sound until washed clean
 
 //	if (shm->buffer)
 //		shm->buffer[4] = shm->buffer[5] = 0x7f; // force a pop for debugging

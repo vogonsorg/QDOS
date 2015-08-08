@@ -346,7 +346,7 @@ int VID_Suspend (MGLDC *dc,m_int flags)
 
 		return MGL_NO_SUSPEND_APP;
 	}
-	return 0; // FS: Compiler Warning
+	return 0; /* FS: Compiler Warning */
 }
 
 
@@ -2143,7 +2143,7 @@ void	VID_Init (unsigned char *palette)
 			*ptmp = bestmatch;
 	}
 
-	if (COM_CheckParm("-startwindowed") || COM_CheckParm("-window") || COM_CheckParm("-windowed")) // FS: Allow a few extra variations
+	if (COM_CheckParm("-startwindowed") || COM_CheckParm("-window") || COM_CheckParm("-windowed")) /* FS: Allow a few extra variations */
 	{
 		startwindowed = 1;
 		vid_default = windowed_default;

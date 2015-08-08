@@ -140,17 +140,9 @@ void Draw_Character (int x, int y, int num)
 
 	num &= 255;
 	
-        if (y <= -8 || y > vid.height - 8 || x < 0 || x > vid.width - 8)
+	if (y <= -8 || y > vid.height - 8 || x < 0 || x > vid.width - 8) /* FS and Taniwha: CAx Overflow */
 		return;			// totally off screen
         
-//#ifdef PARANOID
-/*        if (y > vid.height - 8 || x < 0 || x > vid.width - 8)
-                Sys_Error ("Con_DrawCharacter: (%i, %i)", x, y);
-        if (num < 0 || num > 255)
-		Sys_Error ("Con_DrawCharacter: char %i", num);
-*/
-//#endif // FS and Taniwha: Now we just do nothing if it goes off screen.
-
 	row = num>>4;
 	col = num&15;
 	source = draw_chars + (row<<10) + (col<<3);
@@ -727,30 +719,29 @@ refresh window.
 */
 void Draw_TileClear (int x, int y, int w, int h)
 {
-	int				width=0, height=0; // FS: Compiler Warning
+	int				width=0, height=0; /* FS: Compiler Warning */
 	int				tileoffsetx, tileoffsety;
 	byte			*psrc;
 	vrect_t			vr;
 
+	/* Taniwha: SCR_EraseCenterPrint Fix */
+	if (x < 0)
+	{
+		width += x;
+		x = 0;
+	}
 
-        /* Taniwha: SCR_EraseCenterPrint Fix */
-        if (x < 0)
-        {
-                width += x;
-                x = 0;
-        }
+	if (x + w > vid.width)
+		w = vid.width - x;
 
-        if (x + w > vid.width)
-                w = vid.width - x;
+	if (y < 0)
+	{
+		height += y;
+		y = 0;
+	}
 
-        if (y < 0)
-        {
-                height += y;
-                y = 0;
-        }
-
-        if (y + h > vid.height)
-                h = vid.height - y;
+	if (y + h > vid.height)
+		h = vid.height - y;
 
 	r_rectdesc.rect.x = x;
 	r_rectdesc.rect.y = y;

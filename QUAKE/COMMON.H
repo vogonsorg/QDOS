@@ -19,8 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // comndef.h  -- general definitions
 
-#include "dstring.h"
-
 #include "DG_misc.h" /* FS: Caedes special safe string stuff */
 
 #if !defined BYTE_DEFINED
@@ -32,8 +30,6 @@ typedef unsigned char 		byte;
 #undef false
 
 typedef enum {false, true}	qboolean;
-
-#define bound(a,b,c) ((a) >= (c) ? (a) : (b) < (a) ? (a) : (b) > (c) ? (c) : (b)) // FS
 
 //============================================================================
 
@@ -186,6 +182,7 @@ byte *COM_LoadStackFile (char *path, void *buffer, int bufsize);
 byte *COM_LoadTempFile (char *path);
 byte *COM_LoadHunkFile (char *path);
 void COM_LoadCacheFile (char *path, struct cache_user_s *cu);
+
 /* FS: From Q2 */
 char *COM_NextPath (char *prevpath);
 void COM_FreeFileList (char **list, int n);
@@ -193,8 +190,10 @@ qboolean COM_ItemInList (char *check, int num, char **list);
 char **COM_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned canthave );
 
 extern	struct cvar_s	registered;
-extern	qboolean		standard_quake, rogue, hipnotic;
-extern int              nehahra, extended_mod; // FS: nehahra
+
+extern	qboolean	standard_quake, rogue, hipnotic;
+extern	int			nehahra, extended_mod; /* FS: For Nehara */
+
 void Com_sprintf(dstring_t *dst, const char *fmt, ...); /* FS: Added */
 void Com_strcpy (char *dest, int destSize, const char *src); /* FS: Added */
 

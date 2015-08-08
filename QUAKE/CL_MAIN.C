@@ -19,9 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // cl_main.c  -- client main loop
 
+#include <ctype.h>
 #include "quakedef.h"
-#include "dstring.h" // FS: Dstring
-#include <ctype.h> // FS: -Werror fix
 
 #include "Goa/CEngine/goaceng.h" /* FS: For Gamespy */
 
@@ -43,10 +42,11 @@ cvar_t	m_pitch = {"m_pitch","0.022", true};
 cvar_t	m_yaw = {"m_yaw","0.022", true};
 cvar_t	m_forward = {"m_forward","1", true};
 cvar_t	m_side = {"m_side","0.8", true};
-cvar_t  show_time = {"show_time","0", true, false, "Show current time in the HUD.  1 for military.  2 for AM/PM."}; // FS: Show time
-cvar_t  show_uptime = {"show_uptime","0", true, false, "Show uptime."}; // FS: Show uptime
-cvar_t	console_old_complete = {"console_old_complete", "0", true, false, "Use the legacy style console tab completion."}; // FS
 
+/* FS: New stuff */
+cvar_t  show_time = {"show_time","0", true, false, "Show current time in the HUD.  1 for military.  2 for AM/PM."}; /* FS: Added */
+cvar_t  show_uptime = {"show_uptime","0", true, false, "Show uptime."}; /* FS: Added */
+cvar_t	console_old_complete = {"console_old_complete", "0", true, false, "Use the legacy style console tab completion."}; /* FS: Added */
 cvar_t	cl_ogg_music = {"cl_ogg_music", "1", true, false, "Play OGG tracks in the format of id1/music/trackXX.ogg if they exist."}; /* FS: Added */
 cvar_t	cl_wav_music = {"cl_wav_music", "1", true, false, "Play WAV tracks in the format of id1/music/trackXX.wav if they exist."}; /* FS: Added */
 cvar_t	cl_autorepeat_allkeys = {"cl_autorepeat_allkeys", "0", true, false, "Allow to autorepeat any key, not just Backspace, Pause, PgUp, and PgDn keys."}; /* FS: So I can autorepeat whatever I want, hoss. */
@@ -66,8 +66,10 @@ int				cl_numvisedicts;
 entity_t		*cl_visedicts[MAX_VISEDICTS];
 
 extern cvar_t	r_lerpmodels, r_lerpmove; //johnfitz
-int bFlashlight = 0; // FS: Flashlight
-void CL_Flashlight_f (void); // FS: Prototype it
+
+/* FS: Flashlight */
+int bFlashlight = 0;
+void CL_Flashlight_f (void);
 
 /* FS: Gamespy CVARs */
 cvar_t	cl_master_server_ip = {"cl_master_server_ip", CL_MASTER_ADDR, true, false, "GameSpy Master Server IP."};
@@ -166,12 +168,13 @@ void CL_Disconnect (void)
 
 	cls.demoplayback = cls.timedemo = false;
 	cls.signon = 0;
-	cl.intermission = 0; // FS: Baker fix
+	cl.intermission = 0; /* FS: Baker fix */
 }
 
 void CL_Disconnect_f (void)
 {
 	CL_Disconnect ();
+
 	if (sv.active)
 		Host_ShutdownServer (false);
 }
@@ -268,9 +271,11 @@ void CL_NextDemo (void)
 		cls.demonum = 0;
 		if (!cls.demos[cls.demonum][0])
 		{
-			if (!cl_demos.value || nostartupdemos == 1) // FS: Disable startup demos
+			if (!cl_demos.value || nostartupdemos) /* FS: Disable startup demos */
 				Con_DPrintf(DEVELOPER_MSG_STANDARD, "Startup demos disabled.");
-			else  Con_Printf ("No demos listed with startdemos\n");
+			else
+				Con_Printf ("No demos listed with startdemos\n");
+
 			cls.demonum = -1;
 			return;
 		}
@@ -458,7 +463,7 @@ void CL_RelinkEntities (void)
 		cl.velocity[i] = cl.mvelocity[1][i] + 
 			frac * (cl.mvelocity[0][i] - cl.mvelocity[1][i]);
 
-	if(bFlashlight) // FS: Flashlight
+	if(bFlashlight) /* FS: Flashlight */
 		cl_entities[cl.viewentity].effects |= EF_BRIGHTLIGHT;
 
 	if (cls.demoplayback)
@@ -685,7 +690,7 @@ void CL_SendCmd (void)
 	SZ_Clear (&cls.message);
 }
 
-void CL_Flashlight_f (void) // FS: Flashlight
+void CL_Flashlight_f (void) /* FS: Flashlight */
 {
 	if(bFlashlight)
 	{
@@ -716,10 +721,6 @@ void CL_Init (void)
 //
 	Cvar_RegisterVariable (&cl_name);
 
-	Cvar_RegisterVariable (&show_time); // FS: Show Time
-	Cvar_RegisterVariable (&show_uptime); // FS: Show uptime
-	Cvar_RegisterVariable (&cl_warncmd); // FS: from QW
-
 	Cvar_RegisterVariable (&cl_color);
 	Cvar_RegisterVariable (&cl_upspeed);
 	Cvar_RegisterVariable (&cl_forwardspeed);
@@ -739,7 +740,6 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&m_yaw);
 	Cvar_RegisterVariable (&m_forward);
 	Cvar_RegisterVariable (&m_side);
-	Cvar_RegisterVariable (&console_old_complete); // FS
 
 	/* FS: GameSpy CVARs */
 	Cvar_RegisterVariable (&cl_master_server_ip);
@@ -751,9 +751,13 @@ void CL_Init (void)
 
 
 	/* FS: New stuff */
+	Cvar_RegisterVariable (&show_time);
+	Cvar_RegisterVariable (&show_uptime);
+	Cvar_RegisterVariable (&cl_warncmd); /* FS: From QW */
 	Cvar_RegisterVariable (&cl_ogg_music);
 	Cvar_RegisterVariable (&cl_wav_music);
 	Cvar_RegisterVariable (&cl_autorepeat_allkeys);
+	Cvar_RegisterVariable (&console_old_complete);
 
 	Cmd_AddCommand ("entities", CL_PrintEntities_f);
 	Cmd_AddCommand ("disconnect", CL_Disconnect_f);
@@ -761,7 +765,7 @@ void CL_Init (void)
 	Cmd_AddCommand ("stop", CL_Stop_f);
 	Cmd_AddCommand ("playdemo", CL_PlayDemo_f);
 	Cmd_AddCommand ("timedemo", CL_TimeDemo_f);
-	Cmd_AddCommand ("flashlight", CL_Flashlight_f); // FS: Flashlight
+	Cmd_AddCommand ("flashlight", CL_Flashlight_f);
 
 	/* FS: Gamespy stuff */
 	Cmd_AddCommand ("slist2", CL_PingNetServers_f);

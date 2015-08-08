@@ -108,7 +108,7 @@ void CL_ParseTEnt (void)
 {
 	int		type;
 	vec3_t	pos;
-//	vec3_t	color; // FS: Nehahra
+//	vec3_t	color; /* FS: Nehara */
 	dlight_t	*dl;
 	int		rnd;
 	int		colorStart, colorLength;
@@ -253,7 +253,7 @@ void CL_ParseTEnt (void)
 /*		color[0] =*/ MSG_ReadCoord();
 /*		color[1] =*/ MSG_ReadCoord ();
 /*		color[2] =*/ MSG_ReadCoord ();
-		Con_DPrintf(DEVELOPER_MSG_VERBOSE, "Not implemented!\n"); // FS: For Nehahra
+		Con_DPrintf(DEVELOPER_MSG_VERBOSE, "Not implemented!\n"); /* FS: FIXME: For Nehahra */
 		break;
 	case TE_LIGHTNING4NEH:
 		pos[0] = MSG_ReadCoord ();
@@ -262,7 +262,7 @@ void CL_ParseTEnt (void)
 		break;
 	default:
 		Sys_Error ("CL_ParseTEnt: bad type %i\n", type);
-        }
+	}
 }
 
 
@@ -298,7 +298,7 @@ CL_UpdateTEnts
 void CL_UpdateTEnts (void)
 {
 	int			i;
-	int			j; // FS: Nasty shit thanks to Taniwha for fix
+	int			j; /* FS: Nasty shit thanks to Taniwha for fix */
 	beam_t		*b;
 	vec3_t		dist, org;
 	float		d;
@@ -358,7 +358,7 @@ void CL_UpdateTEnts (void)
 			ent->angles[1] = yaw;
 			ent->angles[2] = rand()%360;
 
-			for (j=0 ; j<3 ; j++) // FS: Nasty shit thanks to Taniwha for fix
+			for (j=0 ; j<3 ; j++) /* FS: Nasty shit thanks to Taniwha for fix */
 				org[j] += dist[j]*30;
 			d -= 30;
 		}

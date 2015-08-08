@@ -22,10 +22,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define	RETURN_EDICT(e) (((int *)pr_globals)[OFS_RETURN] = EDICT_TO_PROG(e))
 
-extern void SV_CheckVelocity (edict_t *ent); // FS: Proto
-extern void SV_AddGravity (edict_t *ent); // FS: Proto
-void VM_SetTraceGlobals (const trace_t *trace); // FS: Dun dur prototype it
-static trace_t SV_Trace_Toss (edict_t *tossent, edict_t *ignore); // FS: Dun dur prototype it
+/* FS: Prototypes */
+extern void SV_CheckVelocity (edict_t *ent);
+extern void SV_AddGravity (edict_t *ent);
+void VM_SetTraceGlobals (const trace_t *trace);
+static trace_t SV_Trace_Toss (edict_t *tossent, edict_t *ignore);
 
 /*
 ===============================================================================
@@ -1596,7 +1597,7 @@ void PF_changelevel (void)
 	Cbuf_AddText (va("changelevel %s\n",s));
 }
 
-void PF_tracetoss(void) // FS: For nehahra from DP
+void PF_tracetoss(void) /* FS: For Nehahra from DarkPlacse */
 {
 
 	trace_t	trace;
@@ -1624,7 +1625,7 @@ void PF_tracetoss(void) // FS: For nehahra from DP
 
 void VM_SetTraceGlobals(const trace_t *trace)
 {
-// FS: Ripped this from traceline because it appears to be DP but easy?
+/* FS: Ripped this from traceline because it appears to be DarkPlaces but easy? */
 	pr_global_struct->trace_allsolid = trace->allsolid;
 	pr_global_struct->trace_startsolid = trace->startsolid;
 	pr_global_struct->trace_fraction = trace->fraction;
@@ -1751,7 +1752,7 @@ PF_Fixme,
 PF_Fixme,
 PF_Fixme,
 PF_Fixme,
-PF_tracetoss, // FS: For Nehahra
+PF_tracetoss, /* FS: For Nehara */
 PF_Fixme,
 PF_Fixme,
 

@@ -84,9 +84,9 @@ typedef struct texture_s
 #define SURF_DRAWTURB		0x10
 #define SURF_DRAWTILED		0x20
 #define SURF_DRAWBACKGROUND	0x40
-// FS: QuakeSpasm
+
+/* FS: From QuakeSpasm */
 #define SURF_NOTEXTURE		0x100 //johnfitz
-// FS: QuakeSpasm
 #define SURF_DRAWFENCE		0x200
 
 
@@ -316,8 +316,8 @@ typedef enum {mod_brush, mod_sprite, mod_alias} modtype_t;
 #define	EF_TRACER2	64			// orange split trail + rotate
 #define	EF_TRACER3	128			// purple trail
 
-#define FG_QUAKEOLD	1 // FS: Engoo
-#define BSPVERSION91 28 // FS: Engoo
+#define FG_QUAKEOLD	1 /* FS: From Engoo/leillol */
+#define BSPVERSION91 28 /* FS: From Engoo/leillol */
 
 typedef struct model_s
 {
@@ -329,8 +329,8 @@ typedef struct model_s
 	synctype_t	synctype;
 	
 	int			flags;
-	int			fromgame; // FS: Engoo
-	int			bspversion; // FS: QuakeSpasm
+	int			fromgame; /* FS: From Engoo/leillol */
+	int			bspversion; /* FS: From QuakeSpasm */
 //
 // volume occupied by the model
 //		

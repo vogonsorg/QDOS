@@ -137,7 +137,7 @@ cvar_t	r_maxedges = {"r_maxedges", "0"};
 cvar_t	r_numedges = {"r_numedges", "0"};
 cvar_t	r_aliastransbase = {"r_aliastransbase", "200"};
 cvar_t	r_aliastransadj = {"r_aliastransadj", "100"};
-cvar_t	r_maxbmodeledges = {"r_maxbmodeledges", "0" }; // FS: For big boy mods
+cvar_t	r_maxbmodeledges = {"r_maxbmodeledges", "0" }; /* FS: For big boy mods */
 
 extern cvar_t	scr_fov;
 
@@ -222,7 +222,7 @@ void R_Init (void)
 
 	Cvar_SetValue ("r_maxedges", (float)NUMSTACKEDGES);
 	Cvar_SetValue ("r_maxsurfs", (float)NUMSTACKSURFACES);
-	Cvar_SetValue ("r_maxbmodeledges", (float)MAX_BMODEL_EDGES); // FS: For big boy mods
+	Cvar_SetValue ("r_maxbmodeledges", (float)MAX_BMODEL_EDGES); /* FS: For big boy mods */
 
 	view_clipplanes[0].leftedge = true;
 	view_clipplanes[1].rightedge = true;

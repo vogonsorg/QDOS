@@ -51,8 +51,9 @@ void SHOWLMP_Decodeshow (void)
 
 void R_TranslatePlayerSkin (int playernum)
 {
+	/* FS: FIXME: implement */
 	return;
-}// FS: Compiler Error for PROTOCOL_FITZQUAKE
+}
 
 void Fog_ParseServerMessage (void)
 {
@@ -948,7 +949,7 @@ void CL_ParseServerMessage (void)
 {
 	int			cmd;
 	int			i;
-	char		*fversion, *str; // FS
+	char		*fversion, *str; /* FS: f_version and q_version reply */
 	int			total, j;
 	int			lastcmd = 0; //johnfitz
 //
@@ -1022,14 +1023,14 @@ void CL_ParseServerMessage (void)
 
 			case svc_print:
 				fversion = MSG_ReadString();
-				Con_Printf ("%s", fversion); // FS: F_Version Reply
+				Con_Printf ("%s", fversion); /* FS: f_version and q_version reply */
 
 				fversion = strchr(fversion, ':');
-				if (fversion && !strcmp(fversion, ": f_version\n"))
+				if (fversion && (!strcmp(fversion, ": f_version\n") || !strcmp(fversion, ": q_version\n")) )
 				{
 					dstring_t *fversionStr = dstring_new();
 					Com_sprintf(fversionStr, "say Quake DOS with WATTCP v%4.2f.\n", VERSION);
-					Cbuf_AddText (fversionStr->str); // FS: Print version
+					Cbuf_AddText (fversionStr->str);
 					dstring_delete(fversionStr);
 				}
 				break;
@@ -1236,11 +1237,11 @@ void CL_ParseServerMessage (void)
 				break;
 
 			//johnfitz -- new svc types
-			case svc_showlmp: // FS: Nehahra
+			case svc_showlmp: /* FS: Nehahra */
 //				i = MSG_ReadShort();
 //				i = MSG_ReadShort();
 				SHOWLMP_Decodeshow();
-				break; // FS: Nehahra
+				break;
 
 			case svc_hidelmp:
 				str = MSG_ReadString();

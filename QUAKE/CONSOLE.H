@@ -22,8 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // console
 //
 
-// FS: Developer flags for developer cvar and DPrintf's
-// FS: No 0x00000001 because that would be developer->value 1 and we use that to show it all!
+/* FS: Developer flags for developer cvar and DPrintf's */
+/* FS: No 0x00000001 because that would be developer->value 1 and we use that to show it all! */
 #define DEVELOPER_MSG_STANDARD		0x00000002 // 2
 #define DEVELOPER_MSG_SOUND			0x00000004 // 4
 #define DEVELOPER_MSG_NET			0x00000008 // 8
@@ -57,13 +57,12 @@ void Con_Init (void);
 void Con_DrawConsole (int lines, qboolean drawinput);
 void Con_Print (char *txt);
 void Con_Printf (const char *fmt, ...);
-void Con_Warning (const char *fmt, ...); //johnfitz  // FS: New school dstring
-void Con_DPrintf (unsigned long developerFlags, const char *fmt, ...); // FS: New school dstring
-void Con_SafePrintf (const char *fmt, ...); // FS: New school dstring
+void Con_Warning (const char *fmt, ...); //johnfitz
+void Con_DPrintf (unsigned long developerFlags, const char *fmt, ...);
+void Con_SafePrintf (const char *fmt, ...);
 void Con_Clear_f (void);
 void Con_DrawNotify (void);
 void Con_ClearNotify (void);
 void Con_ToggleConsole_f (void);
 
 void Con_NotifyBox (char *text);	// during startup for sound / cd warnings
-

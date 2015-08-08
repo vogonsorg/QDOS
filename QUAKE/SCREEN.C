@@ -32,7 +32,7 @@ float		scr_conlines;		// lines of console to display
 float		oldscreensize, oldfov;
 cvar_t		scr_viewsize = {"viewsize","100", true};
 cvar_t		scr_fov = {"fov","90"};	// 10 - 170
-cvar_t		scr_conspeed = {"scr_conspeed","1000"}; // FS: Was 300
+cvar_t		scr_conspeed = {"scr_conspeed","1000"}; /* FS: Was 300 */
 cvar_t		scr_centertime = {"scr_centertime","2"};
 cvar_t		scr_showram = {"showram","1"};
 cvar_t		scr_showturtle = {"showturtle","0"};
@@ -115,7 +115,7 @@ void SCR_EraseCenterString (void)
 		return;
 	}
 
-	if (scr_erase_lines <= 4) // FS and Taniwha: CAx Overflow
+	if (scr_erase_lines <= 4) /* FS and Taniwha: CAx Overflow */
 		y = vid.height*0.35;
 	else
 		y = 48;
@@ -400,7 +400,7 @@ void SCR_DrawNet (void)
 	Draw_Pic (scr_vrect.x+64, scr_vrect.y, scr_net);
 }
 
-void SCR_DrawUptime (void) // FS: Connection time
+void SCR_DrawUptime (void) /* FS: Connection time */
 {
 	char	str[80];
 	int		minutes, seconds, tens, units;
@@ -410,7 +410,7 @@ void SCR_DrawUptime (void) // FS: Connection time
 		return;
 
 	// time
-	if (show_uptime.value == 1) // FS: Map time or total time playing quake time
+	if (show_uptime.value == 1) /* FS: Map time or total time playing quake time */
 	{
 		minutes = cl.time / 60;
 		seconds = cl.time - 60*minutes;
@@ -429,7 +429,7 @@ void SCR_DrawUptime (void) // FS: Connection time
 	Draw_String(x, y, str);
 }
 
-void SCR_DrawTime (void) // FS: show_time
+void SCR_DrawTime (void) /* FS: show_time */
 {
 	int 		x, y;
 	struct tm	*local = NULL;

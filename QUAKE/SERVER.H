@@ -176,10 +176,12 @@ extern	cvar_t	coop;
 extern	cvar_t	fraglimit;
 extern	cvar_t	timelimit;
 
-extern  cvar_t  cl_fullpitch; // FS
-extern  cvar_t  pq_fullpitch; // FS
-extern	cvar_t	sv_master_server_ip; // FS
-extern	cvar_t	sv_master_server_port; // FS
+extern  cvar_t  cl_fullpitch; /* FS: ProQuake shit */
+extern  cvar_t  pq_fullpitch; /* FS: ProQuake shit */
+
+ /* FS: Gamespy Stuff */
+extern	cvar_t	sv_master_server_ip;
+extern	cvar_t	sv_master_server_port;
 extern	cvar_t	public_server;			// should heartbeats be sent
 
 extern	server_static_t	svs;				// persistant server info
@@ -215,8 +217,8 @@ void SV_AddUpdates (void);
 void SV_ClientThink (void);
 void SV_AddClientToServer (struct qsocket_s	*ret);
 
-void SV_ClientPrintf (const char *fmt, ...); // FS: New school dstring
-void SV_BroadcastPrintf (const char *fmt, ...); // FS: New school dstring
+void SV_ClientPrintf (const char *fmt, ...);
+void SV_BroadcastPrintf (const char *fmt, ...);
 
 void SV_Physics (void);
 

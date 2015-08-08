@@ -31,9 +31,9 @@ when crossing a water boudnary.
 
 */
 
-cvar_t		lcd_x = {"lcd_x","0"};
-cvar_t		lcd_yaw = {"lcd_yaw","0"};
-cvar_t          show_fps = {"show_fps","0", true}; // FS: show_fps from QRACK
+cvar_t	lcd_x = {"lcd_x","0"};
+cvar_t	lcd_yaw = {"lcd_yaw","0"};
+cvar_t	show_fps = {"show_fps","0", true}; /* FS: show_fps from Qrack */
 
 cvar_t	scr_ofsx = {"scr_ofsx","0", false};
 cvar_t	scr_ofsy = {"scr_ofsy","0", false};
@@ -65,9 +65,9 @@ cvar_t	cl_crossy = {"cl_crossy", "0", false};
 
 cvar_t	gl_cshiftpercent = {"gl_cshiftpercent", "100", false};
 
-cvar_t v_contentblend = {"v_contentblend", "1", true}; // FS
+cvar_t	v_contentblend = {"v_contentblend", "1", true}; /* FS: Fucking hate palette blends */
 
-// FS: For mod compatibility
+/* FS: For mod compatibility */
 cvar_t r_wateralpha = {"r_wateralpha", "0", false};
 cvar_t fog = {"fog", "0", false};
 cvar_t r_oldsky = {"r_oldsky", "0", false};
@@ -81,7 +81,7 @@ cvar_t r_skyfog = {"r_skyfog", "0", false};
 
 float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
 
-extern	int			in_forward, in_forward2, in_back;
+extern	int	in_forward, in_forward2, in_back;
 
 
 /*
@@ -89,19 +89,21 @@ extern	int			in_forward, in_forward2, in_back;
 SCR_DrawFPS
 ==============
 */
+/* FS: TODO: Use Knightmare's Q2 code instead */
 void SCR_DrawFPS (void)
 {
 	int		x, y;
-	char		str[80];
-	float		t;
+	char	str[80];
+	float	t;
 	static	float	lastfps;
 	static	double	lastframetime;
-	extern	int	fps_count;
+	extern	int		fps_count;
 
 	if (!show_fps.value)
 		return;
 
-        t = Sys_FloatTime ();
+	t = Sys_FloatTime ();
+
 	if ((t - lastframetime) >= 1.0)
 	{
 		lastfps = fps_count / (t - lastframetime);
@@ -109,10 +111,10 @@ void SCR_DrawFPS (void)
 		lastframetime = t;
 	}
 
-        sprintf(str, "%3.1f FPS", lastfps); // FS
-        x = vid.width - strlen(str) * 8 - 16;
-        y = vid.height - sb_lines - 8;
-        Draw_String (x, y, str);
+	sprintf(str, "%3.1f FPS", lastfps);
+	x = vid.width - strlen(str) * 8 - 16;
+	y = vid.height - sb_lines - 8;
+	Draw_String (x, y, str);
 }
 
 
@@ -383,7 +385,7 @@ void V_ParseDamage (void)
 	if (cl.cshifts[CSHIFT_DAMAGE].percent > 150)
 		cl.cshifts[CSHIFT_DAMAGE].percent = 150;
 
-	if (!v_contentblend.value) // FS
+	if (!v_contentblend.value) /* FS: Fucking hate palette blends */
 	{
 		cl.cshifts[CSHIFT_DAMAGE].destcolor[0] = 0;
 		cl.cshifts[CSHIFT_DAMAGE].destcolor[1] = 0;
@@ -437,7 +439,7 @@ V_cshift_f
 */
 void V_cshift_f (void)
 {
-	if(!v_contentblend.value) // FS
+	if(!v_contentblend.value) /* FS: Fucking hate palette blends */
 	{
 		cshift_empty.destcolor[0] = 0;
 		cshift_empty.destcolor[1] = 0;
@@ -463,20 +465,20 @@ When you run over an item, the server sends this command
 */
 void V_BonusFlash_f (void)
 {
-        if (!v_contentblend.value) // FS
-        {
-                cl.cshifts[CSHIFT_BONUS].destcolor[0] = 0;
-                cl.cshifts[CSHIFT_BONUS].destcolor[1] = 0;
-                cl.cshifts[CSHIFT_BONUS].destcolor[2] = 0;
-                cl.cshifts[CSHIFT_BONUS].percent = 0;
-        }
-        else
-        {
-                cl.cshifts[CSHIFT_BONUS].destcolor[0] = 215;
-                cl.cshifts[CSHIFT_BONUS].destcolor[1] = 186;
-                cl.cshifts[CSHIFT_BONUS].destcolor[2] = 69;
-                cl.cshifts[CSHIFT_BONUS].percent = 50;
-        }
+	if (!v_contentblend.value) /* FS: Fucking hate palette blends */
+	{
+		cl.cshifts[CSHIFT_BONUS].destcolor[0] = 0;
+		cl.cshifts[CSHIFT_BONUS].destcolor[1] = 0;
+		cl.cshifts[CSHIFT_BONUS].destcolor[2] = 0;
+		cl.cshifts[CSHIFT_BONUS].percent = 0;
+	}
+	else
+	{
+		cl.cshifts[CSHIFT_BONUS].destcolor[0] = 215;
+		cl.cshifts[CSHIFT_BONUS].destcolor[1] = 186;
+		cl.cshifts[CSHIFT_BONUS].destcolor[2] = 69;
+		cl.cshifts[CSHIFT_BONUS].percent = 50;
+	}
 }
 
 /*
@@ -488,13 +490,13 @@ Underwater, lava, etc each has a color shift
 */
 void V_SetContentsColor (int contents)
 {
-	if (!v_contentblend.value) 
-	{ // FS
+	if (!v_contentblend.value) /* FS: Fucking hate palette blends */
+	{
 		cl.cshifts[CSHIFT_CONTENTS] = cshift_empty;
 		return;
 	}
 
-        switch (contents)
+	switch (contents)
 	{
 	case CONTENTS_EMPTY:
 	case CONTENTS_SOLID:
@@ -1022,7 +1024,7 @@ void V_Init (void)
 
 	Cvar_RegisterVariable (&lcd_x);
 	Cvar_RegisterVariable (&lcd_yaw);
-        Cvar_RegisterVariable (&show_fps); // FS: show_fps from QRACK
+	Cvar_RegisterVariable (&show_fps); /* FS: show_fps from Qrack */
 
 	Cvar_RegisterVariable (&v_centermove);
 	Cvar_RegisterVariable (&v_centerspeed);
@@ -1034,9 +1036,9 @@ void V_Init (void)
 	Cvar_RegisterVariable (&v_iroll_level);
 	Cvar_RegisterVariable (&v_ipitch_level);
 
-	Cvar_RegisterVariable (&v_contentblend); // FS
-	
-	// FS: For Mod Compatibility
+	Cvar_RegisterVariable (&v_contentblend); /* FS: Fucking hate palette blends */
+
+	/* FS: For Mod Compatibility */
 	Cvar_RegisterVariable (&r_wateralpha);
 	Cvar_RegisterVariable (&fog);
 	Cvar_RegisterVariable (&r_oldsky);	
@@ -1070,5 +1072,3 @@ void V_Init (void)
 	BuildGammaTable (1.0);	// no gamma yet
 	Cvar_RegisterVariable (&v_gamma);
 }
-
-

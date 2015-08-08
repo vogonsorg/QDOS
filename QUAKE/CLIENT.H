@@ -61,7 +61,7 @@ typedef struct
 	char	name[MAX_SCOREBOARDNAME];
 	float	entertime;
 	int		frags;
-	int		ping; // FS: Up and Coming
+	int		ping; /* FS: Unfinished */
 	int		colors;			// two 4 bit fields
 	byte	translations[VID_GRADES*256];
 } scoreboard_t;
@@ -109,7 +109,7 @@ typedef struct
 	vec3_t	start, end;
 } beam_t;
 
-#define	MAX_EFRAGS		2048 // FS: 640
+#define	MAX_EFRAGS		2048 /* FS: Was 640 */
 
 #define	MAX_MAPSTRING	2048
 #define	MAX_DEMOS		8
@@ -222,7 +222,7 @@ typedef struct
 	double		oldtime;		// previous cl.time, time-oldtime is used
 								// to decay light values and smooth step ups
 	
-	double		last_ping_request; // FS: Up and coming?
+	double		last_ping_request; /* FS: Unfinished */
 	float		last_received_message;	// (realtime) for net trouble icon
 
 //
@@ -258,9 +258,9 @@ typedef struct
 extern	cvar_t	cl_name;
 extern	cvar_t	cl_color;
 
-extern  cvar_t  cl_unbindall_protection; // FS: unbindall protection
-extern  cvar_t  in_freelook; // FS: mlook
-extern  cvar_t  cl_warncmd; // FS: from QW
+extern  cvar_t  cl_unbindall_protection; /* FS: unbindall protection */
+extern  cvar_t  in_freelook; /* FS: mlook */
+extern  cvar_t  cl_warncmd; /* FS: From QW */
 
 extern	cvar_t	cl_upspeed;
 extern	cvar_t	cl_forwardspeed;
@@ -351,10 +351,12 @@ typedef struct
 extern	kbutton_t	in_mlook, in_klook;
 extern 	kbutton_t 	in_strafe;
 extern 	kbutton_t 	in_speed;
-extern	int			nostartupdemos; // FS: Disable startup demos
-extern	cvar_t		cl_demos; // FS: Disable startup demos
-extern	cvar_t		cl_master_server_ip; // FS: Gamespy
-extern	cvar_t		cl_master_server_port; // FS: Gamespy
+extern	qboolean	nostartupdemos; /* FS: Disable startup demos */
+extern	cvar_t		cl_demos; /* FS: Disable startup demos */
+
+/* FS: Gamespy Stuff */
+extern	cvar_t		cl_master_server_ip;
+extern	cvar_t		cl_master_server_port;
 
 
 void CL_InitInput (void);

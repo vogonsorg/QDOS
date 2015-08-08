@@ -45,7 +45,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <assert.h> //johnfitz
 #endif
 
-#include "dstring.h" // FS: Dstrings
+#define VISIBLE /* FS: for dstrings */
+#include "dstring.h"
 
 #if defined(_WIN32) && !defined(WINDED)
 
@@ -121,9 +122,9 @@ void    VID_UnlockBuffer (void);
 
 #define MAX_STYLESTRING 64
 
-#define CL_MASTER_ADDR	"maraakate.org" // FS: Gamespy dead "master.gamespy.com"
+#define CL_MASTER_ADDR	"maraakate.org" /* FS: Gamespy dead "master.gamespy.com" */
 #define CL_MASTER_PORT "28900"
-#define SV_MASTER_ADDR "maraakate.org" // FS: gamespy dead "master.gamespy.com"
+#define SV_MASTER_ADDR "maraakate.org" /* FS: gamespy dead "master.gamespy.com" */
 #define SV_MASTER_PORT "27900"
 
 //
@@ -266,7 +267,7 @@ typedef struct
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #endif
 
-// FS
+/* FS: Added */
 #define bound(a,b,c) ((a) >= (c) ? (a) : \
 					(b) < (a) ? (a) : (b) > (c) ? (c) : (b))
 
@@ -302,8 +303,8 @@ extern  quakeparms_t host_parms;
 extern	cvar_t		sys_ticrate;
 extern	cvar_t		sys_nostdout;
 extern	cvar_t		developer;
-extern	cvar_t		con_show_description; // FS
-extern	cvar_t		con_show_dev_flags; // FS
+extern	cvar_t		con_show_description; /* FS: Added */
+extern	cvar_t		con_show_dev_flags; /* FS: Added */
 extern	cvar_t		max_edicts; //johnfitz
 
 extern  qboolean        host_initialized;               // true if into command execution
@@ -319,23 +320,24 @@ void Host_ServerFrame (void);
 void Host_InitCommands (void);
 void Host_Init (quakeparms_t *parms);
 void Host_Shutdown(void);
-void Host_Error (const char *error, ...); // FS: New school dstring
-void Host_EndGame (const char *message, ...); // FS: New school dstring
+void Host_Error (const char *error, ...);
+void Host_EndGame (const char *message, ...);
 void Host_Frame (float time);
 void Host_Quit_f (void);
-void Host_ClientCommands (const char *fmt, ...); // FS: New school dstring
+void Host_ClientCommands (const char *fmt, ...);
 void Host_ShutdownServer (qboolean crash);
 
-extern qboolean         msg_suppress_1;         // suppresses resolution and cache size console output
+extern qboolean	msg_suppress_1;         // suppresses resolution and cache size console output
 										//  an fullscreen DIB focus gain/loss
-extern int                      current_skill;          // skill level for currently loaded level (in case
+extern int	current_skill;          // skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
 										//  running, this reflects the level actually in use)
 
-extern qboolean         isDedicated;
+extern qboolean	sDedicated;
 
-extern int                      minimum_memory;
-extern int				warpspasm; // FS: For Warp Music Hack
+extern int	minimum_memory;
+extern int	warpspasm; /* FS: For Warpspasm Music Hack */
+
 //
 // chase
 //
@@ -346,7 +348,7 @@ void Chase_Reset (void);
 void Chase_Update (void);
 
 
-// FS: From Q2
+/* FS: From Q2 */
 #define SFF_ARCH    0x01
 #define SFF_HIDDEN  0x02
 #define SFF_RDONLY  0x04

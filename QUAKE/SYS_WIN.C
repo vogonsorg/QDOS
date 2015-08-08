@@ -425,7 +425,6 @@ void Sys_Error (const char *error, ...)
 
 void Sys_Printf (const char *fmt, ...)
 {
-	// FS: New school Dstrings
 	va_list		argptr;
 	static		dstring_t *text;
 	DWORD		dummy;
@@ -789,7 +788,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	if (parms.memsize > MAXIMUM_WIN_MEMORY)
 		parms.memsize = MAXIMUM_WIN_MEMORY;
 
-	if (extended_mod) // FS: For big boy mods
+	if (extended_mod) /* FS: For big boy mods */
 		parms.memsize = (int) 64 * 1024 * 1024;
 
 	if (COM_CheckParm ("-heapsize"))

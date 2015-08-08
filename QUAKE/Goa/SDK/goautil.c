@@ -541,22 +541,22 @@ adds \statechanged\ if statechanged != 0 */
 void send_heartbeat(int statechanged)
 {
 	char buf[256];
-	
+	extern qboolean isDedicated;
+
     if (isDedicated)
 		return;		// only dedicated servers send heartbeats
   
 	if (!public_server.value)
 		return;		// a private dedicated game
 
-	Con_DPrintf(DEVELOPER_MSG_SERVER, "Sending a heartbeat to the GameSpy Master Server.\n"); // FS
+	Con_DPrintf(DEVELOPER_MSG_SERVER, "Sending a heartbeat to the GameSpy Master Server.\n");
 	sprintf(buf,"\\heartbeat\\%d\\gamename\\%s",qport, gname);
-//	Com_sprintf(buf,sizeof(buf),"\\heartbeat\\%d\\gamename\\%s",qport, gname);
+
 	if (statechanged)
 	{
 		char statechangedBuf[16];
+
 		sprintf(statechangedBuf, "\\statechanged\\%i", statechanged);
-//		Com_sprintf(statechangedBuf, sizeof(statechangedBuf), "\\statechanged\\%i", statechanged);
-//		strcat(buf,"\\statechanged\\");
 		strcat(buf,statechangedBuf);
 	}
 	send(hbsock, buf, strlen(buf), 0);

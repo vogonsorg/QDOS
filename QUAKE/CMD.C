@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void Cmd_ForwardToServer (void);
 
-#define MAX_ALIAS_NAME  64 // FS: Was 32
+#define MAX_ALIAS_NAME  64 /* FS: Was 32 */
 
 #define CMDLINE_LENGTH 256 //johnfitz -- mirrored in common.c
 
@@ -42,9 +42,9 @@ int *trashspot;
 
 qboolean	cmd_wait;
 
-cvar_t  cl_warncmd = {"cl_warncmd", "0", false, false, "Warn about unknown commands."}; // FS: from QW
+cvar_t  cl_warncmd = {"cl_warncmd", "0", false, false, "Warn about unknown commands."}; /* FS: from QW */
 char *Sort_Possible_Cmds (char *partial);
-qboolean	Sort_Possible_Strtolower (char *partial, char *complete); // FS
+qboolean	Sort_Possible_Strtolower (char *partial, char *complete); /* FS: Added */
 
 //=============================================================================
 
@@ -82,7 +82,6 @@ void Cbuf_Init (void)
 	SZ_Alloc (&cmd_text, 8192);		// space for commands and script files
 }
 
-
 /*
 ============
 Cbuf_AddText
@@ -101,7 +100,6 @@ void Cbuf_AddText (char *text)
 		Con_Printf ("Cbuf_AddText: overflow\n");
 		return;
 	}
-
 	SZ_Write (&cmd_text, text, Q_strlen (text));
 }
 
@@ -265,11 +263,13 @@ void Cmd_Exec_f (void)
 	}
 
 	mark = Hunk_LowMark ();
-	if(!strncmp(Cmd_Argv(1),"default.cfg",11)) // FS: unbindall protection gross hack shit
+
+	if(!strncmp(Cmd_Argv(1),"default.cfg",11)) /* FS: unbindall protection hack */
 	{
-		Con_DPrintf (DEVELOPER_MSG_VERBOSE, "default.cfg gross hack shit\n");
-		cl_unbindall_protection.value = 0; // FS: disable the warning if it's default.cfg
+		Con_DPrintf (DEVELOPER_MSG_VERBOSE, "default.cfg unbindall protection hack\n");
+		cl_unbindall_protection.value = 0; /* FS: disable the warning if it's default.cfg */
 	}
+
 	f = (char *)COM_LoadHunkFile (Cmd_Argv(1));
 	if (!f)
 	{
@@ -744,7 +744,7 @@ void	Cmd_ExecuteString (char *text, cmd_source_t src)
 	}
 	
 // check cvars
-	if (!Cvar_Command () && (cl_warncmd.value || developer.value)) // FS: from QW
+	if (!Cvar_Command () && (cl_warncmd.value || developer.value)) /* FS: from QW */
 	{
 		if(!strncmp(Cmd_Argv(0), "init", 4))
 			Con_DPrintf(DEVELOPER_MSG_VERBOSE, "Unknown Command init hack for some servers\n");
@@ -793,7 +793,6 @@ Returns the position (1 to argc-1) in the command's argument list
 where the given parameter apears, or 0 if not present
 ================
 */
-
 int Cmd_CheckParm (char *parm)
 {
 	int i;
@@ -808,17 +807,18 @@ int Cmd_CheckParm (char *parm)
 	return 0;
 }
 
+/* FS: Auto complete cmds */
 #define RETRY_INITIAL	0
 #define RETRY_ONCE		1
 #define RETRY_MULTIPLE	2
 char *Sort_Possible_Cmds (char *partial)
 {
 	cmd_function_t	*cmd;
-	cvar_t			*cvar; // FS
+	cvar_t			*cvar;
 	cmdalias_t		*a;
-	int	foundExactCount = 0; // FS
-	int foundPartialCount = 0; // FS
-	int retryPartialFlag = RETRY_INITIAL; // FS
+	int	foundExactCount = 0;
+	int foundPartialCount = 0;
+	int retryPartialFlag = RETRY_INITIAL;
 
 	if (!partial || partial[0] == 0)
 		return NULL;
@@ -907,7 +907,7 @@ retryPartial:
 	return NULL;
 }
 
-qboolean Sort_Possible_Strtolower (char *partial, char *complete)
+qboolean	Sort_Possible_Strtolower (char *partial, char *complete)
 {
 	int partialLength = 0;
 	int x = 0;

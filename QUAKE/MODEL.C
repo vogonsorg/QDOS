@@ -35,7 +35,7 @@ model_t *Mod_LoadModel (model_t *mod, qboolean crash);
 
 byte	mod_novis[MAX_MAP_LEAFS/8];
 
-#define MAX_MOD_KNOWN   2048 // FS: Was 256
+#define MAX_MOD_KNOWN   2048 /* FS: Was 256 */
 model_t	mod_known[MAX_MOD_KNOWN];
 int		mod_numknown;
 
@@ -88,7 +88,7 @@ mleaf_t *Mod_PointInLeaf (vec3_t p, model_t *model)
 	mplane_t	*plane;
 	
 	if (!model || !model->nodes)
-		Sys_Error ("Mod_PointInLeaf: bad model: %s", model->name); // FS: Tell me the model name
+		Sys_Error ("Mod_PointInLeaf: bad model: %s", model->name); /* FS: Tell me the model name */
 
 	node = model->nodes;
 	while (1)
@@ -170,10 +170,13 @@ void Mod_ClearAll (void)
 	model_t	*mod;
 
 
-	for (i=0 , mod=mod_known ; i<mod_numknown ; i++, mod++) {
+	for (i=0 , mod=mod_known ; i<mod_numknown ; i++, mod++)
+	{
 		mod->needload = NL_UNREFERENCED;
-//FIX FOR CACHE_ALLOC ERRORS:
-		if (mod->type == mod_sprite) mod->cache.data = NULL; // FS: (QIP)
+
+		//FIX FOR CACHE_ALLOC ERRORS:
+		if (mod->type == mod_sprite)
+			mod->cache.data = NULL; /* FS: From QIP */
 	}
 }
 
@@ -509,7 +512,7 @@ void Mod_LoadLighting (lump_t *l)
 		return;
 	}
 
-// FS: From Engoo
+/* FS: From Engoo/leillol */
 	
 	if (loadmodel->fromgame == FG_QUAKEOLD) // Quake v0.x/0.92 lightmaps lack overbrights
 	{
@@ -632,29 +635,7 @@ void Mod_LoadSubmodels (lump_t *l)
 Mod_LoadEdges
 =================
 */
-/*void Mod_LoadEdges (lump_t *l)
-{
-	dedge_t *in;
-	medge_t *out;
-	int 	i, count;
-
-	in = (void *)(mod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
-	count = l->filelen / sizeof(*in);
-	out = Hunk_AllocName ( (count + 1) * sizeof(*out), loadname);	
-
-	loadmodel->edges = out;
-	loadmodel->numedges = count;
-
-	for ( i=0 ; i<count ; i++, in++, out++)
-	{
-		out->v[0] = (unsigned short)LittleShort(in->v[0]);
-		out->v[1] = (unsigned short)LittleShort(in->v[1]);
-	}
-}
-*/
-// FS: QuakeSpasm
+/* FS: QuakeSpasm */
 void Mod_LoadEdges (lump_t *l, int bsp2)
 {
 	medge_t *out;
@@ -883,10 +864,10 @@ void CalcSurfaceExtents (msurface_t *s)
 }
 #endif
 
-// FS: QuakeSpasm
+/* FS: QuakeSpasm */
 void Mod_CalcSurfaceBounds (msurface_t *s)
 {
-	// FS: TODO FIXME Requires changes to msurface_t in asm
+	/* FS: TODO FIXME Requires changes to msurface_t in asm */
 #if 0
 	int			i, e;
 	mvertex_t	*v;
@@ -1673,7 +1654,7 @@ void Mod_MakeHull0 (void)
 Mod_LoadMarksurfaces
 =================
 */
-void Mod_LoadMarksurfaces (lump_t *l, int bsp2) // FS: BSP2 support
+void Mod_LoadMarksurfaces (lump_t *l, int bsp2) /* FS: BSP2 support */
 {	
 	int		i, j, count;
 	msurface_t **out;
@@ -1812,7 +1793,7 @@ Mod_LoadBrushModel
 void Mod_LoadBrushModel (model_t *mod, void *buffer)
 {
 	int			i, j;
-	int			bsp2; // FS
+	int			bsp2; /* FS: BSP2 Support */
 	dheader_t	*header;
 	dmodel_t 	*bm;
 	float		radius; //johnfitz
@@ -1823,21 +1804,23 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 
 //	i = LittleLong (header->version);
 	mod->bspversion = LittleLong (header->version);
-/*
+
+#if 0
 	if ( ((i != BSPVERSION) && (i != BSPVERSION91)) )
 		Sys_Error ("Mod_LoadBrushModel: %s has wrong version number (%i should be %i)", mod->name, i, BSPVERSION);
 
-	// FS: Engoo
+	/* FS: From Engoo/leillol */
 	if (i == BSPVERSION91)
 		loadmodel->fromgame = FG_QUAKEOLD;
-*/
-	// FS: From QuakeSpasm
+#endif
+
+	/* FS: From QuakeSpasm */
 	switch(mod->bspversion)
 	{
 	case BSPVERSION:
 		bsp2 = false;
 		break;
-	case BSPVERSION91: // FS: From Engoo
+	case BSPVERSION91: /* FS: From Engoo/leillol */
 		bsp2 = false;
 		loadmodel->fromgame = FG_QUAKEOLD;
 		break;
@@ -2056,10 +2039,14 @@ void * Mod_LoadAliasGroup (void * pin, int *pframeindex, int numv,
 	for (i=0 ; i<numframes ; i++)
 	{
 		*poutintervals = LittleFloat (pin_intervals->interval);
+
 		if (*poutintervals <= 0.0)
-			*poutintervals = 0.1; //FS: Spoike fix
+		{
+			*poutintervals = 0.1; /* FS: Spoike hack */
+			Con_DPrintf(DEVELOPER_MSG_VIDEO, "Mod_LoadAliasGroup: interval<=0 from %s\n", name);
 			//Sys_Error ("Mod_LoadAliasGroup: interval<=0");
 			//JASON
+		}
 
 		poutintervals++;
 		pin_intervals++;

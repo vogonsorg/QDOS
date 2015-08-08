@@ -433,7 +433,7 @@ trace_t SV_PushEntity (edict_t *ent, vec3_t push)
    return trace;
 }              
 
-trace_t SV_TraceBox(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, edict_t *passedict, int hitsupercontentsmask) // FS: Needed for Nehahra, from DP, tweaked for QDOS
+trace_t SV_TraceBox(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, edict_t *passedict, int hitsupercontentsmask) /* FS: Needed for Nehahra, from DarkPlaces, tweaked for QDOS */
 {
 	trace_t trace;
 //	vec3_t temp;

@@ -25,13 +25,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <fcntl.h>
 #include <time.h>
 #include "quakedef.h"
-#include "dstring.h" // FS: dstring
 
 int 		con_linewidth;
 
 float		con_cursorspeed = 4;
 
-#define		CON_TEXTSIZE	65536 // FS: 16384
+#define		CON_TEXTSIZE	65536 /* FS: Was 16384 */
 
 qboolean 	con_forcedup;		// because no entities to refresh
 
@@ -43,7 +42,7 @@ char		*con_text=0;
 
 cvar_t		con_notifytime = {"con_notifytime","3", false, false , "Time (in seconds) a console notification message is displayed."};		//seconds
 cvar_t		con_logcenterprint = {"con_logcenterprint", "1", false, false, "Log centerprints to console."}; //johnfitz
-cvar_t		timestamp = {"timestamp", "0", false, false, "Enables timestamps.  1 for military format.  2 for AM/PM format."}; // FS: Timestamp
+cvar_t		timestamp = {"timestamp", "0", false, false, "Enables timestamps.  1 for military format.  2 for AM/PM format."}; /* FS: Timestamp */
 
 char		con_lastcenterstring[1024]; //johnfitz
 
@@ -389,8 +388,7 @@ Con_DebugLog
 void Con_DebugLog(const char *file, const char *fmt, ...)
 {
     va_list argptr; 
-//    static char data[1024];
-	static dstring_t *data; // FS: New school dstring
+	static dstring_t *data;
     int fd;
 
 	if(!data)
@@ -416,8 +414,7 @@ Handles cursor positioning, line wrapping, etc
 void Con_Printf (const char *fmt, ...)
 {
 	va_list		argptr;
-
-	static dstring_t *msg; // FS: New school dstring
+	static dstring_t *msg;
 	static qboolean	inupdate;
         
 	if (!msg)
@@ -514,10 +511,9 @@ A Con_Printf that only shows up if the "developer" cvar is set
 */
 void Con_DPrintf (unsigned long developerFlags, const char *fmt, ...)
 {
-	va_list		argptr;
-	//char            msg[MAXPRINTMSG];
-	static dstring_t        *msg; // FS: new school dstring
-	unsigned long	devValue = 0; // FS
+	va_list				argptr;
+	static dstring_t	*msg;
+	unsigned long		devValue = 0; /* FS: Developer flags */
 
 	if(!msg)
 		msg = dstring_new();
@@ -740,15 +736,15 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 	rows = (lines-16)>>3;		// rows of text to draw
 	y = lines - 16 - (rows<<3);	// may start slightly negative
    
-        if (con_current - con_backscroll != con_current) // FS: Backscroll thingy
-        {
-        // draw arrows to show the buffer is backscrolled
-        for (x=0; x<con_linewidth-1; x+=4)
-                Draw_Character ( (x+1)<<3, lines-30, '^' );
+	if (con_current - con_backscroll != con_current) /* FS: Backscroll thingy from QW */
+	{
+		// draw arrows to show the buffer is backscrolled
+		for (x=0; x<con_linewidth-1; x+=4)
+			Draw_Character ( (x+1)<<3, lines-30, '^' );
 
-                y -= 8;
-                rows--;
-        }
+		y -= 8;
+		rows--;
+	}
      
 	for (i= con_current - rows + 1 ; i<=con_current ; i++, y+=8 )
 	{
@@ -811,21 +807,22 @@ Okay to call even when the screen can't be updated
 */
 void Con_SafePrintf (const char *fmt, ...)
 {
-	va_list		argptr;
-	//char            msg[1024];
-	int			temp;
-	static dstring_t        *msg;  // FS: New school dstring
+	va_list				argptr;
+	int					temp;
+	static dstring_t	*msg;
 	
 	if(!msg)
 		msg = dstring_new();
 
 	va_start (argptr,fmt);
-        dvsprintf (msg,fmt,argptr);
+	dvsprintf (msg,fmt,argptr);
 	va_end (argptr);
 	
 	temp = scr_disabled_for_loading;
 	scr_disabled_for_loading = true;
-        Con_Printf ("%s", msg->str);
+
+	Con_Printf ("%s", msg->str);
+
 	scr_disabled_for_loading = temp;
 }
 

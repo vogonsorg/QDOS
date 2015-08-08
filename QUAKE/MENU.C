@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 void (*vid_menudrawfn)(void);
 void (*vid_menukeyfn)(int key);
 
-enum {m_none, m_main, m_singleplayer, m_demo, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_credits, m_quit, m_serialconfig, m_modemconfig, m_lanconfig, m_gameoptions, m_search, m_slist, m_addressbook, m_setupaddressbook, m_extended, m_gamespy, m_gamespy_pages} m_state;
+enum {m_none, m_main, m_singleplayer, m_demo, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_credits, m_quit, m_serialconfig, m_modemconfig, m_lanconfig, m_gameoptions, m_search, m_slist, m_extended, m_gamespy, m_gamespy_pages} m_state;
 
 void M_Menu_Main_f (void);
 	void M_Menu_SinglePlayer_f (void);
@@ -44,7 +44,7 @@ void M_Menu_LanConfig_f (void);
 void M_Menu_GameOptions_f (void);
 void M_Menu_Search_f (void);
 void M_Menu_ServerList_f (void);
-void M_Menu_Extended_f (void); // FS: Extended
+void M_Menu_Extended_f (void); /* FS: Extended options unique to QDOS */
 
 void M_Main_Draw (void);
 	void M_SinglePlayer_Draw (void);
@@ -92,26 +92,18 @@ void M_Extended_Key (int key); /* FS: Extended options unique to QDOS */
 extern void snd_restart_f (void); /* FS: For extended options */
 void M_Extended_Set_Sound_KHz (int dir, int khz); /* FS: Extended options unique to QDOS */
 
-/* FS: Gravis Ultrasound stuff */
-#ifdef _WIN32
-int havegus = 0;
-#else
-extern int havegus;
-#endif
-
 /* FS: Gamespy stuff */
 void M_Gamespy_Key (int key);
 static void SearchGamespyGames (void);
 static void JoinGamespyServer_Redraw(int serverscale);
 static int serverscale;
 
-void M_Menu_Address_Book_f(void); // FS: Address Book
-void M_Menu_Address_Book_Key(int key); // FS: Address Book
-void M_AddressBook_Draw(void); // FS: Address Book
-
-void M_Setup_Menu_Address_Book_f(void); // FS: Address Book
-void M_Setup_Menu_Address_Book_Key(int key); // FS: Address Book
-void M_Setup_AddressBook_Draw(void); // FS: Address Book
+/* FS: Gravis Ultrasound stuff */
+#ifdef _WIN32
+int havegus = 0;
+#else
+extern int havegus;
+#endif
 
 qboolean	m_entersound;		// play after drawing a frame, so caching
 								// won't disrupt the sound
@@ -453,7 +445,7 @@ void M_Main_Key (int key)
 	case K_ESCAPE:
 		key_dest = key_game;
 		m_state = m_none;
-		if (!cl_demos.value || nostartupdemos == 1) /* FS: Maybe you disabled startup demos via menu? */
+		if (!cl_demos.value || nostartupdemos) /* FS: Maybe you disabled startup demos via menu? */
 		{
 			cls.demonum = -1;
 			break;
@@ -499,69 +491,69 @@ void M_Main_Key (int key)
 		{
 			switch(m_main_cursor)
 			{
-				case 0:
-					if (COM_OpenFile ("maps/neh1m3.bsp", &i) == -1)
-						break;
-					COM_CloseFile(i);
-
-					M_Menu_SinglePlayer_f ();
+			case 0:
+				if (COM_OpenFile ("maps/neh1m3.bsp", &i) == -1)
 					break;
+				COM_CloseFile(i);
 
-				case 1:
-					if (COM_OpenFile ("hearing.dem", &i) == -1)
-						break;
-					COM_CloseFile(i);
+				M_Menu_SinglePlayer_f ();
+				break;
 
-					M_Menu_Demos_f ();
+			case 1:
+				if (COM_OpenFile ("hearing.dem", &i) == -1)
 					break;
+				COM_CloseFile(i);
 
-				case 2:
-					M_Menu_MultiPlayer_f ();
+				M_Menu_Demos_f ();
+				break;
+
+			case 2:
+				M_Menu_MultiPlayer_f ();
+				break;
+
+			case 3:
+				M_Menu_Options_f ();
+				break;
+
+			case 4:
+				if (COM_OpenFile ("endcred.dem", &i) == -1)
 					break;
+				COM_CloseFile(i);
 
-				case 3:
-					M_Menu_Options_f ();
-					break;
+				key_dest = key_game;
+				if (sv.active)
+					Cbuf_AddText ("disconnect\n");
+				Cbuf_AddText ("playdemo endcred\n");
+				break;
 
-				case 4:
-					if (COM_OpenFile ("endcred.dem", &i) == -1)
-						break;
-					COM_CloseFile(i);
-
-					key_dest = key_game;
-					if (sv.active)
-						Cbuf_AddText ("disconnect\n");
-					Cbuf_AddText ("playdemo endcred\n");
-					break;
-
-				case 5:
-					M_Menu_Quit_f ();
-					break;
+			case 5:
+				M_Menu_Quit_f ();
+				break;
 			}
 		}
 		else
 		{
 			switch (m_main_cursor)
 			{
-				case 0:
-					M_Menu_SinglePlayer_f ();
-					break;
+			case 0:
+				M_Menu_SinglePlayer_f ();
+				break;
 
-				case 1:
-					M_Menu_MultiPlayer_f ();
-					break;
+			case 1:
+				M_Menu_MultiPlayer_f ();
+				break;
 
-				case 2:
-					M_Menu_Options_f ();
-					break;
+			case 2:
+				M_Menu_Options_f ();
+				break;
 
-				case 3:
-					M_Menu_Help_f ();
-					break;
+			case 3:
+				M_Menu_Help_f ();
+				break;
 
-				case 4:
-					M_Menu_Quit_f ();
-					break;
+			case 4:
+				M_Menu_Quit_f ();
+				break;
 			}
 		}
 	}
@@ -627,25 +619,23 @@ void M_SinglePlayer_Key (int key)
 			if (sv.active)
 				if (!SCR_ModalMessage("Are you sure you want to\nstart a new game?\n"))
 					break;
+
 			key_dest = key_game;
+
 			if (sv.active)
 				Cbuf_AddText ("disconnect\n");
+
 			Cbuf_AddText ("maxplayers 1\n");
 
-			if (nehahra) // FS: Hacky sack for nehahra
-			{
+			if (nehahra) /* FS: Nehara stuff */
 				Cbuf_AddText ("map nehstart\n");
-			}
 			else
-			{
 				Cbuf_AddText ("map start\n");
-			}
-			break;
 
+			break;
 		case 1:
 			M_Menu_Load_f ();
 			break;
-
 		case 2:
 			M_Menu_Save_f ();
 			break;
@@ -1287,8 +1277,8 @@ void M_AdjustSliders (int dir)
 		v_gamma.value -= dir * 0.05;
 		if (v_gamma.value < 0.5)
 			v_gamma.value = 0.5;
-		if (v_gamma.value > 1)
-			v_gamma.value = 1;
+		if (v_gamma.value > 1.0)
+			v_gamma.value = 1.0;
 		Cvar_SetValue ("gamma", v_gamma.value);
 		break;
 	case 5: // mouse speed
@@ -1338,7 +1328,7 @@ void M_AdjustSliders (int dir)
 	case 11:	// lookstrafe
 		Cvar_SetValue ("lookstrafe", !lookstrafe.value);
 		break;
-	case 666: // FS: FOV
+	case 666:
 		scr_fov.value += dir * 5;
 		if (scr_fov.value < 0)
 			scr_fov.value = 0;
@@ -1503,7 +1493,7 @@ void M_Options_Key (int k)
 			options_cursor = 0;
 	}
 
-	if (options_cursor == 14) // FS
+	if (options_cursor == 14) /* FS: FIXME.  I don't know what I was doing? */
 	{
 		if (k == K_UPARROW)
 			options_cursor = 13;
@@ -1855,7 +1845,7 @@ char *quitMessage [] =
   "                        "
 };
 
-#ifdef OLDQUIT_F // FS: Use QWs version of quitting
+#ifdef OLDQUIT_F /* FS: Use QWs version of quitting */
 void M_Menu_Quit_f (void)
 {
 	if (m_state == m_quit)
@@ -1887,7 +1877,7 @@ void M_Quit_Key (int key)
 			m_state = m_none;
 		}
 		break;
-        case K_ENTER: // FS: You can press enter to default Y
+	case K_ENTER: /* FS: You can press enter to default Y */
 	case 'Y':
 	case 'y':
 		key_dest = key_console;
@@ -2242,27 +2232,27 @@ forward:
 	}
 
 	if (DirectConfig && (serialConfig_cursor == 3 || serialConfig_cursor == 4))
-        {
+	{
 		if (key == K_UPARROW)
-                {
+		{
 			serialConfig_cursor = 2;
-                }
-                else
-                {
-                	serialConfig_cursor = 5;
-                }
-        }
+		}
+		else
+		{
+			serialConfig_cursor = 5;
+		}
+	}
 	if (SerialConfig && StartingGame && serialConfig_cursor == 4)
-        { // FS: Fixes -Wall warnings
-        	if (key == K_UPARROW)
-                {
-        		serialConfig_cursor = 3;
-                }
-                else
-                {
-                	serialConfig_cursor = 5;
-                }
-        }
+	{
+		if (key == K_UPARROW)
+		{
+			serialConfig_cursor = 3;
+		}
+		else
+		{
+			serialConfig_cursor = 5;
+		}
+	}
 }
 
 //=============================================================================
@@ -2626,22 +2616,24 @@ void M_LanConfig_Key (int key)
 	}
 
 	if (StartingGame && lanConfig_cursor == 2)
-        { // FS: Fixes -Wall warnings
+	{
 		if (key == K_UPARROW)
-                {
-                	lanConfig_cursor = 1;
-                }
-                else
-                {
-                	lanConfig_cursor = 0;
-                }
-        }
+		{
+			lanConfig_cursor = 1;
+		}
+		else
+		{
+			lanConfig_cursor = 0;
+		}
+	}
 
 	l =  Q_atoi(lanConfig_portname);
+
 	if (l > 65535)
 		l = lanConfig_port;
 	else
 		lanConfig_port = l;
+
 	sprintf(lanConfig_portname, "%u", lanConfig_port);
 }
 
@@ -3285,9 +3277,7 @@ void M_Init (void)
 	Cmd_AddCommand ("menu_video", M_Menu_Video_f);
 	Cmd_AddCommand ("help", M_Menu_Help_f);
 	Cmd_AddCommand ("menu_quit", M_Menu_Quit_f);
-	Cmd_AddCommand ("menu_addressbook", M_Menu_Address_Book_f); // FS
-	Cmd_AddCommand ("menu_setupaddressbook", M_Setup_Menu_Address_Book_f); // FS
-	Cmd_AddCommand ("menu_extended", M_Menu_Extended_f); // FS: Extended
+	Cmd_AddCommand ("menu_extended", M_Menu_Extended_f); /* FS: Extended options unique to QDOS */
 	Cmd_AddCommand ("menu_credits", M_Menu_Credits_f);
 	Cmd_AddCommand ("menu_demos", M_Menu_Demos_f);
 	Cmd_AddCommand ("menu_gamespy", M_Menu_Gamespy_f); /* FS: Gamespy stuff */
@@ -3324,97 +3314,70 @@ void M_Draw (void)
 	{
 	case m_none:
 		break;
-
 	case m_main:
 		M_Main_Draw ();
 		break;
-
 	case m_demo:
 		M_Demo_Draw ();
 		break;
-
 	case m_singleplayer:
 		M_SinglePlayer_Draw ();
 		break;
-
 	case m_load:
 		M_Load_Draw ();
 		break;
-
 	case m_save:
 		M_Save_Draw ();
 		break;
-
 	case m_multiplayer:
 		M_MultiPlayer_Draw ();
 		break;
-
 	case m_setup:
 		M_Setup_Draw ();
 		break;
-
 	case m_net:
 		M_Net_Draw ();
 		break;
-
 	case m_options:
 		M_Options_Draw ();
 		break;
-
 	case m_keys:
 		M_Keys_Draw ();
 		break;
-
 	case m_video:
 		M_Video_Draw ();
 		break;
-
 	case m_help:
 		M_Help_Draw ();
 		break;
-
 	case m_credits:
 		M_Credits_Draw ();
 		break;
-
 	case m_quit:
 		M_Quit_Draw ();
 		break;
-
 	case m_serialconfig:
 		M_SerialConfig_Draw ();
 		break;
-
 	case m_modemconfig:
 		M_ModemConfig_Draw ();
 		break;
-
 	case m_lanconfig:
 		M_LanConfig_Draw ();
 		break;
-
 	case m_gameoptions:
 		M_GameOptions_Draw ();
 		break;
-
 	case m_search:
 		M_Search_Draw ();
 		break;
-
 	case m_slist:
 		M_ServerList_Draw ();
 		break;
-
-	case m_addressbook: // FS: Address Book
-		M_AddressBook_Draw ();
-		break;
-	case m_setupaddressbook: // FS: Address Book Setup
-		M_Setup_AddressBook_Draw ();
-		break;
-	case m_extended: // FS: Extended
-		M_Extended_Draw ();
-		break;        
-	case m_gamespy: /* FS: Unfinished */
+	case m_extended:  /* FS: Extended options unique to QDOS */
+		M_Extended_Draw();
+		break;	
+	case m_gamespy:
 		M_Gamespy_Draw();
 		break;
 	case m_gamespy_pages:
@@ -3433,105 +3396,76 @@ void M_Draw (void)
 	VID_LockBuffer ();
 }
 
-
 void M_Keydown (int key)
 {
 	switch (m_state)
 	{
 	case m_none:
 		return;
-
 	case m_main:
 		M_Main_Key (key);
 		return;
-
 	case m_demo:
 		M_Demo_Key (key);
 		return;
-
 	case m_singleplayer:
 		M_SinglePlayer_Key (key);
 		return;
-
 	case m_load:
 		M_Load_Key (key);
 		return;
-
 	case m_save:
 		M_Save_Key (key);
 		return;
-
 	case m_multiplayer:
 		M_MultiPlayer_Key (key);
 		return;
-
 	case m_setup:
 		M_Setup_Key (key);
 		return;
-
 	case m_net:
 		M_Net_Key (key);
 		return;
-
 	case m_options:
 		M_Options_Key (key);
 		return;
-
 	case m_keys:
 		M_Keys_Key (key);
 		return;
-
 	case m_video:
 		M_Video_Key (key);
 		return;
-
 	case m_help:
 		M_Help_Key (key);
 		return;
-
 	case m_credits:
 		M_Credits_Key (key);
 		return;
-
-
 	case m_quit:
 		M_Quit_Key (key);
 		return;
-
 	case m_serialconfig:
 		M_SerialConfig_Key (key);
 		return;
-
 	case m_modemconfig:
 		M_ModemConfig_Key (key);
 		return;
-
 	case m_lanconfig:
 		M_LanConfig_Key (key);
 		return;
-
 	case m_gameoptions:
 		M_GameOptions_Key (key);
 		return;
-
 	case m_search:
 		M_Search_Key (key);
 		break;
-
-	case m_addressbook: // FS: Address Book
-		M_Menu_Address_Book_Key (key);
-		break;
-	case m_setupaddressbook: // FS: Address Book
-		M_Setup_Menu_Address_Book_Key (key);
-		break;
-
 	case m_slist:
 		M_ServerList_Key (key);
 		return;
-	case m_extended: // FS: Extended
+	case m_extended: /* FS: Extended options unique to QDOS */
 		M_Extended_Key (key);
 		return;
-	case m_gamespy: /* FS: Unfinished */
+	case m_gamespy:
 	case m_gamespy_pages:
 		M_Gamespy_Key (key);
 		return;
@@ -3869,408 +3803,6 @@ void M_Extended_Set_Sound_KHz (int dir, int khz)
 				Cbuf_AddText("snd_restart\n");
 			}
 	}
-}
-
-
-int address_cursor;
-        
-
-void M_Menu_Address_Book_f(void) // FS: Address Book
-{
-	key_dest = key_menu;
-        m_state = m_addressbook;
-	m_entersound = true;
-
-}
-
-void M_AddressBook_Draw()
-{
-	qpic_t	*p;
-
-	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
-	p = Draw_CachePic ("gfx/p_multi.lmp");
-	M_DrawPic ( (320-p->width)/2, 4, p);
-                M_Print (16, 32, "     Address Book");
-                M_Print (16, 48, "        1"); 
-                M_Print (100, 48, va("%s", adr0.string));
-                M_Print (16, 56, "        2"); 
-                M_Print (100, 56, va("%s", adr1.string));
-                M_Print (16, 64, "        3"); 
-                M_Print (100, 64, va("%s", adr2.string));
-                M_Print (16, 72, "        4"); 
-                M_Print (100, 72, va("%s", adr3.string));
-                M_Print (16, 80, "        5"); 
-                M_Print (100, 80, va("%s", adr4.string));
-                M_Print (16, 88, "        6"); 
-                M_Print (100, 88, va("%s", adr5.string));
-                M_Print (16, 96, "        7"); 
-                M_Print (100, 96, va("%s", adr6.string));
-                M_Print (16, 104,"        8"); 
-                M_Print (100, 104, va("%s", adr7.string));
-                M_Print (16, 112,"        9"); 
-                M_Print (100, 112, va("%s", adr8.string));
-                M_Print (16, 120,"       10"); 
-                M_Print (100, 120, va("%s", adr9.string));
-
-        M_DrawCharacter (52, 48 + address_cursor*8, 12+((int)(realtime*4)&1));
-
-}
-
-void M_Menu_Address_Book_Key(int k) // FS: Address Book
-{
-    char buf[256];
-    switch (k)
-	{
-	case K_UPARROW:
-		S_LocalSound ("misc/menu1.wav");
-                address_cursor--;
-                if (address_cursor < 0)
-                        address_cursor = 9;
-		break;
-
-        case K_DOWNARROW:
-		S_LocalSound ("misc/menu1.wav");
-                address_cursor++;
-                if (address_cursor > 9)
-                        address_cursor = 0;
-		break;
-
-        case K_ESCAPE:
-		M_Menu_Main_f ();
-		break;
-
-	case K_ENTER:
-		m_entersound = true;
-                switch (address_cursor)
-		{
-		case 0:
-                        if (strncmp (adr0.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr0.string);
-                                sprintf(buf, "connect %s\n", adr0.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-                case 1:
-                        if (strncmp (adr1.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr1.string);
-                                sprintf(buf, "connect %s\n", adr1.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-                case 2:
-                        if (strncmp (adr2.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr2.string);
-                                sprintf(buf, "connect %s\n", adr2.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-                case 3:
-                        if (strncmp (adr3.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr3.string);
-                                sprintf(buf, "connect %s\n", adr3.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-                case 4:
-                        if (strncmp (adr4.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr4.string);
-                                sprintf(buf, "connect %s\n", adr4.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-                case 5:
-                        if (strncmp (adr5.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr5.string);
-                                sprintf(buf, "connect %s\n", adr5.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-                case 6:
-                        if (strncmp (adr6.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr6.string);
-                                sprintf(buf, "connect %s\n", adr6.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-                case 7:
-                        if (strncmp (adr7.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr7.string);
-                                sprintf(buf, "connect %s\n", adr7.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-                case 8:
-                        if (strncmp (adr8.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr8.string);
-                                sprintf(buf, "connect %s\n", adr8.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-                case 9:
-                        if (strncmp (adr9.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr9.string);
-                                sprintf(buf, "connect %s\n", adr9.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-               }
-        }
-}
-
-        
-
-void M_Setup_Menu_Address_Book_f(void) // FS: Address Book
-{
-	key_dest = key_menu;
-        m_state = m_setupaddressbook;
-	m_entersound = true;
-
-}
-
-char setup_adr0[256];
-char setup_adr1[256];
-char setup_adr2[256];
-char setup_adr3[256];
-char setup_adr4[256];
-char setup_adr5[256];
-char setup_adr6[256];
-char setup_adr7[256];
-char setup_adr8[256];
-char setup_adr9[256];
-
-
-void M_Setup_AddressBook_Draw()
-{
-        qpic_t	*p;
-
-	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
-	p = Draw_CachePic ("gfx/p_multi.lmp");
-	M_DrawPic ( (320-p->width)/2, 4, p);
-                M_Print (40, 32, "     Address Book");
-                M_DrawTextBox (48, 40, 28, 1);
-                M_Print (52, 48, adr0.string); 
-                M_Print (16, 56, "        2");
-                M_Print (100, 56, va("%s", adr1.string));
-                M_Print (16, 64, "        3"); 
-                M_Print (100, 64, va("%s", adr2.string));
-                M_Print (16, 72, "        4"); 
-                M_Print (100, 72, va("%s", adr3.string));
-                M_Print (16, 80, "        5"); 
-                M_Print (100, 80, va("%s", adr4.string));
-                M_Print (16, 88, "        6"); 
-                M_Print (100, 88, va("%s", adr5.string));
-                M_Print (16, 96, "        7"); 
-                M_Print (100, 96, va("%s", adr6.string));
-                M_Print (16, 104,"        8"); 
-                M_Print (100, 104, va("%s", adr7.string));
-                M_Print (16, 112,"        9"); 
-                M_Print (100, 112, va("%s", adr8.string));
-                M_Print (16, 120,"       10"); 
-                M_Print (100, 120, va("%s", adr9.string));
-
-        M_DrawCharacter (52, 48 + address_cursor*8, 12+((int)(realtime*4)&1));
-
-}
-
-void M_Setup_Menu_Address_Book_Key(int k) // FS: Address Book
-{
-    char buf[256];
-    switch (k)
-	{
-	case K_UPARROW:
-		S_LocalSound ("misc/menu1.wav");
-                address_cursor--;
-                if (address_cursor < 0)
-                        address_cursor = 9;
-		break;
-
-        case K_DOWNARROW:
-		S_LocalSound ("misc/menu1.wav");
-                address_cursor++;
-                if (address_cursor > 9)
-                        address_cursor = 0;
-		break;
-
-        case K_ESCAPE:
-		M_Menu_Main_f ();
-		break;
-
-	case K_ENTER:
-		m_entersound = true;
-                switch (address_cursor)
-		{
-		case 0:
-                        if (strncmp (adr0.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr0.string);
-                                sprintf(buf, "connect %s\n", adr0.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-                case 1:
-                        if (strncmp (adr1.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr1.string);
-                                sprintf(buf, "connect %s\n", adr1.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-                case 2:
-                        if (strncmp (adr2.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr2.string);
-                                sprintf(buf, "connect %s\n", adr2.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-                case 3:
-                        if (strncmp (adr3.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr3.string);
-                                sprintf(buf, "connect %s\n", adr3.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-                case 4:
-                        if (strncmp (adr4.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr4.string);
-                                sprintf(buf, "connect %s\n", adr4.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-                case 5:
-                        if (strncmp (adr5.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr5.string);
-                                sprintf(buf, "connect %s\n", adr5.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-                case 6:
-                        if (strncmp (adr6.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr6.string);
-                                sprintf(buf, "connect %s\n", adr6.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-                case 7:
-                        if (strncmp (adr7.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr7.string);
-                                sprintf(buf, "connect %s\n", adr7.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-                case 8:
-                        if (strncmp (adr8.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr8.string);
-                                sprintf(buf, "connect %s\n", adr8.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-                case 9:
-                        if (strncmp (adr9.string, "", 1) == 0)
-                                break;
-                        else
-                        {
-                                key_dest = key_game;
-                                m_state = m_none;
-                                Con_Printf("Connecting to %s\n", adr9.string);
-                                sprintf(buf, "connect %s\n", adr9.string); // sezero
-                                Cbuf_AddText(buf);
-                                break;
-                        }
-               }
-        }
 }
 
 /* FS: Gamespy stuff */

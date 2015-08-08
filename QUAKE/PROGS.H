@@ -126,7 +126,7 @@ extern	int			pr_xstatement;
 
 extern	unsigned short		pr_crc;
 
-void PR_RunError (const char *error, ...); // FS: New school dstrings
+void PR_RunError (const char *error, ...);
 
 void ED_PrintEdicts (void);
 void ED_PrintNum (int ent);

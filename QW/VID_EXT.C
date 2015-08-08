@@ -34,46 +34,46 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sys.h"
 #include <dpmi.h>
 
-#define MODE_SUPPORTED_IN_HW    0x0001
-#define COLOR_MODE                              0x0008
-#define GRAPHICS_MODE                   0x0010
-#define VGA_INCOMPATIBLE                0x0020
-#define LINEAR_FRAME_BUFFER             0x0080
+#define MODE_SUPPORTED_IN_HW	0x0001
+#define COLOR_MODE				0x0008
+#define GRAPHICS_MODE			0x0010
+#define VGA_INCOMPATIBLE		0x0020
+#define LINEAR_FRAME_BUFFER		0x0080
 
-#define LINEAR_MODE                             0x4000
+#define LINEAR_MODE				0x4000
 
-#define VESA_DONT_WAIT_VSYNC    0               // when page flipping
-#define VESA_WAIT_VSYNC                 0x80
+#define VESA_DONT_WAIT_VSYNC	0		// when page flipping
+#define VESA_WAIT_VSYNC			0x80
 
-#define MAX_VESA_MODES                  30      // we'll just take the first 30 if there
+#define MAX_VESA_MODES			30	// we'll just take the first 30 if there
 									//  are more
 typedef struct {
-	int                     pages[3];                       // either 2 or 3 is valid
-	int                     vesamode;                       // LINEAR_MODE set if linear mode
-	void            *plinearmem;            // linear address of start of frame buffer
-	qboolean        vga_incompatible;
+	int			pages[3];			// either 2 or 3 is valid
+	int			vesamode;			// LINEAR_MODE set if linear mode
+	void		*plinearmem;		// linear address of start of frame buffer
+	qboolean	vga_incompatible;
 } vesa_extra_t;
 
-static vmode_t          vesa_modes[MAX_VESA_MODES] =
+static vmode_t		vesa_modes[MAX_VESA_MODES] =
 	{{NULL, NULL, "    ********* VESA modes *********    "}};
-static vesa_extra_t     vesa_extra[MAX_VESA_MODES];
-static char                     names[MAX_VESA_MODES][10];
+static vesa_extra_t	vesa_extra[MAX_VESA_MODES];
+static char			names[MAX_VESA_MODES][10];
 
 extern regs_t regs;
 
-static int              VID_currentpage;
-static int              VID_displayedpage;
-static int              *VID_pagelist;
-static byte             *VID_membase;
-static int              VID_banked;
+static int		VID_currentpage;
+static int		VID_displayedpage;
+static int		*VID_pagelist;
+static byte		*VID_membase;
+static int		VID_banked;
 
 typedef struct
 {
 	int modenum;
 	int mode_attributes;
-	int     winasegment;
-	int     winbsegment;
-	int     bytes_per_scanline; // bytes per logical scanline (+16)
+	int	winasegment;
+	int	winbsegment;
+	int	bytes_per_scanline; // bytes per logical scanline (+16)
 	int win; // window number (A=0, B=1)
 	int win_size; // window size (+6)
 	int granularity; // how finely i can set the window in vid mem (+4)
@@ -89,31 +89,31 @@ typedef struct
 	int blue_width; // (+35)
 	int blue_pos; // (+36)
 	int pptr;
-	int     pagesize;
-	int     numpages;
+	int	pagesize;
+	int	numpages;
 } modeinfo_t;
 
 static modeinfo_t modeinfo;
 
 // all bytes to avoid problems with compiler field packing
 typedef struct vbeinfoblock_s {
-     byte                       VbeSignature[4];
-     byte                       VbeVersion[2];
-     byte                       OemStringPtr[4];
-     byte                       Capabilities[4];
-     byte                       VideoModePtr[4];
-     byte                       TotalMemory[2];
-     byte                       OemSoftwareRev[2];
-     byte                       OemVendorNamePtr[4];
-     byte                       OemProductNamePtr[4];
-     byte                       OemProductRevPtr[4];
-     byte                       Reserved[222];
-     byte                       OemData[256];
+     byte			VbeSignature[4];
+     byte			VbeVersion[2];
+     byte			OemStringPtr[4];
+     byte			Capabilities[4];
+     byte			VideoModePtr[4];
+     byte			TotalMemory[2];
+     byte			OemSoftwareRev[2];
+     byte			OemVendorNamePtr[4];
+     byte			OemProductNamePtr[4];
+     byte			OemProductRevPtr[4];
+     byte			Reserved[222];
+     byte			OemData[256];
 } vbeinfoblock_t;
 
-static int      totalvidmem;
-static byte     *ppal;
-qboolean        vsync_exists, de_exists;
+static int	totalvidmem;
+static byte	*ppal;
+qboolean	vsync_exists, de_exists;
 
 qboolean VID_ExtraGetModeInfo(int modenum);
 int VID_ExtraInitMode (viddef_t *vid, vmode_t *pcurrentmode);
@@ -181,8 +181,8 @@ VID_SetVESAPalette
 void VID_SetVESAPalette (viddef_t *lvid, vmode_t *pcurrentmode,
 	unsigned char *pal)
 {
-	int             i;
-	byte    *pp;
+	int		i;
+	byte	*pp;
 	byte jpal[768];
 
 	UNUSED(lvid);
@@ -227,7 +227,7 @@ VID_ExtraFarToLinear
 */
 void *VID_ExtraFarToLinear (void *ptr)
 {
-	int             temp;
+	int		temp;
 
 	temp = (int)ptr;
 	return real2ptr(((temp & 0xFFFF0000) >> 12) + (temp & 0xFFFF));
@@ -253,8 +253,8 @@ VID_ExtraVidLookForState
 */
 qboolean VID_ExtraVidLookForState (unsigned state, unsigned mask)
 {
-	int             i;
-	double  starttime, time;
+	int		i;
+	double	starttime, time;
 
 	starttime = Sys_DoubleTime();
 
@@ -280,7 +280,7 @@ VID_ExtraStateFound
 */
 qboolean VID_ExtraStateFound (unsigned state)
 {
-	int             i, workingstate;
+	int		i, workingstate;
 
 	workingstate = 0;
 
@@ -305,10 +305,10 @@ VID_InitExtra
 */
 void VID_InitExtra (void)
 {
-	int                             nummodes;
-	short                   *pmodenums;
-	vbeinfoblock_t  *pinfoblock;
-	__dpmi_meminfo  phys_mem_info;
+	int				nummodes;
+	short			*pmodenums;
+	vbeinfoblock_t	*pinfoblock;
+	__dpmi_meminfo	phys_mem_info;
 
 	pinfoblock = dos_getmemory(sizeof(vbeinfoblock_t));
 
@@ -322,13 +322,14 @@ void VID_InitExtra (void)
 
 	if (regs.x.ax != 0x4f)
 	{
-		dos_freememory(pinfoblock);/* FS: sezero's code from uHexen2 */
-		return;         // no VESA support
+		dos_freememory(pinfoblock); /* FS: sezero's code from uHexen2 */
+		return;		// no VESA support
 	}
+
 	if (pinfoblock->VbeVersion[1] < 0x02)
 	{
-		dos_freememory(pinfoblock);/* FS: sezero's code from uHexen2 */
-		return;         // not VESA 2.0 or greater
+		dos_freememory(pinfoblock); /* FS: sezero's code from uHexen2 */
+		return;		// not VESA 2.0 or greater
 	}
 
 	Con_Printf ("VESA 2.0 compliant adapter:\n%s\n",
@@ -457,8 +458,8 @@ VID_ExtraGetModeInfo
 */
 qboolean VID_ExtraGetModeInfo(int modenum)
 {
-	char    *infobuf;
-	int             numimagepages;
+	char	*infobuf;
+	int		numimagepages;
 
 	infobuf = dos_getmemory(256);
 
@@ -470,7 +471,7 @@ qboolean VID_ExtraGetModeInfo(int modenum)
 
 	if (regs.x.ax != 0x4f)
 	{
-		dos_freememory(infobuf);/* FS: sezero's code from uHexen2 */
+		dos_freememory(infobuf); /* FS: sezero's code from uHexen2 */
 		return false;
 	}
 	else
@@ -487,7 +488,7 @@ qboolean VID_ExtraGetModeInfo(int modenum)
 			(modeinfo.width > MAXWIDTH) ||
 			(modeinfo.height > MAXHEIGHT))
 		{
-			dos_freememory(infobuf);/* FS: sezero's code from uHexen2 */
+			dos_freememory(infobuf); /* FS: sezero's code from uHexen2 */
 			return false;
 		}
 
@@ -498,7 +499,7 @@ qboolean VID_ExtraGetModeInfo(int modenum)
 			 (MODE_SUPPORTED_IN_HW | COLOR_MODE | GRAPHICS_MODE)) !=
 			(MODE_SUPPORTED_IN_HW | COLOR_MODE | GRAPHICS_MODE))
 		{
-			dos_freememory(infobuf);/* FS: sezero's code from uHexen2 */
+			dos_freememory(infobuf); /* FS: sezero's code from uHexen2 */
 			return false;
 		}
 
@@ -508,7 +509,7 @@ qboolean VID_ExtraGetModeInfo(int modenum)
 		{
 			if ((modeinfo.width != 320) || (modeinfo.height != 200))
 			{
-				dos_freememory(infobuf);/* FS: sezero's code from uHexen2 */
+				dos_freememory(infobuf); /* FS: sezero's code from uHexen2 */
 				return false;
 			}
 		}
@@ -519,7 +520,7 @@ qboolean VID_ExtraGetModeInfo(int modenum)
 
 		if (modeinfo.pagesize > totalvidmem)
 		{
-			dos_freememory(infobuf);/* FS: sezero's code from uHexen2 */
+			dos_freememory(infobuf); /* FS: sezero's code from uHexen2 */
 			return false;
 		}
 	// force to one page if the adapter reports it doesn't support more pages
@@ -581,8 +582,8 @@ VID_ExtraInitMode
 */
 int VID_ExtraInitMode (viddef_t *lvid, vmode_t *pcurrentmode)
 {
-	vesa_extra_t    *pextra;
-	int                             pageoffset;
+	vesa_extra_t	*pextra;
+	int				pageoffset;
 
 	pextra = pcurrentmode->pextradata;
 
@@ -593,7 +594,7 @@ int VID_ExtraInitMode (viddef_t *lvid, vmode_t *pcurrentmode)
 
 // clean up any old vid buffer lying around, alloc new if needed
 	if (!VGA_FreeAndAllocVidbuffer (lvid, lvid->numpages == 1))
-		return -1;      // memory alloc failed
+		return -1;	// memory alloc failed
 
 // clear the screen and wait for the next frame. VGA_pcurmode, which
 // VGA_ClearVideoMem relies on, is guaranteed to be set because mode 0 is
@@ -658,7 +659,7 @@ int VID_ExtraInitMode (viddef_t *lvid, vmode_t *pcurrentmode)
 	pageoffset = VID_pagelist[VID_displayedpage];
 
 	regs.x.ax = 0x4f07;
-	regs.x.bx = 0x80;       // wait for vsync so we know page 0 is visible
+	regs.x.bx = 0x80;	// wait for vsync so we know page 0 is visible
 	regs.x.cx = pageoffset % VGA_rowbytes;
 	regs.x.dx = pageoffset / VGA_rowbytes;
 	dos_int86(0x10);
@@ -711,7 +712,7 @@ VID_ExtraSwapBuffers
 void VID_ExtraSwapBuffers (viddef_t *lvid, vmode_t *pcurrentmode,
 	vrect_t *rects)
 {
-	int     pageoffset;
+	int	pageoffset;
 
 	UNUSED(rects);
 	UNUSED(pcurrentmode);
@@ -733,7 +734,7 @@ void VID_ExtraSwapBuffers (viddef_t *lvid, vmode_t *pcurrentmode,
 		}
 		else
 		{
-			regs.x.bx = VESA_WAIT_VSYNC;    // double buffered has to wait
+			regs.x.bx = VESA_WAIT_VSYNC;	// double buffered has to wait
 		}
 
 		regs.x.cx = pageoffset % VGA_rowbytes;
@@ -757,7 +758,7 @@ void VID_ExtraSwapBuffers (viddef_t *lvid, vmode_t *pcurrentmode,
 		}
 		else
 		{
-			lvid->direct = lvid->buffer;    // direct drawing goes to the
+			lvid->direct = lvid->buffer;	// direct drawing goes to the
 											//  currently displayed page
 			lvid->buffer = VID_membase + VID_pagelist[VID_currentpage];
 			lvid->conbuffer = lvid->buffer;
@@ -777,7 +778,7 @@ void VID_ExtraSwapBuffers (viddef_t *lvid, vmode_t *pcurrentmode,
 		{
 			VGA_UpdateLinearScreen (
 					lvid->buffer + rects->x + (rects->y * lvid->rowbytes),
-					VGA_pagebase + rects->x + (rects->y * VGA_rowbytes),
+		 			VGA_pagebase + rects->x + (rects->y * VGA_rowbytes),
 					rects->width,
 					rects->height,
 					lvid->rowbytes,

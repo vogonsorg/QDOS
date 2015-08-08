@@ -27,23 +27,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern	int	m_activenet;
 
-/* FS: Address Book -- This could probably be an array, but I am so lazy
-       (or is it ironic that probably just coding the array would have taken
-       less time?  Therefore, coding an array would be lazy!  (or more efficient?)
-       ((who sees what??)) (((what am i talking about??))) ((((lol at drunk coding))))*/
-
-extern  cvar_t  adr0;
-extern  cvar_t  adr1;
-extern  cvar_t  adr2;
-extern  cvar_t  adr3;
-extern  cvar_t  adr4;
-extern  cvar_t  adr5;
-extern  cvar_t  adr6;
-extern  cvar_t  adr7;
-extern  cvar_t  adr8;
-extern  cvar_t  adr9;
-
-
 //
 // menus
 //

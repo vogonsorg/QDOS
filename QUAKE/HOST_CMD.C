@@ -27,8 +27,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 extern cvar_t	pausable;
-cvar_t cl_demos = {"cl_demos","1",true, false, "Set to 0 to disable startup demos."}; // FS: Disable startup demos
-int nostartupdemos = 0; // FS: Disable startup demos
+cvar_t cl_demos = {"cl_demos","1",true, false, "Set to 0 to disable startup demos."}; /* FS: Disable startup demos */
+qboolean nostartupdemos = false; /* FS: Disable startup demos */
 extern int com_nummissionpacks; //johnfitz
 
 int	current_skill;
@@ -42,7 +42,7 @@ Host_Quit_f
 */
 
 extern void M_Menu_Quit_f (void);
-extern void Host_WriteConfiguration (void); // FS: Prototype it
+extern void Host_WriteConfiguration (void);
 
 void Host_Quit_f (void)
 {
@@ -57,7 +57,7 @@ void Host_Quit_f (void)
 	Sys_Quit ();
 }
 
-void Host_Fast_Quit_f (void) // FS: Fast Quit
+void Host_Fast_Quit_f (void) /* FS: Fast Quit */
 {
 	CL_Disconnect ();
 	Host_ShutdownServer(false);		
@@ -779,19 +779,19 @@ void Host_Map_f (void)
 {
 	int		i;
 	char	name[MAX_QPATH];
-	char	level[MAX_QPATH]; // FS: Check for the map before we spawn the server
+	char	level[MAX_QPATH]; /* FS: Check for the map before we spawn the server */
 
 	if (cmd_source != src_command)
 		return;
 
-	// FS: Check for bad map names before we start to spawn the server
+	/* FS: Check for bad map names before we start to spawn the server */
 	sprintf (level, "maps/%s.bsp", Cmd_Argv(1));
+
 	if (COM_OpenFile (level, &i) == -1)
 	{
 		Con_Printf ("cannot find map %s", level);
 		return;
 	}
-
 
 	cls.demonum = -1;		// stop demo loop in case this fails
 
@@ -802,6 +802,7 @@ void Host_Map_f (void)
 	SCR_BeginLoadingPlaque ();
 
 	cls.mapstring[0] = 0;
+
 	for (i=0 ; i<Cmd_Argc() ; i++)
 	{
 		strcat (cls.mapstring, Cmd_Argv(i));
@@ -910,16 +911,18 @@ User command to connect to server
 void Host_Connect_f (void)
 {
 	char	name[MAX_QPATH];
-	int     defaultport = 26000; // FS: -O2 Warning
+	int     defaultport = 26000; /* FS: Compiler warning */
 
 	cls.demonum = -1;		// stop demo loop in case this fails
+
 	if (cls.demoplayback)
 	{
 		CL_StopPlayback ();
 		CL_Disconnect ();
 	}
 
-	strcpy (name, Cmd_Argv(3)); // FS: Port Parsing
+	/* FS: FIXME be safer */
+	strcpy (name, Cmd_Argv(3)); /* FS: Port parsing */
 	Con_DPrintf(DEVELOPER_MSG_NET, "Port: %s\n", name);
 	Con_DPrintf(DEVELOPER_MSG_NET, "Defaultport: %i\n", defaultport);
 	Con_DPrintf(DEVELOPER_MSG_NET, "Net_hostport: %i\n", net_hostport);
@@ -927,7 +930,7 @@ void Host_Connect_f (void)
 
 	if(!strcmp(name, ""))
 	{
-		Con_DPrintf(DEVELOPER_MSG_NET, "No port argv passed.  Defaulting %i.\n", DEFAULTnet_hostport); // FS
+		Con_DPrintf(DEVELOPER_MSG_NET, "No port argv passed.  Defaulting %i.\n", DEFAULTnet_hostport); /* FS */
 		net_hostport = DEFAULTnet_hostport;        
 	}
 	else
@@ -937,7 +940,7 @@ void Host_Connect_f (void)
 	defaultport = net_hostport;
 
 	strcpy (name, Cmd_Argv(1));
-	Con_DPrintf(DEVELOPER_MSG_NET, "Srvr: %s\n", name);
+	Con_DPrintf(DEVELOPER_MSG_NET, "Server: %s\n", name); /* FS */
 
 	CL_EstablishConnection (name);
 	Host_Reconnect_f ();
@@ -1783,7 +1786,7 @@ Host_Give_f
 void Host_Give_f (void)
 {
 	char	*t;
-        int             v; // FS: Makes -Wall happy
+	int		v;
 	eval_t	*val;
 
 	if (cmd_source == src_command)
@@ -1800,57 +1803,60 @@ void Host_Give_f (void)
 	
 	switch (t[0])
 	{
-   case '0':
-   case '1':
-   case '2':
-   case '3':
-   case '4':
-   case '5':
-   case '6':
-   case '7':
-   case '8':
-   case '9':
-      // MED 01/04/97 added hipnotic give stuff
-      if (hipnotic)
-      {
-         if (t[0] == '6')
-         {
-            if (t[1] == 'a')
-               sv_player->v.items = (int)sv_player->v.items | HIT_PROXIMITY_GUN;
-            else
-               sv_player->v.items = (int)sv_player->v.items | IT_GRENADE_LAUNCHER;
-         }
-         else if (t[0] == '9')
-            sv_player->v.items = (int)sv_player->v.items | HIT_LASER_CANNON;
-         else if (t[0] == '0')
-            sv_player->v.items = (int)sv_player->v.items | HIT_MJOLNIR;
-         else if (t[0] >= '2')
-            sv_player->v.items = (int)sv_player->v.items | (IT_SHOTGUN << (t[0] - '2'));
-      }
-      else
-      {
-         if (t[0] >= '2')
-            sv_player->v.items = (int)sv_player->v.items | (IT_SHOTGUN << (t[0] - '2'));
-      }
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+		// MED 01/04/97 added hipnotic give stuff
+		if (hipnotic)
+		{
+			if (t[0] == '6')
+			{
+				if (t[1] == 'a')
+					sv_player->v.items = (int)sv_player->v.items | HIT_PROXIMITY_GUN;
+				else
+					sv_player->v.items = (int)sv_player->v.items | IT_GRENADE_LAUNCHER;
+			}
+			else if (t[0] == '9')
+				sv_player->v.items = (int)sv_player->v.items | HIT_LASER_CANNON;
+			else if (t[0] == '0')
+				sv_player->v.items = (int)sv_player->v.items | HIT_MJOLNIR;
+			else if (t[0] >= '2')
+				sv_player->v.items = (int)sv_player->v.items | (IT_SHOTGUN << (t[0] - '2'));
+		}
+		else
+		{
+			if (t[0] >= '2')
+				sv_player->v.items = (int)sv_player->v.items | (IT_SHOTGUN << (t[0] - '2'));
+		}
 		break;
 	
-    case 's':
+	case 's':
 		if (rogue)
 		{
 	        val = GetEdictFieldValue(sv_player, "ammo_shells1");
+
 		    if (val)
 			    val->_float = v;
 		}
 
         sv_player->v.ammo_shells = v;
         break;		
-    case 'n':
+	case 'n':
 		if (rogue)
 		{
 			val = GetEdictFieldValue(sv_player, "ammo_nails1");
+
 			if (val)
 			{
 				val->_float = v;
+
 				if (sv_player->v.weapon <= IT_LIGHTNING)
 					sv_player->v.ammo_nails = v;
 			}
@@ -1860,25 +1866,29 @@ void Host_Give_f (void)
 			sv_player->v.ammo_nails = v;
 		}
         break;		
-    case 'l':
+	case 'l':
 		if (rogue)
 		{
 			val = GetEdictFieldValue(sv_player, "ammo_lava_nails");
+
 			if (val)
 			{
 				val->_float = v;
+
 				if (sv_player->v.weapon > IT_LIGHTNING)
 					sv_player->v.ammo_nails = v;
 			}
 		}
         break;
-    case 'r':
+	case 'r':
 		if (rogue)
 		{
 			val = GetEdictFieldValue(sv_player, "ammo_rockets1");
+
 			if (val)
 			{
 				val->_float = v;
+
 				if (sv_player->v.weapon <= IT_LIGHTNING)
 					sv_player->v.ammo_rockets = v;
 			}
@@ -1888,28 +1898,32 @@ void Host_Give_f (void)
 			sv_player->v.ammo_rockets = v;
 		}
         break;		
-    case 'm':
+	case 'm':
 		if (rogue)
 		{
 			val = GetEdictFieldValue(sv_player, "ammo_multi_rockets");
+
 			if (val)
 			{
 				val->_float = v;
+
 				if (sv_player->v.weapon > IT_LIGHTNING)
 					sv_player->v.ammo_rockets = v;
 			}
 		}
         break;		
-    case 'h':
+	case 'h':
         sv_player->v.health = v;
         break;		
-    case 'c':
+	case 'c':
 		if (rogue)
 		{
 			val = GetEdictFieldValue(sv_player, "ammo_cells1");
+
 			if (val)
 			{
 				val->_float = v;
+
 				if (sv_player->v.weapon <= IT_LIGHTNING)
 					sv_player->v.ammo_cells = v;
 			}
@@ -1919,20 +1933,22 @@ void Host_Give_f (void)
 			sv_player->v.ammo_cells = v;
 		}
         break;		
-    case 'p':
+	case 'p':
 		if (rogue)
 		{
 			val = GetEdictFieldValue(sv_player, "ammo_plasma");
+
 			if (val)
 			{
 				val->_float = v;
+
 				if (sv_player->v.weapon > IT_LIGHTNING)
 					sv_player->v.ammo_cells = v;
 			}
 		}
         break;
 	//johnfitz -- give armour
-    case 'a':
+	case 'a':
 		if (v > 150)
 		{
 			sv_player->v.armortype = 0.8;
@@ -1981,12 +1997,15 @@ void Host_Give_f (void)
 	case RIT_LAVA_NAILGUN: //same as IT_AXE
 		if (rogue)
 			sv_player->v.currentammo = sv_player->v.ammo_nails;
+
 		break;
 	case RIT_PLASMA_GUN: //same as HIT_PROXIMITY_GUN
 		if (rogue)
 			sv_player->v.currentammo = sv_player->v.ammo_cells;
+
 		if (hipnotic)
 			sv_player->v.currentammo = sv_player->v.ammo_rockets;
+
 		break;
 	}
 	//johnfitz
@@ -2000,6 +2019,7 @@ edict_t	*FindViewthing (void)
 	for (i=0 ; i<sv.num_edicts ; i++)
 	{
 		e = EDICT_NUM(i);
+
 		if ( !strcmp (pr_strings + e->v.classname, "viewthing") )
 			return e;
 	}
@@ -2046,6 +2066,7 @@ void Host_Viewframe_f (void)
 	e = FindViewthing ();
 	if (!e)
 		return;
+
 	m = cl.model_precache[(int)e->v.modelindex];
 
 	f = atoi(Cmd_Argv(1));
@@ -2064,6 +2085,7 @@ void PrintFrameName (model_t *m, int frame)
 	hdr = (aliashdr_t *)Mod_Extradata (m);
 	if (!hdr)
 		return;
+
 	pframedesc = &hdr->frames[frame];
 	
 	Con_Printf ("frame %i: %s\n", frame, pframedesc->name);
@@ -2082,6 +2104,7 @@ void Host_Viewnext_f (void)
 	e = FindViewthing ();
 	if (!e)
 		return;
+
 	m = cl.model_precache[(int)e->v.modelindex];
 
 	e->v.frame = e->v.frame + 1;
@@ -2132,13 +2155,13 @@ void Host_Startdemos_f (void)
 {
 	int		i, c;
 
-	if (COM_CheckParm("-nodemo") || !cl_demos.intValue) // FS
+	if (COM_CheckParm("-nodemo") || !cl_demos.intValue) /* FS: Disable startup demos */
 	{
 		Con_Printf("Startup demos disabled.\n");
 		c = 0;
 		i = 0;
 		cls.demonum = -1;
-		nostartupdemos = 1;
+		nostartupdemos = true;
 		return;
 	}
 
@@ -2179,9 +2202,9 @@ Return to looping demos
 */
 void Host_Demos_f (void)
 {
-	if (COM_CheckParm("-nodemo") || !cl_demos.intValue) //FS
+	if (COM_CheckParm("-nodemo") || !cl_demos.intValue) /* FS: Skip startup demos */
 	{
-		nostartupdemos = 1;
+		nostartupdemos = false;
 		cls.demonum = -1;
 		CL_Disconnect_f();
 		return;
@@ -2228,7 +2251,7 @@ void Host_InitCommands (void)
 
 	Cmd_AddCommand ("status", Host_Status_f);
 	Cmd_AddCommand ("quit", Host_Quit_f);
-	Cmd_AddCommand ("quit!", Host_Fast_Quit_f); // FS: Fast Quit
+	Cmd_AddCommand ("quit!", Host_Fast_Quit_f); /* FS: Fast Quit */
 	Cmd_AddCommand ("god", Host_God_f);
 	Cmd_AddCommand ("notarget", Host_Notarget_f);
 	Cmd_AddCommand ("fly", Host_Fly_f);
@@ -2266,6 +2289,5 @@ void Host_InitCommands (void)
 	Cmd_AddCommand ("viewprev", Host_Viewprev_f);
 
 	Cmd_AddCommand ("mcache", Mod_Print);
-        Cvar_RegisterVariable (&cl_demos); // FS: Disable Startdemos
-        
+	Cvar_RegisterVariable (&cl_demos); /* FS: Disable Startdemos */
 }

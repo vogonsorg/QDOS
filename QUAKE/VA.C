@@ -45,7 +45,6 @@ static __attribute__ ((used)) const char rcsid[] =
 
 #include <stdarg.h>
 
-#include "dstring.h"
 #include "va.h"
 
 

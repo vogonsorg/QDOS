@@ -1266,8 +1266,7 @@ void M_Draw (void)
 	case m_extended:  /* FS: Extended options unique to QDOS */
 		M_Extended_Draw();
 		break;	
-
-	case m_gamespy: /* FS: Unfinished */
+	case m_gamespy:
 		M_Gamespy_Draw();
 		break;
 	case m_gamespy_pages:
@@ -1292,7 +1291,6 @@ void M_Keydown (int key)
 	{
 	case m_none:
 		return;
-
 	case m_main:
 		M_Main_Key (key);
 		return;
@@ -1300,75 +1298,58 @@ void M_Keydown (int key)
 	case m_singleplayer:
 		M_SinglePlayer_Key (key);
 		return;
-
 	case m_load:
 //	      M_Load_Key (key);
 		return;
-
 	case m_save:
 //	      M_Save_Key (key);
 		return;
-
 	case m_multiplayer:
 		M_MultiPlayer_Key (key);
 		return;
-
 	case m_setup:
 //	      M_Setup_Key (key);
 		return;
-
 	case m_net:
 //	      M_Net_Key (key);
 		return;
-
 	case m_options:
 		M_Options_Key (key);
 		return;
-
 	case m_keys:
 		M_Keys_Key (key);
 		return;
-
 	case m_video:
 		M_Video_Key (key);
 		return;
-
 	case m_help:
 		M_Help_Key (key);
 		return;
-
 	case m_quit:
 		M_Quit_Key (key);
 		return;
-
 	case m_serialconfig:
 //	      M_SerialConfig_Key (key);
 		return;
-
 	case m_modemconfig:
 //	      M_ModemConfig_Key (key);
 		return;
-
 	case m_lanconfig:
 //	      M_LanConfig_Key (key);
 		return;
-
 	case m_gameoptions:
 //	      M_GameOptions_Key (key);
 		return;
-
 	case m_search:
 //	      M_Search_Key (key);
 		break;
-
 	case m_slist:
 //	      M_ServerList_Key (key);
 		return;
 	case m_extended: /* FS: Extended options unique to QDOS */
 		M_Extended_Key (key);
 		return;
-
-	case m_gamespy: /* FS: Unfinished */
+	case m_gamespy:
 	case m_gamespy_pages:
 		M_Gamespy_Key (key);
 		return;

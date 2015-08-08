@@ -19,10 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // host.c -- coordinates spawning and killing of local servers
 
+#include <ctype.h>
 #include "quakedef.h"
 #include "r_local.h"
-#include "cfgfile.h" // FS: Parse CFG early -- sezero
-#include <ctype.h> // FS: -Werror fix
+#include "cfgfile.h" /* FS: Parse CFG early -- sezero */
+
 /*
 
 A server can allways be started, even if the system started out as a client
@@ -43,7 +44,7 @@ double      host_time;
 double      realtime;            // without any filtering or bounding
 double      oldrealtime;         // last frame run
 int         host_framecount;
-int			fps_count; // FS: for SHOW_FPS
+int			fps_count; /* FS: for show_fps */
 
 int         host_hunklevel;
 
@@ -72,18 +73,6 @@ cvar_t	teamplay = {"teamplay","0",false,true, "Enable team deathmatch."};
 cvar_t	samelevel = {"samelevel","0", false, false, "Repeats the same level if an endlevel is triggered."};
 cvar_t	noexit = {"noexit","0", false, true, "Do not allow exiting in a game."};
 
-/* FS: Address Book */
-cvar_t	adr0 = {"adr0", "", true};
-cvar_t	adr1 = {"adr1", "", true};
-cvar_t	adr2 = {"adr2", "", true};
-cvar_t	adr3 = {"adr3", "", true};
-cvar_t	adr4 = {"adr4", "", true};
-cvar_t	adr5 = {"adr5", "", true};
-cvar_t	adr6 = {"adr6", "", true};
-cvar_t	adr7 = {"adr7", "", true};
-cvar_t	adr8 = {"adr8", "", true};
-cvar_t	adr9 = {"adr9", "", true};
-
 cvar_t	developer = {"developer","0", false, false, "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Server msgs - 256\n  * Progs msgs - 512\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Save/Restore msgs - 32768\n  * Extremely verbose msgs - 65536\n"};
 
 cvar_t	skill = {"skill","1", false, false, "Sets the skill.  Valid values are 0 through 3."};                 // 0 - 3
@@ -93,8 +82,10 @@ cvar_t	coop = {"coop","0", false, false, "Enable a coop game.  Deathmatch must b
 cvar_t	pausable = {"pausable","1"};
 
 cvar_t	temp1 = {"temp1","0"};
-cvar_t	con_show_description = {"con_show_description", "1", true, false, "Show descriptions for CVARs."}; // FS
-cvar_t	con_show_dev_flags = {"con_show_dev_flags", "1", true, false, "Show developer flag options."}; // FS
+
+/* FS: New stuff */
+cvar_t	con_show_description = {"con_show_description", "1", true, false, "Show descriptions for CVARs."};
+cvar_t	con_show_dev_flags = {"con_show_dev_flags", "1", true, false, "Show developer flag options."};
 
 /*
 ================
@@ -124,9 +115,8 @@ Host_EndGame
 void Host_EndGame (const char *message, ...)
 {
 	va_list     argptr;
-//   char     string[1024];
-	static dstring_t *string; // FS: New school dstring
-  
+	static dstring_t *string;
+
 	if (!string)
 		string = dstring_new();
 
@@ -134,13 +124,13 @@ void Host_EndGame (const char *message, ...)
 	dvsprintf (string,message,argptr);
 	va_end (argptr);
 	Con_DPrintf (DEVELOPER_MSG_NET, "Host_EndGame: %s\n",string->str);
-   
+
 	if (sv.active)
 		Host_ShutdownServer (false);
 
 	if (cls.state == ca_dedicated)
 		Sys_Error ("Host_EndGame: %s\n",string->str);  // dedicated servers exit
-   
+
 	if (cls.demonum != -1)
 		CL_NextDemo ();
 	else
@@ -158,9 +148,8 @@ This shuts down both the client and server
 */
 void Host_Error (const char *error, ...)
 {
-   va_list     argptr;
-//   char     string[1024];
-	static dstring_t *string; // FS: New school dstring
+	va_list     argptr;
+	static dstring_t *string;
 	static   qboolean inerror = false;
 
 	if (!string)
@@ -169,14 +158,14 @@ void Host_Error (const char *error, ...)
 	if (inerror)
 		Sys_Error ("Host_Error: recursively entered");
 	inerror = true;
-   
+
 	SCR_EndLoadingPlaque ();      // reenable screen updates
 
 	va_start (argptr,error);
 	dvsprintf (string,error,argptr);
 	va_end (argptr);
 	Con_Printf ("Host_Error: %s\n",string->str);
-   
+
 	if (sv.active)
 		Host_ShutdownServer (false);
 
@@ -276,26 +265,14 @@ void Host_InitLocal (void)
 
 	Cvar_RegisterVariable (&temp1);
 
-	/* FS: Address Book */
-	Cvar_RegisterVariable(&adr0);
-	Cvar_RegisterVariable(&adr1);
-	Cvar_RegisterVariable(&adr2);
-	Cvar_RegisterVariable(&adr3);
-	Cvar_RegisterVariable(&adr4);
-	Cvar_RegisterVariable(&adr5);
-	Cvar_RegisterVariable(&adr6);
-	Cvar_RegisterVariable(&adr7);
-	Cvar_RegisterVariable(&adr8);
-	Cvar_RegisterVariable(&adr9);
-
-	Cvar_RegisterVariable(&con_show_description); // FS
-	Cvar_RegisterVariable(&con_show_dev_flags); // FS
+	/* FS: New stuff */
+	Cvar_RegisterVariable(&con_show_description);
+	Cvar_RegisterVariable(&con_show_dev_flags);
 
 	Host_FindMaxClients ();
    
 	host_time = 1.0;     // so a think at time 0 won't get called
 }
-
 
 /*
 ===============
@@ -339,19 +316,18 @@ FIXME: make this just a stuffed echo?
 */
 void SV_ClientPrintf (const char *fmt, ...)
 {
-   va_list     argptr;
-//   char     string[1024];
-	static dstring_t *string; // FS: New school dstring
+	va_list	argptr;
+	static	dstring_t	*string;
 
 	if (!string)
 		string = dstring_new();
 
-   va_start (argptr,fmt);
-   dvsprintf (string, fmt,argptr);
-   va_end (argptr);
+	va_start (argptr,fmt);
+	dvsprintf (string, fmt,argptr);
+	va_end (argptr);
    
-   MSG_WriteByte (&host_client->message, svc_print);
-   MSG_WriteString (&host_client->message, string->str);
+	MSG_WriteByte (&host_client->message, svc_print);
+	MSG_WriteString (&host_client->message, string->str);
 }
 
 /*
@@ -363,24 +339,25 @@ Sends text to all active clients
 */
 void SV_BroadcastPrintf (const char *fmt, ...)
 {
-   va_list     argptr;
-//   char     string[1024];
-	static dstring_t *string;
-   int         i;
+	va_list	argptr;
+	static	dstring_t *string;
+	int		i;
    
 	if(!string)
 		string = dstring_new();
 
-   va_start (argptr,fmt);
-   dvsprintf (string, fmt,argptr);
-   va_end (argptr);
+	va_start (argptr,fmt);
+	dvsprintf (string, fmt,argptr);
+	va_end (argptr);
    
-   for (i=0 ; i<svs.maxclients ; i++)
-      if (svs.clients[i].active && svs.clients[i].spawned)
-      {
-         MSG_WriteByte (&svs.clients[i].message, svc_print);
-         MSG_WriteString (&svs.clients[i].message, string->str);
-      }
+	for (i=0 ; i<svs.maxclients ; i++)
+	{
+		if (svs.clients[i].active && svs.clients[i].spawned)
+		{
+			MSG_WriteByte (&svs.clients[i].message, svc_print);
+			MSG_WriteString (&svs.clients[i].message, string->str);
+		}
+	}
 }
 
 /*
@@ -392,20 +369,18 @@ Send text over to the client to be executed
 */
 void Host_ClientCommands (const char *fmt, ...)
 {
-   va_list     argptr;
-//   char     string[1024];
+	va_list	argptr;
+	static	dstring_t *string;
 
-   static dstring_t *string; // FS: New school dstring
-
-   if(!string)
-	   string = dstring_new();
+	if(!string)
+		string = dstring_new();
    
-   va_start (argptr,fmt);
-   dvsprintf (string, fmt,argptr);
-   va_end (argptr);
+	va_start (argptr,fmt);
+	dvsprintf (string, fmt,argptr);
+	va_end (argptr);
    
-   MSG_WriteByte (&host_client->message, svc_stufftext);
-   MSG_WriteString (&host_client->message, string->str);
+	MSG_WriteByte (&host_client->message, svc_stufftext);
+	MSG_WriteString (&host_client->message, string->str);
 }
 
 /*
@@ -711,38 +686,38 @@ Runs all active servers
 */
 void _Host_Frame (float time)
 {
-   static double     time1 = 0;
-   static double     time2 = 0;
-   static double     time3 = 0;
-   int         pass1, pass2, pass3;
+	static double	time1 = 0;
+	static double	time2 = 0;
+	static double	time3 = 0;
+	int				pass1, pass2, pass3;
 
-   if (setjmp (host_abortserver) )
-      return;        // something bad happened, or the server disconnected
+	if (setjmp (host_abortserver) )
+		return;        // something bad happened, or the server disconnected
 
 // keep the random time dependent
-   rand ();
+	rand ();
 
 // decide the simulation time
-   if (!Host_FilterTime (time))
-      return;        // don't run too fast, or packets will flood out
+	if (!Host_FilterTime (time))
+		return;        // don't run too fast, or packets will flood out
 
 	/*FS: Gamespy Stuff*/
 	GameSpy_Async_Think();
 
 // get new key events
-   Sys_SendKeyEvents ();
+	Sys_SendKeyEvents ();
 
 // allow mice or other external controllers to add commands
-   IN_Commands ();
+	IN_Commands ();
 
 // process console commands
-   Cbuf_Execute ();
+	Cbuf_Execute ();
 
-   NET_Poll();
+	NET_Poll();
 
 // if running the server locally, make intentions now
-   if (sv.active)
-      CL_SendCmd ();
+	if (sv.active)
+		CL_SendCmd ();
    
 //-------------------
 //
@@ -751,10 +726,10 @@ void _Host_Frame (float time)
 //-------------------
 
 // check for commands typed to the host
-   Host_GetConsoleCommands ();
+	Host_GetConsoleCommands ();
    
-   if (sv.active)
-      Host_ServerFrame ();
+	if (sv.active)
+		Host_ServerFrame ();
 
 //-------------------
 //
@@ -764,49 +739,49 @@ void _Host_Frame (float time)
 
 // if running the server remotely, send intentions now after
 // the incoming messages have been read
-   if (!sv.active)
-      CL_SendCmd ();
+	if (!sv.active)
+		CL_SendCmd ();
 
-   host_time += host_frametime;
+	host_time += host_frametime;
 
 // fetch results from server
-   if (cls.state == ca_connected)
-   {
-      CL_ReadFromServer ();
-   }
+	if (cls.state == ca_connected)
+	{
+		CL_ReadFromServer ();
+	}
 
 // update video
-   if (host_speeds.value)
-      time1 = Sys_FloatTime ();
+	if (host_speeds.value)
+		time1 = Sys_FloatTime ();
       
-   SCR_UpdateScreen ();
+	SCR_UpdateScreen ();
 
-   if (host_speeds.value)
-      time2 = Sys_FloatTime ();
+	if (host_speeds.value)
+		time2 = Sys_FloatTime ();
       
 // update audio
-   if (cls.signon == SIGNONS)
-   {
-      S_Update (r_origin, vpn, vright, vup);
-      CL_DecayLights ();
-   }
-   else
-      S_Update (vec3_origin, vec3_origin, vec3_origin, vec3_origin);
+	if (cls.signon == SIGNONS)
+	{
+		S_Update (r_origin, vpn, vright, vup);
+		CL_DecayLights ();
+	}
+	else
+		S_Update (vec3_origin, vec3_origin, vec3_origin, vec3_origin);
    
-   CDAudio_Update();
+	CDAudio_Update();
 
-   if (host_speeds.value)
-   {
-      pass1 = (time1 - time3)*1000;
-      time3 = Sys_FloatTime ();
-      pass2 = (time2 - time1)*1000;
-      pass3 = (time3 - time2)*1000;
-      Con_Printf ("%3i tot %3i server %3i gfx %3i snd\n",
-               pass1+pass2+pass3, pass1, pass2, pass3);
-   }
+	if (host_speeds.value)
+	{
+		pass1 = (time1 - time3)*1000;
+		time3 = Sys_FloatTime ();
+		pass2 = (time2 - time1)*1000;
+		pass3 = (time3 - time2)*1000;
+		Con_Printf ("%3i tot %3i server %3i gfx %3i snd\n",
+					pass1+pass2+pass3, pass1, pass2, pass3);
+	}
    
-   host_framecount++;
-	fps_count++; // FS: for SHOW_FPS
+	host_framecount++;
+	fps_count++; /* FS: for show_fps */
 }
 
 void Host_Frame (float time)
@@ -876,8 +851,8 @@ void Host_Init (quakeparms_t *parms)
 	V_Init ();
 	Chase_Init ();
 	COM_Init (parms->basedir);
-	Cvar_Init(); // FS
-	CFG_OpenConfig("config.cfg");  // FS: Parse CFG early -- sezero
+	Cvar_Init();
+	CFG_OpenConfig("config.cfg"); /* FS: Parse CFG early -- sezero */
 	Host_InitLocal ();
 	W_LoadWadFile ("gfx.wad");
 	Key_Init ();
@@ -898,24 +873,24 @@ void Host_Init (quakeparms_t *parms)
 		host_basepal = (byte *)COM_LoadHunkFile ("gfx/palette.lmp");
 		if (!host_basepal)
 			Sys_Error ("Couldn't load gfx/palette.lmp");
+
 		host_colormap = (byte *)COM_LoadHunkFile ("gfx/colormap.lmp");
 		if (!host_colormap)
 			Sys_Error ("Couldn't load gfx/colormap.lmp");
-                // FS: Joystick.
 
 		VID_Init (host_basepal);
 		Draw_Init ();
 		SCR_Init ();
 		R_Init ();
-#ifndef _WIN32 // FS: Tired of warnings about things already registered.  See vid_win.c
+#ifndef _WIN32 /* FS: Tired of warnings about things already registered.  See vid_win.c */
 		S_Init ();
 #endif
 		CDAudio_Init ();
 		Sbar_Init ();
 		CL_Init ();
-		IN_Init (); // FS: Disable for Debug
+		IN_Init ();
 
-		if(COM_CheckParm("-safevga")) // FS: Safe VGA mode
+		if(COM_CheckParm("-safevga")) /* FS: Safe VGA mode */
 		{
 			Con_Printf("Safe VGA mode enabled\n");
 			Cbuf_AddText("vid_mode 0");
@@ -923,7 +898,7 @@ void Host_Init (quakeparms_t *parms)
 	}
 
 	Cbuf_InsertText ("exec quake.rc\n");
-	Cbuf_AddText ("cl_warncmd 1\n"); // FS: from QW
+	Cbuf_AddText ("cl_warncmd 1\n"); /* FS: From QW */
 
 	Hunk_AllocName (0, "-HOST_HUNKLEVEL-");
 	host_hunklevel = Hunk_LowMark ();

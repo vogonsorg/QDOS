@@ -260,11 +260,11 @@ Aborts the currently executing function
 */
 void PR_RunError (const char *error, ...)
 {
-	va_list		argptr;
-    static dstring_t    *string; // FS: New school dstring
+	va_list	argptr;
+    static	dstring_t	*string;
 
-    if (!string)
-        string = dstring_new();
+	if (!string)
+		string = dstring_new();
 
 	va_start (argptr,error);
 	dvsprintf (string,error,argptr);
@@ -274,7 +274,7 @@ void PR_RunError (const char *error, ...)
 	PR_StackTrace ();
 	Con_Printf ("%s\n", string->str);
 	
-	pr_depth = 0;		// dump the stack so host_error can shutdown functions
+	pr_depth = 0;	// dump the stack so host_error can shutdown functions
 
 	Host_Error ("Program error");
 }

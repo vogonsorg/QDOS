@@ -325,9 +325,10 @@ void Key_Console (int key)
 char chat_buffer[MAXCHATLINE]; 
 qboolean team_message = false;
 
-char    chat_buffer_array[MAX_CHAT][MAXCHATLINE]; // FS: Chat history
-int	chat_head = 0, chat_tail = 0; // FS: Chat history
-int	chat_index = 0; // FS: Chat history
+/* FS: Chat buffer ring array */
+char    chat_buffer_array[MAX_CHAT][MAXCHATLINE];
+int	chat_head = 0, chat_tail = 0;
+int	chat_index = 0;
 
 void Key_Message (int key)
 {
@@ -347,8 +348,10 @@ void Key_Message (int key)
 		/* Taniwha's chat ring array */
 		strcpy (chat_buffer_array[chat_head], chat_buffer);
 		chat_head = (chat_head + 1) % MAX_CHAT;
+
 		if (chat_head == chat_tail)
 			chat_tail = (chat_tail + 1) % MAX_CHAT;
+
 		chat_buffer_array[chat_head][0] = 0;
 		chat_index = chat_head;
 		/* end */

@@ -1044,7 +1044,6 @@ void Sbar_DeathmatchOverlay (void)
 	int				i, k, l;
 	int				top, bottom;
 	int				x, y, f;
-//        int			p; // FS: Up and Coming
 	char			num[12];
 	scoreboard_t	*s;
 
@@ -1072,8 +1071,8 @@ void Sbar_DeathmatchOverlay (void)
 
 	x = 80 + ((vid.width - 320)>>1);
 	y = 40;
-		x = 16;
-//                            0    40 64   104   152
+	x = 16;
+//	0    40 64   104   152
 		Draw_String ( x , y, "frags   name");
 		y += 8;
 //		Draw_String ( x , y, "-----   ----------------");
@@ -1085,13 +1084,7 @@ void Sbar_DeathmatchOverlay (void)
 		s = &cl.scores[k];
 		if (!s->name[0])
 			continue;
-/*
-		// draw ping
-		p = s->ping;
-		if (p < 0 || p > 999)
-			p = 999;
-		sprintf (num, "%4i", p);
-		Draw_String ( x, y, num); */
+
 	// draw background
 		top = s->colors & 0xf0;
 		bottom = (s->colors & 15)<<4;
@@ -1127,7 +1120,7 @@ Sbar_DeathmatchOverlay
 */
 void Sbar_MiniDeathmatchOverlay (void)
 {
-	int				i, k; //, l;
+	int				i, k;
 	int				top, bottom;
 	int				x, y, f;
 	char			num[12];
@@ -1144,7 +1137,6 @@ void Sbar_MiniDeathmatchOverlay (void)
 	Sbar_SortFrags ();
 
 // draw the text
-//	l = scoreboardlines;
 	y = vid.height - sb_lines;
 	numlines = sb_lines/8;
 	if (numlines < 3)

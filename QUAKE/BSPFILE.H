@@ -55,7 +55,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define BSPVERSION	29
 
-// FS: From QuakeSpasm
+/* FS: From QuakeSpasm */
 /* RMQ support (2PSB). 32bits instead of shorts for all but bbox sizes (which
  * still use shorts) */
 #define BSP2VERSION_2PSB (('B' << 24) | ('S' << 16) | ('P' << 8) | '2')
@@ -161,7 +161,7 @@ typedef struct
 
 
 // !!! if this is changed, it must be changed in asm_i386.h too !!!
-// FS: QuakeSpasm
+/* FS: From QuakeSpasm */
 typedef struct
 {
 	int			planenum;
@@ -172,7 +172,7 @@ typedef struct
 	unsigned int	numfaces;	// counting both sides
 } dl1node_t;
 
-// FS: QuakeSpasm
+/* FS: From QuakeSpasm */
 typedef struct
 {
 	int			planenum;
@@ -199,7 +199,7 @@ typedef struct
 	short		children[2];	// negative numbers are contents
 } dclipnode_t;
 
-// FS: From QuakeSpasm
+/* FS: From QuakeSpasm */
 typedef struct
 {
 	int			planenum;
@@ -222,7 +222,7 @@ typedef struct
 	unsigned short	v[2];		// vertex numbers
 } dedge_t;
 
-// FS: From QuakeSpasm
+/* FS: From QuakeSpasm */
 typedef struct
 {
 	unsigned int	v[2];		// vertex numbers
@@ -243,7 +243,7 @@ typedef struct
 	int			lightofs;		// start of [numstyles*surfsize] samples
 } dface_t;
 
-// FS: QuakeSpasm
+/* FS: From QuakeSpasm */
 typedef struct
 {
 	int			planenum;
@@ -281,7 +281,7 @@ typedef struct
 	byte		ambient_level[NUM_AMBIENTS];
 } dleaf_t;
 
-// FS: QuakeSpasm
+/* FS: From QuakeSpasm */
 typedef struct
 {
 	int			contents;
@@ -296,7 +296,7 @@ typedef struct
 	byte		ambient_level[NUM_AMBIENTS];
 } dl1leaf_t;
 
-// FS: QuakeSpasm
+/* FS: From QuakeSpasm */
 typedef struct
 {
 	int			contents;

@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "d_local.h"
 #include "dosisms.h"
 #include "vid_dos.h"
+#include "sys.h"
 #include <dpmi.h>
 
 #define MODE_SUPPORTED_IN_HW	0x0001
@@ -314,13 +315,13 @@ void VID_InitExtra (void)
 
 	if (regs.x.ax != 0x4f)
 	{
-		dos_freememory(pinfoblock); // FS: from HOT
+		dos_freememory(pinfoblock); /* FS: sezero's code from uHexen2 */
 		return;		// no VESA support
 	}
 
 	if (pinfoblock->VbeVersion[1] < 0x02)
 	{
-		dos_freememory(pinfoblock); // FS: from HOT
+		dos_freememory(pinfoblock); /* FS: sezero's code from uHexen2 */
 		return;		// not VESA 2.0 or greater
 	}
 
@@ -460,9 +461,10 @@ qboolean VID_ExtraGetModeInfo(int modenum)
 	regs.x.es = ptr2real(infobuf) >> 4;
 	regs.x.di = ptr2real(infobuf) & 0xf;
 	dos_int86(0x10);
+
 	if (regs.x.ax != 0x4f)
 	{
-                dos_freememory(infobuf); // FS: from HOT
+		dos_freememory(infobuf); /* FS: sezero's code from uHexen2 */
 		return false;
 	}
 	else
@@ -479,8 +481,8 @@ qboolean VID_ExtraGetModeInfo(int modenum)
 			(modeinfo.width > MAXWIDTH) ||
 			(modeinfo.height > MAXHEIGHT))
 		{
-                        dos_freememory(infobuf); // FS: from HOT
-                        return false;
+			dos_freememory(infobuf); /* FS: sezero's code from uHexen2 */
+			return false;
 		}
 
 		modeinfo.mode_attributes = *(short*)infobuf;
@@ -490,8 +492,8 @@ qboolean VID_ExtraGetModeInfo(int modenum)
 			 (MODE_SUPPORTED_IN_HW | COLOR_MODE | GRAPHICS_MODE)) !=
 			(MODE_SUPPORTED_IN_HW | COLOR_MODE | GRAPHICS_MODE))
 		{
-                        dos_freememory(infobuf); // FS: from HOT
-                        return false;
+			dos_freememory(infobuf); /* FS: sezero's code from uHexen2 */
+			return false;
 		}
 
 	// we only work with linear frame buffers, except for 320x200, which can
@@ -499,10 +501,10 @@ qboolean VID_ExtraGetModeInfo(int modenum)
 		if (!(modeinfo.mode_attributes & LINEAR_FRAME_BUFFER))
 		{
 			if ((modeinfo.width != 320) || (modeinfo.height != 200))
-                        {
-                                dos_freememory(infobuf); // FS: from HOT
-                                return false;
-                        }
+			{
+				dos_freememory(infobuf); /* FS: sezero's code from uHexen2 */
+				return false;
+			}
 		}
 
 		modeinfo.bytes_per_scanline = *(short*)(infobuf+16);
@@ -510,8 +512,10 @@ qboolean VID_ExtraGetModeInfo(int modenum)
 		modeinfo.pagesize = modeinfo.bytes_per_scanline * modeinfo.height;
 
 		if (modeinfo.pagesize > totalvidmem)
+		{
+			dos_freememory(infobuf); /* FS: sezero's code from uHexen2 */
 			return false;
-
+		}
 	// force to one page if the adapter reports it doesn't support more pages
 	// than that, no matter how much memory it has--it may not have hardware
 	// support for page flipping

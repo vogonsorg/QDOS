@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-cvar_t  in_freelook = {"in_freelook","1",true, false, "Enables mouselook"}; // FS: mlook
+cvar_t  in_freelook = {"in_freelook","1",true, false, "Enables mouselook"}; /* FS: mlook */
 /*
 ===============================================================================
 
@@ -179,12 +179,12 @@ float CL_KeyState (kbutton_t *key)
 	down = key->state & 1;
 	val = 0;
 	
-	if (impulsedown && !impulseup)  // FS: Fixes -Wall warnings
+	if (impulsedown && !impulseup)
 	{
-        	if (down)
-				val = 0.5;	// pressed and held this frame
-			else
-				val = 0;	//	I_Error ();
+		if (down)
+			val = 0.5;	// pressed and held this frame
+		else
+			val = 0;	//	I_Error ();
 	}
 	if (impulseup && !impulsedown)
 	{
@@ -230,8 +230,8 @@ cvar_t	cl_pitchspeed = {"cl_pitchspeed","150"};
 
 cvar_t	cl_anglespeedkey = {"cl_anglespeedkey","1.5"};
 
-cvar_t  pq_fullpitch = {"pq_fullpitch", "0", true}; // FS
-cvar_t  cl_fullpitch = {"cl_fullpitch", "0", true}; // FS
+cvar_t  pq_fullpitch = {"pq_fullpitch", "0", true}; /* FS: ProQuake Shit */
+cvar_t  cl_fullpitch = {"cl_fullpitch", "0", true}; /* FS: ProQuake Shit */
 
 /*
 ================
@@ -272,7 +272,7 @@ void CL_AdjustAngles (void)
 	if (up || down)
 		V_StopPitchDrift ();
 
-	if (pq_fullpitch.value) // FS: PQ Full Pitch Support
+	if (pq_fullpitch.value) /* FS: ProQuake Shit */
 	{
 		if (cl.viewangles[PITCH] > 90)
 			cl.viewangles[PITCH] = 90;
@@ -321,7 +321,7 @@ void CL_BaseMove (usercmd_t *cmd)
 	cmd->upmove += cl_upspeed.value * CL_KeyState (&in_up);
 	cmd->upmove -= cl_upspeed.value * CL_KeyState (&in_down);
 
-	if ( in_jump.down ) // FS: Noclip up with +jump or swim up with +jump
+	if ( in_jump.down ) /* FS: Noclip up with +jump or swim up with +jump */
 	{
 		cmd->upmove += cl_upspeed.value * CL_KeyState (&in_jump);
 	}
@@ -463,6 +463,6 @@ void CL_InitInput (void)
 	Cmd_AddCommand ("+mlook", IN_MLookDown);
 	Cmd_AddCommand ("-mlook", IN_MLookUp);
 
-	Cvar_RegisterVariable (&in_freelook); // FS: Mlook
+	Cvar_RegisterVariable (&in_freelook); /* FS: mlook */
 }
 
