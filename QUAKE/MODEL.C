@@ -646,7 +646,7 @@ void Mod_LoadEdges (lump_t *l, int bsp2)
 		dledge_t *in = (dledge_t *)(mod_base + l->fileofs);
 
 		if (l->filelen % sizeof(*in))
-			Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
+			Sys_Error ("MOD_LoadEdges: funny lump size in %s",loadmodel->name);
 
 		count = l->filelen / sizeof(*in);
 		out = (medge_t *) Hunk_AllocName ( (count + 1) * sizeof(*out), loadname);
@@ -665,7 +665,7 @@ void Mod_LoadEdges (lump_t *l, int bsp2)
 		dedge_t *in = (dedge_t *)(mod_base + l->fileofs);
 
 		if (l->filelen % sizeof(*in))
-			Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
+			Sys_Error ("MOD_LoadEdges: funny lump size in %s",loadmodel->name);
 
 		count = l->filelen / sizeof(*in);
 		out = (medge_t *) Hunk_AllocName ( (count + 1) * sizeof(*out), loadname);
@@ -796,7 +796,9 @@ void CalcSurfaceExtents (msurface_t *s)
 		s->extents[i] = (bmaxs[i] - bmins[i]) * 16;
 
 		if ( !(tex->flags & TEX_SPECIAL) && s->extents[i] > 2000) //johnfitz -- was 512 in glquake, 256 in winquake
+		{
 			Sys_Error ("Bad surface extents");
+		}
 	}
 }
 #else
@@ -859,7 +861,14 @@ void CalcSurfaceExtents (msurface_t *s)
 		s->extents[i] = (bmaxs[i] - bmins[i]) * 16;
 
 		if ( !(tex->flags & TEX_SPECIAL) && s->extents[i] > 2000) //johnfitz -- was 512 in glquake, 256 in winquake
+		{
+#ifdef DEBUG /* FS: Force an assert on purpose to debug this issue */
+			int zz = 0;
+			assert(zz);
+#else
 			Sys_Error ("Bad surface extents. Flags: %i. Value: %i", tex->flags, s->extents[i]);
+#endif
+		}
 	}
 }
 #endif
@@ -1047,12 +1056,10 @@ void Mod_LoadFaces (lump_t *l, qboolean bsp2)
 	if (bsp2)
 	{
 		Mod_LoadFaces_L2(l);
-		return;
 	}
 	else
 	{
 		Mod_LoadFaces_L1(l);
-		return;
 	}
 }
 
@@ -1718,7 +1725,7 @@ void Mod_LoadSurfedges (lump_t *l)
 	
 	in = (void *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
+		Sys_Error ("MOD_LoadSurfedges: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
 	out = Hunk_AllocName ( count*sizeof(*out), loadname);	
 
@@ -1744,7 +1751,7 @@ void Mod_LoadPlanes (lump_t *l)
 	
 	in = (void *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
+		Sys_Error ("MOD_LoadPlanes: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
 	out = Hunk_AllocName ( count*2*sizeof(*out), loadname);	
 	
@@ -1845,7 +1852,7 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 
 #ifndef BSP2_SUPPORT
 	Mod_LoadVertexes (&header->lumps[LUMP_VERTEXES]);
-	Mod_LoadEdges (&header->lumps[LUMP_EDGES], bsp2);
+	Mod_LoadEdges (&header->lumps[LUMP_EDGES], 0);
 	Mod_LoadSurfedges (&header->lumps[LUMP_SURFEDGES]);
 	Mod_LoadTextures (&header->lumps[LUMP_TEXTURES]);
 	Mod_LoadLighting (&header->lumps[LUMP_LIGHTING]);

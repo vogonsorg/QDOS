@@ -421,9 +421,13 @@ void *Hunk_AllocName (int size, char *name)
 		Sys_Error ("Hunk_Alloc: bad size: %i", size);
 		
 	size = sizeof(hunk_t) + ((size+15)&~15);
-	
-	if (hunk_size - hunk_low_used - hunk_high_used < size)
+
+#ifdef DEBUG /* FS: Force an assert on purpose so we can find where it's coming from */
+	assert (hunk_size - hunk_low_used - hunk_high_used > size);
+#else
+	if(hunk_size - hunk_low_used - hunk_high_used < size)
 		Sys_Error ("Hunk_Alloc: failed on %i bytes",size);
+#endif
 	
 	h = (hunk_t *)(hunk_base + hunk_low_used);
 	hunk_low_used += size;
