@@ -197,3 +197,8 @@ extern	qboolean		standard_quake, rogue, hipnotic;
 extern int              nehahra, extended_mod; // FS: nehahra
 void Com_sprintf(dstring_t *dst, const char *fmt, ...); /* FS: Added */
 void Com_strcpy (char *dest, int destSize, const char *src); /* FS: Added */
+
+/* FS: Gamespy stuff */
+#define SHOW_POPULATED_SERVERS 1
+#define SHOW_ALL_SERVERS 2
+

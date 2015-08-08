@@ -19,6 +19,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // client.h
 
+/* FS: Gamespy stuff */
+#define MAX_SERVERS 400 /* FS: There's barely 350 active servers existing, but OK. */
+typedef struct
+{
+	char ip[15];
+	int port;
+	int ping;
+	char hostname[32];
+	int curPlayers;
+	int maxPlayers;
+	char mapname[32];
+}
+gamespyBrowser_t;
+extern gamespyBrowser_t browserList[MAX_SERVERS];
+extern gamespyBrowser_t browserListAll[MAX_SERVERS];
+void CL_PingNetServers_f (void);
+void Update_Gamespy_Menu(void);
+void GameSpy_Async_Think(void);
+
 typedef struct
 {
 	vec3_t	viewangles;

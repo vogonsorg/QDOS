@@ -195,14 +195,21 @@ void Key_Console (int key)
 		return;
 	}
 
-        if (key == 'c') // FS: Disconnect
-        {
-                if(keydown[K_CTRL])
-                {
-                        Cbuf_AddText("disconnect\n");
-                        return;
-                }
-        }
+	if( key == 'c' ) /* FS: Disconnect */
+	{
+		if ( keydown[K_CTRL] )
+		{
+			if(cls.gamespyupdate)
+			{
+				Cbuf_AddText("gspystop\n");
+			}
+			else
+			{
+				Cbuf_AddText ("disconnect\n");
+			}
+			return;
+		}
+	}
 
 	if (key == K_TAB)
 	{	// command completion

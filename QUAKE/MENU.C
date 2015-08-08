@@ -4250,3 +4250,8 @@ void M_Setup_Menu_Address_Book_Key(int k) // FS: Address Book
                }
         }
 }
+
+void Update_Gamespy_Menu(void)
+{
+	/* FS: Not yet... */
+}

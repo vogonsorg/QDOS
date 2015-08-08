@@ -546,7 +546,8 @@ abort:
 }
 
 //loop through pending queries and send out new ones
-#define STATUS "\xff\xff\xff\xffstatus"
+//#define STATUS "\xff\xff\xff\xffstatus"
+const char q1status[12] = "\x80\x00\x00\x0C\x02QUAKE\x00\x03"; /* FS: Raw data that's sent down for a "QUAKE" query string */
 
 /* FS: Redone.  Now works properly at the same speed in DOS and WIN32 */
 static GError ServerListQueryLoop(GServerList serverlist)
@@ -593,7 +594,9 @@ static GError ServerListQueryLoop(GServerList serverlist)
 						server->ping = current_time() - serverlist->updatelist[i].starttime;
 					}
 
-					ServerParseKeyVals(server, indata);
+//					ServerParseKeyVals(server, indata);
+					ServerParseQ1KeyVals(server, indata, error);
+
 					serverlist->CallBackFn(serverlist, 
 										LIST_PROGRESS, 
 										serverlist->instance,
@@ -647,7 +650,7 @@ static GError ServerListQueryLoop(GServerList serverlist)
 
 			saddr.sin_port = htons((short)ServerGetQueryPort(server));
 
-			error = sendto(serverlist->updatelist[i].s,STATUS,strlen(STATUS), 0, (struct sockaddr *) &saddr, saddrlen);
+			error = sendto(serverlist->updatelist[i].s,q1status,sizeof(q1status), 0, (struct sockaddr *) &saddr, saddrlen);
 
 			if (SOCKET_ERROR != error)
 			{

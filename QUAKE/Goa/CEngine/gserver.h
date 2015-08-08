@@ -46,6 +46,7 @@ typedef struct
 void ServerFree(void *elem);
 GServer ServerNew(char *ip, int port);
 void ServerParseKeyVals(GServer server, char *keyvals);
+void ServerParseQ1KeyVals(GServer server, char *data, int length); /* FS: NetQuake Needs some hacky shit */
 
 #ifdef __cplusplus
 }

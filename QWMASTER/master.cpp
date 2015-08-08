@@ -2335,6 +2335,11 @@ void Add_Servers_From_List(char *filename)
 		gamenameFromHttp = (char *)malloc(11);
 		Com_sprintf(gamenameFromHttp, 11, "quakeworld");
 	}
+	else if(strstr(filename, "q1servers"))
+	{
+		gamenameFromHttp = (char *)malloc(7);
+		Com_sprintf(gamenameFromHttp, 7, "quake1");
+	}
 	else
 	{
 		gamenameFromHttp = NULL;

@@ -81,6 +81,70 @@ void ServerParsePlayerCount(GServer server, char *savedkeyvals)
 	TableEnter(server->keyvals, &kvpair);
 }
 
+void ServerParseQ1KeyVals(GServer server, char *data, int length)
+{
+	int nullCount = 0;
+	int i = 0;
+	int offset = 5; /* FS: Skip past the header crud */
+	char reformatted[1024];
+	char players[12];
+	char maxPlayers[12];
+	char playerSeperators[] = "\\";
+	char *test, *p;
+	GKeyValuePair kvpair;
+
+	memset(reformatted, 0, sizeof(reformatted));
+	memset(players, 0 , sizeof(players));
+	memset(maxPlayers, 0, sizeof(maxPlayers));
+
+	for (i = offset; i < length; i ++)
+	{
+		if(data[i] == 0 && nullCount < 3) /* FS: Players and Max Players are sent as unsigned chars so we have to stop here */
+		{
+			data[i] = '\\';
+			nullCount++;
+		}
+		else if (nullCount > 2)
+			break;
+
+		reformatted[i-offset] = data[i];
+	}
+
+	reformatted[i-offset] = 0;
+	sprintf(players, "%u", data[length-3]);
+	sprintf(maxPlayers, "\\%u\\", data[length-2]);
+
+	strcat(reformatted, players);
+	strcat(reformatted, maxPlayers);
+
+	/* FS: Yeah, yeah, this is kind of dangerous... */
+	test = DG_strtok_r(reformatted, playerSeperators, &p);
+	kvpair.key = _strdup("ip");
+	kvpair.value = _strdup(test);
+	TableEnter(server->keyvals, &kvpair);
+
+	test = DG_strtok_r(NULL, playerSeperators, &p);
+	kvpair.key = _strdup("hostname");
+	kvpair.value = _strdup(test);
+	TableEnter(server->keyvals, &kvpair);
+
+	test = DG_strtok_r(NULL, playerSeperators, &p);
+	kvpair.key = _strdup("map");
+	kvpair.value = _strdup(test);
+	TableEnter(server->keyvals, &kvpair);
+
+	test = DG_strtok_r(NULL, playerSeperators, &p);
+	kvpair.key = _strdup("numplayers");
+	kvpair.value = _strdup(test);
+	TableEnter(server->keyvals, &kvpair);
+
+	test = DG_strtok_r(NULL, playerSeperators, &p);
+	kvpair.key = _strdup("maxclients");
+	kvpair.value = _strdup(test);
+	TableEnter(server->keyvals, &kvpair);
+
+}
+
 void ServerParseKeyVals(GServer server, char *keyvals)
 {
 	char *k = NULL;
