@@ -1,0 +1,152 @@
+CC   = gcc
+STRIP= strip
+
+# whether to use OGG VORBIS
+USE_OGG=yes
+# whether to use ASM
+USE_ASM=1
+
+CFLAGS= -g -Wall -O2 -fno-strict-aliasing -fomit-frame-pointer -DWATT32_NO_OLDIES -I../wat/inc
+LDFLAGS= -L../wat/lib
+LIBS= -lwatt
+
+ifeq ($(USE_OGG),yes)
+CFLAGS+= -DOGG_SUPPORT
+CFLAGS+= -I../3rdparty/include
+LIBS  += -L../3rdparty/lib -lvorbisfile -lvorbis -logg
+endif
+LIBS  += -lm
+
+# subdirectory for objects
+O=dos
+
+# not too sophisticated dependency
+CLIENT = $(O)/cd_audio.o  \
+	$(O)/mathlib.o  \
+	$(O)/d_edge.o \
+	$(O)/r_aclip.o  \
+	$(O)/vsnprntf.o   \
+	$(O)/cfgfile.o   \
+	$(O)/dstring.o   \
+	$(O)/r_vars.o   \
+	$(O)/d_fill.o   \
+	$(O)/r_alias.o  \
+	$(O)/sbar.o     \
+	$(O)/cl_demo.o  \
+	$(O)/d_init.o   \
+	$(O)/keys.o     \
+	$(O)/r_bsp.o    \
+	$(O)/screen.o   \
+	$(O)/cl_input.o \
+	$(O)/d_modech.o \
+	$(O)/r_draw.o   \
+	$(O)/cl_main.o  \
+	$(O)/d_part.o   \
+	$(O)/menu.o     \
+	$(O)/r_edge.o   \
+	$(O)/cl_parse.o \
+	$(O)/d_polyse.o \
+	$(O)/model.o    \
+	$(O)/r_efrag.o  \
+	$(O)/cl_tent.o  \
+	$(O)/d_scan.o   \
+	$(O)/r_light.o  \
+	$(O)/cmd.o      \
+	$(O)/d_sky.o    \
+	$(O)/r_main.o   \
+	$(O)/view.o     \
+	$(O)/common.o   \
+	$(O)/d_sprite.o \
+	$(O)/r_misc.o   \
+	$(O)/wad.o      \
+	$(O)/d_surf.o   \
+	$(O)/r_part.o   \
+	$(O)/console.o  \
+	$(O)/d_vars.o   \
+	$(O)/r_sky.o    \
+	$(O)/zone.o     \
+	$(O)/crc.o      \
+	$(O)/d_zpoint.o \
+	$(O)/r_sprite.o \
+	$(O)/cvar.o     \
+	$(O)/draw.o     \
+	$(O)/r_surf.o   \
+	$(O)/pmove.o   \
+	$(O)/pmovetst.o   \
+	$(O)/cl_ents.o   \
+	$(O)/cl_pred.o   \
+	$(O)/cl_cam.o   \
+	$(O)/skin.o   \
+	$(O)/md4.o   \
+	$(O)/net_udp.o  \
+	$(O)/net_chan.o \
+	$(O)/snd_dos.o  \
+	$(O)/snd_dma.o  \
+	$(O)/snd_gus.o  \
+	$(O)/snd_mix.o  \
+	$(O)/snd_mem.o  \
+	$(O)/glob.o  \
+	$(O)/sys_find.o  \
+	$(O)/snd_strm.o  \
+	$(O)/snd_wavstream.o  \
+	$(O)/dos_v2.o   \
+	$(O)/in_dos.o   \
+	$(O)/vid_vga.o  \
+	$(O)/vid_ext.o  \
+	$(O)/vregset.o  \
+	$(O)/d_copy.o \
+	$(O)/sys_dosa.o \
+	$(O)/vid_dos.o   \
+	$(O)/j.o \
+	$(O)/Goa/CEngine/darray.o \
+	$(O)/Goa/CEngine/gserver.o \
+	$(O)/Goa/CEngine/gserverlist.o \
+	$(O)/Goa/CEngine/gutil.o \
+	$(O)/Goa/CEngine/hashtable.o \
+	$(O)/Goa/nonport.o \
+	$(O)/sys_dos.o \
+
+ifeq ($(USE_ASM),1)
+ASM = $(O)/d_draw.o \
+	$(O)/d_draw16.o \
+	$(O)/d_parta.o \
+	$(O)/d_polysa.o \
+	$(O)/d_scana.o \
+	$(O)/d_spr8.o \
+	$(O)/d_varsa.o \
+	$(O)/math.o \
+	$(O)/r_aclipa.o \
+	$(O)/r_aliasa.o \
+	$(O)/r_edgea.o \
+	$(O)/r_varsa.o \
+	$(O)/r_drawa.o \
+	$(O)/snd_mixa.o \
+	$(O)/surf16.o \
+	$(O)/surf8.o
+endif
+
+OBJECTS =  $(CLIENT) $(ASM)
+
+all:     qw.exe
+
+clean:
+	rm -f $(O)/*.o
+	rm -f $(O)/Goa/*.o
+	rm -f $(O)/Goa/CEngine/*.o
+	rm -f $(O)/Goa/Sdk/*.o
+
+qw.exe: $(OBJECTS)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJECTS) -o dqw.exe $(LIBS)
+	rm -f qw.exe
+	cp -p dqw.exe qw.exe
+	$(STRIP) qw.exe
+
+
+DO_AS=$(CC) -x assembler-with-cpp
+
+$(O)/%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+$(O)/%.o: %.S
+	$(DO_AS) $(CFLAGS) -c $< -o $@
+$(O)/%.o: %.s
+	$(DO_AS) $(CFLAGS) -c $< -o $@
