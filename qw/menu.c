@@ -1050,7 +1050,7 @@ void M_SinglePlayer_Draw (void) {
 
 }
 
-void M_SinglePlayer_Key (key) {
+void M_SinglePlayer_Key (int key) {
 	if (key == K_ESCAPE || key==K_ENTER)
 		m_state = m_main;
 }
@@ -1078,7 +1078,7 @@ void M_MultiPlayer_Draw (void) {
 	M_PrintWhite (72, 16*8, "        started!        ");
 }
 
-void M_MultiPlayer_Key (key) {
+void M_MultiPlayer_Key (int key) {
 	if (key == K_ESCAPE || key==K_ENTER)
 		m_state = m_main;
 }
