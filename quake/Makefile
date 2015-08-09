@@ -10,7 +10,7 @@ USE_MPATH=no
 # whether to use OGG VORBIS
 USE_OGG=yes
 # whether to use BSP2 Support (needs further testing, but appears OK)
-USE_BPS2=yes
+USE_BSP2=yes
 
 CFLAGS = -g -Wall -Werror -O0 -fno-strict-aliasing -fomit-frame-pointer
 LIBS   =
