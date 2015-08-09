@@ -27,11 +27,7 @@ extern float v_blend[4];
 
 extern cvar_t lcd_x;
 extern cvar_t v_contentblend; /* FS: Added */
-extern cvar_t show_fps; /* FS: Added */
-extern cvar_t show_time; /* FS: Added */
-extern cvar_t show_uptime; /* FS: Added */
 
-void SCR_DrawFPS(void); /* FS: Added */
 void V_Init (void);
 void V_RenderView (void);
 float V_CalcRoll (vec3_t angles, vec3_t velocity);

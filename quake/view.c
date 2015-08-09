@@ -33,7 +33,6 @@ when crossing a water boudnary.
 
 cvar_t	lcd_x = {"lcd_x","0"};
 cvar_t	lcd_yaw = {"lcd_yaw","0"};
-cvar_t	show_fps = {"show_fps","0", true}; /* FS: show_fps from Qrack */
 
 cvar_t	scr_ofsx = {"scr_ofsx","0", false};
 cvar_t	scr_ofsy = {"scr_ofsy","0", false};
@@ -82,42 +81,6 @@ cvar_t r_skyfog = {"r_skyfog", "0", false};
 float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
 
 extern	int	in_forward, in_forward2, in_back;
-
-
-/*
-==============
-SCR_DrawFPS
-==============
-*/
-/* FS: TODO: Use Knightmare's Q2 code instead */
-void SCR_DrawFPS (void)
-{
-	int		x, y;
-	char	str[80];
-	float	t;
-	static	float	lastfps;
-	static	double	lastframetime;
-	extern	int		fps_count;
-
-	if (!show_fps.value)
-		return;
-
-	t = Sys_FloatTime ();
-
-	if ((t - lastframetime) >= 1.0)
-	{
-		lastfps = fps_count / (t - lastframetime);
-		fps_count = 0;
-		lastframetime = t;
-	}
-
-	sprintf(str, "%3.1f FPS", lastfps);
-	x = vid.width - strlen(str) * 8 - 16;
-	y = vid.height - sb_lines - 8;
-	Draw_String (x, y, str);
-}
-
-
 
 /*
 ===============
@@ -1024,7 +987,6 @@ void V_Init (void)
 
 	Cvar_RegisterVariable (&lcd_x);
 	Cvar_RegisterVariable (&lcd_yaw);
-	Cvar_RegisterVariable (&show_fps); /* FS: show_fps from Qrack */
 
 	Cvar_RegisterVariable (&v_centermove);
 	Cvar_RegisterVariable (&v_centerspeed);

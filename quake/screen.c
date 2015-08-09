@@ -39,6 +39,10 @@ cvar_t		scr_showturtle = {"showturtle","0"};
 cvar_t		scr_showpause = {"showpause","1"};
 cvar_t		scr_printspeed = {"scr_printspeed","8"};
 
+cvar_t		show_fps = {"show_fps","0", true, false, "Show framerate measured in Frames Per Second."}; /* FS: show_fps from Qrack */
+cvar_t		show_time = {"show_time","0", true, false, "Show current time in the HUD.  1 for military.  2 for AM/PM."}; /* FS: Added */
+cvar_t		show_uptime = {"show_uptime","0", true, false, "Show uptime."}; /* FS: Added */
+
 qboolean	scr_initialized;		// ready to draw
 
 qpic_t		*scr_ram;
@@ -328,6 +332,11 @@ void SCR_Init (void)
 	Cvar_RegisterVariable (&scr_centertime);
 	Cvar_RegisterVariable (&scr_printspeed);
 
+	/* FS: New stuff */
+	Cvar_RegisterVariable (&show_fps); /* FS: From Qrack */
+	Cvar_RegisterVariable (&show_time);
+	Cvar_RegisterVariable (&show_uptime);
+
 //
 // register our commands
 //
@@ -398,6 +407,39 @@ void SCR_DrawNet (void)
 		return;
 
 	Draw_Pic (scr_vrect.x+64, scr_vrect.y, scr_net);
+}
+
+/*
+==============
+SCR_DrawFPS
+==============
+*/
+/* FS: TODO: Use Knightmare's Q2 code instead */
+void SCR_DrawFPS (void)
+{
+	int		x, y;
+	char	str[12];
+	float	t;
+	static	float	lastfps;
+	static	double	lastframetime;
+	extern	int		fps_count;
+
+	if (!show_fps.value)
+		return;
+
+	t = Sys_FloatTime ();
+
+	if ((t - lastframetime) >= 1.0)
+	{
+		lastfps = fps_count / (t - lastframetime);
+		fps_count = 0;
+		lastframetime = t;
+	}
+
+	Com_sprintf(str, sizeof(str), "%3.1f FPS", lastfps);
+	x = vid.width - strlen(str) * 8 - 16;
+	y = vid.height - sb_lines - 8;
+	Draw_String (x, y, str);
 }
 
 void SCR_DrawUptime (void) /* FS: Connection time */

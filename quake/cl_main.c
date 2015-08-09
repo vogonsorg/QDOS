@@ -44,8 +44,6 @@ cvar_t	m_forward = {"m_forward","1", true};
 cvar_t	m_side = {"m_side","0.8", true};
 
 /* FS: New stuff */
-cvar_t  show_time = {"show_time","0", true, false, "Show current time in the HUD.  1 for military.  2 for AM/PM."}; /* FS: Added */
-cvar_t  show_uptime = {"show_uptime","0", true, false, "Show uptime."}; /* FS: Added */
 cvar_t	console_old_complete = {"console_old_complete", "0", true, false, "Use the legacy style console tab completion."}; /* FS: Added */
 cvar_t	cl_ogg_music = {"cl_ogg_music", "1", true, false, "Play OGG tracks in the format of id1/music/trackXX.ogg if they exist."}; /* FS: Added */
 cvar_t	cl_wav_music = {"cl_wav_music", "1", true, false, "Play WAV tracks in the format of id1/music/trackXX.wav if they exist."}; /* FS: Added */
@@ -748,8 +746,6 @@ void CL_Init (void)
 
 
 	/* FS: New stuff */
-	Cvar_RegisterVariable (&show_time);
-	Cvar_RegisterVariable (&show_uptime);
 	Cvar_RegisterVariable (&cl_warncmd); /* FS: From QW */
 	Cvar_RegisterVariable (&cl_ogg_music);
 	Cvar_RegisterVariable (&cl_wav_music);
