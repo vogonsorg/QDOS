@@ -421,43 +421,43 @@ void Con_Printf (const char *fmt, ...)
 {
 	va_list argptr;
 	static dstring_t *msg;
+#if 0
 	static qboolean inupdate;
+#endif
 
 	if (!msg)
 		msg = dstring_new ();
-        
+
 	va_start (argptr,fmt);
 	dvsprintf (msg,fmt,argptr);
 	va_end (argptr);
 
 	/* FS: Timestamp code */
-	if(timestamp.value)
+	if(timestamp.intValue > 0)
 	{
-        struct tm       *local = NULL;
-        time_t          utc = 0;
-        const char *timefmt = NULL;
-        char            st[80];
+		struct tm *local;
+		time_t utc;
+		const char *timefmt;
+		char st[80];
 
-        utc = time (NULL);
-        local = localtime (&utc);
+		utc = time (NULL);
+		local = localtime (&utc);
 #ifdef _MSC_VER
 		if (timestamp.value == 1)
 			timefmt = "[%m/%d/%y @ %H:%M:%S %p] ";
-		else if (timestamp.value > 1)
-			timefmt = "[%m/%d/%y @ %I:%M:%S %p] ";
+		else	timefmt = "[%m/%d/%y @ %I:%M:%S %p] ";
 #else
-		if (timestamp.value == 1)
+		if (timestamp.intValue == 1)
 			timefmt = "[%m/%d/%y @ %k:%M:%S %p] ";
-		else if (timestamp.value > 1)
-			timefmt = "[%m/%d/%y @ %l:%M:%S %p] ";
+		else	timefmt = "[%m/%d/%y @ %l:%M:%S %p] ";
 #endif
-        strftime (st, sizeof (st), timefmt, local);
+		strftime (st, sizeof (st), timefmt, local);
 		Sys_Printf("%s", st);
 
 		if(con_initialized)
 			Con_Print(st);
 	}
-	
+
 	// also echo to debugging console
 	Sys_Printf("%s",msg->str); // also echo to debugging console
 
@@ -467,12 +467,12 @@ void Con_Printf (const char *fmt, ...)
 
 	if (!con_initialized)
 		return;
-		
+
 	// write it to the scrollable buffer
 	Con_Print (msg->str);
 
-#if 0 /* FS: This makes scrolling painfully slow, and Quake 2 doesn't even use something like this */
 	// update the screen immediately if the console is displayed
+#if 0 /* FS: This makes scrolling painfully slow, and Quake 2 doesn't even use something like this */
 	if (cls.state != ca_active)
 	{
 		// protect against infinite loop if something in SCR_UpdateScreen calls Con_Printf
