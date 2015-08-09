@@ -59,7 +59,7 @@ byte     *host_colormap;
 
 cvar_t	host_framerate = {"host_framerate","0"};  // set for slow motion
 cvar_t	host_speeds = {"host_speeds","0"};        // set for running times
-cvar_t	host_maxfps = {"host_maxfps", "72", true, false, "Maximum frames pers second to render."}; //johnfitz
+cvar_t	cl_maxfps = {"cl_maxfps", "72.0", true, false, "Maximum frames pers second to render."}; /* FS: Technically it was host_maxfps, but cl_maxfps is standard in other Quake games */ //johnfitz
 cvar_t	host_timescale = {"host_timescale", "0"}; //johnfitz
 cvar_t	max_edicts = {"max_edicts", "2048", false, false, "Maximum number of edicts allowed."}; //johnfitz
 
@@ -244,7 +244,7 @@ void Host_InitLocal (void)
    
 	Cvar_RegisterVariable (&host_framerate);
 	Cvar_RegisterVariable (&host_speeds);
-	Cvar_RegisterVariable (&host_maxfps); //johnfitz
+	Cvar_RegisterVariable (&cl_maxfps); /* FS: Technically it was host_maxfps, but cl_maxfps is standard in other Quake games */ //johnfitz
 	Cvar_RegisterVariable (&host_timescale); //johnfitz
 	Cvar_RegisterVariable (&sys_ticrate);
 	Cvar_RegisterVariable (&serverprofile);
@@ -558,7 +558,7 @@ qboolean Host_FilterTime (float time)
 	realtime += time;
 
 	//johnfitz -- max fps cvar
-	maxfps = CLAMP (10.0, host_maxfps.value, 1000.0);
+	maxfps = CLAMP (10.0, cl_maxfps.value, 1000.0); /* FS: Technically it was host_maxfps, but cl_maxfps is standard in other Quake games */
 	if (!cls.timedemo && realtime - oldrealtime < 1.0/maxfps)
 		return false; // framerate is too high
 	//johnfitz
