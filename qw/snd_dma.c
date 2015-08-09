@@ -94,8 +94,8 @@ cvar_t ambient_fade = {"ambient_fade", "100"};
 cvar_t snd_noextraupdate = {"snd_noextraupdate", "0"};
 cvar_t snd_show = {"snd_show", "0"};
 cvar_t _snd_mixahead = {"_snd_mixahead", "0.2", true};
-cvar_t s_khz = {"s_khz","", true}; /* FS: Added */
-cvar_t	s_musicvolume = {"s_musicvolume", "1", true};
+cvar_t s_khz = {"s_khz","", true, false, "Sound sampling rate."}; /* FS: Added */
+cvar_t s_musicvolume = {"s_musicvolume", "1.0", true, false, "Music volume for wav and ogg streaming."}; /* FS: Added */
 
 // ====================================================================
 // User-setable variables
@@ -546,11 +546,6 @@ void S_StartSound(int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float f
 		return;         // couldn't load the sound's data
 	}
 
-	if (sfx->isCDtrack) /* FS: Loop */
-	{
-		sc->loopstart = 0;
-	}
-
 	target_chan->sfx = sfx;
 	target_chan->pos = 0.0;
 	target_chan->end = paintedtime + sc->length;
@@ -827,13 +822,8 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 	{
 		if (!ch->sfx)
 			continue;
-		if (ch->sfx->isCDtrack) /* FS: Fucks up tunes if we allow spatial */
-		{
-			ch->leftvol = ch->master_vol;
-			ch->rightvol = ch->master_vol;
-			continue;
-		}
-			SND_Spatialize(ch);         // respatialize channel
+
+		SND_Spatialize(ch);         // respatialize channel
 		if (!ch->leftvol && !ch->rightvol)
 			continue;
 
@@ -1133,11 +1123,9 @@ void S_RawSamples (int samples, int rate, int width, int channels, byte *data, q
 		return;
 
 // Knightmare added
-#ifdef OGG_SUPPORT
 	if (music)
 		snd_vol = (s_musicvolume.value);
 	else
-#endif
 		snd_vol = (volume.value);
 
 // end Knightmare

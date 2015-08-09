@@ -44,10 +44,8 @@ typedef struct
 
 typedef struct sfx_s
 {
-	char 	name[MAX_QPATH];
+	char			name[MAX_QPATH];
 	cache_user_t	cache;
-	int		isCDtrack; /* FS */
-	qboolean	music; // Knightmare added
 } sfx_t;
 
 // !!! if this is changed, it much be changed in asm_i386.h too !!!
@@ -186,8 +184,8 @@ extern	int			total_channels;
 // number of times S_Update() is called per second.
 //
 
-extern qboolean 		fakedma;
-extern int 			fakedma_updates;
+extern qboolean fakedma;
+extern int 		fakedma_updates;
 extern int		paintedtime;
 extern int		s_rawend; /* FS: Quake 2 raw wav streaming */
 

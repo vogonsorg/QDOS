@@ -417,14 +417,12 @@ Con_Printf
 Handles cursor positioning, line wrapping, etc
 ================
 */
-#define	MAXPRINTMSG	4096
 void Con_Printf (const char *fmt, ...)
 {
-	va_list		argptr;
-
+	va_list argptr;
 	static dstring_t *msg;
-	static qboolean	inupdate;
-        
+	static qboolean inupdate;
+
 	if (!msg)
 		msg = dstring_new ();
         
@@ -455,7 +453,9 @@ void Con_Printf (const char *fmt, ...)
 #endif
         strftime (st, sizeof (st), timefmt, local);
 		Sys_Printf("%s", st);
-		Con_Print(st);
+
+		if(con_initialized)
+			Con_Print(st);
 	}
 	
 	// also echo to debugging console
@@ -464,13 +464,14 @@ void Con_Printf (const char *fmt, ...)
 	// log all messages to file
 	if (con_debuglog)
 		Sys_DebugLog(va("%s/qconsole.log",com_gamedir), "%s", msg->str);
-		
+
 	if (!con_initialized)
 		return;
 		
 	// write it to the scrollable buffer
 	Con_Print (msg->str);
 
+#if 0 /* FS: This makes scrolling painfully slow, and Quake 2 doesn't even use something like this */
 	// update the screen immediately if the console is displayed
 	if (cls.state != ca_active)
 	{
@@ -482,6 +483,7 @@ void Con_Printf (const char *fmt, ...)
 			inupdate = false;
 		}
 	}
+#endif
 }
 
 /*
@@ -491,7 +493,7 @@ Con_Warning -- johnfitz -- prints a warning to the console
 */
 void Con_Warning (const char *fmt, ...)
 {
-	va_list		argptr;
+	va_list argptr;
 	static dstring_t *msg;
 
 	if (!msg)
@@ -514,15 +516,15 @@ A Con_Printf that only shows up if the "developer" cvar is set
 */
 void Con_DPrintf (unsigned long developerFlags, const char *fmt, ...)
 {
-	va_list		argptr;
-	static dstring_t        *msg;
-	unsigned long	devValue = 0; /* FS: Developer Flags */
-
-	if(!msg)
-		msg = dstring_new();
+	va_list argptr;
+	static dstring_t *msg;
+	unsigned long devValue = 0; /* FS: Developer Flags */
 
 	if (!developer.value)
 		return;			// don't confuse non-developers with techie stuff...
+
+	if (!msg)
+		msg = dstring_new();
 
 	devValue = (unsigned long)developer.value;
 	
@@ -544,21 +546,25 @@ void Con_DPrintf (unsigned long developerFlags, const char *fmt, ...)
 Con_CenterPrintf -- johnfitz -- pad each line with spaces to make it appear centered
 ================
 */
+#define MAXPRINTMSG	8192
 void Con_CenterPrintf (int linewidth, char *fmt, ...)
 {
 	va_list	argptr;
-	char	msg[MAXPRINTMSG]; //the original message
-	char	line[MAXPRINTMSG]; //one line from the message
-	char	spaces[21]; //buffer for spaces
-	char	*src, *dst;
-	int		len, s;
+	static dstring_t *msg; //the original message
+	char line[MAXPRINTMSG]; //one line from the message
+	char spaces[21]; //buffer for spaces
+	char *src, *dst;
+	int	 len, s;
+
+	if (!msg)
+		msg = dstring_new();
 
 	va_start (argptr,fmt);
-	vsprintf (msg,fmt,argptr);
+	dvsprintf (msg,fmt,argptr);
 	va_end (argptr);
 
 	linewidth = MIN(linewidth, con_linewidth);
-	for (src = msg; *src; )
+	for (src = msg->str; *src; )
 	{
 		dst = line;
 		while (*src && *src != '\n')
