@@ -30,8 +30,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MAXWORKINGVERTS	(MAXVERTS+4)	// max points in an intermediate
 										//  polygon (while processing)
 // !!! if this is changed, it must be changed in d_ifacea.h too !!!
-#define MAXHEIGHT               4000 /* FS: Was 1024 */
-#define MAXWIDTH                4000 /* FS: Was 1280 */
+#define MAXHEIGHT		1200 /* FS: Was 1024 */
+/* be careful if you ever want to change MAXWIDTH: 12.20 fixed
+ * point math used in R_ScanEdges() overflows at width 2048 !! */
+#define MAXWIDTH		2040 /* FS: Was 1280 */
 #define MAXDIMENSION	((MAXHEIGHT > MAXWIDTH) ? MAXHEIGHT : MAXWIDTH)
 
 #define SIN_BUFFER_SIZE	(MAXDIMENSION+CYCLE)
