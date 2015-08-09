@@ -76,19 +76,21 @@ void SV_Protocol_f (void)
 void SV_DumpEntities_f (void)
 {
 	FILE	*f;
+	char	filename[MAX_OSPATH];
 
-	f = fopen (va("%s/maps/%s.ent",com_gamedir, sv.name), "w");
+	Com_sprintf(filename, sizeof(filename), "%s/maps/%s.ent", com_gamedir, sv.name);
+
+	f = fopen (filename, "w");
 
 	if (!f)
 	{
-		Con_Warning ("Couldn't write %s/maps/%s.ent.\n", com_gamedir, sv.name);
+		Con_Warning ("Couldn't open %s for writing.\n", filename);
+		return;
 	}
-	else
-	{
-		Con_Printf ("Dumping Entities to %s/maps/%s.ent.\n", com_gamedir, sv.name);
-		fputs(sv.worldmodel->entities, f);
-		fclose(f);
-	}
+
+	Con_Printf ("Dumping Entities to %s.\n", filename);
+	fputs(sv.worldmodel->entities, f);
+	fclose(f);
 }
 
 /*

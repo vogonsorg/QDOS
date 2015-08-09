@@ -215,24 +215,23 @@ static void MaxPlayers_f (void)
 		Cbuf_AddText ("listen 1\n");
 
 	svs.maxclients = n;
+// 1999-07-30 coop and deathmatch flag fix by Frog/Maddes start
 	if (n == 1)
-	{					// 1999-07-30 coop and deathmatch flag fix by Frog/Maddes
+	{
 		Cvar_Set ("deathmatch", "0");
-// 1999-07-30 coop and deathmatch flag fix by Frog/Maddes  start
 		Cvar_Set ("coop", "0");
 	}
-// 1999-07-30 coop and deathmatch flag fix by Frog/Maddes  end
 	else
-// 1999-07-30 coop and deathmatch flag fix by Frog/Maddes  start
 	{
 		if (coop.value)
 			Cvar_Set ("deathmatch", "0");
 		else
-// 1999-07-30 coop and deathmatch flag fix by Frog/Maddes  end
 			Cvar_Set ("deathmatch", "1");
-	}					// 1999-07-30 coop and deathmatch flag fix by Frog/Maddes
+	}
+// 1999-07-30 coop and deathmatch flag fix by Frog/Maddes  end
 }
 
+/* FS: FIXME: This is kind of stupid, this should be a CVAR and now that we have ->modified it should be somewhat painless to do so */
 static void NET_Port_f (void)
 {
 	int 	n;

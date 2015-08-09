@@ -912,6 +912,7 @@ void Host_Connect_f (void)
 {
 	char	name[MAX_QPATH];
 	char	port[6]; /* FS: Port parsing */
+	char	portString[32];
 
 	cls.demonum = -1;		// stop demo loop in case this fails
 
@@ -942,9 +943,10 @@ void Host_Connect_f (void)
 	CL_EstablishConnection (name);
 	Host_Reconnect_f ();
 
-	Cbuf_AddText(va("port \"%i\"\n", DEFAULTnet_hostport)); /* FS: Set port back to default after the connect sequence */
+	 /* FS: Set port back to default after the connect sequence */
+	Com_sprintf(portString, sizeof(portString), "port \"%i\"\n", DEFAULTnet_hostport);
+	Cbuf_AddText(portString);
 }
-
 
 /*
 ===============================================================================
