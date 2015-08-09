@@ -518,7 +518,7 @@ void NET_Stats_f (void)
 	}
 }
 
-
+/* FS: TODO: Make all Test*_f commands work with sending the port as well, instead of having to set "port" via the console */
 static qboolean testInProgress = false;
 static int		testPollCount;
 static int		testDriver;
@@ -539,16 +539,13 @@ static void Test_Poll(void)
 	int		connectTime;
 	byte	playerNumber;
 
-	char map[64];
-	byte users, maxusers, recvByte;
-
 	net_landriverlevel = testDriver;
 
-	while ((len = dfunc.Read (testSocket, net_message.data, net_message.maxsize, &clientaddr)) > 0)
+	while (1)
 	{
-//		len = dfunc.Read (testSocket, net_message.data, net_message.maxsize, &clientaddr);
+		len = dfunc.Read (testSocket, net_message.data, net_message.maxsize, &clientaddr);
 		if (len < sizeof(int))
-			continue;
+			break;
 
 		net_message.cursize = len;
 
@@ -556,16 +553,14 @@ static void Test_Poll(void)
 		control = BigLong(*((int *)net_message.data));
 		MSG_ReadLong();
 		if (control == -1)
-			continue;
+			break;
 		if ((control & (~NETFLAG_LENGTH_MASK)) !=  NETFLAG_CTL)
-			continue;
+			break;
 		if ((control & NETFLAG_LENGTH_MASK) != len)
-			continue;
+			break;
 
-#if 0
 		if (MSG_ReadByte() != CCREP_PLAYER_INFO)
-			continue;
-//			Sys_Error("Unexpected repsonse to Player Info request\n");
+			Sys_Error("Unexpected repsonse to Player Info request\n");
 
 		playerNumber = MSG_ReadByte();
 		Q_strcpy(name, MSG_ReadString());
@@ -574,28 +569,8 @@ static void Test_Poll(void)
 		connectTime = MSG_ReadLong();
 		Q_strcpy(address, MSG_ReadString());
 
-		Con_Printf("[%uc]%s\n  frags:%3i  colors:%u %u  time:%u\n  %s\n", playerNumber, name, frags, colors >> 4, colors & 0x0f, connectTime / 60, address);
+		Con_Printf("[%u]%s\n  frags:%3i  colors:%u %u  time:%u\n  %s\n", playerNumber, name, frags, colors >> 4, colors & 0x0f, connectTime / 60, address);
 	}
-#else
-		recvByte = MSG_ReadByte();
-		if (recvByte != CCREP_SERVER_INFO)
-		{
-			Con_Printf("Got byte: %uc.  Expected %uc\n", recvByte, CCREP_SERVER_INFO);
-			continue;
-		}
-//			Sys_Error("Unexpected repsonse to Server Info request\n");
-
-		dfunc.GetAddrFromName(MSG_ReadString(), &clientaddr);
-
-		// add it
-		Q_strcpy(name, MSG_ReadString());
-		Q_strcpy(map, MSG_ReadString());
-		users = MSG_ReadByte();
-		maxusers = MSG_ReadByte();
-
-		Con_Printf("Name: %s. Map: %s. Players: %uc/%uc.\n", name, map, users, maxusers);
-	}
-#endif
 	testPollCount--;
 	if (testPollCount)
 	{
@@ -608,16 +583,12 @@ static void Test_Poll(void)
 	}
 }
 
-char queryString[12] = "\x80\x00\x00\x0C\x02\x51\x55\x41\x4b\x45\x00\x03"; /* FS: Raw data that's sent down for a "QUAKE" query string */
-
 static void Test_f (void)
 {
 	char	*host;
 	int		n;
-	int		x;
 	int		max = MAX_SCOREBOARD;
 	struct qsockaddr sendaddr;
-	FILE	*f;
 
 	if (testInProgress)
 		return;
@@ -661,36 +632,17 @@ JustDoIt:
 	testPollCount = 20;
 	testDriver = net_landriverlevel;
 
-	f = fopen("testnet.txt", "wb");
 	for (n = 0; n < max; n++)
 	{
 		SZ_Clear(&net_message);
 		// save space for the header, filled in later
-#if 0
 		MSG_WriteLong(&net_message, 0);
 		MSG_WriteByte(&net_message, CCREQ_PLAYER_INFO);
 		MSG_WriteByte(&net_message, n);
 		*((int *)net_message.data) = BigLong(NETFLAG_CTL | 	(net_message.cursize & NETFLAG_LENGTH_MASK));
-#else
-/*		// save space for the header, filled in later
-		MSG_WriteLong(&net_message, 0);
-		MSG_WriteByte(&net_message, CCREQ_SERVER_INFO);
-		MSG_WriteString(&net_message, "QUAKE");
-		MSG_WriteByte(&net_message, NET_PROTOCOL_VERSION);
-		*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-*/
-		for (x = 0; x < 12; x++)
-		{
-			MSG_WriteByte(&net_message, queryString[x]);
-		}
-#endif
-		if((f) && (n == 0))
-			fwrite(net_message.data, net_message.cursize, 1, f);
 		dfunc.Write (testSocket, net_message.data, net_message.cursize, &sendaddr);
 	}
 	SZ_Clear(&net_message);
-	if(f)
-		fclose(f);
 	SchedulePollProcedure(&testPollProcedure, 0.1);
 }
 
@@ -817,6 +769,129 @@ JustDoIt:
 	SchedulePollProcedure(&test2PollProcedure, 0.05);
 }
 
+/* FS: Send a query packet out to get some basic stats.  Similiar to a \\status\\ packet in QW and Q2 */
+static qboolean test3InProgress = false;
+static int		test3Driver;
+static int		test3Socket;
+static const char		queryString[12] = "\x80\x00\x00\x0C\x02QUAKE\x00\x03"; /* FS: Raw data that's sent down for a "QUAKE" query string */
+
+static void Test3_Poll(void);
+PollProcedure	test3PollProcedure = {NULL, 0.0, Test3_Poll};
+
+static void Test3_Poll(void)
+{
+	struct qsockaddr clientaddr;
+	int		control;
+	int		len;
+	char	name[64];
+	char	map[64];
+	byte	users, maxusers, recvByte;
+
+	net_landriverlevel = test3Driver;
+	testPollCount = 0;
+
+	while (1)
+	{
+		len = dfunc.Read (test3Socket, net_message.data, net_message.maxsize, &clientaddr);
+		if (len < sizeof(int))
+			break;
+
+		net_message.cursize = len;
+
+		MSG_BeginReading ();
+		control = BigLong(*((int *)net_message.data));
+		MSG_ReadLong();
+		if (control == -1)
+			break;
+		if ((control & (~NETFLAG_LENGTH_MASK)) !=  NETFLAG_CTL)
+			break;
+		if ((control & NETFLAG_LENGTH_MASK) != len)
+			break;
+
+		recvByte = MSG_ReadByte();
+		if (recvByte != CCREP_SERVER_INFO)
+			Sys_Error("Unexpected repsonse to Server Info request.  Got byte %u.  Expected %u.\n", recvByte, CCREP_SERVER_INFO);
+
+		dfunc.GetAddrFromName(MSG_ReadString(), &clientaddr);
+
+		// add it
+		Q_strcpy(name, MSG_ReadString());
+		Q_strcpy(map, MSG_ReadString());
+		users = MSG_ReadByte();
+		maxusers = MSG_ReadByte();
+
+		Con_Printf("Hostname: %s.  Map: %s.  Players: %u/%u.\n", name, map, users, maxusers);
+	}
+
+	testPollCount--;
+	if (testPollCount)
+	{
+		SchedulePollProcedure(&test3PollProcedure, 0.05);
+	}
+	else
+	{
+		dfunc.CloseSocket(test3Socket);
+		test3InProgress = false;
+	}
+}
+
+static void Test3_f (void)
+{
+	char	*host;
+	int		n, x;
+	struct qsockaddr sendaddr;
+
+	if (test2InProgress)
+		return;
+
+	host = Cmd_Argv (1);
+
+	if (host && hostCacheCount)
+	{
+		for (n = 0; n < hostCacheCount; n++)
+			if (Q_strcasecmp (host, hostcache[n].name) == 0)
+			{
+				if (hostcache[n].driver != myDriverLevel)
+					continue;
+				net_landriverlevel = hostcache[n].ldriver;
+				Q_memcpy(&sendaddr, &hostcache[n].addr, sizeof(struct qsockaddr));
+				break;
+			}
+		if (n < hostCacheCount)
+			goto JustDoIt;
+	}
+
+	for (net_landriverlevel = 0; net_landriverlevel < net_numlandrivers; net_landriverlevel++)
+	{
+		if (!net_landrivers[net_landriverlevel].initialized)
+			continue;
+
+		// see if we can resolve the host name
+		if (dfunc.GetAddrFromName(host, &sendaddr) != -1)
+			break;
+	}
+	if (net_landriverlevel == net_numlandrivers)
+		return;
+
+JustDoIt:
+	test3Socket = dfunc.OpenSocket(0);
+	if (test3Socket == -1)
+		return;
+
+	test3InProgress = true;
+	test3Driver = net_landriverlevel;
+
+	SZ_Clear(&net_message);
+
+	for (x = 0; x < sizeof(queryString); x++) /* FS: Sent out all raw.  Was used to test sending out a raw string when writing the master server emulator and the gamespy recv stuff */
+	{
+		MSG_WriteByte(&net_message, queryString[x]);
+	}
+
+	dfunc.Write (test3Socket, net_message.data, net_message.cursize, &sendaddr);
+	SZ_Clear(&net_message);
+	SchedulePollProcedure(&test3PollProcedure, 0.05);
+}
 
 int Datagram_Init (void)
 {
@@ -843,6 +918,7 @@ int Datagram_Init (void)
 #endif
 	Cmd_AddCommand ("test", Test_f);
 	Cmd_AddCommand ("test2", Test2_f);
+	Cmd_AddCommand ("test3", Test3_f); /* FS: Send a query packet out to get some basic stats.  Similiar to a \\status\\ packet in QW and Q2 */
 
 	return 0;
 }
