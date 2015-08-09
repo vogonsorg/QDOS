@@ -33,6 +33,11 @@ Why code for DOS in 2012 you ask?  Pretty much the same reason anybody
 QDOS has many features, I can't remember each one that me or others have added
    but are some highlights:
 
+* BSP2 and 2PSB support. Code (with some slight readaptations) from QuakeSpasm.
+  Additonal help from sezero.  These maps may need things like:
+  r_maxedges and r_maxsurfs set to very high values.  Try setting both
+  to 25000 and restarting the map if you see disappearing objects as you
+  look around.
 * Ogg Vorbis support.  Put tracks in id1/music/trackXX.ogg format.
 * External *.ent file support, and entity dumping in-game.   
 * Fitzquake v666 Protocol support.  Thanks to Fitzquake.

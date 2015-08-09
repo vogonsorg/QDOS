@@ -3,9 +3,11 @@ Original Concept and WATTCP import coding by NeoZeed
 Coding by [HCI]Mara'akate
 
 Additional code from sezero, taniwha, spoike, LordHavoc, 
-   QuakeForge, FitzQuake, Quakespasm, Darkplaces and more.
+   QuakeForge, FitzQuake, QuakeSpasm, Darkplaces and more.
 ---------------------------------------------------------
 
+* BSP2 and 2PSB support.  Code (with some slight readaptions) from QuakeSpasm.
+  Additional help from sezero.
 * Scaleable particle sizes for SVGA resolutions.  Use sw_particle_size_override
   and friends to set more custom values.
 * OGG and WAV music support in format of /id1/music/trackXX
