@@ -303,7 +303,7 @@ void CL_SendConnectPacket (
 	cls.fteprotocolextensions  = (ftepext & CL_SupportedFTEExtensions());
 #endif // PROTOCOL_VERSION_FTE
 
-   t1 = Sys_DoubleTime ();
+	t1 = Sys_DoubleTime ();
 
 	if (!NET_StringToAdr (cls.servername->str, &adr))
 	{
@@ -330,6 +330,7 @@ void CL_SendConnectPacket (
 	Info_SetValueForStarKey (cls.userinfo, "*ip", NET_AdrToString(adr), MAX_INFO_STRING);
 
 	Con_Printf ("Connecting to %s...\n", cls.servername->str);
+
 	data = dstring_new();
 	dsprintf(data, "%c%c%c%cconnect %i %i %i \"%s\"\n",
                 255, 255, 255, 255,     PROTOCOL_VERSION, cls.qport, cls.challenge, cls.userinfo);
@@ -337,7 +338,7 @@ void CL_SendConnectPacket (
 	if (cls.fteprotocolextensions) 
 	{
 		char tmp[128];
-		sprintf(tmp, "0x%x 0x%x\n", PROTOCOL_VERSION_FTE, cls.fteprotocolextensions);
+		Com_sprintf(tmp, sizeof(tmp), "0x%x 0x%x\n", PROTOCOL_VERSION_FTE, cls.fteprotocolextensions);
 		Con_DPrintf(DEVELOPER_MSG_NET, "0x%x is fte protocol ver and 0x%x is fteprotocolextensions\n", PROTOCOL_VERSION_FTE, cls.fteprotocolextensions);
 		strcat(data->str, tmp);
 	}
@@ -652,38 +653,39 @@ void CL_Users_f (void)
 
 void CL_Color_f (void)
 {
-   // just for quake compatability...
-   int      top, bottom;
-   char  num[16];
+	// just for quake compatability...
+	int	top, bottom;
+	char	num[16];
 
-   if (Cmd_Argc() == 1)
-   {
-      Con_Printf ("\"color\" is \"%s %s\"\n",
-         Info_ValueForKey (cls.userinfo, "topcolor"),
-         Info_ValueForKey (cls.userinfo, "bottomcolor") );
-      Con_Printf ("color <0-13> [0-13]\n");
-      return;
-   }
+	if (Cmd_Argc() == 1)
+	{
+		Con_Printf ("\"color\" is \"%s %s\"\n",
+			Info_ValueForKey (cls.userinfo, "topcolor"),
+			Info_ValueForKey (cls.userinfo, "bottomcolor") );
+		Con_Printf ("color <0-13> [0-13]\n");
+		return;
+	}
 
-   if (Cmd_Argc() == 2)
-      top = bottom = atoi(Cmd_Argv(1));
-   else
-   {
-      top = atoi(Cmd_Argv(1));
-      bottom = atoi(Cmd_Argv(2));
-   }
+	if (Cmd_Argc() == 2)
+		top = bottom = atoi(Cmd_Argv(1));
+	else
+	{
+		top = atoi(Cmd_Argv(1));
+		bottom = atoi(Cmd_Argv(2));
+	}
    
-   top &= 15;
-   if (top > 13)
-      top = 13;
-   bottom &= 15;
-   if (bottom > 13)
-      bottom = 13;
+	top &= 15;
+	if (top > 13)
+		top = 13;
+
+	bottom &= 15;
+	if (bottom > 13)
+		bottom = 13;
    
-   sprintf (num, "%i", top);
-   Cvar_Set ("topcolor", num);
-   sprintf (num, "%i", bottom);
-   Cvar_Set ("bottomcolor", num);
+	Com_sprintf (num, sizeof(num), "%i", top);
+	Cvar_Set ("topcolor", num);
+	Com_sprintf (num, sizeof(num), "%i", bottom);
+	Cvar_Set ("bottomcolor", num);
 }
 
 /*
@@ -870,7 +872,7 @@ void CL_NextDemo (void)
 		}
 	}
 
-	sprintf (str,"playdemo %s\n", cls.demos[cls.demonum]);
+	Com_sprintf (str, sizeof(str), "playdemo %s\n", cls.demos[cls.demonum]);
 	Cbuf_InsertText (str);
 	cls.demonum++;
 }

@@ -1206,7 +1206,7 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 		{       // duplicate the basic information
 			char    name[10];
 
-			sprintf (name, "*%i", i+1);
+			Com_sprintf (name, sizeof(name), "*%i", i+1);
 			loadmodel = Mod_FindName (name);
 			*loadmodel = *mod;
 			strcpy (loadmodel->name, name);
@@ -1439,19 +1439,19 @@ Mod_LoadAliasModel
 */
 void Mod_LoadAliasModel (model_t *mod, void *buffer)
 {
-	int                                     i;
-	mdl_t                           *pmodel, *pinmodel;
-	stvert_t                        *pstverts, *pinstverts;
-	aliashdr_t                      *pheader;
-	mtriangle_t                     *ptri;
-	dtriangle_t                     *pintriangles;
-	int                                     version, numframes, numskins;
-	int                                     size;
-	daliasframetype_t       *pframetype;
-	daliasskintype_t        *pskintype;
-	maliasskindesc_t        *pskindesc;
-	int                                     skinsize;
-	int                                     start, end, total;
+	int	i;
+	mdl_t	*pmodel, *pinmodel;
+	stvert_t	*pstverts, *pinstverts;
+	aliashdr_t	*pheader;
+	mtriangle_t	*ptri;
+	dtriangle_t	*pintriangles;
+	int	version, numframes, numskins;
+	int	size;
+	daliasframetype_t	*pframetype;
+	daliasskintype_t	*pskintype;
+	maliasskindesc_t	*pskindesc;
+	int	skinsize;
+	int	start, end, total;
 	
 	if (!strcmp(loadmodel->name, "progs/player.mdl") ||
 		!strcmp(loadmodel->name, "progs/eyes.mdl")) {

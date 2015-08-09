@@ -1546,12 +1546,12 @@ The filename will be prefixed by the current game directory
 */
 void COM_WriteFile (char *filename, void *data, int len)
 {
-	int             handle;
-	char    name[MAX_OSPATH];
+	int		handle;
+	char	name[MAX_OSPATH];
 
 	Sys_mkdir (com_gamedir); //johnfitz -- if we've switched to a nonexistant gamedir, create it now so we don't crash
 
-	sprintf (name, "%s/%s", com_gamedir, filename);
+	Com_sprintf (name, sizeof(name), "%s/%s", com_gamedir, filename);
 
 	handle = Sys_FileOpenWrite (name);
 	if (handle == -1)
@@ -1689,7 +1689,7 @@ int COM_FindFile (char *filename, int *handle, FILE **file)
 					continue;
 			}
 			
-			sprintf (netpath, "%s/%s",search->filename, filename);
+			Com_sprintf (netpath, sizeof(netpath), "%s/%s",search->filename, filename);
 			
 			findtime = Sys_FileTime (netpath);
 			if (findtime == -1)
@@ -1702,11 +1702,11 @@ int COM_FindFile (char *filename, int *handle, FILE **file)
 			{	
 #if defined(_WIN32)
 				if ((strlen(netpath) < 2) || (netpath[1] != ':'))
-					sprintf (cachepath,"%s%s", com_cachedir, netpath);
+					Com_sprintf (cachepath, sizeof(cachepath), "%s%s", com_cachedir, netpath);
 				else
-					sprintf (cachepath,"%s%s", com_cachedir, netpath+2);
+					Com_sprintf (cachepath, sizeof(cachepath), "%s%s", com_cachedir, netpath+2);
 #else
-				sprintf (cachepath,"%s%s", com_cachedir, netpath);
+				Com_sprintf (cachepath, sizeof(cachepath), "%s%s", com_cachedir, netpath);
 #endif
 
 				cachetime = Sys_FileTime (cachepath);
@@ -1956,10 +1956,10 @@ COM_AddGameDirectory -- johnfitz -- modified based on topaz's tutorial
 */
 void COM_AddGameDirectory (char *dir)
 {
-	int                             i;
-	searchpath_t    *search;
-	pack_t                  *pak;
-	char                    pakfile[MAX_OSPATH];
+	int	i;
+	searchpath_t	*search;
+	pack_t	*pak;
+	char	pakfile[MAX_OSPATH];
 
 	strcpy (com_gamedir, dir);
 
@@ -1974,7 +1974,7 @@ void COM_AddGameDirectory (char *dir)
 //
 	for (i=0 ; ; i++)
 	{
-		sprintf (pakfile, "%s/pak%i.pak", dir, i);
+		Com_sprintf (pakfile, sizeof(pakfile), "%s/pak%i.pak", dir, i);
 		pak = COM_LoadPackFile (pakfile);
 		if (!pak)
 			break;

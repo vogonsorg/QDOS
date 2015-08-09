@@ -868,7 +868,7 @@ void CL_ParseServerData (void)
 	//ZOID--run the autoexec.cfg in the gamedir
 	//if it exists
 	if (cflag) {
-		sprintf(fn, "%s/%s", com_gamedir, "config.cfg");
+		Com_sprintf(fn, sizeof(fn), "%s/%s", com_gamedir, "config.cfg");
 		if ((f = fopen(fn, "r")) != NULL) {
 			fclose(f);
 			Cbuf_AddText ("cl_warncmd 0\n");
@@ -1846,8 +1846,7 @@ void CL_PlayBackgroundTrack (int track)
 
 	/* If an external music file exists play it, otherwise fall back to CD audio */
 	have_extmusic = 0;
-//	Com_sprintf (name, sizeof(name), "music/track%02i.", CL_MissionPackCDTrack(track));
-	sprintf(name, "music/track%02i.", track);
+	Com_sprintf (name, sizeof(name), "music/track%02i.", track);
 
 	p = name + strlen(name);
 	strcpy (p, "wav");

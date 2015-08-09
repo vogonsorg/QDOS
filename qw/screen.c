@@ -459,60 +459,62 @@ void SCR_DrawUptime (void) /* FS: Connection time */
 {
 	char	str[80];
 	int		minutes, seconds, tens, units;
-        int x, y;
+	int		x, y;
 
-        if (!show_uptime.value)
-                return;
+	if (!show_uptime.value)
+		return;
 
 	// time
-        if (show_uptime.value == 1) /* FS: Map time or total time playing quake time */
-                minutes = cl.time / 60;
-        else
-                minutes = realtime / 60;
-        if (show_uptime.value == 1)
-                seconds = cl.time - 60*minutes;
-        else
-                seconds = realtime - 60*minutes;
+	if (show_uptime.value == 1) /* FS: Map time or total time playing quake time */
+		minutes = cl.time / 60;
+	else
+		minutes = realtime / 60;
+
+	if (show_uptime.value == 1)
+		seconds = cl.time - 60*minutes;
+	else
+		seconds = realtime - 60*minutes;
+
 	tens = seconds / 10;
 	units = seconds - 10*tens;
-        sprintf (str,"%3i:%i%i", minutes, tens, units);
-        x = vid.width - strlen(str) * 8 - 44; /* FS: Has to be out of the way of the HUD... */
-        y = vid.height - sb_lines - 24;
-        Draw_String(x, y, str);
+
+	Com_sprintf (str, sizeof(str), "%3i:%i%i", minutes, tens, units);
+	x = vid.width - strlen(str) * 8 - 44; /* FS: Has to be out of the way of the HUD... */
+	y = vid.height - sb_lines - 24;
+	Draw_String(x, y, str);
 }
 
 void SCR_DrawTime (void) /* FS: show_time */
 {
-        int x, y;
-        struct tm       *local = NULL;
-        time_t          utc = 0;
-        const char *timefmt = NULL;
-        char            st[80];
+	int x, y;
+	struct tm	*local = NULL;
+	time_t	utc = 0;
+	const char	*timefmt = NULL;
+	char	st[80];
 
-        if (!show_time.value)
-                return;
+	if (!show_time.value)
+		return;
 
-        utc = time (NULL);
-        local = localtime (&utc);
+	utc = time (NULL);
+	local = localtime (&utc);
 
 #ifdef _MSC_VER
-		if (show_time.value == 1)
-			timefmt = "%H:%M:%S %p";
-		else if (show_time.value > 1)
-			timefmt = "%I:%M:%S %p";
+	if (show_time.value == 1)
+		timefmt = "%H:%M:%S %p";
+	else if (show_time.value > 1)
+		timefmt = "%I:%M:%S %p";
 #else
-        if (show_time.value == 1)
-                timefmt = "%k:%M:%S %p";
-        else if (show_time.value > 1)
-                timefmt = "%l:%M:%S %p";
+	if (show_time.value == 1)
+		timefmt = "%k:%M:%S %p";
+	else if (show_time.value > 1)
+		timefmt = "%l:%M:%S %p";
 #endif
-        strftime (st, sizeof (st), timefmt, local);
+	strftime (st, sizeof (st), timefmt, local);
 
-        x = vid.width - strlen(st) * 8 - 44; /* FS: Has to be out of the way of the HUD... */
-        y = vid.height - sb_lines - 16;
-        Draw_String(x, y, st);
+	x = vid.width - strlen(st) * 8 - 44; /* FS: Has to be out of the way of the HUD... */
+	y = vid.height - sb_lines - 16;
+	Draw_String(x, y, st);
 }
-
 
 void SCR_DrawFPS (void)
 {
@@ -535,13 +537,14 @@ void SCR_DrawFPS (void)
 		lastframetime = t;
 	}
 
-	sprintf(st, "%3.1f FPS", lastfps);
+	Com_sprintf(st, sizeof(st), "%3.1f FPS", lastfps);
      
 	x = vid.width - strlen(st) * 8 - 44; /* FS: Has to be out of the way of the HUD... */
 	y = vid.height - sb_lines - 8;
 	Draw_String(x, y, st);
 }
 
+/* FS: This is old, probably stupid code... I'm assuming I could just check my last message received to Sys_DoubleTime */
 void SCR_DrawPing (void)
 {
 	player_info_t	*player;
@@ -576,7 +579,7 @@ void SCR_DrawPing (void)
 	if (ping < 0 || ping > 999)
 		ping = 999;
 
-	sprintf(st, "%i", ping);
+	Com_sprintf(st, sizeof(st), "%i", ping);
      
     x = vid.width - strlen(st) * 8 - 44; /* FS: Has to be out of the way of the HUD... */
 	y = vid.height - sb_lines - 32;
@@ -779,7 +782,7 @@ void SCR_ScreenShot_f (void)
 	{ 
 		pcxname[5] = i/10 + '0'; 
 		pcxname[6] = i%10 + '0'; 
-		sprintf (checkname, "%s/%s", com_gamedir, pcxname);
+		Com_sprintf (checkname, sizeof(checkname), "%s/%s", com_gamedir, pcxname);
 		if (Sys_FileTime(checkname) == -1)
 			break;	// file doesn't exist
 	} 

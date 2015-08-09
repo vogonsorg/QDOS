@@ -1390,7 +1390,7 @@ void COM_WriteFile (char *filename, void *data, int len)
 	FILE	*f;
 	char	name[MAX_OSPATH];
 	
-	sprintf (name, "%s/%s", com_gamedir, filename);
+	Com_sprintf (name, sizeof(name), "%s/%s", com_gamedir, filename);
 	
 	f = fopen (name, "wb");
 	if (!f) {
@@ -1627,7 +1627,7 @@ int COM_FindFile (char *filename, int *handle, FILE **file)
 					continue;
 			}
 			
-			sprintf (netpath, "%s/%s",search->filename, filename);
+			Com_sprintf (netpath, sizeof(netpath), "%s/%s",search->filename, filename);
 			
 			findtime = Sys_FileTime (netpath);
 			if (findtime == -1)
@@ -1640,11 +1640,11 @@ int COM_FindFile (char *filename, int *handle, FILE **file)
 			{	
 #if defined(_WIN32)
 				if ((strlen(netpath) < 2) || (netpath[1] != ':'))
-					sprintf (cachepath,"%s%s", com_cachedir, netpath);
+					Com_sprintf (cachepath, sizeof(cachepath), "%s%s", com_cachedir, netpath);
 				else
-					sprintf (cachepath,"%s%s", com_cachedir, netpath+2);
+					Com_sprintf (cachepath, sizeof(cachepath), "%s%s", com_cachedir, netpath+2);
 #else
-				sprintf (cachepath,"%s%s", com_cachedir, netpath);
+				Com_sprintf (cachepath, sizeof(cachepath), "%s%s", com_cachedir, netpath);
 #endif
 
 				cachetime = Sys_FileTime (cachepath);
@@ -1749,18 +1749,17 @@ int COM_FOpenFile (char *filename, FILE **file)
 					continue;
 			}
 			
-                        dsprintf (netpath, "%s/%s",search->filename, filename);
+			dsprintf (netpath, "%s/%s",search->filename, filename);
 			
-                        findtime = Sys_FileTime (netpath->str);
+			findtime = Sys_FileTime (netpath->str);
 			if (findtime == -1)
 				continue;
 				
-                        Sys_Printf ("FindFile: %s\n",netpath->str);
+			Sys_Printf ("FindFile: %s\n",netpath->str);
 
-                        *file = fopen (netpath->str, "rb");
-                        return COM_filelength (*file);
+			*file = fopen (netpath->str, "rb");
+			return COM_filelength (*file);
 		}
-		
 	}
 	
 	Sys_Printf ("FindFile: can't find %s\n", filename);
@@ -2005,7 +2004,7 @@ void COM_AddGameDirectory (char *dir)
 //
 	for (i=0 ; ; i++)
 	{
-		sprintf (pakfile, "%s/pak%i.pak", dir, i);
+		Com_sprintf (pakfile, sizeof(pakfile), "%s/pak%i.pak", dir, i);
 		pak = COM_LoadPackFile (pakfile);
 		if (!pak)
 			break;
@@ -2066,7 +2065,7 @@ void COM_Gamedir (char *dir)
 	if (!strcmp(dir,"id1") || !strcmp(dir, "qw"))
 		return;
 
-	sprintf (com_gamedir, "%s/%s", com_basedir, dir);
+	Com_sprintf (com_gamedir, sizeof(com_gamedir), "%s/%s", com_basedir, dir);
 
 	//
 	// add the directory to the search path
@@ -2081,7 +2080,7 @@ void COM_Gamedir (char *dir)
 	//
 	for (i=0 ; ; i++)
 	{
-		sprintf (pakfile, "%s/pak%i.pak", com_gamedir, i);
+		Com_sprintf (pakfile, sizeof(pakfile), "%s/pak%i.pak", com_gamedir, i);
 		pak = COM_LoadPackFile (pakfile);
 		if (!pak)
 			break;

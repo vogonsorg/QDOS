@@ -410,7 +410,7 @@ void CL_Record_f (void)
 	if (cls.demorecording)
 		CL_Stop_f();
   
-	sprintf (name, "%s/%s", com_gamedir, Cmd_Argv(1));
+	Com_sprintf (name, sizeof(name), "%s/%s", com_gamedir, Cmd_Argv(1));
 
 //
 // open the demo file
@@ -682,7 +682,7 @@ void CL_ReRecord_f (void)
 	if (cls.demorecording)
 		CL_Stop_f();
   
-	sprintf (name, "%s/%s", com_gamedir, Cmd_Argv(1));
+	Com_sprintf (name, sizeof(name), "%s/%s", com_gamedir, Cmd_Argv(1));
 
 //
 // open the demo file

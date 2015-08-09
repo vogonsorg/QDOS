@@ -749,7 +749,7 @@ void Serial_SearchForHosts (qboolean xmit)
 	if (TTY_IsModem(p->tty))
 		return;
 
-	sprintf(hostcache[hostCacheCount].name, "COM%u", n+1);
+	Com_sprintf(hostcache[hostCacheCount].name, sizeof(hostcache[hostCacheCount].name), "COM%u", n+1);
 	Q_strcpy(hostcache[hostCacheCount].map, "");
 	hostcache[hostCacheCount].users = 0;
 	hostcache[hostCacheCount].maxusers = 0;
@@ -933,7 +933,7 @@ static qsocket_t *_Serial_CheckNewConnections (SerialLine *p)
 	p->connected = true;
 	p->connecting = false;
 	p->sock->lastMessageTime = net_time;
-	sprintf(p->sock->address, "COM%u", (int)((p - serialLine) + 1));
+	Com_sprintf(p->sock->address, sizeof(p->sock->address), "COM%u", (int)((p - serialLine) + 1));
 
 	return p->sock;
 }

@@ -423,7 +423,7 @@ void SCR_DrawUptime (void) /* FS: Connection time */
 	
 	tens = seconds / 10;
 	units = seconds - 10*tens;
-	sprintf (str,"%3i:%i%i", minutes, tens, units);
+	Com_sprintf (str, sizeof(str), "%3i:%i%i", minutes, tens, units);
 	x = vid.width - strlen(str) * 8 - 16;
 	y = vid.height - sb_lines - 24;
 	Draw_String(x, y, str);
@@ -693,7 +693,7 @@ void SCR_ScreenShot_f (void)
 	{ 
 		pcxname[5] = i/10 + '0'; 
 		pcxname[6] = i%10 + '0'; 
-		sprintf (checkname, "%s/%s", com_gamedir, pcxname);
+		Com_sprintf (checkname, sizeof(checkname), "%s/%s", com_gamedir, pcxname);
 		if (Sys_FileTime(checkname) == -1)
 			break;	// file doesn't exist
 	} 

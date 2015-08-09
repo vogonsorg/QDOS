@@ -193,7 +193,7 @@ void Host_Game_f (void)
 			//Load the paks if any are found:
 			for (i = 0; ; i++)
 			{
-				sprintf (pakfile, "%s/pak%i.pak", com_gamedir, i);
+				Com_sprintf (pakfile, sizeof(pakfile), "%s/pak%i.pak", com_gamedir, i);
 				pak = COM_LoadPackFile (pakfile);
 				if (!pak)
 				break;
@@ -273,13 +273,13 @@ void ExtraMaps_Init (void) //TODO: move win32 specific stuff to sys_win.c
 	int             i;
 
 	//we don't want to list the maps in id1 pakfiles, becuase these are not "add-on" levels
-	sprintf (ignorepakdir, "/%s/", GAMENAME);
+	Com_sprintf (ignorepakdir, sizeof(ignorepakdir), "/%s/", GAMENAME);
 
 	for (search = com_searchpaths ; search ; search = search->next)
 	{
 		if (*search->filename) //directory
 		{
-			sprintf (filestring,"%s/maps/*.bsp",search->filename);
+			Com_sprintf (filestring, sizeof(filestring), "%s/maps/*.bsp", search->filename);
 			Find = FindFirstFile(filestring, &FindFileData);
 			if (Find == INVALID_HANDLE_VALUE)
 				continue;
@@ -393,7 +393,7 @@ void Modlist_Init (void) //TODO: move win32 specific stuff to sys_win.c
 	char			filestring[MAX_OSPATH], childstring[MAX_OSPATH];
 	int				temp;
 
-	sprintf (filestring,"%s/*", host_parms.basedir);
+	Com_sprintf (filestring, sizeof(filestring), "%s/*", host_parms.basedir);
 	Find = FindFirstFile(filestring, &FindFileData);
 	if (Find == INVALID_HANDLE_VALUE)
 	{
@@ -403,10 +403,10 @@ void Modlist_Init (void) //TODO: move win32 specific stuff to sys_win.c
 
 	do
 	{
-		sprintf (childstring,"%s/%s/progs.dat", host_parms.basedir, FindFileData.cFileName);
+		Com_sprintf (childstring, sizeof(childstring), "%s/%s/progs.dat", host_parms.basedir, FindFileData.cFileName);
 		FindProgs = FindFirstFile(childstring, &FindChildData);
 
-		sprintf (childstring,"%s/%s/*.pak", host_parms.basedir, FindFileData.cFileName);
+		Com_sprintf (childstring, sizeof(childstring), "%s/%s/*.pak", host_parms.basedir, FindFileData.cFileName);
 		FindPak = FindFirstFile(childstring, &FindChildData);
 
 		if (FindProgs != INVALID_HANDLE_VALUE || FindPak != INVALID_HANDLE_VALUE)
@@ -785,7 +785,7 @@ void Host_Map_f (void)
 		return;
 
 	/* FS: Check for bad map names before we start to spawn the server */
-	sprintf (level, "maps/%s.bsp", Cmd_Argv(1));
+	Com_sprintf (level, sizeof(level), "maps/%s.bsp", Cmd_Argv(1));
 
 	if (COM_OpenFile (level, &i) == -1)
 	{
@@ -856,7 +856,7 @@ void Host_Changelevel_f (void)
 	}
 
 	//johnfitz -- check for client having map before anything else
-	sprintf (level, "maps/%s.bsp", Cmd_Argv(1));
+	Com_sprintf (level, sizeof(level), "maps/%s.bsp", Cmd_Argv(1));
 	if (COM_OpenFile (level, &i) == -1)
 		Host_Error ("cannot find map %s", level);
 	//johnfitz
@@ -1035,7 +1035,7 @@ void Host_Savegame_f (void)
 		}
 	}
 
-	sprintf (name, "%s/%s", com_gamedir, Cmd_Argv(1));
+	Com_sprintf (name, sizeof(name), "%s/%s", com_gamedir, Cmd_Argv(1));
 	COM_DefaultExtension (name, ".sav");
 	
 	Con_Printf ("Saving game to %s...\n", name);
@@ -1106,7 +1106,7 @@ void Host_Loadgame_f (void)
 
 	cls.demonum = -1;		// stop demo loop in case this fails
 
-	sprintf (name, "%s/%s", com_gamedir, Cmd_Argv(1));
+	Com_sprintf (name, sizeof(name), "%s/%s", com_gamedir, Cmd_Argv(1));
 	COM_DefaultExtension (name, ".sav");
 	
 // we can't call SCR_BeginLoadingPlaque, because too much stack space has

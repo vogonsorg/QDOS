@@ -254,7 +254,7 @@ void Con_Init (void)
 	{
 		if (strlen (com_gamedir) < (MAXGAMEDIRLEN - strlen (t2)))
 		{
-			sprintf (temp, "%s%s", com_gamedir, t2);
+			Com_sprintf (temp, sizeof(temp), "%s%s", com_gamedir, t2);
 			unlink (temp);
 		}
 	}

@@ -654,7 +654,7 @@ void VID_MenuDraw (void)
 // line cursor
 	if (vid_testingmode)
 	{
-		sprintf (temp, "TESTING %s",
+		Com_sprintf (temp, sizeof(temp), "TESTING %s",
 				modedescs[vid_line].desc);
 		M_Print (13*8, 36 + MAX_COLUMN_SIZE * 8 + 8*4, temp);
 		M_Print (9*8, 36 + MAX_COLUMN_SIZE * 8 + 8*6,
@@ -667,13 +667,13 @@ void VID_MenuDraw (void)
 		M_Print (6*8, 36 + MAX_COLUMN_SIZE * 8 + 8*3,
 				"T to test mode for 5 seconds");
 		ptr = VID_GetModeDescription (vid_modenum);
-		sprintf (temp, "D to make %s the default", ptr);
+		Com_sprintf (temp, sizeof(temp), "D to make %s the default", ptr);
 		M_Print (6*8, 36 + MAX_COLUMN_SIZE * 8 + 8*5, temp);
 		ptr = VID_GetModeDescription ((int)_vid_default_mode.value);
 
 		if (ptr)
 		{
-			sprintf (temp, "Current default is %s", ptr);
+			Com_sprintf (temp, sizeof(temp), "Current default is %s", ptr);
 			M_Print (7*8, 36 + MAX_COLUMN_SIZE * 8 + 8*6, temp);
 		}
 

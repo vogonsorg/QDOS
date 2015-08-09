@@ -657,17 +657,17 @@ void Draw_ConsoleBackground (int lines)
 // hack the version number directly into the pic
 	if (cls.download || cls.gamespyupdate) /* FS: Added gamespy progress bar */
 	{
-		sprintf (ver, "%4.2f", VERSION);
+		Com_sprintf (ver, sizeof(ver), "%4.2f", VERSION);
 		dest = conback->data + 320 + 320*186 - 11 - 8*strlen(ver);
 	}
 	else
 	{
 #if defined(__linux__)
-		sprintf (ver, "Linux (%4.2f) QuakeWorld %4.2f", LINUX_VERSION, VERSION);
+		Com_sprintf (ver, sizeof(ver), "Linux (%4.2f) QuakeWorld %4.2f", LINUX_VERSION, VERSION);
 #elif defined (__DJGPP__) /* FS: Display QWDOS if we can */
-		sprintf (ver, "QuakeWorld DOS %4.2f", VERSION);
+		Com_sprintf (ver, sizeof(ver), "QuakeWorld DOS %4.2f", VERSION);
 #else
-		sprintf (ver, "QuakeWorld %4.2f", VERSION);
+		Com_sprintf (ver, sizeof(ver), "QuakeWorld %4.2f", VERSION);
 #endif
 		dest = conback->data + 320 - (strlen(ver)*8 + 11) + 320*186;
 	}

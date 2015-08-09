@@ -230,7 +230,7 @@ void CL_Record_f (void)
 	else
 		track = -1;	
 
-	sprintf (name, "%s/%s", com_gamedir, Cmd_Argv(1));
+	Com_sprintf (name, sizeof(name), "%s/%s", com_gamedir, Cmd_Argv(1));
 	
 //
 // start the map up
