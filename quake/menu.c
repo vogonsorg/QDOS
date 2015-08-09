@@ -1328,14 +1328,6 @@ void M_AdjustSliders (int dir)
 	case 11:	// lookstrafe
 		Cvar_SetValue ("lookstrafe", !lookstrafe.value);
 		break;
-	case 666:
-		scr_fov.value += dir * 5;
-		if (scr_fov.value < 0)
-			scr_fov.value = 0;
-		if (scr_fov.value > 170)
-			scr_fov.value = 170;
-		Cvar_SetValue ("fov", scr_fov.value);
-		break;
 	}
 }
 
@@ -1482,23 +1474,6 @@ void M_Options_Key (int k)
 	case K_RIGHTARROW:
 		M_AdjustSliders (1);
 		break;
-	}
-
-	/* FS: Needed to readjust and that Use Mouse shit was getting in the way. */
-	if ( (options_cursor == 14) && (vid_menudrawfn == NULL) )
-	{
-		if (k == K_UPARROW)
-			options_cursor = 13;
-		else
-			options_cursor = 0;
-	}
-
-	if (options_cursor == 14) /* FS: FIXME.  I don't know what I was doing? */
-	{
-		if (k == K_UPARROW)
-			options_cursor = 13;
-		else
-			options_cursor = 0;
 	}
 }
 
