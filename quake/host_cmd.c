@@ -911,7 +911,7 @@ User command to connect to server
 void Host_Connect_f (void)
 {
 	char	name[MAX_QPATH];
-	int     defaultport = 26000; /* FS: Compiler warning */
+	char	port[6]; /* FS: Port parsing */
 
 	cls.demonum = -1;		// stop demo loop in case this fails
 
@@ -921,30 +921,28 @@ void Host_Connect_f (void)
 		CL_Disconnect ();
 	}
 
-	/* FS: FIXME be safer */
-	strcpy (name, Cmd_Argv(3)); /* FS: Port parsing */
-	Con_DPrintf(DEVELOPER_MSG_NET, "Port: %s\n", name);
-	Con_DPrintf(DEVELOPER_MSG_NET, "Defaultport: %i\n", defaultport);
+	DG_strlcpy(port, Cmd_Argv(3), sizeof(port)); /* FS: Port parsing */
+
+	Con_DPrintf(DEVELOPER_MSG_NET, "Port: %s\n", port);
 	Con_DPrintf(DEVELOPER_MSG_NET, "Net_hostport: %i\n", net_hostport);
 	Con_DPrintf(DEVELOPER_MSG_NET, "DefaultNet: %i\n", DEFAULTnet_hostport);
 
-	if(!strcmp(name, ""))
+	if(port[0] == 0)
 	{
-		Con_DPrintf(DEVELOPER_MSG_NET, "No port argv passed.  Defaulting %i.\n", DEFAULTnet_hostport); /* FS */
+		Con_DPrintf(DEVELOPER_MSG_NET, "No port argv passed.  Defaulting to %i.\n", DEFAULTnet_hostport); /* FS */
 		net_hostport = DEFAULTnet_hostport;        
 	}
 	else
 	{
-		net_hostport = Q_atoi(name);
+		net_hostport = Q_atoi(port);
 	}
-	defaultport = net_hostport;
 
-	strcpy (name, Cmd_Argv(1));
-	Con_DPrintf(DEVELOPER_MSG_NET, "Server: %s\n", name); /* FS */
+	DG_strlcpy(name, Cmd_Argv(1), sizeof(name));
 
 	CL_EstablishConnection (name);
 	Host_Reconnect_f ();
-	Cbuf_AddText(va("port \"%i\"\n", DEFAULTnet_hostport));
+
+	Cbuf_AddText(va("port \"%i\"\n", DEFAULTnet_hostport)); /* FS: Set port back to default after the connect sequence */
 }
 
 

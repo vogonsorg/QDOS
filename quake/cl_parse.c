@@ -1028,10 +1028,10 @@ void CL_ParseServerMessage (void)
 				fversion = strchr(fversion, ':');
 				if (fversion && (!strcmp(fversion, ": f_version\n") || !strcmp(fversion, ": q_version\n")) )
 				{
-					dstring_t *fversionStr = dstring_new();
-					Com_sprintf(fversionStr, "say Quake DOS with WATTCP v%4.2f.\n", VERSION);
-					Cbuf_AddText (fversionStr->str);
-					dstring_delete(fversionStr);
+					char fversionStr[1400];
+
+					Com_sprintf(fversionStr, sizeof(fversionStr), "say Quake DOS with WATTCP v%4.2f.\n", VERSION);
+					Cbuf_AddText (fversionStr);
 				}
 				break;
 			
@@ -1305,8 +1305,7 @@ void CL_PlayBackgroundTrack (int track)
 
 	/* If an external music file exists play it, otherwise fall back to CD audio */
 	have_extmusic = 0;
-//	Com_sprintf (name, sizeof(name), "music/track%02i.", CL_MissionPackCDTrack(track));
-	sprintf(name, "music/track%02i.", track);
+	Com_sprintf (name, sizeof(name), "music/track%02i.", track);
 
 	p = name + strlen(name);
 	strcpy (p, "wav");

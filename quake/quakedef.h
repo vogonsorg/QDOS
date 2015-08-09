@@ -336,7 +336,6 @@ extern int	current_skill;          // skill level for currently loaded level (in
 extern qboolean	sDedicated;
 
 extern int	minimum_memory;
-extern int	warpspasm; /* FS: For Warpspasm Music Hack */
 
 //
 // chase

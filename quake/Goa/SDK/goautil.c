@@ -347,8 +347,7 @@ void packet_send(struct sockaddr *addr, char *buffer)
 	if (strlen(buffer) == 0)
 		return; //dont need to send an empty one!
 	packetnumber++; //packet numbers start at 1
-	sprintf(keyvalue,"\\queryid\\%d.%d",queryid, packetnumber);
-//	Com_sprintf(keyvalue,sizeof(keyvalue),"\\queryid\\%d.%d",queryid, packetnumber);
+	Com_sprintf(keyvalue,sizeof(keyvalue),"\\queryid\\%d.%d",queryid, packetnumber);
 	strcat(buffer,keyvalue);
 	sendto(querysock, buffer, strlen(buffer), 0, addr, sizeof(struct sockaddr));
 	buffer[0]='\0';
@@ -446,8 +445,7 @@ void send_echo(struct sockaddr *sender, char *outbuf,char *echostr)
 
 	if (strlen(echostr) > MAX_DATA_SIZE - 50)
 		return;
-	sprintf(keyvalue,"\\echo\\%s",echostr);
-//	Com_sprintf(keyvalue,sizeof(keyvalue),"\\echo\\%s",echostr);
+	Com_sprintf(keyvalue,sizeof(keyvalue),"\\echo\\%s",echostr);
 	buffer_send(sender, outbuf, keyvalue);
 }
 
@@ -467,13 +465,11 @@ void send_final(struct sockaddr *sender, char *outbuf,char *validation)
 		strcpy(encrypted_val, validation);
 		gs_encrypt((unsigned char *)goa_secret_key, strlen(goa_secret_key), (unsigned char *)encrypted_val, keylen);
 		gs_encode((unsigned char *)encrypted_val,keylen, (unsigned char *)encoded_val);
-		sprintf(keyvalue,"\\validate\\%s",encoded_val);
-//		Com_sprintf(keyvalue,sizeof(keyvalue),"\\validate\\%s",encoded_val);
+		Com_sprintf(keyvalue,sizeof(keyvalue),"\\validate\\%s",encoded_val);
 		buffer_send(sender, outbuf, keyvalue);
 	}
 	
-	sprintf(keyvalue,"\\final\\");
-//	Com_sprintf(keyvalue,sizeof(keyvalue),"\\final\\");
+	Com_sprintf(keyvalue,sizeof(keyvalue),"\\final\\");
 	buffer_send(sender, outbuf, keyvalue);
 	packet_send(sender, outbuf);
 }

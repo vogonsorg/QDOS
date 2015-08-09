@@ -31,6 +31,20 @@ typedef unsigned char 		byte;
 
 typedef enum {false, true}	qboolean;
 
+#ifdef __DJGPP__
+int vsnprintf(char *str, size_t n, const char *fmt, va_list ap);
+#endif
+#if defined(__DJGPP__) || defined(_WIN32)
+char *strtok_r(char *s, const char *delim, char **last);
+#endif
+
+/* from Quake3 */
+#ifdef _WIN32
+#define Q_vsnprintf _vsnprintf
+#else
+#define Q_vsnprintf  vsnprintf
+#endif
+
 //============================================================================
 
 typedef struct sizebuf_s
@@ -192,9 +206,9 @@ char **COM_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned
 extern	struct cvar_s	registered;
 
 extern	qboolean	standard_quake, rogue, hipnotic;
-extern	int			nehahra, extended_mod; /* FS: For Nehara */
+extern	qboolean	warpspasm, nehahra, extended_mod; /* FS: For Nehara */
 
-void Com_sprintf(dstring_t *dst, const char *fmt, ...); /* FS: Added */
+void Com_sprintf (char *dest, int size, char *fmt, ...); /* FS: Added */
 void Com_strcpy (char *dest, int destSize, const char *src); /* FS: Added */
 
 /* FS: Gamespy stuff */

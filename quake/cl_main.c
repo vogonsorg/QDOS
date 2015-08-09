@@ -68,7 +68,7 @@ entity_t		*cl_visedicts[MAX_VISEDICTS];
 extern cvar_t	r_lerpmodels, r_lerpmove; //johnfitz
 
 /* FS: Flashlight */
-int bFlashlight = 0;
+qboolean bFlashlight;
 void CL_Flashlight_f (void);
 
 /* FS: Gamespy CVARs */
@@ -173,10 +173,7 @@ void CL_Disconnect (void)
 
 void CL_Disconnect_f (void)
 {
-	CL_Disconnect ();
-
-	if (sv.active)
-		Host_ShutdownServer (false);
+	Host_Error("Disconnected from server\n"); /* FS: QW, Q2 and friends use this now. */
 }
 
 /*
@@ -694,12 +691,12 @@ void CL_Flashlight_f (void) /* FS: Flashlight */
 {
 	if(bFlashlight)
 	{
-		bFlashlight = 0;
+		bFlashlight = false;
 		Con_Printf("Flashlight OFF\n");
 	}
 	else
 	{
-		bFlashlight = 1;
+		bFlashlight = true;
 		Con_Printf("Flashlight ON\n");
 	}
 }

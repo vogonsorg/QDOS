@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define DG_MISC_IMPLEMENTATION /* FS: Use caedes special safe string stuff */
 
+#ifdef __DJGPP__
+#include <stdio.h>
+#include <limits.h>
+#include <errno.h>
+#include <libc/file.h>
+#endif
+
 #include "quakedef.h"
 
 #define NUM_SAFE_ARGVS  8
@@ -68,7 +75,6 @@ int             static_registered = 1;  // only for startup check, then set
 qboolean		msg_suppress_1 = 0;
 
 void COM_InitFilesystem (void);
-void COM_Type_f(void); /* FS: TODO: Unfinished */
 
 // if a packfile directory differs from this, it is assumed to be hacked
 #define PAK0_COUNT              339
@@ -82,7 +88,7 @@ char	**com_argv;
 char	com_cmdline[CMDLINE_LENGTH];
 
 qboolean	standard_quake = true, rogue, hipnotic;
-int			nehahra, extended_mod, warpspasm; /* FS: for Nehahra and Warpspasm */
+qboolean	nehahra, extended_mod, warpspasm; /* FS: For Nehahra and Warpspasm */
 
 // this graphic needs to be in the pak file to use registered features
 unsigned short pop[] =
@@ -1224,11 +1230,11 @@ void COM_InitArgv (int argc, char **argv)
 	if (COM_CheckParm ("-warp") || COM_CheckParm ("-nehahra")) /* FS: So we get larger RAM by default */
 	{
 		if (COM_CheckParm ("-nehahra"))
-			nehahra = 1;
-		else if (COM_CheckParm ("-warp"))
-			warpspasm = 1;
+			nehahra = true;
+		if (COM_CheckParm ("-warp"))
+			warpspasm = true;
 
-		extended_mod = 1;
+		extended_mod = true;
 	}
 }
 
@@ -1291,7 +1297,6 @@ void COM_Init (char *basedir)
 
 	Cvar_RegisterVariable (&registered);
 	Cvar_RegisterVariable (&cmdline);
-	Cmd_AddCommand ("type", COM_Type_f); /* FS: TODO: Unfinished */
 	Cmd_AddCommand ("path", COM_Path_f);
 
 	COM_InitFilesystem ();
@@ -1841,18 +1846,6 @@ byte *COM_LoadFile (char *path, int usehunk)
 	return buf;
 }
 
-void COM_Type_f (void) /* FS: TODO: Unfinished */
-{
-	char *buf;
-
-	buf = (char *)COM_LoadTempFile (Cmd_Argv(1));
-
-	if(!buf)
-		Con_Warning ("File not found: %s\n", Cmd_Argv(1));
-	else
-		Con_Printf("%s\n", buf);
-}
-
 byte *COM_LoadHunkFile (char *path)
 {
 	return COM_LoadFile (path, 1);
@@ -2127,17 +2120,58 @@ void COM_InitFilesystem () //johnfitz -- modified based on topaz's tutorial
 		proghack = true;
 }
 
-/* FS: Buffer safe sprintf so we aren't va'ing all over the place */
-void Com_sprintf(dstring_t *dst, const char *fmt, ...)
+#ifdef __DJGPP__
+int vsnprintf(char *str, size_t n, const char *fmt, va_list ap)
 {
-	va_list     argptr;
+  FILE _strbuf;
+  int len;
 
-	if(!dst)
-		Host_Error("Error in Com_sprintf:  DST is NULL!\n");
+  /* _cnt is an int in the FILE structure. To prevent wrap-around, we limit
+   * n to between 0 and INT_MAX inclusively. */
+  if (n > INT_MAX)
+  {
+    errno = EFBIG;
+    return -1;
+  }
 
-	va_start (argptr, fmt);
-	dvsprintf (dst,fmt,argptr);
+  memset(&_strbuf, 0, sizeof(_strbuf));
+  _strbuf._flag = _IOWRT | _IOSTRG | _IONTERM;  
+
+  /* If n == 0, just querying how much space is needed. */
+  if (n > 0)
+  {
+    _strbuf._cnt = n - 1;
+    _strbuf._ptr = str;
+  }
+  else
+  {
+    _strbuf._cnt = 0;
+    _strbuf._ptr = NULL;
+  }
+
+  len = _doprnt(fmt, ap, &_strbuf);
+
+  /* Ensure nul termination */
+  if (n > 0)
+    *_strbuf._ptr = 0;
+
+  return len;
+}
+#endif
+
+/* FS: Buffer safe sprintf so we aren't va'ing all over the place */
+void Com_sprintf (char *dest, int size, char *fmt, ...)
+{
+	int		len;
+	va_list		argptr;
+
+	va_start (argptr,fmt);
+	len = Q_vsnprintf (dest, size, fmt, argptr);
 	va_end (argptr);
+	if (size > 0) dest[size - 1] = 0;
+	if (len < 0 || len >= size) {
+		Con_Printf ("Com_sprintf: overflow of %i in %i\n", len, size);
+	}
 }
 
 // Knightmare added

@@ -108,22 +108,20 @@ static qboolean S_OpenBackgroundTrack (char *name, bgTrack_t *track)
 	OggVorbis_File	*vorbisFile;
 	vorbis_info		*vorbisInfo;
 	ov_callbacks	vorbisCallbacks = {ovc_read, ovc_seek, ovc_close, ovc_tell};
-//	char	filename[1024];
-	dstring_t	*filename = dstring_new();
+	char	filename[1024];
 	char	*path = NULL;
 
 //	Con_Printf("Opening background track: %s\n", name);
 	do {
 		path = COM_NextPath( path );
-		Com_sprintf( filename,/* sizeof(filename),*/ "%s/%s", path, name );
-		if ( (track->file = fopen(filename->str, "rb")) != 0)
+		Com_sprintf( filename, sizeof(filename), "%s/%s", path, name );
+		if ( (track->file = fopen(filename, "rb")) != 0)
 			break;
 	} while ( path );
 
 	if (!track->file)
 	{
 		Con_Printf("S_OpenBackgroundTrack: couldn't find %s\n", name);
-		dstring_delete(filename);
 		return false;
 	}
 
@@ -133,7 +131,6 @@ static qboolean S_OpenBackgroundTrack (char *name, bgTrack_t *track)
 	if (ov_open_callbacks(track, vorbisFile, NULL, 0, vorbisCallbacks) < 0)
 	{
 		Con_Printf("S_OpenBackgroundTrack: couldn't open OGG stream (%s)\n", name);
-		dstring_delete(filename);
 		return false;
 	}
 
@@ -142,7 +139,6 @@ static qboolean S_OpenBackgroundTrack (char *name, bgTrack_t *track)
 	if (vorbisInfo->channels != 1 && vorbisInfo->channels != 2)
 	{
 		Con_Printf("S_OpenBackgroundTrack: only mono and stereo OGG files supported (%s)\n", name);
-		dstring_delete(filename);
 		return false;
 	}
 
@@ -154,7 +150,6 @@ static qboolean S_OpenBackgroundTrack (char *name, bgTrack_t *track)
 //	Con_Printf("Vorbis info: frequency: %i channels: %i bitrate: %i\n",
 //		vorbisInfo->rate, vorbisInfo->channels, vorbisInfo->bitrate_nominal);
 
-	dstring_delete(filename);
 	return true;
 }
 
@@ -467,8 +462,7 @@ static void S_OGG_LoadFileList (void)
 {
 	char	*p, *path = NULL;
 	char	**list;			// List of .ogg files
-//	char	findname[MAX_OSPATH];
-	dstring_t	*findname = dstring_new();
+	char	findname[MAX_OSPATH];
 	char	lastPath[MAX_OSPATH];	// Knightmare added
 	int		i, numfiles = 0;
 
@@ -487,8 +481,8 @@ static void S_OGG_LoadFileList (void)
 		}
 
 		// Get file list
-		Com_sprintf( findname, /*sizeof(findname),*/ "%s/music/*.ogg", path );
-		list = COM_ListFiles(findname->str, &numfiles, 0, SFF_SUBDIR | SFF_HIDDEN | SFF_SYSTEM);
+		Com_sprintf( findname, sizeof(findname), "%s/music/*.ogg", path );
+		list = COM_ListFiles(findname, &numfiles, 0, SFF_SUBDIR | SFF_HIDDEN | SFF_SYSTEM);
 
 		// Add valid Ogg Vorbis file to the list
 		for (i=0; i<numfiles && ogg_numfiles<MAX_OGGLIST; i++)
@@ -511,7 +505,6 @@ static void S_OGG_LoadFileList (void)
 		Q_strlcpy (lastPath, path, sizeof(lastPath));	// Knightmare- copy to lastPath
 		path = COM_NextPath( path );
 	}
-	dstring_delete(findname);
 }
 
 // =====================================================================
@@ -530,8 +523,7 @@ static void S_OGG_PlayCmd (void)
 		Con_Printf("Usage: ogg play {track}\n");
 		return;
 	}
-//	Com_sprintf(name, sizeof(name), "music/%s.ogg", Cmd_Argv(2) );
-	sprintf(name, "music/%s.ogg", Cmd_Argv(2) );
+	Com_sprintf(name, sizeof(name), "music/%s.ogg", Cmd_Argv(2) );
 	S_StartOGGBackgroundTrack (name, name);
 }
 

@@ -58,7 +58,6 @@ $(O)/cd_audio.o \
 $(O)/d_edge.o   \
 $(O)/host.o     \
 $(O)/r_aclip.o  \
-$(O)/vsnprntf.o   \
 $(O)/dstring.o   \
 $(O)/r_vars.o   \
 $(O)/chase.o    \
