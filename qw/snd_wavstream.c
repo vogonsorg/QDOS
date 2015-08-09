@@ -207,8 +207,7 @@ static qboolean S_OpenWAVBackgroundTrack (char *name, bgTrack_t *track)
 	do
 	{
 		path = COM_NextPath( path );
-//		Com_sprintf( filename, sizeof(filename), "%s/%s", path, name );
-		sprintf(filename, "%s/%s", path, name);
+		Com_sprintf( filename, sizeof(filename), "%s/%s", path, name );
 		if ((track->file = fopen(filename, "rb")) != NULL)
 			break;
 	} while ( path );
@@ -468,8 +467,7 @@ static void S_WAV_LoadFileList (void)
 		}
 
 		// Get file list
-//		Com_sprintf( findname, sizeof(findname), "%s/music/*.wav", path );
-		sprintf( findname, "%s/music/*.wav", path );
+		Com_sprintf( findname, sizeof(findname), "%s/music/*.wav", path );
 
 		list = COM_ListFiles(findname, &numfiles, 0, SFF_SUBDIR | SFF_HIDDEN | SFF_SYSTEM);
 
@@ -504,8 +502,7 @@ static void S_WAV_PlayCmd (void)
 		Con_Printf("Usage: wav play {track}\n");
 		return;
 	}
-//	Com_sprintf(name, sizeof(name), "music/%s.wav", Cmd_Argv(2) );
-	sprintf(name, "music/%s.wav", Cmd_Argv(2) );
+	Com_sprintf(name, sizeof(name), "music/%s.wav", Cmd_Argv(2) );
 	S_StartWAVBackgroundTrack (name, name);
 }
 

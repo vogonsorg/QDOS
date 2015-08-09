@@ -25,7 +25,6 @@ CLIENT = $(O)/cd_audio.o  \
 	$(O)/mathlib.o  \
 	$(O)/d_edge.o \
 	$(O)/r_aclip.o  \
-	$(O)/vsnprntf.o   \
 	$(O)/cfgfile.o   \
 	$(O)/dstring.o   \
 	$(O)/r_vars.o   \

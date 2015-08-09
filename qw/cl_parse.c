@@ -374,7 +374,7 @@ void CL_FinishDownload(qboolean rename_files)
 	if (cl_downloadrate_hack.intValue && (rate.intValue > 0 && cls.downloadoldrate > 0)) /* FS: FIXME Shitty hack to accelerate the downloading a bit */
 	{
 		oldrate = dstring_new();
-		Com_sprintf(oldrate, "%i", cls.downloadoldrate);
+		dsprintf(oldrate, "%i", cls.downloadoldrate);
 		Con_DPrintf(DEVELOPER_MSG_NET, "Changing rate from %i to %i\n", cls.downloadmaxrate, cls.downloadoldrate);
 		Cvar_Set("rate", oldrate->str);
 		dstring_delete(oldrate);
@@ -542,7 +542,7 @@ void CL_ParseChunkedDownload(void)
 			maxrate = dstring_new();
 			cls.downloadoldrate = rate.intValue;
 			cls.downloadmaxrate = 250000;
-			Com_sprintf(maxrate, "%i", cls.downloadmaxrate);
+			dsprintf(maxrate, "%i", cls.downloadmaxrate);
 			Con_DPrintf(DEVELOPER_MSG_NET, "Changing rate from %i to %i\n", cls.downloadoldrate, cls.downloadmaxrate);
 			Cvar_Set("rate", maxrate->str);
 			dstring_delete(maxrate);
@@ -1544,7 +1544,7 @@ void CL_ParseServerMessage (void)
 			if (fversion && !strcmp(fversion, ": f_version\n"))
 			{
 				dstring_t *fversionStr = dstring_new();
-				Com_sprintf(fversionStr, "say QuakeWorld DOS with WATTCP v%4.2f.  Built %s at %s.\n", VERSION, __DATE__, __TIME__);
+				dsprintf(fversionStr, "say QuakeWorld DOS with WATTCP v%4.2f.  Built %s at %s.\n", VERSION, __DATE__, __TIME__);
 				Cbuf_AddText(fversionStr->str);
 				dstring_delete(fversionStr);
 			}

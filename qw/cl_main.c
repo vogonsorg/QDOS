@@ -1192,7 +1192,7 @@ void CL_Download_f (void)
 	cls.downloadtype = dl_single;
 
 	MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
-	Com_sprintf(dlstr, "download %s\n",Cmd_Argv(1));
+	dsprintf(dlstr, "download %s\n", Cmd_Argv(1));
 	SZ_Print (&cls.netchan.message, dlstr->str);
 	dstring_delete(dlstr);
 }
@@ -1222,8 +1222,9 @@ void CL_Init (void)
 {
 	extern   cvar_t	   baseskin;
 	extern   cvar_t	   noskins;
+
 	dstring_t *version = dstring_new();
-	Com_sprintf(version, "QWDOS v%4.2f", VERSION);
+	dsprintf(version, "QWDOS v%4.2f", VERSION);
 
 	cls.state = ca_disconnected;
 

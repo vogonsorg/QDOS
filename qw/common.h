@@ -34,6 +34,20 @@ typedef unsigned char           byte;
 
 typedef enum {false, true}	qboolean;
 
+#ifdef __DJGPP__
+int vsnprintf(char *str, size_t n, const char *fmt, va_list ap);
+#endif
+#if defined(__DJGPP__) || defined(_WIN32)
+char *strtok_r(char *s, const char *delim, char **last);
+#endif
+
+/* from Quake3 */
+#ifdef _WIN32
+#define Q_vsnprintf _vsnprintf
+#else
+#define Q_vsnprintf  vsnprintf
+#endif
+
 #define MAX_INFO_STRING 1024 /* FS: Was 196 */
 #define MAX_SERVERINFO_STRING 2048  /* FS: Was 1024 */
 #define MAX_LOCALINFO_STRING    32768 /* JASON upped from 512 -- Spoike */
@@ -279,5 +293,5 @@ byte    COM_BlockSequenceCRCByte (byte *base, int length, int sequence);
 
 int build_number( void );
 void CompleteCommand (void); /* FS: Autocomplete commands */
-void Com_sprintf(dstring_t *dst, const char *fmt, ...); /* FS: Added */
+void Com_sprintf (char *dest, int size, char *fmt, ...); /* FS: Added */
 void Com_strcpy (char *dest, int destSize, const char *src); /* FS: Added */
