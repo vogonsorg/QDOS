@@ -33,7 +33,7 @@ CFLAGS+= -I../3rdparty/include
 LIBS  += -L../3rdparty/lib -lvorbisfile -lvorbis -logg
 endif
 ifeq ($(USE_BSP2),yes)
-CFLAGS+= -BSP2_SUPPORT
+CFLAGS+= -DBSP2_SUPPORT
 endif
 LIBS  += -lm
 
