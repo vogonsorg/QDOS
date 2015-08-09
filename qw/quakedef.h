@@ -148,7 +148,8 @@ extern qboolean		msg_suppress_1;		// suppresses resolution and cache size consol
 #define SFF_RDONLY  0x04
 #define SFF_SUBDIR  0x08
 #define SFF_SYSTEM  0x10
-char *Sys_FindFirst (char *path, unsigned musthave, unsigned canhave);
-char *Sys_FindNext (unsigned musthave, unsigned canhave);
+
+char *Sys_FindFirst (char *path, unsigned musthave, unsigned canthave);
+char *Sys_FindNext (unsigned musthave, unsigned canthave);
 void Sys_FindClose (void);
 

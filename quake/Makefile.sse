@@ -130,7 +130,6 @@ $(O)/snd_dma.o  \
 $(O)/snd_gus.o  \
 $(O)/snd_mix.o  \
 $(O)/snd_mem.o  \
-$(O)/glob.o  \
 $(O)/sys_find.o  \
 $(O)/snd_strm.o  \
 $(O)/snd_wavstream.o  \

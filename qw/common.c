@@ -939,15 +939,19 @@ COM_FileBase
 void COM_FileBase (char *in, char *out)
 {
 	char *s, *s2;
-	
+
+	if (!*in) {
+		*out = 0;
+		return;
+	}
 	s = in + strlen(in) - 1;
-	
+
 	while (s != in && *s != '.')
 		s--;
-	
-	for (s2 = s ; *s2 && *s2 != '/' ; s2--)
-	;
-	
+
+	for (s2 = s ; s2 != in && *s2 != '/' ; s2--)
+	 ;
+
 	if (s-s2 < 2)
 		strcpy (out,"?model?");
 	else
@@ -956,6 +960,30 @@ void COM_FileBase (char *in, char *out)
 		strncpy (out,s2+1, s-s2);
 		out[s-s2] = 0;
 	}
+}
+
+/*
+============
+COM_FilePath
+
+Returns the path up to, but not including the last /
+============
+*/
+void COM_FilePath (char *in, char *out)
+{
+	char *s;
+
+	if (!*in) {
+		*out = 0;
+		return;
+	}
+	s = in + strlen(in) - 1;
+
+	while (s != in && *s != '/')
+		s--;
+
+	strncpy (out,in, s-in);
+	out[s-in] = 0;
 }
 
 

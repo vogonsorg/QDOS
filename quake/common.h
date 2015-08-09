@@ -173,6 +173,7 @@ void COM_InitArgv (int argc, char **argv);
 char *COM_SkipPath (char *pathname);
 void COM_StripExtension (char *in, char *out);
 void COM_FileBase (char *in, char *out);
+void COM_FilePath (char *in, char *out);
 void COM_DefaultExtension (char *path, char *extension);
 
 // does a varargs printf into a temp buffer
@@ -201,7 +202,7 @@ void COM_LoadCacheFile (char *path, struct cache_user_s *cu);
 char *COM_NextPath (char *prevpath);
 void COM_FreeFileList (char **list, int n);
 qboolean COM_ItemInList (char *check, int num, char **list);
-char **COM_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned canthave );
+char **COM_ListFiles (char *findname, int *numfiles, unsigned musthave, unsigned canthave);
 
 extern	struct cvar_s	registered;
 

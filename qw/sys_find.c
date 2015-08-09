@@ -1,98 +1,109 @@
 /* FS: From Q2 */
 #ifdef __DJGPP__
-#include <sys/stat.h>
-#include <dirent.h>
+#include <dos.h>
+#include <dir.h>
 #include "quakedef.h"
-#include "glob.h"
 
-static	DIR		*fdir;
+static	struct ffblk	finddata;
+static	int	findhandle = -1;
 static	char	findbase[MAX_OSPATH];
 static	char	findpath[MAX_OSPATH];
-static	char	findpattern[MAX_OSPATH];
 
-static qboolean CompareAttributes(char *path, char *name,
-	unsigned musthave, unsigned canthave )
+static qboolean CompareAttributes(const struct ffblk *ff,
+				  unsigned musthave, unsigned canthave)
 {
-	struct stat st;
-	char fn[MAX_OSPATH];
-
-// . and .. never match
-	if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0)
+	/* . and .. never match */
+	if (strcmp(ff->ff_name, ".") == 0 || strcmp(ff->ff_name, "..") == 0)
 		return false;
 
-	return true;
-
-	if (stat(fn, &st) == -1)
-		return false; // shouldn't happen
-
-	if ( ( st.st_mode & S_IFDIR ) && ( canthave & SFF_SUBDIR ) )
+	if (ff->ff_attrib & _A_VOLID) /* shouldn't happen */
 		return false;
 
-	if ( ( musthave & SFF_SUBDIR ) && !( st.st_mode & S_IFDIR ) )
-		return false;
+	if (ff->ff_attrib & _A_SUBDIR) {
+		if (canthave & SFF_SUBDIR)
+			return false;
+	}
+	else {
+		if (musthave & SFF_SUBDIR)
+			return false;
+	}
+
+	if (ff->ff_attrib & _A_RDONLY) {
+		if (canthave & SFF_RDONLY)
+			return false;
+	}
+	else {
+		if (musthave & SFF_RDONLY)
+			return false;
+	}
+
+	if (ff->ff_attrib & _A_HIDDEN) {
+		if (canthave & SFF_HIDDEN)
+			return false;
+	}
+	else {
+		if (musthave & SFF_HIDDEN)
+			return false;
+	}
+
+	if (ff->ff_attrib & _A_SYSTEM) {
+		if (canthave & SFF_SYSTEM)
+			return false;
+	}
+	else {
+		if (musthave & SFF_SYSTEM)
+			return false;
+	}
 
 	return true;
 }
 
-char *Sys_FindFirst (char *path, unsigned musthave, unsigned canhave)
+char *Sys_FindFirst (char *path, unsigned musthave, unsigned canthave)
 {
-	struct dirent *d;
-	char *p;
+	int attribs;
 
-	if (fdir)
-		Sys_Error ("Sys_FindFirst without close");
+	if (findhandle == 0)
+		Sys_Error ("Sys_BeginFind without close");
 
-//	COM_FilePath (path, findbase);
-	strcpy(findbase, path);
+	COM_FilePath (path, findbase);
+	memset (&finddata, 0, sizeof(finddata));
 
-	if ((p = strrchr(findbase, '/')) != NULL) {
-		*p = 0;
-		strcpy(findpattern, p + 1);
-	} else
-		strcpy(findpattern, "*");
+	attribs = FA_ARCH|FA_RDONLY;
+	if (!(canthave & SFF_SUBDIR))
+		attribs |= FA_DIREC;
+	if (musthave & SFF_HIDDEN)
+		attribs |= FA_HIDDEN;
+	if (musthave & SFF_SYSTEM)
+		attribs |= FA_SYSTEM;
 
-	if (strcmp(findpattern, "*.*") == 0)
-		strcpy(findpattern, "*");
-	
-	if ((fdir = opendir(findbase)) == NULL)
+	findhandle = findfirst(path, &finddata, attribs);
+	if (findhandle != 0)
 		return NULL;
-	while ((d = readdir(fdir)) != NULL) {
-		if (!*findpattern || glob_match(findpattern, d->d_name)) {
-//			if (*findpattern)
-//				printf("%s matched %s\n", findpattern, d->d_name);
-			if (CompareAttributes(findbase, d->d_name, musthave, canhave)) {
-				Com_sprintf (findpath, sizeof(findpath), "%s/%s", findbase, d->d_name);
-				return findpath;
-			}
-		}
+	if (CompareAttributes(&finddata, musthave, canthave)) {
+		sprintf (findpath, "%s/%s", findbase, finddata.ff_name);
+		return findpath;
 	}
-	return NULL;
+	return Sys_FindNext(musthave, canthave);
 }
 
-char *Sys_FindNext (unsigned musthave, unsigned canhave)
+char *Sys_FindNext (unsigned musthave, unsigned canthave)
 {
-	struct dirent *d;
-
-	if (fdir == NULL)
+	if (findhandle != 0)
 		return NULL;
-	while ((d = readdir(fdir)) != NULL) {
-		if (!*findpattern || glob_match(findpattern, d->d_name)) {
-//			if (*findpattern)
-//				printf("%s matched %s\n", findpattern, d->d_name);
-			if (CompareAttributes(findbase, d->d_name, musthave, canhave)) {
-				Com_sprintf (findpath, sizeof(findpath), "%s/%s", findbase, d->d_name);
-				return findpath;
-			}
+
+	while (findnext(&finddata) == 0) {
+		if (CompareAttributes(&finddata, musthave, canthave)) {
+			sprintf (findpath, "%s/%s", findbase, finddata.ff_name);
+			return findpath;
 		}
 	}
+
 	return NULL;
 }
 
 void Sys_FindClose (void)
 {
-	if (fdir != NULL)
-		closedir(fdir);
-	fdir = NULL;
+	findhandle = -1;
 }
 #endif /* __DJGPP__ */
 
