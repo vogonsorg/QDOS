@@ -815,42 +815,6 @@ void CalcSurfaceExtents (msurface_t *s)
 	}
 }
 
-/* FS: QuakeSpasm */
-void Mod_CalcSurfaceBounds (msurface_t *s)
-{
-	/* FS: TODO FIXME Requires changes to msurface_t in asm */
-#if 0
-	int			i, e;
-	mvertex_t	*v;
-
-	s->mins[0] = s->mins[1] = s->mins[2] = 9999;
-	s->maxs[0] = s->maxs[1] = s->maxs[2] = -9999;
-
-	for (i=0 ; i<s->numedges ; i++)
-	{
-		e = loadmodel->surfedges[s->firstedge+i];
-		if (e >= 0)
-			v = &loadmodel->vertexes[loadmodel->edges[e].v[0]];
-		else
-			v = &loadmodel->vertexes[loadmodel->edges[-e].v[1]];
-
-		if (s->mins[0] > v->position[0])
-			s->mins[0] = v->position[0];
-		if (s->mins[1] > v->position[1])
-			s->mins[1] = v->position[1];
-		if (s->mins[2] > v->position[2])
-			s->mins[2] = v->position[2];
-
-		if (s->maxs[0] < v->position[0])
-			s->maxs[0] = v->position[0];
-		if (s->maxs[1] < v->position[1])
-			s->maxs[1] = v->position[1];
-		if (s->maxs[2] < v->position[2])
-			s->maxs[2] = v->position[2];
-	}
-#endif
-}
-
 
 /*
 =================
@@ -895,10 +859,8 @@ void Mod_LoadFaces_L1 (lump_t *l)
 		out->texinfo = loadmodel->texinfo + LittleShort (in->texinfo);
 
 		CalcSurfaceExtents (out);
-		Mod_CalcSurfaceBounds (out); //johnfitz -- for per-surface frustum culling
-				
-	// lighting info
 
+	// lighting info
 		for (i=0 ; i<MAXLIGHTMAPS ; i++)
 			out->styles[i] = in->styles[i];
 		i = LittleLong(in->lightofs);
@@ -960,10 +922,8 @@ void Mod_LoadFaces_L2 (lump_t *l)
 		out->texinfo = loadmodel->texinfo + LittleLong (in->texinfo);
 
 		CalcSurfaceExtents (out);
-		Mod_CalcSurfaceBounds (out); //johnfitz -- for per-surface frustum culling
-				
-	// lighting info
 
+	// lighting info
 		for (i=0 ; i<MAXLIGHTMAPS ; i++)
 			out->styles[i] = in->styles[i];
 		i = LittleLong(in->lightofs);
@@ -973,7 +933,6 @@ void Mod_LoadFaces_L2 (lump_t *l)
 			out->samples = loadmodel->lightdata + i;
 		
 	// set the drawing flags flag
-		
 		if (!Q_strncmp(out->texinfo->texture->name,"sky",3))	// sky
 		{
 			out->flags |= (SURF_DRAWSKY | SURF_DRAWTILED);

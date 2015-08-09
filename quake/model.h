@@ -108,11 +108,6 @@ typedef struct
 typedef struct msurface_s
 {
 	int			visframe;		// should be drawn when node is crossed
-#ifdef BSP2_SUPPORT
-	qboolean	culled;			// johnfitz -- for frustum culling
-	float		mins[3];		// johnfitz -- for frustum culling
-	float		maxs[3];		// johnfitz -- for frustum culling
-#endif
 
 	int			dlightframe;
 	int			dlightbits;
