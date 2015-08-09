@@ -171,7 +171,14 @@ void CL_Disconnect (void)
 
 void CL_Disconnect_f (void)
 {
-	Host_Error("Disconnected from server\n"); /* FS: QW, Q2 and friends use this now. */
+	if(cls.state > ca_disconnected) /* FS: Added message. */
+		Con_Printf("*** Disconnected from server *** \n");
+
+	CL_Disconnect();
+
+	if (sv.active)
+		Host_ShutdownServer (false);
+
 }
 
 /*
