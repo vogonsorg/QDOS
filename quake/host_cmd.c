@@ -42,7 +42,6 @@ Host_Quit_f
 */
 
 extern void M_Menu_Quit_f (void);
-extern void Host_WriteConfiguration (void);
 
 void Host_Quit_f (void)
 {
@@ -175,7 +174,7 @@ void Host_Game_f (void)
 		Host_ShutdownServer(true);
 
 		//Write config file
-		Host_WriteConfiguration ();
+		Host_WriteConfiguration ("config");
 
 		//Kill the extra game if it is loaded
 		if (NumGames(com_searchpaths) > 1 + com_nummissionpacks)

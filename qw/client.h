@@ -420,7 +420,7 @@ dlight_t *CL_AllocDlight (int key);
 void	CL_DecayLights (void);
 
 void CL_Init (void);
-void Host_WriteConfiguration (void);
+void Host_WriteConfiguration (char *cfgName); /* FS */
 
 void CL_EstablishConnection (char *host);
 

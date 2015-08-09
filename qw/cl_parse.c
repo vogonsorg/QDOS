@@ -859,7 +859,7 @@ void CL_ParseServerData (void)
 
 	if (stricmp(gamedirfile, str)) {
 		// save current config
-		Host_WriteConfiguration (); 
+		Host_WriteConfiguration ("config"); 
 		cflag = true;
 	}
 

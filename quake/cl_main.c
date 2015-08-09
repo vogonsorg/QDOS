@@ -706,6 +706,31 @@ void CL_Flashlight_f (void) /* FS: Flashlight */
 	}
 }
 
+// Knightmare added
+/*
+===============
+CL_WriteConfig_f
+
+===============
+*/
+void CL_WriteConfig_f (void)
+{
+	char cfgName[MAX_QPATH];
+
+	if ((Cmd_Argc() == 1) || (Cmd_Argc() == 2))
+	{
+		if(Cmd_Argc() == 1)
+			Com_sprintf(cfgName, sizeof(cfgName), "config");
+		else
+			strncpy (cfgName, Cmd_Argv(1), sizeof(cfgName));
+
+		Host_WriteConfiguration (cfgName);
+		Con_Printf ("Wrote config file %s/%s.cfg.\n", com_gamedir, cfgName);
+	}
+	else
+		Con_Printf ("Usage: writeconfig <name>\n");
+}
+
 /*
 =================
 CL_Init
@@ -766,6 +791,7 @@ void CL_Init (void)
 	Cmd_AddCommand ("playdemo", CL_PlayDemo_f);
 	Cmd_AddCommand ("timedemo", CL_TimeDemo_f);
 	Cmd_AddCommand ("flashlight", CL_Flashlight_f);
+	Cmd_AddCommand ("writeconfig", CL_WriteConfig_f);
 
 	/* FS: Gamespy stuff */
 	Cmd_AddCommand ("slist2", CL_PingNetServers_f);

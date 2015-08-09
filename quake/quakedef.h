@@ -326,6 +326,7 @@ void Host_Frame (float time);
 void Host_Quit_f (void);
 void Host_ClientCommands (const char *fmt, ...);
 void Host_ShutdownServer (qboolean crash);
+void Host_WriteConfiguration (char *cfgName); /* FS */
 
 extern qboolean	msg_suppress_1;         // suppresses resolution and cache size console output
 										//  an fullscreen DIB focus gain/loss
