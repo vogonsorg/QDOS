@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define DEFAULT_SOUND_PACKET_VOLUME 255
 #define DEFAULT_SOUND_PACKET_ATTENUATION 1.0
 
-#define SND_BUFFER_SIZE	32768 /* FS: Was 4096 */
+#define SND_BUFFER_SIZE	16384 /* FS: Was 4096 */
 #define	PAINTBUFFER_SIZE	2048 /* FS: Was 512 */
 
 // !!! if this is changed, it much be changed in asm_i386.h too !!!
