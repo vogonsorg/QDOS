@@ -805,7 +805,6 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 		Con_DrawInput ();
 }
 
-
 /*
 ==================
 Con_NotifyBox
@@ -868,4 +867,3 @@ void Con_SafePrintf (const char *fmt, ...)
 
 	scr_disabled_for_loading = temp;
 }
-

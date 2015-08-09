@@ -59,8 +59,7 @@ qboolean		msg_suppress_1 = 0;
 
 void COM_InitFilesystem (void);
 void COM_Path_f (void);
-void COM_Type_f (void); /* FS: TODO UNFINISHED Notepad */
-
+void COM_Dir_f (void); /* FS: From Quake 2 */
 
 // if a packfile directory differs from this, it is assumed to be hacked
 #define	PAK0_COUNT		339
@@ -1232,8 +1231,10 @@ void COM_Init (void)
 	}
 
 	Cvar_RegisterVariable (&registered);
+
 	Cmd_AddCommand ("path", COM_Path_f);
-	Cmd_AddCommand ("type", COM_Type_f); /* FS: Notepad */
+	Cmd_AddCommand ("dir", COM_Dir_f); /* FS: From Quake 2 */
+
 	COM_InitFilesystem ();
 	COM_CheckRegistered ();
 }
@@ -1859,44 +1860,6 @@ byte *COM_LoadFile (char *path, int usehunk)
 	return buf;
 }
 
-void COM_Type_f (void) /* FS: TODO UNFINISHED Notepad */
-{
-	FILE	*fdata;
-	char	*data;
-	long	lSize;
-	size_t	result;
-
-	fdata = fopen(va("%s/%s",com_gamedir,Cmd_Argv(1)), "r");
-
-	if(!fdata)
-	{
-		Con_Warning("File not found %s\n", Cmd_Argv(1));
-		return;
-	}
-
-	// obtain file size:
-	fseek (fdata , 0 , SEEK_END);
-	lSize = ftell (fdata);
-	rewind (fdata);
-
-	// allocate memory to contain the whole file:
-	data = (char*) malloc (sizeof(char)*lSize);
-
-	if (data == NULL)
-	{
-		Con_Warning("Out of memory.  Cannot load %s\n", Cmd_Argv(1));
-		return;
-	}
-
-	// copy the file into the buffer:
-	result = fread (data,1,lSize,fdata);
-	result = result; /* FS: TODO FIXME: Finish this -- Silence compiler */
-//	Con_Printf("%s:\n%s\n", Cmd_Argv(1),data);
-	Con_Printf("%s\n", data);
-	free(data);
-	fclose(fdata);
-}
-
 byte *COM_LoadHunkFile (char *path)
 {
 	return COM_LoadFile (path, 1);
@@ -1993,9 +1956,56 @@ pack_t *COM_LoadPackFile (char *packfile)
 	pack->files = newfiles;
 	
 	Con_Printf ("Added packfile %s (%i files)\n", packfile, numpackfiles);
-        return pack;
+	return pack;
 }
 
+/* FS: From Quake 2 */
+void COM_Dir_f (void)
+{
+	char	*path = NULL;
+	char	findname[1024];
+	char	wildcard[1024] = "*.*";
+	char	**dirnames;
+	int		ndirs;
+
+	if ( Cmd_Argc() != 1 )
+	{
+		strcpy( wildcard, Cmd_Argv( 1 ) );
+	}
+
+	while ( ( path = COM_NextPath( path ) ) != NULL )
+	{
+		char *tmp = findname;
+
+		Com_sprintf( findname, sizeof(findname), "%s/%s", path, wildcard );
+
+		while ( *tmp != 0 )
+		{
+			if ( *tmp == '\\' ) 
+				*tmp = '/';
+			tmp++;
+		}
+		Con_Printf( "Directory of %s\n", findname );
+		Con_Printf( "----\n" );
+
+		if ( ( dirnames = COM_ListFiles( findname, &ndirs, 0, 0 ) ) != 0 )
+		{
+			int i;
+
+			for ( i = 0; i < ndirs-1; i++ )
+			{
+				if ( strrchr( dirnames[i], '/' ) )
+					Con_Printf( "%s\n", strrchr( dirnames[i], '/' ) + 1 );
+				else
+					Con_Printf( "%s\n", dirnames[i] );
+
+				free( dirnames[i] );
+			}
+			free( dirnames );
+		}
+		Con_Printf( "\n" );
+	};
+}
 
 /*
 ================

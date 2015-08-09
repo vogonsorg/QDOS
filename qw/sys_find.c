@@ -156,8 +156,7 @@ char *Sys_FindFirst (char *path, unsigned musthave, unsigned canthave )
 		Sys_Error ("Sys_FindFirst without close");
 	findhandle = 0;
 
-//	COM_FilePath (path, findbase);
-	strcpy(findbase, path);
+	COM_FilePath (path, findbase);
 
 	findhandle = _findfirst (path, &findinfo);
 	if (findhandle == -1)

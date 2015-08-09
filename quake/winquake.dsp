@@ -521,10 +521,6 @@ SOURCE=.\DSTRING.C
 # End Source File
 # Begin Source File
 
-SOURCE=.\glob.c
-# End Source File
-# Begin Source File
-
 SOURCE=.\host.c
 # End Source File
 # Begin Source File

@@ -75,6 +75,7 @@ int             static_registered = 1;  // only for startup check, then set
 qboolean		msg_suppress_1 = 0;
 
 void COM_InitFilesystem (void);
+void COM_Dir_f (void); /* FS: From Quake 2 */
 
 // if a packfile directory differs from this, it is assumed to be hacked
 #define PAK0_COUNT              339
@@ -1325,7 +1326,9 @@ void COM_Init (char *basedir)
 
 	Cvar_RegisterVariable (&registered);
 	Cvar_RegisterVariable (&cmdline);
+
 	Cmd_AddCommand ("path", COM_Path_f);
+	Cmd_AddCommand ("dir", COM_Dir_f); /* FS: From Quake 2 */
 
 	COM_InitFilesystem ();
 	COM_CheckRegistered ();
@@ -1976,6 +1979,53 @@ pack_t *COM_LoadPackFile (char *packfile)
 	return pack;
 }
 
+/* FS: From Quake 2 */
+void COM_Dir_f (void)
+{
+	char	*path = NULL;
+	char	findname[1024];
+	char	wildcard[1024] = "*.*";
+	char	**dirnames;
+	int		ndirs;
+
+	if ( Cmd_Argc() != 1 )
+	{
+		strcpy( wildcard, Cmd_Argv( 1 ) );
+	}
+
+	while ( ( path = COM_NextPath( path ) ) != NULL )
+	{
+		char *tmp = findname;
+
+		Com_sprintf( findname, sizeof(findname), "%s/%s", path, wildcard );
+
+		while ( *tmp != 0 )
+		{
+			if ( *tmp == '\\' ) 
+				*tmp = '/';
+			tmp++;
+		}
+		Con_Printf( "Directory of %s\n", findname );
+		Con_Printf( "----\n" );
+
+		if ( ( dirnames = COM_ListFiles( findname, &ndirs, 0, 0 ) ) != 0 )
+		{
+			int i;
+
+			for ( i = 0; i < ndirs-1; i++ )
+			{
+				if ( strrchr( dirnames[i], '/' ) )
+					Con_Printf( "%s\n", strrchr( dirnames[i], '/' ) + 1 );
+				else
+					Con_Printf( "%s\n", dirnames[i] );
+
+				free( dirnames[i] );
+			}
+			free( dirnames );
+		}
+		Con_Printf( "\n" );
+	};
+}
 
 /*
 =================
