@@ -9,6 +9,8 @@ USE_BWTCP=yes
 USE_MPATH=no
 # whether to use OGG VORBIS
 USE_OGG=yes
+# whether to use BSP2 Support (needs further testing)
+USE_BPS2=no
 
 CFLAGS = -g -Wall -O2 -DNDEBUG=1 -fno-strict-aliasing -fomit-frame-pointer
 LIBS   =
@@ -29,6 +31,9 @@ ifeq ($(USE_OGG),yes)
 CFLAGS+= -DOGG_SUPPORT
 CFLAGS+= -I../3rdparty/include
 LIBS  += -L../3rdparty/lib -lvorbisfile -lvorbis -logg
+endif
+ifeq ($(USE_BSP2),yes)
+CFLAGS+= -DBSP2_SUPPORT
 endif
 LIBS  += -lm
 
