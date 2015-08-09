@@ -51,7 +51,7 @@ default: all
 # Root directory for Waterloo tcp/ip etc. Change to suite.
 # WATT_ROOT should be set during Watt-32 install.
 #
-WATT32_ROOT  = ../../wattcp
+WATT32_ROOT  = ../../wat
 OPENSSL_ROOT = e:/net/openssl.099
 ZLIB_ROOT    = $(DJDIR)/contrib/zlib
 LIBIDN_ROOT  = $(TOPDIR)/../IDN/libidn
@@ -98,3 +98,4 @@ $(OBJ_DIR)/%.o: %.c
 depend: $(DEPEND_PREREQ) $(MAKEFILE)
 	$(CC) -MM $(CFLAGS) $(CSOURCES) | \
 	sed -e 's/^\([a-zA-Z0-9_-]*\.o:\)/$$(OBJ_DIR)\/\1/' > depend.dj
+
