@@ -752,56 +752,6 @@ CalcSurfaceExtents
 Fills in s->texturemins[] and s->extents[]
 ================
 */
-#ifndef BSP2_SUPPORT
-void CalcSurfaceExtents (msurface_t *s)
-{
-	float	mins[2], maxs[2], val;
-	int		i,j, e;
-	mvertex_t	*v;
-	mtexinfo_t	*tex;
-	int		bmins[2], bmaxs[2];
-
-	mins[0] = mins[1] = 999999;
-	maxs[0] = maxs[1] = -99999;
-
-	tex = s->texinfo;
-	
-	for (i=0 ; i<s->numedges ; i++)
-	{
-		e = loadmodel->surfedges[s->firstedge+i];
-		if (e >= 0)
-			v = &loadmodel->vertexes[loadmodel->edges[e].v[0]];
-		else
-			v = &loadmodel->vertexes[loadmodel->edges[-e].v[1]];
-		
-		for (j=0 ; j<2 ; j++)
-		{
-			val = v->position[0] * tex->vecs[j][0] + 
-				v->position[1] * tex->vecs[j][1] +
-				v->position[2] * tex->vecs[j][2] +
-				tex->vecs[j][3];
-			if (val < mins[j])
-				mins[j] = val;
-			if (val > maxs[j])
-				maxs[j] = val;
-		}
-	}
-
-	for (i=0 ; i<2 ; i++)
-	{	
-		bmins[i] = floor(mins[i]/16);
-		bmaxs[i] = ceil(maxs[i]/16);
-
-		s->texturemins[i] = bmins[i] * 16;
-		s->extents[i] = (bmaxs[i] - bmins[i]) * 16;
-
-		if ( !(tex->flags & TEX_SPECIAL) && s->extents[i] > 2000) //johnfitz -- was 512 in glquake, 256 in winquake
-		{
-			Sys_Error ("Bad surface extents");
-		}
-	}
-}
-#else
 void CalcSurfaceExtents (msurface_t *s)
 {
 	float	mins[2], maxs[2], val;
@@ -861,17 +811,9 @@ void CalcSurfaceExtents (msurface_t *s)
 		s->extents[i] = (bmaxs[i] - bmins[i]) * 16;
 
 		if ( !(tex->flags & TEX_SPECIAL) && s->extents[i] > 2000) //johnfitz -- was 512 in glquake, 256 in winquake
-		{
-#ifdef DEBUG /* FS: Force an assert on purpose to debug this issue */
-			int zz = 0;
-			assert(zz);
-#else
-			Sys_Error ("Bad surface extents. Flags: %i. Value: %i", tex->flags, s->extents[i]);
-#endif
-		}
+			Sys_Error ("Bad surface extents");
 	}
 }
-#endif
 
 /* FS: QuakeSpasm */
 void Mod_CalcSurfaceBounds (msurface_t *s)
