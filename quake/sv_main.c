@@ -1282,7 +1282,7 @@ void SV_SpawnServer (char *server)
 {
 	edict_t	*ent;
 	int		i;
-	char	*entitystring; /* FS: Ent file loading */
+	char	*entitystring = NULL; /* FS: Ent file loading */
 	FILE	*f; /* FS: Ent file loading */
 
 	// let's not have any servers with no name
@@ -1414,29 +1414,22 @@ void SV_SpawnServer (char *server)
 
 
 /* FS: Load external ent files, from MVDSV */
-	entitystring = NULL;
-
-	if(sv_loadentfiles.value)
+	if(sv_loadentfiles.intValue)
 	{
-		entitystring = (char *) COM_LoadHunkFile (va("maps/%s.ent", server));
+		char filename[MAX_QPATH];
 
-		/* FS: FIXME this is stupid */
-		f = fopen (va("%s/maps/%s.ent",com_gamedir, sv.name), "r"); /* FS: Only load from gamedir, not other places in search path */
+		Com_sprintf(filename, sizeof(filename), "maps/%s.ent", server);
+		Con_DPrintf(DEVELOPER_MSG_IO, "Attempting to load external ent file %s...\n", filename);
+		entitystring = (char *) COM_LoadHunkFile (filename);
 
-		if (!f)
-		{
-			Con_DPrintf(DEVELOPER_MSG_VERBOSE, "No ENT file found!\n");
-			entitystring = NULL;
-		}
+		if (!entitystring)
+			Con_DPrintf(DEVELOPER_MSG_IO, "No external ent file found.\n");
 		else
-		{
-			Con_Warning("ENT file found!\n"); /* FS: Warn about non-standardness */
-			fclose(f);
-		}
+			Con_Warning("External ent file found!\n"); /* FS: Warn about non-standardness */
 
 		if(entitystring && strlen(entitystring) == 0) /* FS: Check to see if it's blank. */
 		{
-			Con_Warning("%s.ent is blank!  Defaulting to %s.bsp.\n", server, server);
+			Con_Warning("%s.ent is blank!  Defaulting to %s.bsp.\n", filename, server);
 			entitystring = NULL;
 		}
 	}

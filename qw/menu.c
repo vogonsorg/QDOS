@@ -1381,22 +1381,22 @@ void M_Extended_Draw()
 	M_DrawPic ( (320-p->width)/2, 4, p);
 
 	M_Print (16, 32, "     Chat Broadcasting");
-	M_DrawCheckbox (220, 32, net_broadcast_chat.value);
+	M_DrawCheckbox (220, 32, net_broadcast_chat.intValue);
 
 	M_Print (16, 40, "     Chat Notification");
-	M_DrawCheckbox (220, 40, net_showchat.value);
+	M_DrawCheckbox (220, 40, net_showchat.intValue);
 
 	M_Print (16, 48, "         Chat Graphics");
-	M_DrawCheckbox (220, 48, net_showchatgfx.value);
+	M_DrawCheckbox (220, 48, net_showchatgfx.intValue);
 
 	M_Print (16, 56,  "      Content Blending");
-	M_DrawCheckbox (220, 56, v_contentblend.value);
+	M_DrawCheckbox (220, 56, v_contentblend.intValue);
 
 	M_Print (16, 64,  "     Unbindall Protect");
-	M_DrawCheckbox (220, 64, cl_unbindall_protection.value);
+	M_DrawCheckbox (220, 64, cl_unbindall_protection.intValue);
 
 	M_Print (16, 72,  "           Show Uptime");
-	M_DrawCheckbox (220, 72, show_uptime.value);
+	M_DrawCheckbox (220, 72, show_uptime.intValue);
 
 	M_Print (16, 80,  "             Show Time");
 	if (show_time.value < 1 )
@@ -1407,13 +1407,13 @@ void M_Extended_Draw()
 		M_Print (220, 80, "AM/PM");
 
 	M_Print (16, 88,  "        Show Framerate");
-	M_DrawCheckbox (220, 88, show_fps.value);
+	M_DrawCheckbox (220, 88, show_fps.intValue);
 
 	M_Print (16, 96,  "        Mouse Freelook");
-	M_DrawCheckbox (220, 96, in_freelook.value);
+	M_DrawCheckbox (220, 96, in_freelook.intValue);
 
 	M_Print (16,104,  "       Water View-warp");
-	M_DrawCheckbox (220, 104, r_waterwarp.value);
+	M_DrawCheckbox (220, 104, r_waterwarp.intValue);
 
 	M_Print (16, 112, "       Field of Vision");
 	r = (scr_fov.value - 30) / (175 - 30);
@@ -1422,7 +1422,12 @@ void M_Extended_Draw()
 
 	M_Print (16, 120, "            Sound Rate");
 	if (s_khz.intValue <= 0)
-		Cvar_SetValue("s_khz", 11025);
+	{
+		if (havegus)
+			Cvar_SetValue("s_khz", 19293);
+		else
+			Cvar_SetValue("s_khz", 11025);
+	}
 	M_Print (220, 120, s_khz.string);
 }
 
@@ -1431,22 +1436,22 @@ void M_AdjustSliders_Extended (int dir)
 	switch(extended_cursor)
 	{
 	case 0:
-		Cvar_SetValue ("net_broadcast_chat", !net_broadcast_chat.value);
+		Cvar_SetValue ("net_broadcast_chat", !net_broadcast_chat.intValue);
 		break;
 	case 1:
-		Cvar_SetValue ("net_showchat", !net_showchat.value);
+		Cvar_SetValue ("net_showchat", !net_showchat.intValue);
 		break;
 	case 2:
-		Cvar_SetValue ("net_showchatgfx", !net_showchatgfx.value);
+		Cvar_SetValue ("net_showchatgfx", !net_showchatgfx.intValue);
 		break;
 	case 3:
-		Cvar_SetValue ("v_contentblend", !v_contentblend.value);
+		Cvar_SetValue ("v_contentblend", !v_contentblend.intValue);
 		break;
 	case 4:
-		Cvar_SetValue ("cl_unbindall_protection", !cl_unbindall_protection.value);
+		Cvar_SetValue ("cl_unbindall_protection", !cl_unbindall_protection.intValue);
 		break;
 	case 5:
-		Cvar_SetValue ("show_uptime", !show_uptime.value);
+		Cvar_SetValue ("show_uptime", !show_uptime.intValue);
 		break;
 	case 6:
 		if (show_time.value >= 2)
@@ -1457,13 +1462,13 @@ void M_AdjustSliders_Extended (int dir)
 			Cvar_SetValue ("show_time", 2);
 		break;
 	case 7:
-		Cvar_SetValue ("show_fps", !show_fps.value);
+		Cvar_SetValue ("show_fps", !show_fps.intValue);
 		break;
 	case 8:
-		Cvar_SetValue ("in_freelook", !in_freelook.value);
+		Cvar_SetValue ("in_freelook", !in_freelook.intValue);
 		break;
 	case 9:
-		Cvar_SetValue ("r_waterwarp", !r_waterwarp.value);
+		Cvar_SetValue ("r_waterwarp", !r_waterwarp.intValue);
 		break;
 	case 10:
 		scr_fov.value += dir * 5;

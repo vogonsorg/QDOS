@@ -267,7 +267,7 @@ void Cmd_Exec_f (void)
 	if(!strncmp(Cmd_Argv(1),"default.cfg",11)) /* FS: unbindall protection hack */
 	{
 		Con_DPrintf (DEVELOPER_MSG_VERBOSE, "default.cfg unbindall protection hack\n");
-		cl_unbindall_protection.value = 0; /* FS: disable the warning if it's default.cfg */
+		Cvar_SetValue("cl_unbindall_protection", 0); /* FS: disable the warning if it's default.cfg */
 	}
 
 	f = (char *)COM_LoadHunkFile (Cmd_Argv(1));

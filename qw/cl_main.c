@@ -1474,6 +1474,12 @@ Host_WriteConfiguration
 Writes key bindings and archived cvars to config.cfg
 ===============
 */
+/* FS: There is some slight stupidity in quake.rc executing config.cfg so a hack would
+       be needed for allowing alternate non-default configs.
+	   I would prefer such things so we don't stomp over other ports that rely on
+	   config.cfg and I'm not a fan of bundling new files or pak files if we don't
+	   have to.
+*/
 // Knightmare- this now takes cfgname as a parameter
 void Host_WriteConfiguration (char *cfgName)
 {

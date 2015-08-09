@@ -3495,16 +3495,16 @@ void M_Extended_Draw()
 	M_DrawPic ( (320-p->width)/2, 4, p);
 
 	M_Print (16,32,  "      Content Blending");
-	M_DrawCheckbox (220, 32, v_contentblend.value);
+	M_DrawCheckbox (220, 32, v_contentblend.intValue);
 
 	M_Print (16, 40, "            Full Pitch");
-	M_DrawCheckbox (220, 40, pq_fullpitch.value);
+	M_DrawCheckbox (220, 40, pq_fullpitch.intValue);
 
 	M_Print (16, 48, "         Startup Demos");
-	M_DrawCheckbox (220, 48, cl_demos.value);
+	M_DrawCheckbox (220, 48, cl_demos.intValue);
 
 	M_Print (16,56,  "     Unbindall Protect");
-	M_DrawCheckbox (220, 56, cl_unbindall_protection.value);
+	M_DrawCheckbox (220, 56, cl_unbindall_protection.intValue);
 
 	M_Print (16,64,  "           Show Uptime");
 	if (show_uptime.value < 1 )
@@ -3523,13 +3523,13 @@ void M_Extended_Draw()
 		M_Print (220, 72, "AM/PM");
 
 	M_Print (16,80,  "        Show Framerate");
-	M_DrawCheckbox (220, 80, show_fps.value);
+	M_DrawCheckbox (220, 80, show_fps.intValue);
 
 	M_Print (16,88,  "        Mouse Freelook");
-	M_DrawCheckbox (220, 88, in_freelook.value);
+	M_DrawCheckbox (220, 88, in_freelook.intValue);
 
 	M_Print (16,96,  "       Water View-warp");
-	M_DrawCheckbox (220, 96, r_waterwarp.value);
+	M_DrawCheckbox (220, 96, r_waterwarp.intValue);
 
 	M_Print (16, 104, "       Field of Vision");
 	r = (scr_fov.value - 30) / (175 - 30);
@@ -3538,7 +3538,12 @@ void M_Extended_Draw()
 
 	M_Print (16, 112, "            Sound Rate");
 	if (s_khz.intValue <= 0)
-		Cvar_SetValue("s_khz", 11025);
+	{
+		if (havegus)
+			Cvar_SetValue("s_khz", 19293);
+		else
+			Cvar_SetValue("s_khz", 11025);
+	}
 	M_Print (220, 112, s_khz.string);
 }
 
@@ -3547,17 +3552,17 @@ void M_AdjustSliders_Extended (int dir)
 	switch(extended_cursor)
 	{
 	case 0:
-		Cvar_SetValue ("v_contentblend", !v_contentblend.value);
+		Cvar_SetValue ("v_contentblend", !v_contentblend.intValue);
 		break;
 	case 1:
-		Cvar_SetValue ("pq_fullpitch", !pq_fullpitch.value);
-		Cvar_SetValue ("cl_fullpitch", pq_fullpitch.value);
+		Cvar_SetValue ("pq_fullpitch", !pq_fullpitch.intValue);
+		Cvar_SetValue ("cl_fullpitch", pq_fullpitch.intValue);
 		break;
 	case 2:
-		Cvar_SetValue ("cl_demos", !cl_demos.value);
+		Cvar_SetValue ("cl_demos", !cl_demos.intValue);
 		break;
 	case 3:
-		Cvar_SetValue ("cl_unbindall_protection", !cl_unbindall_protection.value);
+		Cvar_SetValue ("cl_unbindall_protection", !cl_unbindall_protection.intValue);
 		break;
 	case 4:
 		if (show_uptime.value >= 2)
@@ -3576,13 +3581,13 @@ void M_AdjustSliders_Extended (int dir)
 			Cvar_SetValue ("show_time", 2);
 		break;
 	case 6:
-		Cvar_SetValue ("show_fps", !show_fps.value);
+		Cvar_SetValue ("show_fps", !show_fps.intValue);
 		break;
 	case 7:
-		Cvar_SetValue ("in_freelook", !in_freelook.value);
+		Cvar_SetValue ("in_freelook", !in_freelook.intValue);
 		break;
 	case 8:
-		Cvar_SetValue ("r_waterwarp", !r_waterwarp.value);
+		Cvar_SetValue ("r_waterwarp", !r_waterwarp.intValue);
 		break;
 	case 9:
 		scr_fov.value += dir * 5;

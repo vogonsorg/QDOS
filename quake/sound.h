@@ -223,4 +223,8 @@ void S_AmbientOn (void);
 
 void S_StopBackgroundTrack(void); /* FS: So we can suport both */
 
-#endif
+/* FS: For deterimining the s_khz minimum rate */
+#define GUS_CLASSIC 1
+#define GUS_MAXPNP 2
+
+#endif // __SOUND__
