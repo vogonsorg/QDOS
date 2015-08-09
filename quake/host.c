@@ -283,28 +283,30 @@ Writes key bindings and archived cvars to config.cfg
 */
 extern qboolean   isDedicated;
 
+/* FS: TODO: Make this a function like in Q2DOS to save whatever config name we want to or whenever we want to */
 void Host_WriteConfiguration (void)
 {
-   FILE  *f;
+	FILE	*f;
+	char	filename[MAX_QPATH];
 
 // dedicated servers initialize the host but don't parse and set the
 // config.cfg cvars
-   if (host_initialized & !isDedicated)
-   {
-      f = fopen (va("%s/config.cfg",com_gamedir), "w");
-      if (!f)
-      {
-         Con_Printf ("Couldn't write config.cfg.\n");
-         return;
-      }
+	if (host_initialized & !isDedicated)
+	{
+		Com_sprintf(filename, sizeof(filename), "%s/config.cfg", com_gamedir);
+		f = fopen (filename, "w");
+		if (!f)
+		{
+			Con_Printf ("Couldn't write config.cfg.\n");
+			return;
+		}
       
-      Key_WriteBindings (f);
-      Cvar_WriteVariables (f);
+		Key_WriteBindings (f);
+		Cvar_WriteVariables (f);
 
-      fclose (f);
-   }
+		fclose (f);
+	}
 }
-
 
 /*
 =================
