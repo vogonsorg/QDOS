@@ -1526,7 +1526,7 @@ char **COM_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned
 		if ( s[strlen(s)-1] != '.' )
 		{
 			list[nfiles] = strdup( s );
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__MSDOS__)
 			strlwr( list[nfiles] );
 #endif
 			nfiles++;
