@@ -1026,11 +1026,13 @@ Mod_LoadNodes
 */
 
 #ifndef BSP2_SUPPORT
-void Mod_LoadNodes (lump_t *l)
+void Mod_LoadNodes (lump_t *l, int bsp2)
 {
 	int			i, j, count, p;
 	dnode_t		*in;
 	mnode_t 	*out;
+
+	(void)bsp2;/* unused param */
 
 	in = (void *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -1774,9 +1776,15 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 		loadmodel->fromgame = FG_QUAKEOLD;
 		break;
 	case BSP2VERSION_2PSB:
+#ifndef BSP2_SUPPORT
+		Sys_Error ("Mod_LoadBrushModel: %s is bsp2 format.\nThis QDOS version is built without bsp2 support.", mod->name);
+#endif
 		bsp2 = 1;	//first iteration
 		break;
 	case BSP2VERSION_BSP2:
+#ifndef BSP2_SUPPORT
+		Sys_Error ("Mod_LoadBrushModel: %s is bsp2 format.\nThis QDOS version is built without bsp2 support.", mod->name);
+#endif
 		bsp2 = 2;	//sanitised revision
 		break;
 	default:
@@ -1792,23 +1800,6 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 
 // load into heap
 
-#ifndef BSP2_SUPPORT
-	Mod_LoadVertexes (&header->lumps[LUMP_VERTEXES]);
-	Mod_LoadEdges (&header->lumps[LUMP_EDGES], 0);
-	Mod_LoadSurfedges (&header->lumps[LUMP_SURFEDGES]);
-	Mod_LoadTextures (&header->lumps[LUMP_TEXTURES]);
-	Mod_LoadLighting (&header->lumps[LUMP_LIGHTING]);
-	Mod_LoadPlanes (&header->lumps[LUMP_PLANES]);
-	Mod_LoadTexinfo (&header->lumps[LUMP_TEXINFO]);
-	Mod_LoadFaces_L1 (&header->lumps[LUMP_FACES]);
-	Mod_LoadMarksurfaces (&header->lumps[LUMP_MARKSURFACES], 0);
-	Mod_LoadVisibility (&header->lumps[LUMP_VISIBILITY]);
-	Mod_LoadLeafs (&header->lumps[LUMP_LEAFS], 0);
-	Mod_LoadNodes (&header->lumps[LUMP_NODES]);
-	Mod_LoadClipnodes (&header->lumps[LUMP_CLIPNODES], 0);
-	Mod_LoadEntities (&header->lumps[LUMP_ENTITIES]);
-	Mod_LoadSubmodels (&header->lumps[LUMP_MODELS]);
-#else
 	Mod_LoadVertexes (&header->lumps[LUMP_VERTEXES]);
 	Mod_LoadEdges (&header->lumps[LUMP_EDGES], bsp2);
 	Mod_LoadSurfedges (&header->lumps[LUMP_SURFEDGES]);
@@ -1824,7 +1815,6 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 	Mod_LoadClipnodes (&header->lumps[LUMP_CLIPNODES], bsp2);
 	Mod_LoadEntities (&header->lumps[LUMP_ENTITIES]);
 	Mod_LoadSubmodels (&header->lumps[LUMP_MODELS]);
-#endif
 
 	Mod_MakeHull0 ();
 	
