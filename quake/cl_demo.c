@@ -91,10 +91,10 @@ int CL_GetMessage (void)
 {
 	int		r, i;
 	float	f;
-	
+
 	if	(cls.demoplayback)
 	{
-	// decide if it is time to grab the next message		
+	// decide if it is time to grab the next message
 		if (cls.signon == SIGNONS)	// allways grab until fully connected
 		{
 			if (cls.timedemo)
@@ -112,7 +112,7 @@ int CL_GetMessage (void)
 					return 0;		// don't need another message yet
 			}
 		}
-		
+
 	// get the next message
 		fread (&net_message.cursize, 4, 1, cls.demofile);
 		VectorCopy (cl.mviewangles[0], cl.mviewangles[1]);
@@ -121,7 +121,7 @@ int CL_GetMessage (void)
 			r = fread (&f, 4, 1, cls.demofile);
 			cl.mviewangles[0][i] = LittleFloat (f);
 		}
-		
+
 		net_message.cursize = LittleLong (net_message.cursize);
 		if (net_message.cursize > MAX_MSGLEN)
 			Sys_Error ("Demo message > MAX_MSGLEN");
@@ -131,17 +131,17 @@ int CL_GetMessage (void)
 			CL_StopPlayback ();
 			return 0;
 		}
-	
+
 		return 1;
 	}
 
 	while (1)
 	{
 		r = NET_GetMessage (cls.netcon);
-		
+
 		if (r != 1 && r != 2)
 			return r;
-	
+
 	// discard nop keepalive message
 		if (net_message.cursize == 1 && net_message.data[0] == svc_nop)
 			Con_Printf ("<-- server to client keepalive\n");
@@ -151,7 +151,7 @@ int CL_GetMessage (void)
 
 	if (cls.demorecording)
 		CL_WriteDemoMessage ();
-	
+
 	return r;
 }
 
@@ -228,16 +228,19 @@ void CL_Record_f (void)
 		Con_Printf ("Forcing CD track to %i\n", cls.forcetrack);
 	}
 	else
-		track = -1;	
+		track = -1;
 
 	Com_sprintf (name, sizeof(name), "%s/%s", com_gamedir, Cmd_Argv(1));
-	
+
 //
 // start the map up
 //
 	if (c > 2)
+	{
 		Cmd_ExecuteString ( va("map %s", Cmd_Argv(2)), src_command);
-	
+		if (cls.state != ca_connected)
+			return;
+	}
 //
 // open the demo file
 //
@@ -354,9 +357,9 @@ void CL_FinishTimeDemo (void)
 {
 	int		frames;
 	float	time;
-	
+
 	cls.timedemo = false;
-	
+
 // the first frame didn't count
 	frames = (host_framecount - cls.td_startframe) - 1;
 	time = realtime - cls.td_starttime;
@@ -384,10 +387,11 @@ void CL_TimeDemo_f (void)
 	}
 
 	CL_PlayDemo_f ();
-	
+	if (!cls.demofile)
+		return;
+
 // cls.td_starttime will be grabbed at the second frame of the demo, so
 // all the loading time doesn't get counted
-	
 	cls.timedemo = true;
 	cls.td_startframe = host_framecount;
 	cls.td_lastframe = -1;		// get a new message this frame
