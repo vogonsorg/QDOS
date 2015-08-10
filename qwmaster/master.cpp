@@ -759,6 +759,8 @@ int My_Main (int argc, char **argv)
 #endif
 		// destroy old servers, etc
 		RunFrame();
+
+		msleep(1); /* FS: Don't suck up 100% CPU */
 	}
 
 	WSACleanup();	// Windows Sockets cleanup
