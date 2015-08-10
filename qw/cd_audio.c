@@ -17,80 +17,80 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 // Quake is a trademark of Id Software, Inc., (c) 1996 Id Software, Inc. All
 // rights reserved.
 
 #include <dpmi.h>
+#include <go32.h>
 #include "quakedef.h"
 #include "dosisms.h"
 
-extern	cvar_t	bgmvolume;
-
 #define ADDRESS_MODE_HSG		0
-#define ADDRESS_MODE_RED_BOOK	1
+#define ADDRESS_MODE_RED_BOOK		1
 
-#define STATUS_ERROR_BIT	0x8000
-#define STATUS_BUSY_BIT		0x0200
-#define STATUS_DONE_BIT		0x0100
-#define STATUS_ERROR_MASK	0x00ff
+#define STATUS_ERROR_BIT		0x8000
+#define STATUS_BUSY_BIT			0x0200
+#define STATUS_DONE_BIT			0x0100
+#define STATUS_ERROR_MASK		0x00ff
 
 #define ERROR_WRITE_PROTECT		0
 #define ERROR_UNKNOWN_UNIT		1
-#define ERROR_DRIVE_NOT_READY	2
-#define ERROR_UNKNOWN_COMMAND	3
+#define ERROR_DRIVE_NOT_READY		2
+#define ERROR_UNKNOWN_COMMAND		3
 #define ERROR_CRC_ERROR			4
-#define ERROR_BAD_REQUEST_LEN	5
+#define ERROR_BAD_REQUEST_LEN		5
 #define ERROR_SEEK_ERROR		6
 #define ERROR_UNKNOWN_MEDIA		7
-#define ERROR_SECTOR_NOT_FOUND	8
+#define ERROR_SECTOR_NOT_FOUND		8
 #define ERROR_OUT_OF_PAPER		9
 #define ERROR_WRITE_FAULT		10
 #define ERROR_READ_FAULT		11
-#define ERROR_GENERAL_FAILURE	12
+#define ERROR_GENERAL_FAILURE		12
 #define ERROR_RESERVED_13		13
 #define ERROR_RESERVED_14		14
-#define ERROR_BAD_DISK_CHANGE	15
+#define ERROR_BAD_DISK_CHANGE		15
 
 #define COMMAND_READ			3
 #define COMMAND_WRITE			12
 #define COMMAND_PLAY_AUDIO		132
 #define COMMAND_STOP_AUDIO		133
-#define COMMAND_RESUME_AUDIO	136
+#define COMMAND_RESUME_AUDIO		136
 
 #define READ_REQUEST_AUDIO_CHANNEL_INFO		4
-#define READ_REQUEST_DEVICE_STATUS			6
-#define READ_REQUEST_MEDIA_CHANGE			9
+#define READ_REQUEST_DEVICE_STATUS		6
+#define READ_REQUEST_MEDIA_CHANGE		9
 #define READ_REQUEST_AUDIO_DISK_INFO		10
 #define READ_REQUEST_AUDIO_TRACK_INFO		11
-#define READ_REQUEST_AUDIO_STATUS			15
+#define READ_REQUEST_AUDIO_STATUS		15
 
-#define WRITE_REQUEST_EJECT					0
-#define WRITE_REQUEST_RESET					2
+#define WRITE_REQUEST_EJECT			0
+#define WRITE_REQUEST_RESET			2
 #define WRITE_REQUEST_AUDIO_CHANNEL_INFO	3
 
-#define STATUS_DOOR_OPEN					0x00000001
-#define STATUS_DOOR_UNLOCKED				0x00000002
-#define STATUS_RAW_SUPPORT					0x00000004
-#define STATUS_READ_WRITE					0x00000008
-#define STATUS_AUDIO_SUPPORT				0x00000010
-#define STATUS_INTERLEAVE_SUPPORT			0x00000020
-#define STATUS_BIT_6_RESERVED				0x00000040
-#define STATUS_PREFETCH_SUPPORT				0x00000080
+#define STATUS_DOOR_OPEN			0x00000001
+#define STATUS_DOOR_UNLOCKED			0x00000002
+#define STATUS_RAW_SUPPORT			0x00000004
+#define STATUS_READ_WRITE			0x00000008
+#define STATUS_AUDIO_SUPPORT			0x00000010
+#define STATUS_INTERLEAVE_SUPPORT		0x00000020
+#define STATUS_BIT_6_RESERVED			0x00000040
+#define STATUS_PREFETCH_SUPPORT			0x00000080
 #define STATUS_AUDIO_MANIPLUATION_SUPPORT	0x00000100
 #define STATUS_RED_BOOK_ADDRESS_SUPPORT		0x00000200
 
-#define MEDIA_NOT_CHANGED		1
-#define MEDIA_STATUS_UNKNOWN	0
-#define MEDIA_CHANGED			-1
+#define MEDIA_NOT_CHANGED			1
+#define MEDIA_STATUS_UNKNOWN			0
+#define MEDIA_CHANGED				(-1)
 
-#define AUDIO_CONTROL_MASK				0xd0
+#define AUDIO_CONTROL_MASK			0xd0
 #define AUDIO_CONTROL_DATA_TRACK		0x40
 #define AUDIO_CONTROL_AUDIO_2_TRACK		0x00
-#define AUDIO_CONTROL_AUDIO_2P_TRACK	0x10
+#define AUDIO_CONTROL_AUDIO_2P_TRACK		0x10
 #define AUDIO_CONTROL_AUDIO_4_TRACK		0x80
-#define AUDIO_CONTROL_AUDIO_4P_TRACK	0x90
+#define AUDIO_CONTROL_AUDIO_4P_TRACK		0x90
 
-#define AUDIO_STATUS_PAUSED				0x0001
+#define AUDIO_STATUS_PAUSED			0x0001
 
 #pragma pack(1)
 
@@ -131,7 +131,7 @@ struct cd_request
 	union
 	{
 		struct	playAudioRequest	playAudio;
-		struct	readRequest			read;
+		struct	readRequest		read;
 		struct	writeRequest		write;
 	} x;
 };
@@ -153,7 +153,7 @@ struct audioChannelInfo_s
 struct deviceStatus_s
 {
 	char	code;
-	int		status;
+	int	status;
 };
 
 struct mediaChange_s
@@ -167,14 +167,14 @@ struct audioDiskInfo_s
 	char	code;
 	char	lowTrack;
 	char	highTrack;
-	int		leadOutStart;
+	int	leadOutStart;
 };
 
 struct audioTrackInfo_s
 {
 	char	code;
 	char	track;
-	int		start;
+	int	start;
 	char	control;
 };
 
@@ -182,8 +182,8 @@ struct audioStatus_s
 {
 	char	code;
 	short	status;
-	int		PRstartLocation;
-	int		PRendLocation;
+	int	PRstartLocation;
+	int	PRendLocation;
 };
 
 struct reset_s
@@ -199,7 +199,7 @@ union readInfo_u
 	struct audioDiskInfo_s		audioDiskInfo;
 	struct audioTrackInfo_s		audioTrackInfo;
 	struct audioStatus_s		audioStatus;
-	struct reset_s				reset;
+	struct reset_s			reset;
 };
 
 #pragma pack()
@@ -224,25 +224,27 @@ typedef struct
 
 static struct cd_request	*cdRequest;
 static union readInfo_u		*readInfo;
-static cd_info				cd;
+static cd_info			cd;
 
 static qboolean	playing = false;
 static qboolean	wasPlaying = false;
 static qboolean	mediaCheck = false;
 static qboolean	initialized = false;
 static qboolean	enabled = true;
-static qboolean playLooping = false;
+static qboolean	playLooping = false;
 static short	cdRequestSegment;
 static short	cdRequestOffset;
 static short	readInfoSegment;
 static short	readInfoOffset;
-static byte 	remap[256];
-static byte		cdrom;
-static byte		playTrack;
-static byte		cdvolume;
+static byte	remap[256];
+static byte	cdrom;
+static byte	firstcdrom, numcdroms;
+static byte	cdroms_list[32];
+static byte	playTrack;
+static byte	cdvolume;
 
 
-static int RedBookToSector(int rb)
+static int RedBookToSector (int rb)
 {
 	byte	minute;
 	byte	second;
@@ -255,7 +257,7 @@ static int RedBookToSector(int rb)
 }
 
 
-static void CDAudio_Reset(void)
+static void CDAudio_Reset (void)
 {
 	cdRequest->headerLength = 13;
 	cdRequest->unit = 0;
@@ -279,7 +281,7 @@ static void CDAudio_Reset(void)
 }
 
 
-static void CDAudio_Eject(void)
+static void CDAudio_Eject (void)
 {
 	cdRequest->headerLength = 13;
 	cdRequest->unit = 0;
@@ -303,7 +305,7 @@ static void CDAudio_Eject(void)
 }
 
 
-static int CDAudio_GetAudioTrackInfo(byte track, int *start)
+static int CDAudio_GetAudioTrackInfo (byte track, int *start)
 {
 	byte	control;
 
@@ -330,7 +332,7 @@ static int CDAudio_GetAudioTrackInfo(byte track, int *start)
 
 	if (cdRequest->status & STATUS_ERROR_BIT)
 	{
-		Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio_GetAudioTrackInfo %04x\n", cdRequest->status & 	0xffff);
+		Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio_GetAudioTrackInfo %04x\n", cdRequest->status & 0xffff);
 		return -1;
 	}
 
@@ -340,9 +342,9 @@ static int CDAudio_GetAudioTrackInfo(byte track, int *start)
 }
 
 
-static int CDAudio_GetAudioDiskInfo(void)
+static int CDAudio_GetAudioDiskInfo (void)
 {
-	int n;
+	int		n;
 
 	cdRequest->headerLength = 13;
 	cdRequest->unit = 0;
@@ -366,7 +368,7 @@ static int CDAudio_GetAudioDiskInfo(void)
 
 	if (cdRequest->status & STATUS_ERROR_BIT)
 	{
-		Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio_GetAudioDiskInfo %04x\n", cdRequest->status & 	0xffff);
+		Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio_GetAudioDiskInfo %04x\n", cdRequest->status & 0xffff);
 		return -1;
 	}
 
@@ -390,7 +392,7 @@ static int CDAudio_GetAudioDiskInfo(void)
 }
 
 
-static int CDAudio_GetAudioStatus(void)
+static int CDAudio_GetAudioStatus (void)
 {
 	cdRequest->headerLength = 13;
 	cdRequest->unit = 0;
@@ -418,7 +420,7 @@ static int CDAudio_GetAudioStatus(void)
 }
 
 
-static int CDAudio_MediaChange(void)
+static int CDAudio_MediaChange (void)
 {
 	cdRequest->headerLength = 13;
 	cdRequest->unit = 0;
@@ -444,15 +446,9 @@ static int CDAudio_MediaChange(void)
 }
 
 
-byte CDAudio_GetVolume (void)
-{
-	return cdvolume;
-}
-
-
 // we set the volume to 0 first and then to the desired volume
 // some cd-rom drivers seem to need it done this way
-void CDAudio_SetVolume (byte volume)
+static void CDAudio_SetVolume (byte volume)
 {
 	if (!initialized || !enabled)
 		return;
@@ -498,11 +494,13 @@ void CDAudio_SetVolume (byte volume)
 }
 
 
-void CDAudio_Play(byte track, qboolean looping)
+void CDAudio_Play (byte track, qboolean looping)
 {
+	int		volume;
+
 	if (!initialized || !enabled)
 		return;
-	
+
 	if (!cd.valid)
 		return;
 
@@ -531,6 +529,19 @@ void CDAudio_Play(byte track, qboolean looping)
 		return;
 	}
 
+	volume = (int)(bgmvolume.value * 255.0);
+	if (volume < 0)
+	{
+		Cvar_SetValue ("bgmvolume", 0.0);
+		volume = 0;
+	}
+	else if (volume > 255)
+	{
+		Cvar_SetValue ("bgmvolume", 1.0);
+		volume = 255;
+	}
+	CDAudio_SetVolume (volume);
+
 	cdRequest->headerLength = 13;
 	cdRequest->unit = 0;
 	cdRequest->command = COMMAND_PLAY_AUDIO;
@@ -558,11 +569,11 @@ void CDAudio_Play(byte track, qboolean looping)
 }
 
 
-void CDAudio_Stop(void)
+void CDAudio_Stop (void)
 {
 	if (!initialized || !enabled)
 		return;
-	
+
 	cdRequest->headerLength = 13;
 	cdRequest->unit = 0;
 	cdRequest->command = COMMAND_STOP_AUDIO;
@@ -578,22 +589,24 @@ void CDAudio_Stop(void)
 	playing = false;
 }
 
-void CDAudio_Pause(void)
+
+void CDAudio_Pause (void)
 {
-	CDAudio_Stop();  /* FS: For reasons that escape all logic this was removed... */
+	CDAudio_Stop();
 }
 
-void CDAudio_Resume(void)
+
+void CDAudio_Resume (void)
 {
 	if (!initialized || !enabled)
 		return;
-	
+
 	if (!cd.valid)
 		return;
 
 	if (!wasPlaying)
 		return;
-	
+
 	cdRequest->headerLength = 13;
 	cdRequest->unit = 0;
 	cdRequest->command = COMMAND_RESUME_AUDIO;
@@ -612,8 +625,7 @@ void CDAudio_Resume(void)
 static void CD_f (void)
 {
 	char	*command;
-	int		ret;
-	int		n;
+	int		ret, n;
 	int		startAddress;
 
 	if (Cmd_Argc() < 2)
@@ -725,11 +737,11 @@ static void CD_f (void)
 }
 
 
-void CDAudio_Update(void)
+void CDAudio_Update (void)
 {
 	int		ret;
 	int		newVolume;
-	static	double lastUpdate;
+	static double	lastUpdate;
 
 	if (!initialized || !enabled)
 		return;
@@ -740,7 +752,7 @@ void CDAudio_Update(void)
 
 	if (mediaCheck)
 	{
-		static	double lastCheck;
+		static double	lastCheck;
 
 		if ((realtime - lastCheck) < 5.0)
 			return;
@@ -759,18 +771,20 @@ void CDAudio_Update(void)
 	}
 
 	newVolume = (int)(bgmvolume.value * 255.0);
-	if (newVolume < 0)
+	if (newVolume != cdvolume)
 	{
-		Cvar_SetValue ("bgmvolume", 0.0);
-		newVolume = 0;
-	}
-	else if (newVolume > 255)
-	{
-		Cvar_SetValue ("bgmvolume", 1.0);
-		newVolume = 255;
-	}
-	if (cdvolume != newVolume)
+		if (newVolume < 0)
+		{
+			Cvar_SetValue ("bgmvolume", 0.0);
+			newVolume = 0;
+		}
+		else if (newVolume > 255)
+		{
+			Cvar_SetValue ("bgmvolume", 1.0);
+			newVolume = 255;
+		}
 		CDAudio_SetVolume (newVolume);
+	}
 
 	if (playing)
 	{
@@ -785,19 +799,67 @@ void CDAudio_Update(void)
 }
 
 
-qboolean CDAudio_Playing(void)
+static byte get_cddev_arg (const char *arg)
 {
-	return playing;
+/* arg should be like "D", "D:" or "D:\", make
+ * sure it is so. Also check if this is really
+ * a CDROM drive. */
+	byte drivenum;
+	__dpmi_regs r;
+
+	if (!arg || ! *arg)
+		return 0xff;
+	if (arg[1] != '\0')
+	{
+		if (arg[1] != ':')
+			return 0xff;
+		if (arg[2] != '\0')
+		{
+			if (arg[2] != '\\' &&
+			    arg[2] != '/')
+				return 0xff;
+			if (arg[3] != '\0')
+				return 0xff;
+		}
+	}
+
+	drivenum = *arg;
+	if (drivenum >= 'A' && drivenum <= 'Z')
+		drivenum -= 'A';
+	else if (drivenum >= 'a' && drivenum <= 'z')
+		drivenum -= 'a';
+	else
+		return 0xff;
+
+	r.x.ax = 0x150b;
+	r.x.cx = drivenum;	/* 0 = A: */
+	__dpmi_int(0x2f, &r);
+	if (r.x.ax != 0 /*&& r.x.bx == 0xadad*/)
+		return drivenum;
+
+	Con_Printf("%c: is not a CDROM drive\n", drivenum + 'A');
+	return 0xff;
 }
 
-int CDAudio_Init(void)
+static const byte *get_cdroms_list (void)
+{
+	__dpmi_regs r;
+
+	memset (cdroms_list, 0, sizeof(cdroms_list));
+	r.x.ax = 0x150d;
+	r.x.bx = __tb & 0x0f;
+	r.x.es = (__tb >> 4) & 0xffff;
+	if (__dpmi_int(0x2f, &r) != 0)
+		return NULL;
+
+	dosmemget(__tb, numcdroms, cdroms_list);
+	return cdroms_list;
+}
+
+int CDAudio_Init (void)
 {
 	char	*memory;
 	int		n;
-
-	//no cd audio for dedicated servers I guess.......
-	//if (cls.state == ca_dedicated)
-	//        return -1;
 
 	if (COM_CheckParm("-nocdaudio") || COM_CheckParm("-nocd")) /* FS: Added -nocd */
 		return -1;
@@ -810,34 +872,49 @@ int CDAudio_Init(void)
 	dos_int86 (0x2f);
 	if (regs.x.bx == 0)
 	{
-		Con_Printf("\nMSCDEX not loaded, music is\ndisabled.  Use \"-nocdaudio\" if you\nwish to avoid this message in the\nfuture.  See README.TXT for help.\n");
-		return -1; /* FS: Just warn me, no need for the press any key shit. */
+		Con_Printf ("MSCDEX not loaded, CD Audio is disabled.\n");
+		return -1;
 	}
 
-	if (regs.x.bx > 1)
-		Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio_Init: First CD-ROM drive will be used\n");
-
-	cdrom = regs.x.cx;
+	numcdroms = regs.x.bx;
+	firstcdrom = regs.x.cx;
+	cdrom = firstcdrom;
 
 	regs.x.ax = 0x150c;
 	regs.x.bx = 0;
 	dos_int86 (0x2f);
 	if (regs.x.bx == 0)
 	{
-		Con_NotifyBox (
-			"MSCDEX version 2.00 or later\n"
-			"required for music. See README.TXT\n"
-			"for help.\n"
-			);                      
-		Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio_Init: MSCDEX version 2.00 or later required.\n");
+		Con_Printf("%s: MSCDEX version 2.00 or later required.\n", __FUNCTION__);
 		return -1;
 	}
 
-	memory = dos_getmemory(sizeof(struct cd_request
-) + sizeof(union readInfo_u));
+	if (!get_cdroms_list ())
+	{
+		cdroms_list[0] = firstcdrom;
+		Con_Printf("CDAudio_Init: Couldn't get available CD drive letters\n");
+	}
+
+	Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio_Init: %u CD-ROM drive(s) available:", numcdroms);
+	for (n = 0; n < numcdroms && cdroms_list[n]; n++)
+		Con_DPrintf (DEVELOPER_MSG_CD, " %c", cdroms_list[n] + 'A');
+	Con_DPrintf(DEVELOPER_MSG_CD, ".\n");
+
+	if ((n = COM_CheckParm("-cddev")) != 0 && n < com_argc - 1)
+	{
+		cdrom = get_cddev_arg(com_argv[n + 1]);
+		if (cdrom == 0xff)
+		{
+			Con_Printf("Invalid argument to -cddev\n");
+			return -1;
+		}
+	}
+	Con_Printf("CDAudio_Init: Using CD-ROM drive %c:\n", cdrom + 'A');
+
+	memory = (char *) dos_getmemory(sizeof(struct cd_request) + sizeof(union readInfo_u));
 	if (memory == NULL)
 	{
-		Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio_Init: Unable to allocate low memory.\n");
+		Con_DPrintf(DEVELOPER_MSG_CD, "%s: Unable to allocate low memory.\n", __FUNCTION__);
 		return -1;
 	}
 
@@ -868,9 +945,11 @@ int CDAudio_Init(void)
 }
 
 
-void CDAudio_Shutdown(void)
+void CDAudio_Shutdown (void)
 {
 	if (!initialized)
 		return;
 	CDAudio_Stop();
+	CDAudio_SetVolume (255);
 }
+
