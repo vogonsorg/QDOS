@@ -204,7 +204,7 @@ int UDP_OpenSocket (int port)
 	return newsocket;
 
 ErrorReturn:
-	close (newsocket);
+	UDP_CloseSocket (newsocket);
 	return -1;
 }
 
@@ -214,7 +214,7 @@ int UDP_CloseSocket (int socket)
 {
 	if (socket == net_broadcastsocket)
 		net_broadcastsocket = 0;
-	return close (socket);
+	return closesocket (socket);
 }
 
 
@@ -294,7 +294,7 @@ int UDP_CheckNewConnections (void)
 	if (net_acceptsocket == -1)
 		return -1;
 
-	if (ioctl (net_acceptsocket, FIONREAD, &available) == -1)
+	if (ioctlsocket (net_acceptsocket, FIONREAD, &available) == -1)
 		Sys_Error ("UDP: ioctlsocket (FIONREAD) failed\n");
 	if (available)
 		return net_acceptsocket;
