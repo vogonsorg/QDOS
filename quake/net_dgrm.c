@@ -127,7 +127,7 @@ void NET_Ban_f (void)
 	}
 	else
 	{
-		if (pr_global_struct->deathmatch && !host_client->privileged)
+		if (pr_global_struct->deathmatch)
 			return;
 		print = SV_ClientPrintf;
 	}
