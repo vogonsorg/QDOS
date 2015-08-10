@@ -1082,8 +1082,6 @@ void R_InitTurb (void)
 
 void R_Restart_f (void)
 {
-	int		i;
-
 	r_viewleaf = NULL;
 	R_ClearParticles ();
 

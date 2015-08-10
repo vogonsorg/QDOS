@@ -83,7 +83,7 @@ void D_ViewChanged (void)
 	d_vrecty = r_refdef.vrect.y;
 	d_vrectright_particle = r_refdef.vrectright - d_pix_max;
 	d_vrectbottom_particle =
-	r_refdef.vrectbottom - (d_pix_max << d_y_aspect_shift);
+			r_refdef.vrectbottom - (d_pix_max << d_y_aspect_shift);
 
 	{
 		int		i;

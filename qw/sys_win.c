@@ -497,16 +497,12 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	/* FS */
 	t = COM_CheckParm("-mem");
-	if (t)
-		parms.memsize = (int) (Q_atof(com_argv[t+1]) * 1024 * 1024);
+	if (t && t < com_argc-1)
+		parms.memsize = Q_atoi(com_argv[t+1]) * 1024 * 1024;
 
-	if (COM_CheckParm ("-heapsize"))
-	{
-		t = COM_CheckParm("-heapsize") + 1;
-
-		if (t < com_argc)
-			parms.memsize = Q_atoi (com_argv[t]) * 1024;
-	}
+	t = COM_CheckParm("-heapsize");
+	if (t && t < com_argc-1)
+		parms.memsize = Q_atoi(com_argv[t+1]) * 1024;
 
 	parms.membase = malloc (parms.memsize);
 

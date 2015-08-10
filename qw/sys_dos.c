@@ -610,43 +610,26 @@ Sys_GetMemory
 */
 void Sys_GetMemory(void)
 {
-	int             j, tsize;
+	int j;
 
-	j = COM_CheckParm("-mem");
-	if (j)
-	{
-		quakeparms.memsize = (int) (Q_atof(com_argv[j+1]) * 1024 * 1024);
-		quakeparms.membase = malloc (quakeparms.memsize);
-	}
-	else
-	{
-		int j;
-		//quakeparms.membase = dos_getmaxlockedmem (&quakeparms.memsize);
-		//I've totally screwed this up.. so I just cheat and force a malloc of 30MB.  sorry all you 16mb users out there.
-		j=32; /* FS: Was 30 */
-		quakeparms.memsize = (int) j * 1024 * 1024;
-		quakeparms.membase = malloc (quakeparms.memsize);
-	}
+	//I've totally screwed this up.. so I just cheat and force a malloc of 32MB.  sorry all you 16mb users out there.
+	quakeparms.memsize = 0x2000000;
 
-	fprintf(stderr, "malloc'd: %d\n", quakeparms.memsize);
+	if ((j = COM_CheckParm("-mem")) != 0 && j < com_argc-1)
+		quakeparms.memsize = Q_atoi(com_argv[j+1]) * 1024 * 1024;
 
-	if (COM_CheckParm ("-noclear")) /* FS: Wanted the option */
-	{
-		return;
-	}
-	else
+	if ((j = COM_CheckParm ("-heapsize")) != 0 && j < com_argc-1)
+		quakeparms.memsize = Q_atoi(com_argv[j+1]) * 1024;
+
+	quakeparms.membase = malloc (quakeparms.memsize);
+
+	printf("malloc'd: %d\n", quakeparms.memsize);
+
+	if (!COM_CheckParm ("-noclear")) /* FS: Wanted the option */
 	{
 		printf("Clearing allocated memory...\n");
 		memset(quakeparms.membase,0x0,quakeparms.memsize); // JASON: Clear memory on startup
 		printf("Done!  Continuing to load Quake.\n");
-	}
-
-	if (COM_CheckParm ("-heapsize"))
-	{
-		tsize = Q_atoi (com_argv[COM_CheckParm("-heapsize") + 1]) * 1024;
-
-		if (tsize < quakeparms.memsize)
-			quakeparms.memsize = tsize;
 	}
 }
 
