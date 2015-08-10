@@ -9,6 +9,8 @@ USE_BWTCP=yes
 USE_MPATH=yes
 # whether to use OGG VORBIS
 USE_OGG=yes
+# use tremor library for ogg/vorbis:
+USE_TREMOR=1
 # whether to use BSP2 Support (needs further testing, but appears OK)
 USE_BSP2=yes
 
@@ -30,7 +32,12 @@ endif
 ifeq ($(USE_OGG),yes)
 CFLAGS+= -DOGG_SUPPORT
 CFLAGS+= -I../3rdparty/include
+ifneq ($(USE_TREMOR),1)
 LIBS  += -L../3rdparty/lib -lvorbisfile -lvorbis -logg
+else
+CFLAGS+= -DVORBIS_USE_TREMOR
+LIBS  += -L../3rdparty/lib -lvorbisidec -logg
+endif
 endif
 ifeq ($(USE_BSP2),yes)
 CFLAGS+= -DBSP2_SUPPORT
@@ -190,4 +197,3 @@ $(O)/%.o: %.S
 	$(DO_AS) $(CFLAGS) -c $< -o $@
 $(O)/%.o: %.s
 	$(DO_AS) $(CFLAGS) -c $< -o $@
-
