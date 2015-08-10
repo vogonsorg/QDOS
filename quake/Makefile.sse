@@ -184,7 +184,7 @@ clean:
 	rm -f $(O)/Goa/SDK/*.o
 
 qdossse.exe: $(OBJS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) -o dqsse.exe $(LIBS)
+	$(CC) $(OBJS) $(LDFLAGS) $(LIBS) -o dqsse.exe
 	rm -f qdossse.exe
 	cp -p dqsse.exe qdossse.exe
 	$(STRIP) qdossse.exe

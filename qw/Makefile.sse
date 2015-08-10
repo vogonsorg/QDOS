@@ -141,7 +141,7 @@ clean:
 	rm -f $(O)/Goa/Sdk/*.o
 
 qwsse.exe: $(OBJECTS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJECTS) -o dqwsse.exe $(LIBS)
+	$(CC) $(OBJECTS) $(LDFLAGS) $(LIBS) -o dqwsse.exe
 	rm -f qwsse.exe
 	cp -p dqwsse.exe qwsse.exe
 	$(STRIP) qwsse.exe

@@ -141,7 +141,7 @@ clean:
 	rm -f $(O)/Goa/Sdk/*.o
 
 qw.exe: $(OBJECTS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJECTS) -o dqw.exe $(LIBS)
+	$(CC) $(OBJECTS) $(LDFLAGS) $(LIBS) -o dqw.exe
 	rm -f qw.exe
 	cp -p dqw.exe qw.exe
 	$(STRIP) qw.exe

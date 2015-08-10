@@ -184,7 +184,7 @@ clean:
 	rm -f $(O)/Goa/SDK/*.o
 
 qdos.exe: $(OBJS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) -o dquake.exe $(LIBS)
+	$(CC) $(OBJS) $(LDFLAGS) $(LIBS) -o dquake.exe
 	rm -f qdos.exe
 	cp -p dquake.exe qdos.exe
 	$(STRIP) qdos.exe

@@ -33,7 +33,7 @@ clean:
 	rm -f *.o
 
 gspydos.exe: $(OBJECTS)
-	$(CC) $(CFLAGS) $(OBJECTS) -o gspydos.exe $(CURLLFLAGS) -lm $(WLFLAGS)
+	$(CC) $(OBJECTS) $(CURLLFLAGS) -lm $(WLFLAGS) -o gspydos.exe
 #	rm -f qdos.exe
 #	cp -p dquake.exe qdos.exe
 #	$(STRIP) qdos.exe
