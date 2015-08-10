@@ -154,6 +154,7 @@ int Q_strncasecmp (char *s1, char *s2, int n);
 int	Q_atoi (char *str);
 float Q_atof (char *str);
 size_t Q_strlcpy (char *dst, const char *src, size_t siz); /* FS: From OpenBSD */
+size_t Q_strlcat (char *dst, const char *src, size_t siz); /* FS: From OpenBSD */
 
 //============================================================================
 

@@ -1,9 +1,4 @@
-/*
-	strl_fn.h
-	header file for BSD strlcat and strlcpy
-
-	$Id: strl_fn.h 4268 2011-10-18 14:55:43Z sezero $
-*/
+/*	header file for BSD strlcat and strlcpy		*/
 
 #ifndef __STRLFUNCS_H
 #define __STRLFUNCS_H

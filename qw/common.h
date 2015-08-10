@@ -224,6 +224,7 @@ void MSG_ReadDeltaUsercmd (struct usercmd_s *from, struct usercmd_s *cmd);
 int	Q_atoi (char *str);
 float Q_atof (char *str);
 size_t Q_strlcpy (char *dst, const char *src, size_t siz); /* FS: From OpenBSD */
+size_t Q_strlcat (char *dst, const char *src, size_t siz); /* FS: From OpenBSD */
 
 //============================================================================
 
