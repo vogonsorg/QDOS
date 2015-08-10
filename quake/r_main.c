@@ -1080,3 +1080,52 @@ void R_InitTurb (void)
 	}
 }
 
+void R_Restart_f (void)
+{
+	int		i;
+	
+	r_viewleaf = NULL;
+	R_ClearParticles ();
+
+	r_cnumsurfs = r_maxsurfs.value;
+
+	if (r_cnumsurfs <= MINSURFACES)
+		r_cnumsurfs = MINSURFACES;
+
+	if (r_cnumsurfs > NUMSTACKSURFACES)
+	{
+		surfaces = Hunk_AllocName (r_cnumsurfs * sizeof(surf_t), "surfaces");
+		surface_p = surfaces;
+		surf_max = &surfaces[r_cnumsurfs];
+		r_surfsonstack = false;
+	// surface 0 doesn't really exist; it's just a dummy because index 0
+	// is used to indicate no edge attached to surface
+		surfaces--;
+		R_SurfacePatch ();
+	}
+	else
+	{
+		r_surfsonstack = true;
+	}
+
+	r_maxedgesseen = 0;
+	r_maxsurfsseen = 0;
+
+	r_numallocatededges = r_maxedges.value;
+
+	if (r_numallocatededges < MINEDGES)
+		r_numallocatededges = MINEDGES;
+
+	if (r_numallocatededges <= NUMSTACKEDGES)
+	{
+		auxedges = NULL;
+	}
+	else
+	{
+		auxedges = Hunk_AllocName (r_numallocatededges * sizeof(edge_t),
+								   "edges");
+	}
+
+	r_dowarpold = false;
+	r_viewchanged = true;
+}

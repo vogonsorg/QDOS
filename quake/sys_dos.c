@@ -658,7 +658,7 @@ Sys_GetMemory
 */
 void Sys_GetMemory(void)
 {
-	int             j, tsize;
+	int j, tsize;
 
 	j = COM_CheckParm("-mem");
 	if (j)

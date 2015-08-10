@@ -108,7 +108,7 @@ void CL_ParseTEnt (void)
 {
 	int		type;
 	vec3_t	pos;
-//	vec3_t	color; /* FS: Nehara */
+	vec3_t	color; /* FS: Nehara */
 	dlight_t	*dl;
 	int		rnd;
 	int		colorStart, colorLength;
@@ -247,13 +247,20 @@ void CL_ParseTEnt (void)
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
 		break;
 	case TE_EXPLOSION3:
-/*		pos[0] =*/ MSG_ReadCoord ();
-/*		pos[1] =*/ MSG_ReadCoord ();
-/*		pos[2] =*/ MSG_ReadCoord ();
-/*		color[0] =*/ MSG_ReadCoord();
-/*		color[1] =*/ MSG_ReadCoord ();
-/*		color[2] =*/ MSG_ReadCoord ();
-		Con_DPrintf(DEVELOPER_MSG_VERBOSE, "Not implemented!\n"); /* FS: FIXME: For Nehahra */
+		pos[0] = MSG_ReadCoord ();
+		pos[1] = MSG_ReadCoord ();
+		pos[2] = MSG_ReadCoord ();
+		color[0] = MSG_ReadCoord();
+		color[1] = MSG_ReadCoord();
+		color[2] = MSG_ReadCoord();
+		R_ParticleExplosion (pos);
+		dl = CL_AllocDlight (0);
+		VectorCopy (pos, dl->origin);
+		dl->radius = 350;
+		dl->die = cl.time + 0.5;
+		dl->decay = 300;
+		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
+		Con_DPrintf(DEVELOPER_MSG_VERBOSE, "TE_EXPLOSION3 Not fully implemented!\n"); /* FS: FIXME: For Nehahra */
 		break;
 	case TE_LIGHTNING4NEH:
 		pos[0] = MSG_ReadCoord ();

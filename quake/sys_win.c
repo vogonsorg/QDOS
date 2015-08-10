@@ -791,6 +791,11 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	if (extended_mod) /* FS: For big boy mods */
 		parms.memsize = (int) 64 * 1024 * 1024;
 
+	/* FS */
+	t = COM_CheckParm("-mem");
+	if (t)
+		parms.memsize = (int) (Q_atof(com_argv[t+1]) * 1024 * 1024);
+
 	if (COM_CheckParm ("-heapsize"))
 	{
 		t = COM_CheckParm("-heapsize") + 1;
