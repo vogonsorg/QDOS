@@ -268,11 +268,12 @@ void Z_CheckHeap (void)
 
 #define	HUNK_SENTINAL	0x1df001ed
 
+#define HUNKNAME_LEN	8
 typedef struct
 {
 	int		sentinal;
 	int		size;		// including sizeof(hunk_t), -1 = not allocated
-	char	name[8];
+	char	name[HUNKNAME_LEN];
 } hunk_t;
 
 byte	*hunk_base;
@@ -320,9 +321,8 @@ void Hunk_Print (qboolean all)
 	hunk_t	*h, *next, *endlow, *starthigh, *endhigh;
 	int		count, sum;
 	int		totalblocks;
-	char	name[9];
+	char	name[HUNKNAME_LEN];
 
-	name[8] = 0;
 	count = 0;
 	sum = 0;
 	totalblocks = 0;
@@ -347,7 +347,7 @@ void Hunk_Print (qboolean all)
 			Con_Printf ("-------------------------\n");
 			h = starthigh;
 		}
-		
+
 	//
 	// if totally done, break
 	//
@@ -361,7 +361,7 @@ void Hunk_Print (qboolean all)
 			Sys_Error ("Hunk_Check: trahsed sentinal");
 		if (h->size < 16 || h->size + (byte *)h - hunk_base > hunk_size)
 			Sys_Error ("Hunk_Check: bad size");
-			
+
 		next = (hunk_t *)((byte *)h+h->size);
 		count++;
 		totalblocks++;
@@ -370,15 +370,15 @@ void Hunk_Print (qboolean all)
 	//
 	// print the single block
 	//
-		memcpy (name, h->name, 8);
+		memcpy (name, h->name, HUNKNAME_LEN);
 		if (all)
 			Con_Printf ("%8p :%8i %8s\n",h, h->size, name);
-			
+
 	//
 	// print the total
 	//
-		if (next == endlow || next == endhigh || 
-		strncmp (h->name, next->name, 8) )
+		if (next == endlow || next == endhigh ||
+		    strncmp (h->name, next->name, HUNKNAME_LEN - 1))
 		{
 			if (!all)
 				Con_Printf ("          :%8i %8s (TOTAL)\n",sum, name);
@@ -434,7 +434,7 @@ void *Hunk_AllocName (int size, char *name)
 	
 	h->size = size;
 	h->sentinal = HUNK_SENTINAL;
-	Q_strncpy (h->name, name, 8);
+	Q_strncpy (h->name, name, HUNKNAME_LEN - 1);
 	
 	return (void *)(h+1);
 }
@@ -525,7 +525,7 @@ void *Hunk_HighAllocName (int size, char *name)
 	memset (h, 0, size);
 	h->size = size;
 	h->sentinal = HUNK_SENTINAL;
-	Q_strncpy (h->name, name, 8);
+	Q_strncpy (h->name, name, HUNKNAME_LEN - 1);
 
 	return (void *)(h+1);
 }
@@ -567,11 +567,12 @@ CACHE MEMORY
 ===============================================================================
 */
 
+#define CACHENAME_LEN	16
 typedef struct cache_system_s
 {
 	int						size;		// including this header
 	cache_user_t			*user;
-	char					name[16];
+	char					name[CACHENAME_LEN];
 	struct cache_system_s	*prev, *next;
 	struct cache_system_s	*lru_prev, *lru_next;	// for LRU flushing	
 } cache_system_t;
@@ -884,7 +885,7 @@ void *Cache_Alloc (cache_user_t *c, int size, char *name)
 
 	if (c->data)
 		Sys_Error ("Cache_Alloc: allready allocated");
-	
+
 	if (size <= 0)
 		Sys_Error ("Cache_Alloc: size %i", size);
 
@@ -896,19 +897,18 @@ void *Cache_Alloc (cache_user_t *c, int size, char *name)
 		cs = Cache_TryAlloc (size, false);
 		if (cs)
 		{
-			strncpy (cs->name, name, sizeof(cs->name)-1);
+			strncpy (cs->name, name, CACHENAME_LEN - 1);
 			c->data = (void *)(cs+1);
 			cs->user = c;
 			break;
 		}
-	
+
 	// free the least recently used cahedat
 		if (cache_head.lru_prev == &cache_head)
-			Sys_Error ("Cache_Alloc: out of memory");
-													// not enough memory at all
+			Sys_Error ("Cache_Alloc: out of memory");	// not enough memory at all
 		Cache_Free ( cache_head.lru_prev->user );
-	} 
-	
+	}
+
 	return Cache_Check (c);
 }
 
