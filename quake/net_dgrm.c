@@ -421,7 +421,7 @@ int	Datagram_GetMessage (qsocket_t *sock)
 			sock->sendMessageLength -= MAX_DATAGRAM;
 			if (sock->sendMessageLength > 0)
 			{
-				Q_memcpy(sock->sendMessage, sock->sendMessage+MAX_DATAGRAM, sock->sendMessageLength);
+				memmove (sock->sendMessage, sock->sendMessage + MAX_DATAGRAM, sock->sendMessageLength);
 				sock->sendNext = true;
 			}
 			else
@@ -895,8 +895,7 @@ JustDoIt:
 
 int Datagram_Init (void)
 {
-	int i;
-	int csock;
+	int i, csock, num_inited;
 
 	myDriverLevel = net_driverlevel;
 	Cmd_AddCommand ("net_stats", NET_Stats_f);
@@ -904,14 +903,19 @@ int Datagram_Init (void)
 	if (COM_CheckParm("-nolan"))
 		return -1;
 
+	num_inited = 0;
 	for (i = 0; i < net_numlandrivers; i++)
-		{
+	{
 		csock = net_landrivers[i].Init ();
 		if (csock == -1)
 			continue;
 		net_landrivers[i].initialized = true;
 		net_landrivers[i].controlSock = csock;
-		}
+		num_inited++;
+	}
+
+	if (num_inited == 0)
+		return -1;
 
 #ifdef BAN_TEST
 	Cmd_AddCommand ("ban", NET_Ban_f);
@@ -1461,8 +1465,9 @@ static qsocket_t *_Datagram_Connect (char *host)
 	if (ret == CCREP_REJECT)
 	{
 		reason = MSG_ReadString();
-		Con_Printf(reason);
+		Con_Printf("%s\n", reason);
 		Q_strncpy(m_return_reason, reason, 31);
+		m_return_reason[31] = 0;
 		goto ErrorReturn;
 	}
 

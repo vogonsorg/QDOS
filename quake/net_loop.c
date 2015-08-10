@@ -66,7 +66,7 @@ qsocket_t *Loop_Connect (char *host)
 {
 	if (Q_strcmp(host,"local") != 0)
 		return NULL;
-	
+
 	localconnectpending = true;
 
 	if (!loop_client)
@@ -97,8 +97,8 @@ qsocket_t *Loop_Connect (char *host)
 
 	loop_client->driverdata = (void *)loop_server;
 	loop_server->driverdata = (void *)loop_client;
-	
-	return loop_client;	
+
+	return loop_client;
 }
 
 
@@ -142,7 +142,7 @@ int Loop_GetMessage (qsocket_t *sock)
 	sock->receiveMessageLength -= length;
 
 	if (sock->receiveMessageLength)
-		Q_memcpy(sock->receiveMessage, &sock->receiveMessage[length], sock->receiveMessageLength);
+		memmove (sock->receiveMessage, &sock->receiveMessage[length], sock->receiveMessageLength);
 
 	if (sock->driverdata && ret == 1)
 		((qsocket_t *)sock->driverdata)->canSend = true;

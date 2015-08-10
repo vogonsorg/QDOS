@@ -51,8 +51,6 @@ int			net_send_socket;	// blocking, for sends
 #define	MAX_UDP_PACKET	8192
 byte		net_message_buffer[MAX_UDP_PACKET];
 
-int gethostname (char *, int);
-int close (int);
 char *NET_ErrorString (void);
 
 //=============================================================================
@@ -314,7 +312,7 @@ NET_Shutdown
 */
 void	NET_Shutdown (void)
 {
-	close (net_socket);
+	closesocket (net_socket);
 }
 
 /*

@@ -164,22 +164,20 @@ void Cbuf_Execute (void)
 			if (text[i] == '\n')
 				break;
 		}
-			
-				
+
 		memcpy (line, text, i);
 		line[i] = 0;
-		
+
 // delete the text from the command buffer and move remaining commands down
 // this is necessary because commands (exec, alias) can insert data at the
 // beginning of the text buffer
-
 		if (i == cmd_text.cursize)
 			cmd_text.cursize = 0;
 		else
 		{
 			i++;
 			cmd_text.cursize -= i;
-			Q_memcpy (text, text+i, cmd_text.cursize);
+			memmove (text, text+i, cmd_text.cursize);
 		}
 
 // execute the command line

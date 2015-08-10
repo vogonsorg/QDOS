@@ -268,62 +268,80 @@ play [demoname]
 void CL_PlayDemo_f (void)
 {
 	dstring_t *name;
-	int c;
-	qboolean neg = false;
-
-	name = dstring_new();
+	int i, c;
+	qboolean neg;
 
 	if (cmd_source != src_command)
-	{
-		dstring_delete(name);
 		return;
-	}	
 
 	if (Cmd_Argc() != 2)
 	{
 		Con_Printf ("play <demoname> : plays a demo\n");
-		dstring_delete(name);
-	return;
+		return;
 	}
 
 //
 // disconnect from server
 //
 	CL_Disconnect ();
-	
+
 //
 // open the demo file
 //
+	name = dstring_new();
 	dstring_copystr (name, Cmd_Argv(1));
-	
+
 	COM_DefaultExtension (name->str, ".dem");
 
 	Con_Printf ("Playing demo from %s.\n", name->str);
 	COM_FOpenFile (name->str, &cls.demofile);
 	if (!cls.demofile)
 	{
-    	Con_Printf ("ERROR: couldn't open %s.\n", name->str); /* FS: Tell me the filename, please */
+		Con_Printf ("ERROR: couldn't open %s.\n", name->str); /* FS: Tell me the filename, please */
 		cls.demonum = -1;		// stop demo loop
-        dstring_delete(name);
+		dstring_delete(name);
 		return;
 	}
 
-	cls.demoplayback = true;
-	cls.state = ca_connected;
+// ZOID, fscanf is evil
+// O.S.: if a space character e.g. 0x20 (' ') follows '\n',
+// fscanf skips that byte too and screws up further reads.
+//	fscanf (cls.demofile, "%i\n", &cls.forcetrack);
 	cls.forcetrack = 0;
-
-	while ((c = getc(cls.demofile)) != '\n')
-		if (c == '-')
+	neg = false;
+	// read a decimal integer possibly with a leading '-',
+	// followed by a '\n':
+	for (i = 0; i < 13; i++)
+	{
+		c = getc(cls.demofile);
+		if (c == '\n')
+			break;
+		if (c == '-') {
 			neg = true;
-		else
-			cls.forcetrack = cls.forcetrack * 10 + (c - '0');
-
+			continue;
+		}
+		// check for multiple '-' or legal digits? meh...
+		cls.forcetrack = cls.forcetrack * 10 + (c - '0');
+	}
+	if (c != '\n')
+	{
+		fclose (cls.demofile);
+		cls.demofile = NULL;
+		cls.demonum = -1;	// stop demo loop
+		Con_Printf ("ERROR: demo \"%s\" is invalid\n", name);
+		dstring_delete(name);
+		return;
+	}
 	if (neg)
 		cls.forcetrack = -cls.forcetrack;
-		
+
 	dstring_delete(name);
-// ZOID, fscanf is evil
-//	fscanf (cls.demofile, "%i\n", &cls.forcetrack);
+
+	cls.demoplayback = true;
+	cls.state = ca_connected;
+
+// get rid of the menu and/or console
+	key_dest = key_game;
 }
 
 /*

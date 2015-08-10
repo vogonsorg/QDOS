@@ -225,8 +225,11 @@ void PR_Profile_f (void)
 	int			max;
 	int			num;
 	int			i;
-	
-	num = 0;	
+
+	if (!sv.active)
+		return;
+
+	num = 0;
 	do
 	{
 		max = 0;

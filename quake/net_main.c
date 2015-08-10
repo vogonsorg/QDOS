@@ -79,6 +79,13 @@ cvar_t	config_modem_hangup = {"_config_modem_hangup", "AT H", true};
 #define sfunc	net_drivers[sock->driver]
 #define dfunc	net_drivers[net_driverlevel]
 
+/* NOTE: several sock->driver checks in the code serve the
+   purpose of ignoring local connections, because the loop
+   driver always takes number 0: it is the first member in
+   the net_drivers[] array.  If you ever change that, such
+   as by removing the loop driver, you must re-visit those
+   checks and adjust them properly!.			*/
+
 int	net_driverlevel;
 
 
@@ -631,35 +638,38 @@ qboolean NET_CanSendMessage (qsocket_t *sock)
 }
 
 
-int NET_SendToAll(sizebuf_t *data, int blocktime)
+int NET_SendToAll (sizebuf_t *data, double blocktime)
 {
 	double		start;
 	int			i;
 	int			count = 0;
-	qboolean	state1 [MAX_SCOREBOARD];
-	qboolean	state2 [MAX_SCOREBOARD];
+	qboolean	msg_init[MAX_SCOREBOARD];	/* can we send */
+	qboolean	msg_sent[MAX_SCOREBOARD];	/* did we send */
 
-	for (i=0, host_client = svs.clients ; i<svs.maxclients ; i++, host_client++)
+	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
 	{
+		/*
 		if (!host_client->netconnection)
 			continue;
 		if (host_client->active)
+		*/
+		if (host_client->netconnection && host_client->active)
 		{
-			if (host_client->netconnection->driver == 0)
+			if (host_client->netconnection->driver == 0)	/* Loop */
 			{
 				NET_SendMessage(host_client->netconnection, data);
-				state1[i] = true;
-				state2[i] = true;
+				msg_init[i] = true;
+				msg_sent[i] = true;
 				continue;
 			}
 			count++;
-			state1[i] = false;
-			state2[i] = false;
+			msg_init[i] = false;
+			msg_sent[i] = false;
 		}
 		else
 		{
-			state1[i] = true;
-			state2[i] = true;
+			msg_init[i] = true;
+			msg_sent[i] = true;
 		}
 	}
 
@@ -669,11 +679,11 @@ int NET_SendToAll(sizebuf_t *data, int blocktime)
 		count = 0;
 		for (i=0, host_client = svs.clients ; i<svs.maxclients ; i++, host_client++)
 		{
-			if (! state1[i])
+			if (! msg_init[i])
 			{
 				if (NET_CanSendMessage (host_client->netconnection))
 				{
-					state1[i] = true;
+					msg_init[i] = true;
 					NET_SendMessage(host_client->netconnection, data);
 				}
 				else
@@ -684,11 +694,11 @@ int NET_SendToAll(sizebuf_t *data, int blocktime)
 				continue;
 			}
 
-			if (! state2[i])
+			if (! msg_sent[i])
 			{
 				if (NET_CanSendMessage (host_client->netconnection))
 				{
-					state2[i] = true;
+					msg_sent[i] = true;
 				}
 				else
 				{
@@ -724,7 +734,6 @@ void NET_Init (void)
 		i = COM_CheckParm ("-udpport");
 	if (!i)
 		i = COM_CheckParm ("-ipxport");
-
 	if (i)
 	{
 		if (i < com_argc-1)
@@ -770,16 +779,20 @@ void NET_Init (void)
 	Cmd_AddCommand ("port", NET_Port_f);
 
 	// initialize all the drivers
-	for (net_driverlevel=0 ; net_driverlevel<net_numdrivers ; net_driverlevel++)
-		{
+	for (i = net_driverlevel = 0; net_driverlevel < net_numdrivers; net_driverlevel++)
+	{
 		controlSocket = net_drivers[net_driverlevel].Init();
 		if (controlSocket == -1)
 			continue;
+		i++;
 		net_drivers[net_driverlevel].initialized = true;
 		net_drivers[net_driverlevel].controlSock = controlSocket;
 		if (listening)
 			net_drivers[net_driverlevel].Listen (true);
-		}
+	}
+
+	if (i == 0 && cls.state == ca_dedicated)
+		Sys_Error("Network not available!");
 
 	if (*my_ipx_address)
 		Con_DPrintf(DEVELOPER_MSG_NET, "IPX address %s\n", my_ipx_address);

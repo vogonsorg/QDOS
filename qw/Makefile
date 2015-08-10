@@ -3,6 +3,8 @@ STRIP= strip
 
 # whether to use OGG VORBIS
 USE_OGG=yes
+# use tremor library for ogg/vorbis:
+USE_TREMOR=1
 # whether to use ASM
 USE_ASM=1
 
@@ -13,7 +15,12 @@ LIBS= -lwatt
 ifeq ($(USE_OGG),yes)
 CFLAGS+= -DOGG_SUPPORT
 CFLAGS+= -I../3rdparty/include
+ifneq ($(USE_TREMOR),1)
 LIBS  += -L../3rdparty/lib -lvorbisfile -lvorbis -logg
+else
+CFLAGS+= -DVORBIS_USE_TREMOR
+LIBS  += -L../3rdparty/lib -lvorbisidec -logg
+endif
 endif
 LIBS  += -lm
 

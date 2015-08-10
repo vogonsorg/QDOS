@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 server_t    sv;
 server_static_t   svs;
 
-char  localmodels[MAX_MODELS][5];         // inline model names for precache
+char  localmodels[MAX_MODELS][8];         // inline model names for precache
 
 int sv_protocol = PROTOCOL_FITZQUAKE; //johnfitz
 cvar_t  sv_loadentfiles = {"sv_loadentfiles","1", true, false, "Attempt to load external *.ent files if they exist."}; /* FS: Load external ent files */
@@ -1262,7 +1262,7 @@ void SV_SendReconnect (void)
 
 	MSG_WriteChar (&msg, svc_stufftext);
 	MSG_WriteString (&msg, "reconnect\n");
-	NET_SendToAll (&msg, 5);
+	NET_SendToAll (&msg, 5.0);
    
 	if (cls.state != ca_dedicated)
 		Cmd_ExecuteString ("reconnect\n", src_command);
@@ -1312,7 +1312,6 @@ void SV_SpawnServer (char *server)
 	edict_t	*ent;
 	int		i;
 	char	*entitystring = NULL; /* FS: Ent file loading */
-	FILE	*f; /* FS: Ent file loading */
 
 	// let's not have any servers with no name
 	if (hostname.string[0] == 0)
