@@ -428,7 +428,6 @@ void CL_Connect_f (void)
 
 	CL_Disconnect ();
 
-	//strncpy (cls.servername->str, server, sizeof(cls.servername->str)-1);
 	dstring_copystr (cls.servername, server); // taniwha
 	CL_BeginServerConnect();
 }

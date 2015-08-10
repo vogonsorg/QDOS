@@ -131,12 +131,14 @@ qboolean	NET_StringToAdr (char *s, netadr_t *a)
 	strcpy (copy, s);
 	// strip off a trailing :port if present
 	for (colon = copy ; *colon ; colon++)
+	{
 		if (*colon == ':')
 		{
 			*colon = 0;
 			sadr.sin_port = htons(atoi(colon+1));	
 		}
-	
+	}
+
 	if (copy[0] >= '0' && copy[0] <= '9')
 	{
 		*(int *)&sadr.sin_addr = inet_addr(copy);
