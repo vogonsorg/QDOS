@@ -295,8 +295,14 @@ void CL_ParseServerInfo (void)
 	int		nummodels, numsounds;
 	char	model_precache[MAX_MODELS][MAX_QPATH];
 	char	sound_precache[MAX_SOUNDS][MAX_QPATH];
-	
+
 	Con_DPrintf (DEVELOPER_MSG_NET, "Serverinfo packet received.\n");
+
+// bring up loading plaque for map changes within a demo.
+// it will be hidden in CL_SignonReply() -- ericw
+	if (cls.demoplayback)
+		SCR_BeginLoadingPlaque();
+
 //
 // wipe the client_state_t struct
 //
