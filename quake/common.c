@@ -38,7 +38,8 @@ static char	*argvdummy = " ";
 static char	*safeargvs[NUM_SAFE_ARGVS] = {"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly", "-safevga"}; /* FS: Added -safevga for 320x200 */
 
 cvar_t  registered = {"registered","0", false, false, "Special internal CVAR for setting Registered game."};
-cvar_t  cmdline = {"cmdline","", false, true, "Adds command line parameters as script statements\nCommands lead with a +, and continue until a - or another +\nquake +prog jctest.qp +cmd amlev1\nquake -nosound +cmd amlev1"};
+/* sending cmdline upon CCREQ_RULE_INFO is evil */
+cvar_t  cmdline = {"cmdline","", false, false, "Adds command line parameters as script statements\nCommands lead with a +, and continue until a - or another +\nquake +prog jctest.qp +cmd amlev1\nquake -nosound +cmd amlev1"};
 
 /* FS: For Nehahra */
 cvar_t	cutscene = {"cutscene", "1", false, false, "Special internal CVAR for Nehara mod."};
