@@ -203,6 +203,9 @@ typedef struct
 extern const int	net_numdrivers;
 extern net_driver_t	net_drivers[];
 
+/* Loop driver must always be registered the first */
+#define IS_LOOP_DRIVER(p)	((p) == 0)
+
 extern int			DEFAULTnet_hostport;
 extern int			net_hostport;
 
