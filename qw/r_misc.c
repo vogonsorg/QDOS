@@ -30,6 +30,17 @@ R_CheckVariables
 */
 void R_CheckVariables (void)
 {
+	if (r_fullbright.modified)
+	{
+		r_fullbright.modified = false;
+		D_FlushCaches ();	// so all lighting changes
+	}
+
+	if(r_ambient.modified)
+	{
+		r_ambient.modified = false;
+		D_FlushCaches();
+	}
 }
 
 
@@ -351,7 +362,7 @@ void R_TransformFrustum (void)
 }
 
 
-#if !id386
+#if	!id386
 
 /*
 ================

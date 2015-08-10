@@ -72,6 +72,11 @@ extern cvar_t	r_numsurfs;
 extern cvar_t	r_reportedgeout;
 extern cvar_t	r_maxedges;
 extern cvar_t	r_numedges;
+extern cvar_t	r_maxbmodeledges; /* FS: For some big boy mods */
+
+/* FS: Moved this */
+#define MAX_BMODEL_VERTS	500	// 6K
+#define MAX_BMODEL_EDGES	1000	// 12K
 
 #define XCENTERING	(1.0 / 2.0)
 #define YCENTERING	(1.0 / 2.0)

@@ -30,12 +30,16 @@ R_CheckVariables
 */
 void R_CheckVariables (void)
 {
-	static float	oldbright;
-
-	if (r_fullbright.value != oldbright)
+	if (r_fullbright.modified)
 	{
-		oldbright = r_fullbright.value;
+		r_fullbright.modified = false;
 		D_FlushCaches ();	// so all lighting changes
+	}
+
+	if(r_ambient.modified)
+	{
+		r_ambient.modified = false;
+		D_FlushCaches();
 	}
 }
 
@@ -57,7 +61,6 @@ void Show (void)
 	vr.pnext = NULL;
 	VID_Update (&vr);
 }
-
 
 /*
 ====================
@@ -99,7 +102,6 @@ void R_TimeRefresh_f (void)
 	
 	r_refdef.viewangles[1] = startangle;
 }
-
 
 /*
 ================
@@ -398,8 +400,10 @@ void R_SetupFrame (void)
 	if (cl.maxclients > 1)
 	{
 		Cvar_Set ("r_draworder", "0");
-		Cvar_Set ("r_fullbright", "0");
-		Cvar_Set ("r_ambient", "0");
+//		Cvar_Set ("r_fullbright", "0");
+//		Cvar_Set ("r_ambient", "0");
+		r_fullbright.value = 0; /* FS: Don't use Cvar_Set here, it's just going to keep trigger the changed function */
+		r_ambient.value = 0;
 		Cvar_Set ("r_drawflat", "0");
 	}
 

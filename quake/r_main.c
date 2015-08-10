@@ -120,21 +120,21 @@ cvar_t	r_speeds = {"r_speeds","0"};
 cvar_t	r_timegraph = {"r_timegraph","0"};
 cvar_t  r_zgraph = {"r_zgraph","0"};
 cvar_t	r_graphheight = {"r_graphheight","10"};
-cvar_t	r_clearcolor = {"r_clearcolor","2"};
+cvar_t	r_clearcolor = {"r_clearcolor","2", false, false, "The (by default) grey background filler seen when there is a hole in the map."};
 cvar_t  r_waterwarp = {"r_waterwarp","1", true}; /* FS: Save it */
-cvar_t	r_fullbright = {"r_fullbright","0"};
+cvar_t	r_fullbright = {"r_fullbright","0", false, false, "Fullbright lighting."};
 cvar_t	r_drawentities = {"r_drawentities","1"};
 cvar_t	r_drawviewmodel = {"r_drawviewmodel","1"};
 cvar_t	r_aliasstats = {"r_polymodelstats","0"};
 cvar_t	r_dspeeds = {"r_dspeeds","0"};
-cvar_t	r_drawflat = {"r_drawflat", "0"};
-cvar_t	r_ambient = {"r_ambient", "0"};
-cvar_t	r_reportsurfout = {"r_reportsurfout", "0"};
-cvar_t	r_maxsurfs = {"r_maxsurfs", "0"};
-cvar_t	r_numsurfs = {"r_numsurfs", "0"};
-cvar_t	r_reportedgeout = {"r_reportedgeout", "0"};
-cvar_t	r_maxedges = {"r_maxedges", "0"};
-cvar_t	r_numedges = {"r_numedges", "0"};
+cvar_t	r_drawflat = {"r_drawflat", "0", false, false, "Draw flat single colour textures instead of the textures themselves."};
+cvar_t	r_ambient = {"r_ambient", "0", false, false, "Adjusts the intensity of ambient lights.  Similar to gl_modulate."};
+cvar_t	r_reportsurfout = {"r_reportsurfout", "0", false, false, "Report running out of surfaces."};
+cvar_t	r_maxsurfs = {"r_maxsurfs", "0", false, false, "Maximum number of surfaces to draw.  This value may need to be raised if you see disappearing textures."};
+cvar_t	r_numsurfs = {"r_numsurfs", "0", false, false, "Report number of surfaces in use."};
+cvar_t	r_reportedgeout = {"r_reportedgeout", "0", false, false, "Report running out of edges."};
+cvar_t	r_maxedges = {"r_maxedges", "0", false, false, "Maximum number of edges to draw.  This value may need to be raised if you see disappearing geometry."};
+cvar_t	r_numedges = {"r_numedges", "0", false, false, "Report number of edges in use."};
 cvar_t	r_aliastransbase = {"r_aliastransbase", "200"};
 cvar_t	r_aliastransadj = {"r_aliastransadj", "100"};
 cvar_t	r_maxbmodeledges = {"r_maxbmodeledges", "0" }; /* FS: For big boy mods */
@@ -633,11 +633,11 @@ void R_DrawViewModel (void)
 	j = R_LightPoint (currententity->origin);
 
 	if (j < 24)
-		j = 24;		// allways give some light on gun
+		j = 24; 	// allways give some light on gun
 	r_viewlighting.ambientlight = j;
 	r_viewlighting.shadelight = j;
 
-// add dynamic lights		
+// add dynamic lights
 	for (lnum=0 ; lnum<MAX_DLIGHTS ; lnum++)
 	{
 		dl = &cl_dlights[lnum];
@@ -841,7 +841,7 @@ void R_DrawBEntitiesOnList (void)
 					}
 				}
 
-			// put back world rotation and frustum clipping		
+			// put back world rotation and frustum clipping
 			// FIXME: R_RotateBmodel should just work off base_vxx
 				VectorCopy (base_vpn, vpn);
 				VectorCopy (base_vup, vup);
@@ -956,7 +956,7 @@ void R_RenderView_ (void)
 	R_SetupFrame ();
 
 #ifdef PASSAGES
-SetVisibilityByPassages ();
+	SetVisibilityByPassages ();
 #else
 	R_MarkLeaves ();	// done here so we know if we're in water
 #endif
@@ -1083,7 +1083,7 @@ void R_InitTurb (void)
 void R_Restart_f (void)
 {
 	int		i;
-	
+
 	r_viewleaf = NULL;
 	R_ClearParticles ();
 

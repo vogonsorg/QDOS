@@ -90,7 +90,7 @@ typedef struct
 	vec3_t		viewangles;
 
 	float		fov_x, fov_y;
-	
+
 	int			ambientlight;
 } refdef_t;
 
@@ -150,4 +150,4 @@ void D_FlushCaches (void);
 void D_DeleteSurfaceCache (void);
 void D_InitCaches (void *buffer, int size);
 void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
-
+void R_Restart_f (void);
