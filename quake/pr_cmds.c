@@ -36,19 +36,27 @@ static trace_t SV_Trace_Toss (edict_t *tossent, edict_t *ignore);
 ===============================================================================
 */
 
-char *PF_VarString (int	first)
+static char *PF_VarString (int	first)
 {
 	int		i;
-	static char out[256];
-	
+	static char out[1024];
+	size_t s;
+
 	out[0] = 0;
-	for (i=first ; i<pr_argc ; i++)
+	s = 0;
+	for (i = first; i < pr_argc; i++)
 	{
-		strcat (out, G_STRING((OFS_PARM0+i*3)));
+		s = Q_strlcat(out, G_STRING((OFS_PARM0+i*3)), sizeof(out));
+		if (s >= sizeof(out))
+		{
+			Con_Warning("PF_VarString: overflow (string truncated)\n");
+			return out;
+		}
 	}
+	if (s > 255)
+		Con_DPrintf(DEVELOPER_MSG_PROGS, "PF_VarString: %i characters exceeds standard limit of 255.\n", (int) s);
 	return out;
 }
-
 
 /*
 =================
