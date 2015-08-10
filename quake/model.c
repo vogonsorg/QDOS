@@ -258,8 +258,9 @@ Loads a model into the cache
 */
 model_t *Mod_LoadModel (model_t *mod, qboolean crash)
 {
-	unsigned *buf;
+	byte	*buf;
 	byte	stackbuf[1024];		// avoid dirtying the cache heap
+	int	mod_type;
 
 	if (mod->type == mod_alias)
 	{
@@ -278,18 +279,18 @@ model_t *Mod_LoadModel (model_t *mod, qboolean crash)
 //
 // because the world is so huge, load it one piece at a time
 //
-	
+
 //
 // load the file
 //
-	buf = (unsigned *)COM_LoadStackFile (mod->name, stackbuf, sizeof(stackbuf));
+	buf = COM_LoadStackFile (mod->name, stackbuf, sizeof(stackbuf));
 	if (!buf)
 	{
 		if (crash)
 			Sys_Error ("Mod_LoadModel: %s not found", mod->name); //johnfitz -- was "Mod_NumForName"
 		return NULL;
 	}
-	
+
 //
 // allocate a new model
 //
@@ -304,7 +305,8 @@ model_t *Mod_LoadModel (model_t *mod, qboolean crash)
 // call the apropriate loader
 	mod->needload = NL_PRESENT;
 
-	switch (LittleLong(*(unsigned *)buf))
+	mod_type = (buf[0] | (buf[1] << 8) | (buf[2] << 16) | (buf[3] << 24));
+	switch (mod_type)
 	{
 	case IDPOLYHEADER:
 		Mod_LoadAliasModel (mod, buf);
