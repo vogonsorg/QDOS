@@ -286,7 +286,7 @@ int UDP_Connect (int socket, struct qsockaddr *addr)
 
 int UDP_CheckNewConnections (void)
 {
-	unsigned long	available;
+	u_long	available;
 	struct sockaddr_in	from;
 	int	fromlen;
 	char	buff[1];
@@ -294,7 +294,7 @@ int UDP_CheckNewConnections (void)
 	if (net_acceptsocket == -1)
 		return -1;
 
-	if (ioctlsocket (net_acceptsocket, FIONREAD, &available) == -1)
+	if (ioctlsocket (net_acceptsocket, FIONREAD, (char *) &available) == SOCKET_ERROR)
 		Sys_Error ("UDP: ioctlsocket (FIONREAD) failed\n");
 	if (available)
 		return net_acceptsocket;
