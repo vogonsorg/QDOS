@@ -79,13 +79,6 @@ cvar_t	config_modem_hangup = {"_config_modem_hangup", "AT H", true};
 #define sfunc	net_drivers[sock->driver]
 #define dfunc	net_drivers[net_driverlevel]
 
-/* NOTE: several sock->driver checks in the code serve the
-   purpose of ignoring local connections, because the loop
-   driver always takes number 0: it is the first member in
-   the net_drivers[] array.  If you ever change that, such
-   as by removing the loop driver, you must re-visit those
-   checks and adjust them properly!.			*/
-
 int	net_driverlevel;
 
 
@@ -325,7 +318,7 @@ static void Slist_Send(void)
 {
 	for (net_driverlevel=0; net_driverlevel < net_numdrivers; net_driverlevel++)
 	{
-		if (!slistLocal && net_driverlevel == 0)
+		if (!slistLocal && IS_LOOP_DRIVER(net_driverlevel))
 			continue;
 		if (net_drivers[net_driverlevel].initialized == false)
 			continue;
@@ -341,7 +334,7 @@ static void Slist_Poll(void)
 {
 	for (net_driverlevel=0; net_driverlevel < net_numdrivers; net_driverlevel++)
 	{
-		if (!slistLocal && net_driverlevel == 0)
+		if (!slistLocal && IS_LOOP_DRIVER(net_driverlevel))
 			continue;
 		if (net_drivers[net_driverlevel].initialized == false)
 			continue;
@@ -466,7 +459,7 @@ qsocket_t *NET_CheckNewConnections (void)
 	{
 		if (net_drivers[net_driverlevel].initialized == false)
 			continue;
-		if (net_driverlevel && listening == false)
+		if (!IS_LOOP_DRIVER(net_driverlevel) && listening == false)
 			continue;
 		ret = dfunc.CheckNewConnections ();
 		if (ret)
@@ -531,7 +524,7 @@ int	NET_GetMessage (qsocket_t *sock)
 	ret = sfunc.QGetMessage(sock);
 
 	// see if this connection has timed out
-	if (ret == 0 && sock->driver)
+	if (ret == 0 && !IS_LOOP_DRIVER(sock->driver))
 	{
 		if (net_time - sock->lastMessageTime > net_messagetimeout.value)
 		{
@@ -544,7 +537,7 @@ int	NET_GetMessage (qsocket_t *sock)
 
 	if (ret > 0)
 	{
-		if (sock->driver)
+		if (!IS_LOOP_DRIVER(sock->driver))
 		{
 			sock->lastMessageTime = net_time;
 			if (ret == 1)
@@ -587,7 +580,7 @@ int NET_SendMessage (qsocket_t *sock, sizebuf_t *data)
 
 	SetNetTime();
 	r = sfunc.QSendMessage(sock, data);
-	if (r == 1 && sock->driver)
+	if (r == 1 && !IS_LOOP_DRIVER(sock->driver))
 		messagesSent++;
 
 	return r;
@@ -609,7 +602,7 @@ int NET_SendUnreliableMessage (qsocket_t *sock, sizebuf_t *data)
 
 	SetNetTime();
 	r = sfunc.SendUnreliableMessage(sock, data);
-	if (r == 1 && sock->driver)
+	if (r == 1 && !IS_LOOP_DRIVER(sock->driver))
 		unreliableMessagesSent++;
 
 	return r;
@@ -655,7 +648,7 @@ int NET_SendToAll (sizebuf_t *data, double blocktime)
 		*/
 		if (host_client->netconnection && host_client->active)
 		{
-			if (host_client->netconnection->driver == 0)	/* Loop */
+			if (IS_LOOP_DRIVER(host_client->netconnection->driver))
 			{
 				NET_SendMessage(host_client->netconnection, data);
 				msg_init[i] = true;
@@ -734,6 +727,7 @@ void NET_Init (void)
 		i = COM_CheckParm ("-udpport");
 	if (!i)
 		i = COM_CheckParm ("-ipxport");
+
 	if (i)
 	{
 		if (i < com_argc-1)
@@ -743,11 +737,11 @@ void NET_Init (void)
 	}
 	net_hostport = DEFAULTnet_hostport;
 
-	if (COM_CheckParm("-listen") || cls.state == ca_dedicated)
-		listening = true;
 	net_numsockets = svs.maxclientslimit;
 	if (cls.state != ca_dedicated)
 		net_numsockets++;
+	if (COM_CheckParm("-listen") || cls.state == ca_dedicated)
+		listening = true;
 
 	SetNetTime();
 
@@ -791,13 +785,23 @@ void NET_Init (void)
 			net_drivers[net_driverlevel].Listen (true);
 	}
 
-	if (i == 0 && cls.state == ca_dedicated)
+	/* Loop_Init() returns -1 for dedicated server case,
+	 * therefore the i == 0 check is correct */
+	if (i == 0
+			&& cls.state == ca_dedicated
+	   )
+	{
 		Sys_Error("Network not available!");
+	}
 
 	if (*my_ipx_address)
+	{
 		Con_DPrintf(DEVELOPER_MSG_NET, "IPX address %s\n", my_ipx_address);
+	}
 	if (*my_tcpip_address)
+	{
 		Con_DPrintf(DEVELOPER_MSG_NET, "TCP/IP address %s\n", my_tcpip_address);
+	}
 }
 
 /*
