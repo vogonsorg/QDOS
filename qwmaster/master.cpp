@@ -166,6 +166,7 @@ SERVICE_STATUS_HANDLE   MyServiceStatusHandle;
 void SetQ2MasterRegKey(char* name, char *value);
 void GetQ2MasterRegKey(char* name, char *value);
 #define selectsocket select
+#define stricmp _stricmp
 
 #else
 
@@ -841,7 +842,6 @@ void DropServer (server_t *server)
 int AddServer (struct sockaddr_in *from, int normal, unsigned short queryPort, char *gamename, char *hostnameIp)
 {
 	server_t	*server = &servers;
-	int len;
 	int			preserved_heartbeats = 0;
 	struct sockaddr_in addr;
 	char validateString[MAX_GSPY_VAL];
@@ -960,7 +960,7 @@ int AddServer (struct sockaddr_in *from, int normal, unsigned short queryPort, c
 		sendto (listener, OOB_SEQ"ack", 7, 0, (struct sockaddr *)&addr, sizeof(addr));
 	}
 
-	if(!strcmp(server->gamename, "quake1")) /* FS: Special hack for ancient Quake 1 protocol */
+	if(!stricmp(server->gamename, "quake1")) /* FS: Special hack for ancient Quake 1 protocol */
 	{
 		int x;
 
@@ -968,17 +968,17 @@ int AddServer (struct sockaddr_in *from, int normal, unsigned short queryPort, c
 			validateString[x] = quake1string[x];
 	}
 	else
+	{
 		Com_sprintf(validateString, sizeof(validateString), "%s", statusstring);
-
-	if(!strcmp(server->gamename, "quake1"))
+	}
+	if(!stricmp(server->gamename, "quake1"))
 		validateStringLen = sizeof(quake1string)-1;
 	else
 		validateStringLen = DG_strlen(validateString);
 
 	validateString[validateStringLen] = '\0';
 
-	len = sendto (listener, validateString, validateStringLen, 0, (struct sockaddr *)&addr, sizeof(addr)); // FS: Gamespy sends this after a heartbeat.
-	printf("sendto len: %i\n", len);
+	sendto (listener, validateString, validateStringLen, 0, (struct sockaddr *)&addr, sizeof(addr)); // FS: Gamespy sends this after a heartbeat.
 	return TRUE;
 }
 
@@ -1023,7 +1023,7 @@ void QueueShutdown (struct sockaddr_in *from, server_t *myserver)
 
 		Con_DPrintf ("[I] shutdown queued %s:%u \n", inet_ntoa (myserver->ip.sin_addr), htons(server->port));
 
-		if(!strcmp(server->gamename, "quake1")) /* FS: Special hack for ancient Quake 1 protocol */
+		if(!stricmp(server->gamename, "quake1")) /* FS: Special hack for ancient Quake 1 protocol */
 		{
 			int x;
 
@@ -1031,9 +1031,11 @@ void QueueShutdown (struct sockaddr_in *from, server_t *myserver)
 				validateString[x] = quake1string[x];
 		}
 		else
+		{
 			Com_sprintf(validateString, sizeof(validateString), "%s", statusstring);
+		}
 
-		if(!strcmp(server->gamename, "quake1"))
+		if(!stricmp(server->gamename, "quake1"))
 			validateStringLen = sizeof(quake1string)-1;
 		else
 			validateStringLen = DG_strlen(validateString);
@@ -1098,7 +1100,7 @@ void RunFrame (void)
 //				Con_DPrintf ("[I] ping %s:%u\n", inet_ntoa (server->ip.sin_addr), htons(server->port));
 				Con_DPrintf ("[I] ping %s(%s):%u\n", server->hostnameIp, inet_ntoa(addr.sin_addr), htons(server->port)); // FS: New ping message
 
-				if(!strcmp(server->gamename, "quake1")) /* FS: Special hack for ancient Quake 1 protocol */
+				if(!stricmp(server->gamename, "quake1")) /* FS: Special hack for ancient Quake 1 protocol */
 				{
 					int x;
 
@@ -1106,9 +1108,11 @@ void RunFrame (void)
 						validateString[x] = quake1string[x];
 				}
 				else
+				{
 					Com_sprintf(validateString, sizeof(validateString), "%s", statusstring);
+				}
 
-				if(!strcmp(server->gamename, "quake1"))
+				if(!stricmp(server->gamename, "quake1"))
 					validateStringLen = sizeof(quake1string)-1;
 				else
 					validateStringLen = DG_strlen(validateString);
@@ -1400,6 +1404,7 @@ int HeartBeat (struct sockaddr_in *from, char *data)
 			Com_sprintf(validateString, sizeof(validateString), "%s", statusstring);
 			validateStringLen = DG_strlen(validateString);
 			validateString[validateStringLen] = '\0'; // FS: Gamespy null terminates the end
+
 			sendto (listener, validateString, validateStringLen, 0, (struct sockaddr *)&addr, sizeof(addr)); // FS: Gamespy uses the \status\ data for collection in a database so people can see the current stats without having to really ping the server.
 
 			if(SendAck) // FS: This isn't standard for DK, it will show messages about the ack.  This is more a courtesy to tell the ded server that we received the heartbeat
