@@ -1823,7 +1823,7 @@ static void FormatGamespyList (void)
 				{
 					char buffer[80];
 
-					DG_strlcpy(gamespy_server_names[m_num_gamespy_servers], browserList[j].hostname, 20);
+					Q_strlcpy(gamespy_server_names[m_num_gamespy_servers], browserList[j].hostname, 20);
 
 					if(Q_strlen(browserList[j].hostname) >= 20)
 					{
@@ -1861,7 +1861,7 @@ static void FormatGamespyList (void)
 			{
 				char buffer[80];
 
-				DG_strlcpy(gamespy_server_names[m_num_gamespy_servers-skip], browserListAll[j].hostname, 20);
+				Q_strlcpy(gamespy_server_names[m_num_gamespy_servers-skip], browserListAll[j].hostname, 20);
 
 				if(Q_strlen(browserListAll[j].hostname) >= 20)
 				{

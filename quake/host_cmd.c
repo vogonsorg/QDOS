@@ -924,7 +924,7 @@ void Host_Connect_f (void)
 		CL_Disconnect ();
 	}
 
-	DG_strlcpy(port, Cmd_Argv(3), sizeof(port)); /* FS: Port parsing */
+	Q_strlcpy(port, Cmd_Argv(3), sizeof(port)); /* FS: Port parsing */
 
 	Con_DPrintf(DEVELOPER_MSG_NET, "Port: %s\n", port);
 	Con_DPrintf(DEVELOPER_MSG_NET, "Net_hostport: %i\n", net_hostport);
@@ -940,7 +940,7 @@ void Host_Connect_f (void)
 		net_hostport = Q_atoi(port);
 	}
 
-	DG_strlcpy(name, Cmd_Argv(1), sizeof(name));
+	Q_strlcpy(name, Cmd_Argv(1), sizeof(name));
 
 	CL_EstablishConnection (name);
 	Host_Reconnect_f ();

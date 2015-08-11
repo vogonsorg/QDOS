@@ -919,11 +919,11 @@ static void GameSpy_Sort_By_Ping(GServerList lst)
 			if(i == MAX_SERVERS)
 				break;
 
-			DG_strlcpy(browserList[gspyCur].ip, ServerGetAddress(server), sizeof(browserList[gspyCur].ip));
+			Q_strlcpy(browserList[gspyCur].ip, ServerGetAddress(server), sizeof(browserList[gspyCur].ip));
 			browserList[gspyCur].port = ServerGetQueryPort(server);
 			browserList[gspyCur].ping = ServerGetPing(server);
-			DG_strlcpy(browserList[gspyCur].hostname, ServerGetStringValue(server, "hostname","(NONE)"), sizeof(browserList[gspyCur].hostname));
-			DG_strlcpy(browserList[gspyCur].mapname, ServerGetStringValue(server,"map","(NO MAP)"), sizeof(browserList[gspyCur].mapname));
+			Q_strlcpy(browserList[gspyCur].hostname, ServerGetStringValue(server, "hostname","(NONE)"), sizeof(browserList[gspyCur].hostname));
+			Q_strlcpy(browserList[gspyCur].mapname, ServerGetStringValue(server,"map","(NO MAP)"), sizeof(browserList[gspyCur].mapname));
 			browserList[gspyCur].curPlayers = ServerGetIntValue(server,"numplayers",0);
 			browserList[gspyCur].maxPlayers = ServerGetIntValue(server,"maxclients",0);
 
@@ -950,11 +950,11 @@ static void GameSpy_Sort_By_Ping(GServerList lst)
 			if(i == MAX_SERVERS)
 				break;
 
-			DG_strlcpy(browserListAll[i].ip, ServerGetAddress(server), sizeof(browserListAll[i].ip));
+			Q_strlcpy(browserListAll[i].ip, ServerGetAddress(server), sizeof(browserListAll[i].ip));
 			browserListAll[i].port = ServerGetQueryPort(server);
 			browserListAll[i].ping = ServerGetPing(server);
-			DG_strlcpy(browserListAll[i].hostname, ServerGetStringValue(server, "hostname","(NONE)"), sizeof(browserListAll[i].hostname));
-			DG_strlcpy(browserListAll[i].mapname, ServerGetStringValue(server,"map","(NO MAP)"), sizeof(browserListAll[i].mapname));
+			Q_strlcpy(browserListAll[i].hostname, ServerGetStringValue(server, "hostname","(NONE)"), sizeof(browserListAll[i].hostname));
+			Q_strlcpy(browserListAll[i].mapname, ServerGetStringValue(server,"map","(NO MAP)"), sizeof(browserListAll[i].mapname));
 			browserListAll[i].curPlayers = ServerGetIntValue(server,"numplayers",0);
 			browserListAll[i].maxPlayers = ServerGetIntValue(server,"maxclients",0);
 		}
