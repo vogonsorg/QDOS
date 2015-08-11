@@ -146,6 +146,11 @@ void SetVisibilityByPassages (void);
 
 void R_ZGraph (void);
 
+ /* FS: Keep track of Surfaces, Edges, and Bmodel Edges for dynamic allocation */
+static int surfacesMark;
+static int edgesMark;
+static int bedgesMark;
+
 /*
 ==================
 R_InitTextures
@@ -187,7 +192,7 @@ R_Init
 void R_Init (void)
 {
 	int	dummy;
-	
+
 // get stack position so we can guess if we are going to overflow
 	r_stack_start = (byte *)&dummy;
 	
@@ -267,9 +272,32 @@ void R_NewMap (void)
 	if (r_cnumsurfs <= MINSURFACES)
 		r_cnumsurfs = MINSURFACES;
 
+	if (surfaces) /* FS */
+	{
+		D_FlushCaches();
+		/* FS: This has to free'd backwards or hunk corruption will hapen */
+		if(bedges)
+		{
+			Hunk_FreeToHighMark (bedgesMark);
+			bedges = NULL;
+		}
+
+		if (auxedges)
+		{
+			Hunk_FreeToHighMark(edgesMark);
+			auxedges = NULL;
+		}
+
+		Hunk_FreeToHighMark(surfacesMark);
+		surfaces = NULL;
+	}
+
+	surfacesMark = Hunk_HighMark();
+
 	if (r_cnumsurfs > NUMSTACKSURFACES)
 	{
-		surfaces = Hunk_AllocName (r_cnumsurfs * sizeof(surf_t), "surfaces");
+		surfaces = Hunk_HighAllocName (r_cnumsurfs * sizeof(surf_t), "surfaces");
+		Hunk_Check();
 		surface_p = surfaces;
 		surf_max = &surfaces[r_cnumsurfs];
 		r_surfsonstack = false;
@@ -291,20 +319,39 @@ void R_NewMap (void)
 	if (r_numallocatededges < MINEDGES)
 		r_numallocatededges = MINEDGES;
 
+	if (auxedges) /* FS */
+	{
+		Hunk_FreeToHighMark(edgesMark);
+		auxedges = NULL;
+	}
+
+	edgesMark = Hunk_HighMark();
+
 	if (r_numallocatededges <= NUMSTACKEDGES)
 	{
 		auxedges = NULL;
 	}
 	else
 	{
-		auxedges = Hunk_AllocName (r_numallocatededges * sizeof(edge_t),
+		auxedges = Hunk_HighAllocName (r_numallocatededges * sizeof(edge_t),
 								   "edges");
+		Hunk_Check();
 	}
 
+	if(bedges) /* FS */
+	{
+		Hunk_FreeToHighMark (bedgesMark);
+		bedges = NULL;
+	}
+
+	bedgesMark = Hunk_HighMark ();
+
 	if(r_maxbmodeledges.intValue > MIN_BMODEL_EDGES) /* FS: Dynamic allocation of bmodel edges */
-		bedges = Hunk_AllocName (r_maxbmodeledges.intValue * sizeof(bedge_t), "bedges");
+		bedges = Hunk_HighAllocName (r_maxbmodeledges.intValue * sizeof(bedge_t), "bedges");
 	else
-		bedges = Hunk_AllocName (MIN_BMODEL_EDGES * sizeof(bedge_t), "bedges");
+		bedges = Hunk_HighAllocName (MIN_BMODEL_EDGES * sizeof(bedge_t), "bedges");
+
+	Hunk_Check();
 
 	r_dowarpold = false;
 	r_viewchanged = false;
@@ -941,6 +988,36 @@ void R_EdgeDrawing (void)
 		R_ScanEdges ();
 }
 
+void R_CheckRestartCvars (void) /* FS */
+{
+	static qboolean map_initialized;
+	qboolean restart;
+
+	if (r_maxbmodeledges.modified) /* FS: Update this before edges get drawn again */
+	{
+		r_maxbmodeledges.modified = false;
+		restart = true;
+	}
+
+	if (r_maxedges.modified)
+	{
+		r_maxedges.modified = false;
+		restart = true;
+	}
+
+	if (r_maxsurfs.modified)
+	{
+		r_maxsurfs.modified = false;
+		restart = true;
+	}
+
+	if(map_initialized && restart) /* FS: It will be set as modified on first R_Newmap, so don't reallocate it all twice on first map load */
+	{
+		R_Restart_f();
+	}
+
+	map_initialized = true;
+}
 
 /*
 ================
@@ -958,11 +1035,7 @@ void R_RenderView_ (void)
 	if (r_timegraph.value || r_speeds.value || r_dspeeds.value)
 		r_time1 = Sys_FloatTime ();
 
-	if (r_maxbmodeledges.modified) /* FS: Update this before edges get drawn again */
-	{
-		r_maxbmodeledges.modified = false;
-		R_Restart_f();
-	}
+	R_CheckRestartCvars(); /* FS: Check any dynamic reallocation stuff before we setup the new frame */
 
 	R_SetupFrame ();
 
@@ -1091,7 +1164,7 @@ void R_InitTurb (void)
 	}
 }
 
-void R_Restart_f (void)
+void R_Restart_f (void) /* FS: This is like R_NewMap we don't destroy everything, it also leaves the ability to force a soft restart for other things someday. */
 {
 	r_viewleaf = NULL;
 	R_ClearParticles ();
@@ -1101,9 +1174,32 @@ void R_Restart_f (void)
 	if (r_cnumsurfs <= MINSURFACES)
 		r_cnumsurfs = MINSURFACES;
 
+	if (surfaces)
+	{
+		D_FlushCaches();
+		/* FS: This has to free'd backwards or hunk corruption will hapen */
+		if(bedges)
+		{
+			Hunk_FreeToHighMark (bedgesMark);
+			bedges = NULL;
+		}
+
+		if (auxedges)
+		{
+			Hunk_FreeToHighMark(edgesMark);
+			auxedges = NULL;
+		}
+
+		Hunk_FreeToHighMark(surfacesMark);
+		surfaces = NULL;
+	}
+
+	surfacesMark = Hunk_HighMark();
+
 	if (r_cnumsurfs > NUMSTACKSURFACES)
 	{
-		surfaces = Hunk_AllocName (r_cnumsurfs * sizeof(surf_t), "surfaces");
+		surfaces = Hunk_HighAllocName (r_cnumsurfs * sizeof(surf_t), "surfaces");
+		Hunk_Check();
 		surface_p = surfaces;
 		surf_max = &surfaces[r_cnumsurfs];
 		r_surfsonstack = false;
@@ -1125,20 +1221,41 @@ void R_Restart_f (void)
 	if (r_numallocatededges < MINEDGES)
 		r_numallocatededges = MINEDGES;
 
+	if (auxedges)
+	{
+		/* FS: This has to free'd backwards or hunk corruption will hapen */
+		Hunk_FreeToHighMark(edgesMark);
+		auxedges = NULL;
+	}
+
+	edgesMark = Hunk_HighMark();
+
 	if (r_numallocatededges <= NUMSTACKEDGES)
 	{
 		auxedges = NULL;
 	}
 	else
 	{
-		auxedges = Hunk_AllocName (r_numallocatededges * sizeof(edge_t),
+		auxedges = Hunk_HighAllocName (r_numallocatededges * sizeof(edge_t),
 								   "edges");
+		Hunk_Check();
 	}
 
-	if(r_maxbmodeledges.intValue > MIN_BMODEL_EDGES) /* FS */
-		bedges = Hunk_AllocName (r_maxbmodeledges.intValue * sizeof(bedge_t), "bedges");
+
+	if(bedges)
+	{
+		Hunk_FreeToHighMark (bedgesMark);
+		bedges = NULL;
+	}
+
+	bedgesMark = Hunk_HighMark ();
+
+	if(r_maxbmodeledges.intValue > MIN_BMODEL_EDGES) /* FS: Dynamic allocation of bmodel edges */
+		bedges = Hunk_HighAllocName (r_maxbmodeledges.intValue * sizeof(bedge_t), "bedges");
 	else
-		bedges = Hunk_AllocName (MIN_BMODEL_EDGES * sizeof(bedge_t), "bedges");
+		bedges = Hunk_HighAllocName (MIN_BMODEL_EDGES * sizeof(bedge_t), "bedges");
+
+	Hunk_Check();
 
 	r_dowarpold = false;
 	r_viewchanged = true;
