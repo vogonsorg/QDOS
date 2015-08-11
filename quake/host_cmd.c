@@ -864,6 +864,9 @@ void Host_Changelevel_f (void)
 	SV_SaveSpawnparms ();
 	strcpy (level, Cmd_Argv(1));
 	SV_SpawnServer (level);
+	// also issue an error if spawn failed -- O.S.
+	if (!sv.active)
+		Host_Error ("cannot run map %s", level);
 }
 
 /*
@@ -882,9 +885,10 @@ void Host_Restart_f (void)
 
 	if (cmd_source != src_command)
 		return;
-	strcpy (mapname, sv.name);	// must copy out, because it gets cleared
-								// in sv_spawnserver
+	strcpy (mapname, sv.name);	// mapname gets cleared in spawnserver
 	SV_SpawnServer (mapname);
+	if (!sv.active)
+		Host_Error ("cannot restart map %s", mapname);
 }
 
 /*
