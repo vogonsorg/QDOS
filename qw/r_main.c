@@ -146,6 +146,7 @@ void SetVisibilityByPassages (void);
 void R_NetGraph (void);
 void R_ZGraph (void);
 
+static qboolean map_initialized = false;
 /*
 ==================
 R_InitTextures
@@ -975,7 +976,11 @@ void R_RenderView_ (void)
 	if (r_maxbmodeledges.modified) /* FS: Update this before edges get drawn again */
 	{
 		r_maxbmodeledges.modified = false;
-		R_Restart_f();
+
+		if(map_initialized) /* FS: First time will be because .modified is true on Cvar_Set so don't do this twice */
+			R_Restart_f();
+
+		map_initialized = true;
 	}
 
 	R_SetupFrame ();
@@ -1110,6 +1115,7 @@ void R_InitTurb (void)
 
 void R_Restart_f (void)
 {
+	/* FS: FIXME: This causes a memory leak until next map load.  But, currently it's better than changing r_maxbmodeledges to a higher value and bombing out */
 	r_viewleaf = NULL;
 	R_ClearParticles ();
 

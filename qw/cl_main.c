@@ -1333,6 +1333,7 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&cl_autorepeat_allkeys);
 
 	Cmd_AddCommand ("writeconfig", CL_WriteConfig_f);
+	Cmd_AddCommand ("vid_restart", R_Restart_f); /* FS: Unfinished */
 
 	/* FS: GameSpy CVARs */
 	Cvar_RegisterVariable (&cl_master_server_ip);

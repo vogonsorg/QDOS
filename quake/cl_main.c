@@ -794,7 +794,7 @@ void CL_Init (void)
 	Cmd_AddCommand ("flashlight", CL_Flashlight_f);
 	Cmd_AddCommand ("writeconfig", CL_WriteConfig_f);
 
-	Cmd_AddCommand ("r_restart", R_Restart_f); /* FS: Unfinished */
+	Cmd_AddCommand ("vid_restart", R_Restart_f); /* FS: Unfinished */
 
 	/* FS: Gamespy stuff */
 	Cmd_AddCommand ("slist2", CL_PingNetServers_f);
