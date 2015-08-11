@@ -1811,7 +1811,7 @@ qboolean CL_MaliciousStuffText(char *stufftext) /* FS: Check for malicious stuff
 	if(!stufftext || stufftext[0] == 0)
 		return false;
 
-	if((Q_strncasecmp(stufftext, "fov ", 4) == 0) || (Q_strncasecmp(stufftext, "_snd_mixahead ", 14) == 0) || (Q_strncasecmp(stufftext, "rate ", 5) == 0)) /* FS: Ignore malicious stufftexts */
+	if((Q_strncasecmp(stufftext, "fov ", 4) == 0) || (Q_strncasecmp(stufftext, "_snd_mixahead ", 14) == 0) || (Q_strncasecmp(stufftext, "rate ", 5) == 0) || (Q_strncasecmp(stufftext, "r_restart", 9) == 0) ) /* FS: Ignore malicious stufftexts */
 	{
 		Con_DPrintf (DEVELOPER_MSG_NET, "Ignoring malicious stufftext: %s\n", stufftext);
 		return true;

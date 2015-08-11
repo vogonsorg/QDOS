@@ -146,7 +146,10 @@ void SetVisibilityByPassages (void);
 void R_NetGraph (void);
 void R_ZGraph (void);
 
+/* FS: Dynamic allocation stuff */
+int bedgesMark;
 static qboolean map_initialized = false;
+
 /*
 ==================
 R_InitTextures
@@ -305,6 +308,9 @@ void R_NewMap (void)
 		auxedges = Hunk_AllocName (r_numallocatededges * sizeof(edge_t),
 								   "edges");
 	}
+
+	bedgesMark = Hunk_LowMark ();
+	Hunk_AllocName(0, "-Dynamic-");
 
 	if(r_maxbmodeledges.intValue > MIN_BMODEL_EDGES) /* FS: Dynamic allocation of bmodel edges */
 		bedges = Hunk_AllocName (r_maxbmodeledges.intValue * sizeof(bedge_t), "bedges");
@@ -1113,8 +1119,19 @@ void R_InitTurb (void)
 	}
 }
 
+void R_ClearDynamic (void) /* FS */
+{
+	if (bedgesMark)
+	{
+		Hunk_FreeToLowMark (bedgesMark);
+	}
+
+	bedges = NULL;
+}
+
 void R_Restart_f (void)
 {
+#if 0
 	/* FS: FIXME: This causes a memory leak until next map load.  But, currently it's better than changing r_maxbmodeledges to a higher value and bombing out */
 	r_viewleaf = NULL;
 	R_ClearParticles ();
@@ -1158,7 +1175,16 @@ void R_Restart_f (void)
 								   "edges");
 	}
 
-	if(r_maxbmodeledges.intValue > MIN_BMODEL_EDGES) /* FS */
+#endif
+	if(bedgesMark)
+		Hunk_FreeToLowMark(bedgesMark);
+
+	bedges = NULL;
+
+	bedgesMark = Hunk_LowMark ();
+	Hunk_AllocName(0, "-Dynamic-");
+
+	if(r_maxbmodeledges.intValue > MIN_BMODEL_EDGES) /* FS: Dynamic allocation of bmodel edges */
 		bedges = Hunk_AllocName (r_maxbmodeledges.intValue * sizeof(bedge_t), "bedges");
 	else
 		bedges = Hunk_AllocName (MIN_BMODEL_EDGES * sizeof(bedge_t), "bedges");

@@ -541,15 +541,17 @@ not reinitialize anything.
 */
 void Host_ClearMemory (void)
 {
-   Con_DPrintf (DEVELOPER_MSG_MEM, "Clearing memory\n");
-   D_FlushCaches ();
-   Mod_ClearAll ();
-   if (host_hunklevel)
-      Hunk_FreeToLowMark (host_hunklevel);
+	Con_DPrintf (DEVELOPER_MSG_MEM, "Clearing memory\n");
+	D_FlushCaches ();
+	Mod_ClearAll ();
+	R_ClearDynamic(); /* FS */
 
-   cls.signon = 0;
-   memset (&sv, 0, sizeof(sv));
-   memset (&cl, 0, sizeof(cl));
+	if (host_hunklevel)
+		Hunk_FreeToLowMark (host_hunklevel);
+
+	cls.signon = 0;
+	memset (&sv, 0, sizeof(sv));
+	memset (&cl, 0, sizeof(cl));
 }
 
 

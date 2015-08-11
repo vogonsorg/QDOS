@@ -506,6 +506,8 @@ void CL_ClearState (void)
    Con_DPrintf (DEVELOPER_MSG_MEM, "Clearing memory\n");
    D_FlushCaches ();
    Mod_ClearAll ();
+   R_ClearDynamic(); /* FS */
+
    if (host_hunklevel)  // FIXME: check this...
       Hunk_FreeToLowMark (host_hunklevel);
 

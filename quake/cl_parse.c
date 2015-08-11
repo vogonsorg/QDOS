@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  /* FS: Prototypes */
 void CL_PlayBackgroundTrack (int track);
+qboolean	CL_MaliciousStuffText(char *stufftext); /* FS: Check for malicious stufftext */
 extern char *Con_Quakebar (int len);
 extern void Con_LogCenterPrint (char *str);
 
@@ -1048,7 +1049,13 @@ void CL_ParseServerMessage (void)
 				break;
 			
 			case svc_stufftext:
-				Cbuf_AddText (MSG_ReadString ());
+				str = MSG_ReadString ();
+				Con_DPrintf (DEVELOPER_MSG_NET, "stufftext: %s\n", str);
+
+				if(CL_MaliciousStuffText(str)) /* FS: Ignore malicious stufftext */
+					break;
+
+				Cbuf_AddText (str);
 				break;
 			
 			case svc_damage:
@@ -1281,6 +1288,20 @@ void CL_ParseServerMessage (void)
 
 		lastcmd = cmd; //johnfitz
 	}
+}
+
+qboolean CL_MaliciousStuffText(char *stufftext) /* FS: Check for malicious stufftext */
+{
+	if(!stufftext || stufftext[0] == 0)
+		return false;
+
+	if((Q_strncasecmp(stufftext, "fov ", 4) == 0) || (Q_strncasecmp(stufftext, "_snd_mixahead ", 14) == 0) || (Q_strncasecmp(stufftext, "rate ", 5) == 0) || (Q_strncasecmp(stufftext, "r_restart", 9) == 0) ) /* FS: Ignore malicious stufftexts */
+	{
+		Con_DPrintf (DEVELOPER_MSG_NET, "Ignoring malicious stufftext: %s\n", stufftext);
+		return true;
+	}
+
+	return false;
 }
 
 /*

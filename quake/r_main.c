@@ -146,6 +146,7 @@ void SetVisibilityByPassages (void);
 
 void R_ZGraph (void);
 
+/* FS: Dynamic allocation stuff */
 int bedgesMark;
 static qboolean map_initialized = false;
 
@@ -303,11 +304,6 @@ void R_NewMap (void)
 		auxedges = Hunk_AllocName (r_numallocatededges * sizeof(edge_t),
 								   "edges");
 	}
-
-	if(bedgesMark)
-		Hunk_FreeToLowMark(bedgesMark);
-
-	bedges = NULL;
 
 	bedgesMark = Hunk_LowMark ();
 	Hunk_AllocName(0, "-Dynamic-");
@@ -1104,6 +1100,16 @@ void R_InitTurb (void)
 		sintable[i] = AMP + sin(i*3.14159*2/CYCLE)*AMP;
 		intsintable[i] = AMP2 + sin(i*3.14159*2/CYCLE)*AMP2;	// AMP2, not 20
 	}
+}
+
+void R_ClearDynamic (void) /* FS */
+{
+	if (bedgesMark)
+	{
+		Hunk_FreeToLowMark (bedgesMark);
+	}
+
+	bedges = NULL;
 }
 
 void R_Restart_f (void)
