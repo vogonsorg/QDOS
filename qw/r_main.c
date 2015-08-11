@@ -22,94 +22,94 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "r_local.h"
 
-//define        PASSAGES
+//define	PASSAGES
 
-void            *colormap;
-vec3_t          viewlightvec;
-alight_t        r_viewlighting = {128, 192, viewlightvec};
-float           r_time1;
-int				r_numallocatededges;
-qboolean        r_drawpolys;
-qboolean        r_drawculledpolys;
-qboolean        r_worldpolysbacktofront;
-qboolean        r_recursiveaffinetriangles = true;
-int				r_pixbytes = 1;
-float           r_aliasuvscale = 1.0;
-int				r_outofsurfaces;
-int				r_outofedges;
+void		*colormap;
+vec3_t		viewlightvec;
+alight_t	r_viewlighting = {128, 192, viewlightvec};
+float		r_time1;
+int			r_numallocatededges;
+qboolean	r_drawpolys;
+qboolean	r_drawculledpolys;
+qboolean	r_worldpolysbacktofront;
+qboolean	r_recursiveaffinetriangles = true;
+int			r_pixbytes = 1;
+float		r_aliasuvscale = 1.0;
+int			r_outofsurfaces;
+int			r_outofedges;
 
-qboolean        r_dowarp, r_dowarpold, r_viewchanged;
+qboolean	r_dowarp, r_dowarpold, r_viewchanged;
 
-int				numbtofpolys;
-btofpoly_t      *pbtofpolys;
-mvertex_t       *r_pcurrentvertbase;
+int			numbtofpolys;
+btofpoly_t	*pbtofpolys;
+mvertex_t	*r_pcurrentvertbase;
 
-int				c_surf;
-int				r_maxsurfsseen, r_maxedgesseen, r_cnumsurfs;
-qboolean        r_surfsonstack;
-int                     r_clipflags;
+int			c_surf;
+int			r_maxsurfsseen, r_maxedgesseen, r_cnumsurfs;
+qboolean	r_surfsonstack;
+int			r_clipflags;
 
-byte			*r_warpbuffer;
+byte		*r_warpbuffer;
 
-byte			*r_stack_start;
+byte		*r_stack_start;
 
-qboolean		r_fov_greater_than_90;
+qboolean	r_fov_greater_than_90;
 
 entity_t		r_worldentity;
 
 //
 // view origin
 //
-vec3_t			vup, base_vup;
-vec3_t			vpn, base_vpn;
-vec3_t			vright, base_vright;
-vec3_t			r_origin;
+vec3_t	vup, base_vup;
+vec3_t	vpn, base_vpn;
+vec3_t	vright, base_vright;
+vec3_t	r_origin;
 
 //
 // screen size info
 //
-refdef_t        r_refdef;
-float           xcenter, ycenter;
-float           xscale, yscale;
-float			xscaleinv, yscaleinv;
-float			xscaleshrink, yscaleshrink;
-float			aliasxscale, aliasyscale, aliasxcenter, aliasycenter;
+refdef_t	r_refdef;
+float		xcenter, ycenter;
+float		xscale, yscale;
+float		xscaleinv, yscaleinv;
+float		xscaleshrink, yscaleshrink;
+float		aliasxscale, aliasyscale, aliasxcenter, aliasycenter;
 
-int				screenwidth;
+int		screenwidth;
 
-float			pixelAspect;
-float			screenAspect;
-float			verticalFieldOfView;
-float			xOrigin, yOrigin;
+float	pixelAspect;
+float	screenAspect;
+float	verticalFieldOfView;
+float	xOrigin, yOrigin;
 
-mplane_t		screenedge[4];
+mplane_t	screenedge[4];
 
 //
 // refresh flags
 //
-int             r_framecount = 1;       // so frame counts initialized to 0 don't match
-int             r_visframecount;
-int             d_spanpixcount;
-int             r_polycount;
-int             r_drawnpolycount;
-int             r_wholepolycount;
+int		r_framecount = 1;	// so frame counts initialized to 0 don't match
+int		r_visframecount;
+int		d_spanpixcount;
+int		r_polycount;
+int		r_drawnpolycount;
+int		r_wholepolycount;
 
-int                     *pfrustum_indexes[4];
-int                     r_frustum_indexes[4*6];
+int			*pfrustum_indexes[4];
+int			r_frustum_indexes[4*6];
 
-int             reinit_surfcache = 1;   // if 1, surface cache is currently empty and
+int		reinit_surfcache = 1;	// if 1, surface cache is currently empty and
 								// must be reinitialized for current cache size
 
-mleaf_t         *r_viewleaf, *r_oldviewleaf;
+mleaf_t		*r_viewleaf, *r_oldviewleaf;
 
-texture_t       *r_notexture_mip;
+texture_t	*r_notexture_mip;
 
-float           r_aliastransition, r_resfudge;
+float		r_aliastransition, r_resfudge;
 
-int             d_lightstylevalue[256]; // 8.8 fraction of base light value
+int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
-float   dp_time1, dp_time2, db_time1, db_time2, rw_time1, rw_time2;
-float   se_time1, se_time2, de_time1, de_time2, dv_time1, dv_time2;
+float	dp_time1, dp_time2, db_time1, db_time2, rw_time1, rw_time2;
+float	se_time1, se_time2, de_time1, de_time2, dv_time1, dv_time2;
 
 void R_MarkLeaves (void);
 
@@ -136,7 +136,7 @@ cvar_t	r_maxedges = {"r_maxedges", "0", false, false, "Maximum number of edges t
 cvar_t	r_numedges = {"r_numedges", "0", false, false, "Report number of edges in use."};
 cvar_t	r_aliastransbase = {"r_aliastransbase", "200"};
 cvar_t	r_aliastransadj = {"r_aliastransadj", "100"};
-cvar_t	r_maxbmodeledges = {"r_maxbmodeledges", "0" }; /* FS: For big boy mods */
+cvar_t	r_maxbmodeledges = {"r_maxbmodeledges", "0", false, false, "Maximum number of bmodel edges to draw."}; /* FS: For big boy mods */
 
 extern cvar_t	scr_fov;
 
@@ -223,7 +223,7 @@ void R_Init (void)
 
 	Cvar_SetValue ("r_maxedges", (float)NUMSTACKEDGES);
 	Cvar_SetValue ("r_maxsurfs", (float)NUMSTACKSURFACES);
-	Cvar_SetValue ("r_maxbmodeledges", (float)MAX_BMODEL_EDGES); /* FS: For big boy mods */
+	Cvar_SetValue ("r_maxbmodeledges", (float)MIN_BMODEL_EDGES ); /* FS: For big boy mods */
 
 	view_clipplanes[0].leftedge = true;
 	view_clipplanes[1].rightedge = true;
@@ -304,6 +304,11 @@ void R_NewMap (void)
 		auxedges = Hunk_AllocName (r_numallocatededges * sizeof(edge_t),
 								   "edges");
 	}
+
+	if(r_maxbmodeledges.intValue > MIN_BMODEL_EDGES) /* FS: Dynamic allocation of bmodel edges */
+		bedges = Hunk_AllocName (r_maxbmodeledges.intValue * sizeof(bedge_t), "bedges");
+	else
+		bedges = Hunk_AllocName (MIN_BMODEL_EDGES * sizeof(bedge_t), "bedges");
 
 	r_dowarpold = false;
 	r_viewchanged = false;
@@ -967,6 +972,12 @@ void R_RenderView_ (void)
 	if (r_timegraph.value || r_speeds.value || r_dspeeds.value)
 		r_time1 = Sys_DoubleTime ();
 
+	if (r_maxbmodeledges.modified) /* FS: Update this before edges get drawn again */
+	{
+		r_maxbmodeledges.modified = false;
+		R_Restart_f();
+	}
+
 	R_SetupFrame ();
 
 #ifdef PASSAGES
@@ -1140,6 +1151,11 @@ void R_Restart_f (void)
 		auxedges = Hunk_AllocName (r_numallocatededges * sizeof(edge_t),
 								   "edges");
 	}
+
+	if(r_maxbmodeledges.intValue > MIN_BMODEL_EDGES) /* FS */
+		bedges = Hunk_AllocName (r_maxbmodeledges.intValue * sizeof(bedge_t), "bedges");
+	else
+		bedges = Hunk_AllocName (MIN_BMODEL_EDGES * sizeof(bedge_t), "bedges");
 
 	r_dowarpold = false;
 	r_viewchanged = true;

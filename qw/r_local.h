@@ -75,8 +75,8 @@ extern cvar_t	r_numedges;
 extern cvar_t	r_maxbmodeledges; /* FS: For some big boy mods */
 
 /* FS: Moved this */
-#define MAX_BMODEL_VERTS	500	// 6K
-#define MAX_BMODEL_EDGES	1000	// 12K
+#define MAX_BMODEL_VERTS	500*6	/* FS: Was 6K */
+#define MIN_BMODEL_EDGES	1000	// 12K
 
 #define XCENTERING	(1.0 / 2.0)
 #define YCENTERING	(1.0 / 2.0)
@@ -171,6 +171,8 @@ void D_DrawSurfaces (void);
 void R_InsertNewEdges (edge_t *edgestoadd, edge_t *edgelist);
 void R_StepActiveU (edge_t *pedge);
 void R_RemoveEdges (edge_t *pedge);
+
+extern bedge_t *bedges; /* FS: Dynamic allocation of bmodel edges */
 
 extern void R_Surf8Start (void);
 extern void R_Surf8End (void);

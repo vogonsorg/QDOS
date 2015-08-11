@@ -137,7 +137,7 @@ cvar_t	r_maxedges = {"r_maxedges", "0", false, false, "Maximum number of edges t
 cvar_t	r_numedges = {"r_numedges", "0", false, false, "Report number of edges in use."};
 cvar_t	r_aliastransbase = {"r_aliastransbase", "200"};
 cvar_t	r_aliastransadj = {"r_aliastransadj", "100"};
-cvar_t	r_maxbmodeledges = {"r_maxbmodeledges", "0" }; /* FS: For big boy mods */
+cvar_t	r_maxbmodeledges = {"r_maxbmodeledges", "0", false, false, "Maximum number of bmodel edges to draw."}; /* FS: For big boy mods */
 
 extern cvar_t	scr_fov;
 
@@ -222,7 +222,7 @@ void R_Init (void)
 
 	Cvar_SetValue ("r_maxedges", (float)NUMSTACKEDGES);
 	Cvar_SetValue ("r_maxsurfs", (float)NUMSTACKSURFACES);
-	Cvar_SetValue ("r_maxbmodeledges", (float)MAX_BMODEL_EDGES); /* FS: For big boy mods */
+	Cvar_SetValue ("r_maxbmodeledges", (float)MIN_BMODEL_EDGES ); /* FS: For big boy mods */
 
 	view_clipplanes[0].leftedge = true;
 	view_clipplanes[1].rightedge = true;
@@ -300,6 +300,11 @@ void R_NewMap (void)
 		auxedges = Hunk_AllocName (r_numallocatededges * sizeof(edge_t),
 								   "edges");
 	}
+
+	if(r_maxbmodeledges.intValue > MIN_BMODEL_EDGES) /* FS: Dynamic allocation of bmodel edges */
+		bedges = Hunk_AllocName (r_maxbmodeledges.intValue * sizeof(bedge_t), "bedges");
+	else
+		bedges = Hunk_AllocName (MIN_BMODEL_EDGES * sizeof(bedge_t), "bedges");
 
 	r_dowarpold = false;
 	r_viewchanged = false;
@@ -953,6 +958,12 @@ void R_RenderView_ (void)
 	if (r_timegraph.value || r_speeds.value || r_dspeeds.value)
 		r_time1 = Sys_FloatTime ();
 
+	if (r_maxbmodeledges.modified) /* FS: Update this before edges get drawn again */
+	{
+		r_maxbmodeledges.modified = false;
+		R_Restart_f();
+	}
+
 	R_SetupFrame ();
 
 #ifdef PASSAGES
@@ -1123,6 +1134,11 @@ void R_Restart_f (void)
 		auxedges = Hunk_AllocName (r_numallocatededges * sizeof(edge_t),
 								   "edges");
 	}
+
+	if(r_maxbmodeledges.intValue > MIN_BMODEL_EDGES) /* FS */
+		bedges = Hunk_AllocName (r_maxbmodeledges.intValue * sizeof(bedge_t), "bedges");
+	else
+		bedges = Hunk_AllocName (MIN_BMODEL_EDGES * sizeof(bedge_t), "bedges");
 
 	r_dowarpold = false;
 	r_viewchanged = true;
