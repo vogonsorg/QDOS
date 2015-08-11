@@ -1952,14 +1952,25 @@ pack_t *COM_LoadPackFile (char *packfile)
 		return NULL;
 
 	fread (&header, 1, sizeof(header), packhandle);
-	if (header.id[0] != 'P' || header.id[1] != 'A'
-	|| header.id[2] != 'C' || header.id[3] != 'K')
+	if (header.id[0] != 'P' || header.id[1] != 'A' || header.id[2] != 'C' || header.id[3] != 'K')
 		Sys_Error ("%s is not a packfile", packfile);
+
 	header.dirofs = LittleLong (header.dirofs);
 	header.dirlen = LittleLong (header.dirlen);
 
 	numpackfiles = header.dirlen / sizeof(dpackfile_t);
 
+	if (header.dirlen < 0 || header.dirofs < 0)
+	{
+		Sys_Error ("Invalid packfile %s (dirlen: %i, dirofs: %i)",
+					packfile, header.dirlen, header.dirofs);
+	}
+	if (!numpackfiles)
+	{
+		Con_Printf ("WARNING: %s has no files, ignored\n", packfile);
+		fclose (packhandle);
+		return NULL;
+	}
 	if (numpackfiles > MAX_FILES_IN_PACK)
 		Sys_Error ("%s has %i files", packfile, numpackfiles);
 
