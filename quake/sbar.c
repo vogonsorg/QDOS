@@ -457,13 +457,14 @@ Sbar_SoloScoreboard
 void Sbar_SoloScoreboard (void)
 {
 	char	str[80];
+	char	levelStr[21];
 	int		minutes, seconds, tens, units;
 	int		l;
 
-	sprintf (str,"Monsters:%3i /%3i", cl.stats[STAT_MONSTERS], cl.stats[STAT_TOTALMONSTERS]);
+	Com_sprintf (str, sizeof(str), "Monsters:%3i /%3i", cl.stats[STAT_MONSTERS], cl.stats[STAT_TOTALMONSTERS]);
 	Sbar_DrawString (8, 4, str);
 
-	sprintf (str,"Secrets :%3i /%3i", cl.stats[STAT_SECRETS], cl.stats[STAT_TOTALSECRETS]);
+	Com_sprintf (str, sizeof(str), "Secrets :%3i /%3i", cl.stats[STAT_SECRETS], cl.stats[STAT_TOTALSECRETS]);
 	Sbar_DrawString (8, 12, str);
 
 // time
@@ -471,12 +472,24 @@ void Sbar_SoloScoreboard (void)
 	seconds = cl.time - 60*minutes;
 	tens = seconds / 10;
 	units = seconds - 10*tens;
-	sprintf (str,"Time :%3i:%i%i", minutes, tens, units);
+	Com_sprintf (str, sizeof(str), "Time :%3i:%i%i", minutes, tens, units);
 	Sbar_DrawString (184, 4, str);
 
 // draw level name
 	l = strlen (cl.levelname);
-	Sbar_DrawString (232 - l*4, 12, cl.levelname);
+
+	/* FS: Truncate the name so it doesn't spill over into stats */
+	if (l > sizeof(levelStr))
+	{
+		l = sizeof(levelStr);
+		Q_strlcpy(str, cl.levelname, sizeof(levelStr)-3);
+		Q_strlcat(str, "...", sizeof(levelStr));
+	}
+	else
+		Q_strlcpy(str, cl.levelname, sizeof(levelStr));
+
+
+	Sbar_DrawString (232 - l*4, 12, str);
 }
 
 /*
