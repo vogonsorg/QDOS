@@ -858,6 +858,7 @@ void Host_Changelevel_f (void)
 	Com_sprintf (level, sizeof(level), "maps/%s.bsp", Cmd_Argv(1));
 	if (COM_OpenFile (level, &i) == -1)
 		Host_Error ("cannot find map %s", level);
+	else	COM_CloseFile (i);
 	//johnfitz
 
 	SV_SaveSpawnparms ();
