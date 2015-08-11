@@ -20,10 +20,10 @@ static char	timestampMsg[MAXPRINTMSG];
 char *Con_Timestamp (char *msg)
 {
 	/* FS: Timestamp code */
-	struct tm       *local = NULL;
-	time_t          utc = 0;
-	const char *timefmt = NULL;
-	char            st[80];
+	struct tm *local;
+	time_t utc;
+	const char *timefmt;
+	char st[80];
 
 	utc = time (NULL);
 	local = localtime (&utc);
