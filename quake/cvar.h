@@ -53,6 +53,14 @@ Cvars are restricted from having the same names as commands to keep this
 interface from being ambiguous.
 */
 
+/* FS: TODO: This whole thing is stupid and should be changed over to Quake 2's version.
+ *     This allows flags to be set.  Most importantly latched variables that shouldn't
+ *     be commited until the next map load... like deathmatch, coop, skill, even the
+ *     r_maxedges and r_maxsurfs variables.  This would also help remove some CVARs
+ *     that are "fake cvars" that actually are Cmd_AddCommands that run to a function
+ *     that check the variable.
+ */
+
 /* FS: NOTE!!!! If you add anything here... add it after the qboolean modified!  You will goof up setting cvar_t's in the code! */
 typedef struct cvar_s
 {
