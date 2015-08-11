@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef _MSC_VER /* FS: VS6 */
 	#define __attribute__(x)
+	#pragma warning ( disable : 4996) /* FS: Shut up VS2005 */
 #endif
 
 int Sys_FileOpenRead (char *path, int *hndl);

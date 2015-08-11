@@ -71,6 +71,10 @@ LPTSTR GetLastErrorText( LPTSTR lpszBuf, DWORD dwSize );
 //    main service thread.  When the this call returns, 
 //    the service has stopped, so exit. 
 // 
+#ifndef _CRTAPI1 /* FS: VS2005 Compatibility */
+#define _CRTAPI1 _cdecl
+#endif
+
 void _CRTAPI1 main(int argc, char **argv) 
 { 
     SERVICE_TABLE_ENTRY dispatchTable[] = 

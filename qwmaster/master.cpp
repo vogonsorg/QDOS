@@ -149,7 +149,11 @@
 #include <winsock.h>
 #include <winerror.h>
 #include <time.h>
+
+#if defined(_MSC_VER) && _MSC_VER < 1400 /* FS: VS2005 Compatibility */
 #include <winwrap.h>
+#endif
+
 #include <process.h>
 #include "service.h"
 #include "performance.h"
@@ -908,7 +912,7 @@ int AddServer (struct sockaddr_in *from, int normal, unsigned short queryPort, c
 	server = server->next;
 	server->heartbeats = preserved_heartbeats;
 	memcpy (&server->ip, from, sizeof(server->ip));
-	server->last_heartbeat = time(NULL);
+	server->last_heartbeat = (unsigned long)time(NULL);
 	server->next = NULL;
 
 	if(!hostnameIp || hostnameIp[0] == 0) // FS: If we add servers from a list using dynamic IPs, etc.  let's remember it.  Else, just copy the ip
@@ -923,7 +927,7 @@ int AddServer (struct sockaddr_in *from, int normal, unsigned short queryPort, c
 	server->shutdown_issued = 0;
 	server->queued_pings = 0;
 //	server->last_ping = 0;
-	server->last_ping = time(NULL)-(rand()%heartbeatInterval); // FS: Fudge the current time on purpose so we don't just ping a bunch of shit at the same time
+	server->last_ping = (unsigned long)time(NULL)-(rand()%heartbeatInterval); // FS: Fudge the current time on purpose so we don't just ping a bunch of shit at the same time
 	server->validated = 0;
 	Gamespy_Create_Challenge_Key(server->challengeKey, 6); // FS: Challenge key for this server
 	server->challengeKey[6] = '\0';
@@ -1054,7 +1058,7 @@ void QueueShutdown (struct sockaddr_in *from, server_t *myserver)
 void RunFrame (void)
 {
 	server_t		*server = &servers;
-	unsigned int	curtime = time(NULL);
+	unsigned int	curtime = (unsigned int)time(NULL);
 	
 	while (server->next)
 	{
@@ -1304,7 +1308,7 @@ void Ack (struct sockaddr_in *from, char* dataPacket)
 				server->queued_pings,
 				server->validated);
 
-			server->last_heartbeat = time(NULL);
+			server->last_heartbeat = (unsigned long)time(NULL);
 			server->validated = Gamespy_Challenge_Cross_Check(server->challengeKey, dataPacket, 1);
 			server->queued_pings = 0;
 
@@ -1390,7 +1394,7 @@ int HeartBeat (struct sockaddr_in *from, char *data)
 
 			Gamespy_Create_Challenge_Key(server->challengeKey, 6); // FS: Challenge key for this server
 			server->challengeKey[6] = '\0'; // FS: Gamespy null terminates the end
-			server->last_heartbeat = time(NULL);
+			server->last_heartbeat = (unsigned long)time(NULL);
 			Con_DPrintf ("[I] heartbeat from %s:%u.\n",	inet_ntoa (server->ip.sin_addr), htons(server->port));
 
 			Com_sprintf(validateString, sizeof(validateString), "%s", statusstring);
@@ -2596,7 +2600,7 @@ void HTTP_DL_List(void)
 #ifdef USE_CURL
 		printf("[I] Serverlist download sceduled!\n");
 		CURL_HTTP_StartDownload("http://www.quakeservers.net/lists/servers/global.txt", "qwservers.txt");
-		lastHTTPDL = time(NULL);
+		lastHTTPDL = (double)time(NULL);
 #endif
 	}
 }

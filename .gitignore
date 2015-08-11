@@ -3,6 +3,7 @@
 *.o
 q*.7z
 *.ncb
+*.ilk
 *.opt
 *.plg
 *.suo

@@ -5,6 +5,9 @@ del /s *.opt
 del /s *.plg
 del /s *.ilk
 del /s *.ASM
+del /s *.user
+del /s *.aps
+del /AH /s *.suo
 
 @echo Trying Windows XP RD
 rd Debug /S /Q
