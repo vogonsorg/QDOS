@@ -320,10 +320,11 @@ void CL_PlayDemo_f (void)
 		if (c == '\n')
 			break;
 		if (c == '-') {
+			if (neg) break;
 			neg = true;
 			continue;
 		}
-		// check for multiple '-' or legal digits? meh...
+		// check legal digits? meh...
 		cls.forcetrack = cls.forcetrack * 10 + (c - '0');
 	}
 	if (c != '\n')
