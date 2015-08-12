@@ -103,7 +103,7 @@ SOURCE=.\curl_dl.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\DG_misc.h
+SOURCE=.\dg_misc.h
 # End Source File
 # Begin Source File
 

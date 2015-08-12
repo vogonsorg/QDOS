@@ -154,7 +154,7 @@ SOURCE=.\cd_win.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\CFGFILE.C
+SOURCE=.\cfgfile.c
 # End Source File
 # Begin Source File
 
@@ -170,7 +170,7 @@ SOURCE=.\cl_ents.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\CL_HTTP.C
+SOURCE=.\cl_http.c
 # End Source File
 # Begin Source File
 
@@ -525,7 +525,7 @@ SOURCE=.\draw.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\DSTRING.C
+SOURCE=.\dstring.c
 # End Source File
 # Begin Source File
 
@@ -1087,11 +1087,11 @@ SOURCE=.\cdaudio.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\CFGFILE.H
+SOURCE=.\cfgfile.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\CL_HTTP.H
+SOURCE=.\cl_http.h
 # End Source File
 # Begin Source File
 
@@ -1131,7 +1131,7 @@ SOURCE=.\d_local.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\DG_misc.h
+SOURCE=.\dg_misc.h
 # End Source File
 # Begin Source File
 
@@ -1139,11 +1139,7 @@ SOURCE=.\draw.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\DSTRING.H
-# End Source File
-# Begin Source File
-
-SOURCE=.\glob.h
+SOURCE=.\dstring.h
 # End Source File
 # Begin Source File
 
@@ -1152,10 +1148,6 @@ SOURCE=.\input.h
 # Begin Source File
 
 SOURCE=.\keys.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\quake\v2\master\masterpr.h
 # End Source File
 # Begin Source File
 

@@ -230,7 +230,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="CFGFILE.C"
+				RelativePath="cfgfile.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -970,7 +970,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="DSTRING.C"
+				RelativePath="dstring.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -2539,7 +2539,7 @@
 				>
 			</File>
 			<File
-				RelativePath="CFGFILE.H"
+				RelativePath="cfgfile.h"
 				>
 			</File>
 			<File
@@ -2575,7 +2575,7 @@
 				>
 			</File>
 			<File
-				RelativePath="DG_misc.h"
+				RelativePath="dg_misc.h"
 				>
 			</File>
 			<File
@@ -2587,11 +2587,7 @@
 				>
 			</File>
 			<File
-				RelativePath="DSTRING.H"
-				>
-			</File>
-			<File
-				RelativePath="glob.h"
+				RelativePath="dstring.h"
 				>
 			</File>
 			<File
@@ -2632,10 +2628,6 @@
 			</File>
 			<File
 				RelativePath="net_ser.h"
-				>
-			</File>
-			<File
-				RelativePath="net_vcr.h"
 				>
 			</File>
 			<File
@@ -2707,10 +2699,6 @@
 				>
 			</File>
 			<File
-				RelativePath="VA.H"
-				>
-			</File>
-			<File
 				RelativePath="vid.h"
 				>
 			</File>
@@ -2739,10 +2727,6 @@
 			Name="Resource Files"
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe"
 			>
-			<File
-				RelativePath="qe3.ico"
-				>
-			</File>
 			<File
 				RelativePath="quake.ico"
 				>

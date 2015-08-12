@@ -113,7 +113,7 @@ SOURCE=.\Goa\SDK\goautil.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Goa\Sdk\goautil.h
+SOURCE=.\Goa\SDK\goautil.h
 # End Source File
 # Begin Source File
 
@@ -154,7 +154,7 @@ SOURCE=.\cd_win.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\CFGFILE.C
+SOURCE=.\cfgfile.c
 # End Source File
 # Begin Source File
 
@@ -517,7 +517,7 @@ SOURCE=.\draw.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\DSTRING.C
+SOURCE=.\dstring.c
 # End Source File
 # Begin Source File
 
@@ -1148,7 +1148,7 @@ SOURCE=.\cdaudio.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\CFGFILE.H
+SOURCE=.\cfgfile.h
 # End Source File
 # Begin Source File
 
@@ -1184,7 +1184,7 @@ SOURCE=.\d_iface.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\DG_misc.h
+SOURCE=.\dg_misc.h
 # End Source File
 # Begin Source File
 
@@ -1196,11 +1196,7 @@ SOURCE=.\draw.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\DSTRING.H
-# End Source File
-# Begin Source File
-
-SOURCE=.\glob.h
+SOURCE=.\dstring.h
 # End Source File
 # Begin Source File
 
@@ -1241,10 +1237,6 @@ SOURCE=.\net_loop.h
 # Begin Source File
 
 SOURCE=.\net_ser.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\net_vcr.h
 # End Source File
 # Begin Source File
 
@@ -1316,10 +1308,6 @@ SOURCE=.\sys.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\VA.H
-# End Source File
-# Begin Source File
-
 SOURCE=.\vid.h
 # End Source File
 # Begin Source File
@@ -1346,10 +1334,6 @@ SOURCE=.\zone.h
 # Begin Group "Resource Files"
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe"
-# Begin Source File
-
-SOURCE=.\qe3.ico
-# End Source File
 # Begin Source File
 
 SOURCE=.\quake.ico
