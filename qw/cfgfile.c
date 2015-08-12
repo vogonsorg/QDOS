@@ -129,8 +129,7 @@ void CFG_ReadCvarOverrides (char **vars, int num_vars)
 
 	for (i = 0; i < num_vars; i++)
 	{
-		strncpy (&buff[1], vars[i], sizeof(buff) - 1);
-		buff[sizeof(buff) - 1] = 0;
+		Q_strlcpy (&buff[1], vars[i], sizeof(buff) - 1);
 		j = COM_CheckParm(buff);
 		if (j != 0 && j < com_argc - 1)
 		{

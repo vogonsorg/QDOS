@@ -1528,7 +1528,7 @@ void CL_WriteConfig_f (void)
 		if(Cmd_Argc() == 1)
 			Com_sprintf(cfgName, sizeof(cfgName), "config");
 		else
-			strncpy (cfgName, Cmd_Argv(1), sizeof(cfgName));
+			Q_strlcpy (cfgName, Cmd_Argv(1), sizeof(cfgName));
 
 		Host_WriteConfiguration (cfgName);
 		Con_Printf ("Wrote config file %s/%s.cfg.\n", com_gamedir, cfgName);

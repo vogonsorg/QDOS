@@ -852,7 +852,7 @@ int TTY_Connect(int handle, char *host)
 			key_dest = key_menu;
 			m_state = m_return_state;
 			m_return_onerror = false;
-			Q_strncpy(m_return_reason, response, 31);
+			Q_strlcpy(m_return_reason, response, sizeof(m_return_reason));
 		}
 		return -1;
 	}
@@ -1080,18 +1080,18 @@ void Com_f (void)
 
 	if ((i = Cmd_CheckParm ("clear")) != 0)
 	{
-		Q_strncpy (p->clear, Cmd_Argv (i+1), 16);
+		Q_strlcpy (p->clear, Cmd_Argv (i+1), 16);
 	}
 
 	if ((i = Cmd_CheckParm ("startup")) != 0)
 	{
-		Q_strncpy (p->startup, Cmd_Argv (i+1), 32);
+		Q_strlcpy (p->startup, Cmd_Argv (i+1), 32);
 		p->modemInitialized = false;
 	}
 
 	if ((i = Cmd_CheckParm ("shutdown")) != 0)
 	{
-		Q_strncpy (p->shutdown, Cmd_Argv (i+1), 16);
+		Q_strlcpy (p->shutdown, Cmd_Argv (i+1), 16);
 	}
 
 	if (Cmd_CheckParm ("-cts"))

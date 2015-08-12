@@ -888,7 +888,7 @@ void CL_ParseServerData (void)
 
 	// get the full level name
 	str = MSG_ReadString ();
-	strncpy (cl.levelname, str, sizeof(cl.levelname)-1);
+	Q_strlcpy (cl.levelname, str, sizeof(cl.levelname));
 
 	// get the movevars
 	movevars.gravity			= MSG_ReadFloat();
@@ -1273,7 +1273,7 @@ CL_UpdateUserinfo
 */
 void CL_ProcessUserInfo (int slot, player_info_t *player)
 {
-	strncpy (player->name, Info_ValueForKey (player->userinfo, "name"), sizeof(player->name)-1);
+	Q_strlcpy (player->name, Info_ValueForKey (player->userinfo, "name"), sizeof(player->name));
 	player->topcolor = atoi(Info_ValueForKey (player->userinfo, "topcolor"));
 	player->bottomcolor = atoi(Info_ValueForKey (player->userinfo, "bottomcolor"));
 	if (Info_ValueForKey (player->userinfo, "*spectator")[0])
@@ -1304,7 +1304,7 @@ void CL_UpdateUserinfo (void)
 
 	player = &cl.players[slot];
 	player->userid = MSG_ReadLong ();
-	strncpy (player->userinfo, MSG_ReadString(), sizeof(player->userinfo)-1);
+	Q_strlcpy (player->userinfo, MSG_ReadString(), sizeof(player->userinfo));
 
 	CL_ProcessUserInfo (slot, player);
 }
@@ -1327,10 +1327,8 @@ void CL_SetInfo (void)
 
 	player = &cl.players[slot];
 
-	strncpy (key, MSG_ReadString(), sizeof(key) - 1);
-	key[sizeof(key) - 1] = 0;
-        strncpy (value, MSG_ReadString(), sizeof(value) - 1);
-	key[sizeof(value) - 1] = 0;
+	Q_strlcpy (key, MSG_ReadString(), sizeof(key));
+	Q_strlcpy (value, MSG_ReadString(), sizeof(value));
 
 	if(!stricmp(key, "chat")) /* FS: EZQ Chat */
 	{
@@ -1387,10 +1385,8 @@ void CL_ServerInfo (void)
 	char key[MAX_MSGLEN];
 	char value[MAX_MSGLEN];
 
-	strncpy (key, MSG_ReadString(), sizeof(key) - 1);
-	key[sizeof(key) - 1] = 0;
-	strncpy (value, MSG_ReadString(), sizeof(value) - 1);
-	key[sizeof(value) - 1] = 0;
+	Q_strlcpy (key, MSG_ReadString(), sizeof(key));
+	Q_strlcpy (value, MSG_ReadString(), sizeof(value));
 
 	Con_DPrintf(DEVELOPER_MSG_NET, "SERVERINFO: %s=%s\n", key, value);
 

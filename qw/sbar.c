@@ -422,9 +422,8 @@ void Sbar_SortTeams (void)
 			continue;
 
 		// find his team in the list
-		t[16] = 0;
-		strncpy(t, Info_ValueForKey(s->userinfo, "team"), 16);
-		if (t == NULL || t[0] == 0)
+		Q_strlcpy(t, Info_ValueForKey(s->userinfo, "team"), sizeof(t));
+		if (t[0] == 0)
 			continue; // not on team
 		for (j = 0; j < scoreboardteams; j++)
 			if (!strcmp(teams[j].team, t)) {
@@ -937,8 +936,7 @@ void Sbar_TeamOverlay (void)
 		Draw_String ( x, y, num);
 
 	// draw team
-		team[4] = 0;
-		strncpy (team, tm->team, 4);
+		Q_strlcpy (team, tm->team, sizeof(team));
 		Draw_String (x + 104, y, team);
 
 	// draw total
@@ -1108,8 +1106,7 @@ void Sbar_DeathmatchOverlay (int start)
 		// team
 		if (teamplay)
 		{
-			team[4] = 0;
-			strncpy (team, Info_ValueForKey(s->userinfo, "team"), 4);
+			Q_strlcpy (team, Info_ValueForKey(s->userinfo, "team"), sizeof(team));
 			Draw_String (x+152, y, team);
 		}
 
@@ -1220,14 +1217,12 @@ void Sbar_MiniDeathmatchOverlay (void)
 	// team
 		if (teamplay)
 		{
-			team[4] = 0;
-			strncpy (team, Info_ValueForKey(s->userinfo, "team"), 4);
+			Q_strlcpy (team, Info_ValueForKey(s->userinfo, "team"), sizeof(team));
 			Draw_String (x+48, y, team);
 		}
 
 	// draw name
-		name[16] = 0;
-		strncpy(name, s->name, 16);
+		Q_strlcpy(name, s->name, sizeof(name));
 		if (teamplay)
 			Draw_String (x+48+40, y, name);
 		else
@@ -1253,8 +1248,7 @@ void Sbar_MiniDeathmatchOverlay (void)
 		tm = teams + k;
 
 	// draw pings
-		team[4] = 0;
-		strncpy (team, tm->team, 4);
+		Q_strlcpy (team, tm->team, sizeof(team));
 		Draw_String (x, y, team);
 
 	// draw total

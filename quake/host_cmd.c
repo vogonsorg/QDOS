@@ -2194,7 +2194,7 @@ void Host_Startdemos_f (void)
 	Con_Printf ("%i demo(s) in loop\n", c);
 
 	for (i=1 ; i<c+1 ; i++)
-		strncpy (cls.demos[i-1], Cmd_Argv(i), sizeof(cls.demos[0])-1);
+		Q_strlcpy (cls.demos[i-1], Cmd_Argv(i), sizeof(cls.demos[0]));
 
 	if (!sv.active && cls.demonum != -1 && !cls.demoplayback)
 	{
