@@ -19,6 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // client.h
 
+#ifdef USE_CURL
+#include "cl_http.h"
+#endif
+
 typedef struct
 {
 	char            name[16];

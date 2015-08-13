@@ -53,6 +53,7 @@ http_progress (void *clientp, double dltotal, double dlnow,
 {
 	if (dltotal)
 	{
+		/* FS: TODO: Add KBps counter from Q2DOS */
 //		CL_HTTP_Calculate_KBps((int)dlnow, (int)dltotal);
 		cls.downloadpercent = (int)((dlnow / dltotal) * 100.0f);
 	}
@@ -68,6 +69,7 @@ http_write (void *ptr, size_t size, size_t nmemb, void *stream)
 	if (!cls.download)
 	{
 		// FS: If this fails here delete the temp file, don't make it go to response code 200!
+		/* FS: TODO: Add tmp file removal */
 		httpDlAborted = true;
 		Con_DPrintf (DEVELOPER_MSG_NET, "http_write: unexpected call, likely transfer manually aborted\n");
 		return -1;

@@ -1,6 +1,8 @@
 CC   = gcc
 STRIP= strip
 
+# libcurl/http downloads:
+USE_CURL=1
 # whether to use OGG VORBIS
 USE_OGG=yes
 # use tremor library for ogg/vorbis:
@@ -21,6 +23,12 @@ else
 CFLAGS+= -DVORBIS_USE_TREMOR
 LIBS  += -L../3rdparty/lib -lvorbisidec -logg
 endif
+endif
+
+ifeq ($(USE_CURL),1)
+CFLAGS+= -DUSE_CURL -DCURL_NO_OLDIES
+CFLAGS+= -I../libcurl/include
+LIBS+= -L../libcurl/lib -lcurl
 endif
 LIBS  += -lm
 
@@ -47,6 +55,7 @@ CLIENT = $(O)/cd_audio.o  \
 	$(O)/d_modech.o \
 	$(O)/r_draw.o   \
 	$(O)/cl_main.o  \
+	$(O)/cl_http.o  \
 	$(O)/d_part.o   \
 	$(O)/menu.o     \
 	$(O)/r_edge.o   \
