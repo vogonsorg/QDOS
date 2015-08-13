@@ -111,7 +111,6 @@ typedef struct
 	vec3_t	origin;			// origin of sound effect
 	vec_t	dist_mult;		// distance multiplier (attenuation/clipK)
 	int		master_vol;		// 0-255 master volume
-	int		streaming;
 } channel_t;
 
 typedef struct

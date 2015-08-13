@@ -406,12 +406,6 @@ channel_t *SND_PickChannel(int entnum, int entchannel)
 	life_left = 0x7fffffff;
 	for (ch_idx=NUM_AMBIENTS ; ch_idx < NUM_AMBIENTS + MAX_DYNAMIC_CHANNELS ; ch_idx++)
 	{
-		// Don't let game sounds override streaming sounds
-		if (channels[ch_idx].streaming)  // Q2E
-		{
-			continue;
-		}
-
 		if (entchannel != 0		// channel 0 never overrides
 				&& channels[ch_idx].entnum == entnum
 				&& (channels[ch_idx].entchannel == entchannel || entchannel == -1))
