@@ -230,7 +230,7 @@ static void S_CloseWAVBackgroundTrack(void)
 
 void S_StreamWAVBackgroundTrack(void)
 {
-	int		samples, maxSamples;
+	int		i, samples, maxSamples;
 	int		read, maxRead, total;
 	float	scale;
 	byte	musicWavData[MAX_RAW_SAMPLES];
@@ -298,6 +298,12 @@ void S_StreamWAVBackgroundTrack(void)
 
 			total+= read;
 //			Con_Printf("Read: %i, Samples: %i, Total: %i\n", read, samples, total);
+		}
+		if (musicWavInfo.width == 2) {
+			total = samples * musicWavInfo.channels;
+			for (i = 0; i < total; i++) {
+				((short *)musicWavData)[i] = LittleShort( ((short *)musicWavData)[i] );
+			}
 		}
 		S_RawSamples (samples, musicWavInfo.rate, musicWavInfo.width, musicWavInfo.channels, musicWavData, true);
 	}
