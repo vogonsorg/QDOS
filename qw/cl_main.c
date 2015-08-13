@@ -584,6 +584,8 @@ void CL_Disconnect (void)
 	key_dest = 0; /* FS: Fix so main menu still works after disconnect */
 	cl.intermission = 0; /* FS: Baker fix */
 
+	CL_Download_Reset_KBps_counter();
+
 	cls.quakeforge_http_dl = false; /* FS */
 }
 
@@ -2078,4 +2080,59 @@ void CL_PingNetServers_f (void)
 	error = ServerListUpdate(serverlist,true); /* FS: Use Async now! */
 
 	CL_Gamespy_Check_Error(serverlist, error);
+}
+
+//=============================================================================
+
+// Download speed counter
+
+typedef struct {
+	int		prevTime;
+	int		bytesRead;
+	int		byteCount;
+	float	timeCount;
+	float	prevTimeCount;
+	float	startTime;
+} dlSpeedInfo_t;
+
+dlSpeedInfo_t	dlSpeedInfo;
+
+/*
+=====================
+CL_Download_Reset_KBps_counter
+=====================
+*/
+void CL_Download_Reset_KBps_counter (void)
+{
+	dlSpeedInfo.timeCount = dlSpeedInfo.prevTime = dlSpeedInfo.prevTimeCount = dlSpeedInfo.bytesRead = dlSpeedInfo.byteCount = 0;
+	dlSpeedInfo.startTime = (float)Sys_DoubleTime()*1000.0f;
+	cls.downloadrate = 0;
+}
+
+/*
+=====================
+CL_Download_Calculate_KBps
+=====================
+*/
+void CL_Download_Calculate_KBps (int byteDistance, int totalSize)
+{
+	float	timeDistance = (float)((Sys_DoubleTime()*1000.0f) - dlSpeedInfo.prevTime);
+	float	totalTime = (dlSpeedInfo.timeCount - dlSpeedInfo.startTime) / 1000.0f;
+
+	dlSpeedInfo.timeCount += timeDistance;
+	dlSpeedInfo.byteCount += byteDistance;
+	dlSpeedInfo.bytesRead += byteDistance;
+
+//	Con_DPrintf(DEVELOPER_MSG_NET, "Time distance: %fs\n", timeDistance);
+//	Con_DPrintf(DEVELOPER_MSG_NET, "Byte distance: %i\nByteCount: %i\nTotal: %i\n", byteDistance, dlSpeedInfo.byteCount, totalSize);
+//	Con_DPrintf(DEVELOPER_MSG_NET, "Total time counted: %3.2fs\n", totalTime);
+
+	if (totalTime >= 1.0f)
+	{
+		cls.downloadrate = (float)dlSpeedInfo.byteCount / 1024.0f;
+		Con_DPrintf (DEVELOPER_MSG_NET, "Rate: %4.2fKB/s, Downloaded %4.2fKB of %4.2fKB\n", cls.downloadrate, (float)dlSpeedInfo.bytesRead/1024.0, (float)totalSize/1024.0);
+		dlSpeedInfo.byteCount = 0;
+		dlSpeedInfo.startTime = (float)Sys_DoubleTime()*1000.0f;
+	}
+	dlSpeedInfo.prevTime = Sys_DoubleTime()*1000.0f;
 }

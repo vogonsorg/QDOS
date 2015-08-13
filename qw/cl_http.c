@@ -47,21 +47,36 @@ static CURL *easy_handle;
 static CURLM *multi_handle;
 static qboolean httpDlAborted = false;
 
-static int
-http_progress (void *clientp, double dltotal, double dlnow,
+// FS: For KBps calculator
+int		prevSize;
+
+void CL_HTTP_Reset_KBps_Counter (void)
+{
+	prevSize = 0;
+	CL_Download_Reset_KBps_counter ();
+}
+
+void CL_HTTP_Calculate_KBps (int curSize, int totalSize)
+{
+	int byteDistance = curSize-prevSize;
+
+	CL_Download_Calculate_KBps (byteDistance, totalSize);
+	prevSize = curSize;
+}
+
+static int http_progress (void *clientp, double dltotal, double dlnow,
 			   double ultotal, double uplow)
 {
 	if (dltotal)
 	{
-		/* FS: TODO: Add KBps counter from Q2DOS */
-//		CL_HTTP_Calculate_KBps((int)dlnow, (int)dltotal);
+		CL_HTTP_Calculate_KBps((int)dlnow, (int)dltotal);
 		cls.downloadpercent = (int)((dlnow / dltotal) * 100.0f);
 	}
 	else
 		cls.downloadpercent = 0;
-
 	return 0;	//non-zero = abort
 }
+
 
 static size_t
 http_write (void *ptr, size_t size, size_t nmemb, void *stream)
@@ -98,6 +113,7 @@ void
 CL_HTTP_StartDownload (void)
 {
 	Con_DPrintf(DEVELOPER_MSG_NET, "In CL_HTTP_StartDownload\n");
+	CL_HTTP_Reset_KBps_Counter();
 
 	easy_handle = curl_easy_init ();
 

@@ -212,7 +212,7 @@ typedef struct
 	int                      downloadnumber;
 	dltype_t	downloadtype;
 	int			downloadpercent;
-	int			downloadrate; /* FS: Chunked downloads */
+	float		downloadrate; /* FS: Chunked downloads */
 	double		downloadstarttime; /* FS: Chunked downloads */
 
 	int downloadoldrate; /* FS: Chunked downloads */
@@ -435,6 +435,10 @@ void CL_NextDemo (void);
 qboolean CL_DemoBehind(void);
 
 void CL_BeginServerConnect(void);
+
+/* FS */
+void CL_Download_Reset_KBps_counter (void);
+void CL_Download_Calculate_KBps (int byteDistance, int totalSize);
 
 #define			MAX_VISEDICTS	256
 extern	int				cl_numvisedicts, cl_oldnumvisedicts;

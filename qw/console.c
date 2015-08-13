@@ -49,6 +49,8 @@ int			con_notifylines;		// scan lines to clear for notify lines
 qboolean	con_debuglog;
 
 #define		MAXCMDLINE	256
+#define		CONWIDTH_AT_640X480	78 /* FS: Added */
+
 extern	char	key_lines[32][MAXCMDLINE];
 extern	int		edit_line;
 extern	int		key_linepos;
@@ -791,7 +793,26 @@ void Con_DrawConsole (int lines)
 			text = cls.downloadname->str;
 
 		x = con_linewidth - ((con_linewidth * 7) / 40);
-		y = x - strlen(text) - 8;
+
+		if (cls.downloadrate > 0.0f)
+		{
+			if(con_linewidth >= CONWIDTH_AT_640X480)
+				y = x - strlen(text) - 19;
+			else
+			{
+				y = x - strlen(text) - 9;
+			}
+		}
+		else
+		{
+			if(con_linewidth >= CONWIDTH_AT_640X480)
+				y = x - strlen(text) - 8;
+			else
+			{
+				y = x - strlen(text) - 2;
+			}
+		}
+
 		i = con_linewidth/3;
 		if (strlen(text) > i)
 		{
@@ -819,7 +840,11 @@ void Con_DrawConsole (int lines)
 		dlbar[i++] = '\x82';
 		dlbar[i] = 0;
 
-		sprintf(dlbar + strlen(dlbar), " %02d%%", cls.downloadpercent);
+//		sprintf(dlbar + strlen(dlbar), " %02d%%", cls.downloadpercent);
+		if (cls.downloadrate > 0.0f)
+			Com_sprintf(dlbar + strlen(dlbar), sizeof(dlbar)-strlen(dlbar), " %2d%% (%4.2fKB/s)", cls.downloadpercent, cls.downloadrate);
+		else
+			Com_sprintf(dlbar + strlen(dlbar), sizeof(dlbar)-strlen(dlbar), " %2d%%", cls.downloadpercent);
 
 		// draw it
 		y = con_vislines-22 + 8;

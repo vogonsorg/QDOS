@@ -725,6 +725,8 @@ void CL_ParseDownload (void)
 	// open the file if not opened yet
 	if (!cls.download)
 	{
+		CL_Download_Reset_KBps_counter();
+
 		if(!CL_CreateDownload(size, false)) /* FS: Added */
 			return;
 	}
@@ -735,6 +737,9 @@ void CL_ParseDownload (void)
 
 	if (percent != 100)
 	{
+		// request next block
+		CL_Download_Calculate_KBps (size, 0);	// Knightmare- for KB/s counter
+
 		cls.downloadpercent = percent;
 
 		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);

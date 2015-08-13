@@ -1126,6 +1126,7 @@ void R_ClearDynamic (void) /* FS */
 		Hunk_FreeToLowMark (bedgesMark);
 	}
 
+	bedgesMark = 0;
 	bedges = NULL;
 }
 
