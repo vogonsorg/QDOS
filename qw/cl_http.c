@@ -1,4 +1,4 @@
-#ifdef USETHIS
+#ifdef USE_CURL
 /*
 	#FILENAME#
 
@@ -28,39 +28,51 @@
 		Boston, MA  02111-1307, USA
 
 */
-#ifdef HAVE_CONFIG_H
-# include "config.h"
+#ifdef _WIN32
+#define CURL_HIDDEN_SYMBOLS
+#define CURL_EXTERN_SYMBOL
+#define CURL_CALLING_CONVENTION __cdecl
 #endif
 
-#undef HAVE_LIBCURL /* FS: TODO: Take DKs HTTP code -- Disabled */
-#ifdef HAVE_LIBCURL
-
+#define CURL_STATICLIB
 #include <curl/curl.h>
 
 #include "sys.h"
 
 #include "cl_http.h"
-#include "client.h"
+#include "quakedef.h"
 
 static int curl_borked;
 static CURL *easy_handle;
 static CURLM *multi_handle;
+static qboolean httpDlAborted = false;
 
 static int
 http_progress (void *clientp, double dltotal, double dlnow,
 			   double ultotal, double uplow)
 {
+	if (dltotal)
+	{
+//		CL_HTTP_Calculate_KBps((int)dlnow, (int)dltotal);
+		cls.downloadpercent = (int)((dlnow / dltotal) * 100.0f);
+	}
+	else
+		cls.downloadpercent = 0;
+
 	return 0;	//non-zero = abort
 }
 
 static size_t
 http_write (void *ptr, size_t size, size_t nmemb, void *stream)
 {
-	if (!cls.download) {
-		Sys_Printf ("http_write: unexpected call\n");
+	if (!cls.download)
+	{
+		// FS: If this fails here delete the temp file, don't make it go to response code 200!
+		httpDlAborted = true;
+		Con_DPrintf (DEVELOPER_MSG_NET, "http_write: unexpected call, likely transfer manually aborted\n");
 		return -1;
 	}
-	return Qwrite (cls.download, ptr, size * nmemb);
+	return fwrite (ptr, 1, size *nmemb, cls.download);
 }
 
 void
@@ -83,15 +95,18 @@ CL_HTTP_Shutdown (void)
 void
 CL_HTTP_StartDownload (void)
 {
+	Con_DPrintf(DEVELOPER_MSG_NET, "In CL_HTTP_StartDownload\n");
+
 	easy_handle = curl_easy_init ();
 
-	curl_easy_setopt (easy_handle, CURLOPT_NOPROGRESS, 1L);
+	curl_easy_setopt (easy_handle, CURLOPT_NOPROGRESS, 0L);
 	curl_easy_setopt (easy_handle, CURLOPT_NOSIGNAL, 1L);
 	curl_easy_setopt (easy_handle, CURLOPT_PROGRESSFUNCTION, http_progress);
 	curl_easy_setopt (easy_handle, CURLOPT_WRITEFUNCTION, http_write);
-
 	curl_easy_setopt (easy_handle, CURLOPT_URL, cls.downloadurl->str);
 	curl_multi_add_handle (multi_handle, easy_handle);
+
+	Con_DPrintf(DEVELOPER_MSG_NET, "HTTP Download URL: %s\n", cls.downloadurl->str);
 }
 
 void
@@ -102,17 +117,33 @@ CL_HTTP_Update (void)
 	CURLMsg    *msg;
 
 	curl_multi_perform (multi_handle, &running_handles);
-	while ((msg = curl_multi_info_read (multi_handle, &messages_in_queue))) {
-		if (msg->msg == CURLMSG_DONE) {
+	while ((msg = curl_multi_info_read (multi_handle, &messages_in_queue)))
+	{
+		if (msg->msg == CURLMSG_DONE)
+		{
 			long        response_code;
 
-			curl_easy_getinfo (msg->easy_handle, CURLINFO_RESPONSE_CODE,
-							   &response_code);
-			if (response_code == 200) {
-				CL_FinishDownload ();
-			} else {
-				Sys_Printf ("download failed: %ld\n", response_code);
-				CL_FailDownload ();
+			curl_easy_getinfo (msg->easy_handle, CURLINFO_RESPONSE_CODE, &response_code);
+			Con_DPrintf(DEVELOPER_MSG_NET, "HTTP URL response code: %li\n", response_code);
+			if ( (response_code == HTTP_OK || response_code == HTTP_REST) && !(httpDlAborted))
+			{
+				Con_Printf ("HTTP Download of %s completed\n", cls.downloadname->str); // FS: Tell me when it's done
+
+				CL_FinishDownload (true);
+			}
+			else
+			{
+				Con_Printf ("HTTP download failed: %ld\n", response_code);
+
+//				CL_HTTP_RemoveTemp(); // FS: Remove stray temp files so the server doesn't think we're resuming 0 length files or files that now have just header information
+
+				if(httpDlAborted) // FS: Abort this whole thing if http_write had something silly happen (disconnecting during dl)
+				{
+					httpDlAborted = false;
+					return;
+				}
+
+				CL_FinishDownload (false);
 			}
 			curl_multi_remove_handle (multi_handle, easy_handle);
 		}
@@ -137,5 +168,4 @@ void CL_HTTP_StartDownload (void) {}
 void CL_HTTP_Update (void) {}
 void CL_HTTP_Reset (void) {}
 
-#endif
-#endif
+#endif 

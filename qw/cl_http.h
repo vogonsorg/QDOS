@@ -32,6 +32,12 @@
 #ifndef __cl_http_h
 #define __cl_http_h
 
+#define HTTP_OK 200
+#define HTTP_REST 206
+#define HTTP_UNAUTHORIZED 401
+#define HTTP_FORBIDDEN 403
+#define HTTP_NOT_FOUND 404
+
 void CL_HTTP_Init (void);
 void CL_HTTP_Shutdown (void);
 void CL_HTTP_StartDownload (void);

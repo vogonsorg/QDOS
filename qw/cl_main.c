@@ -1243,7 +1243,6 @@ void CL_Init (void)
 	Info_SetValueForStarKey (cls.userinfo, "*ver", version->str, MAX_INFO_STRING);
 	Info_SetValueForKey (cls.userinfo, "chat", "", MAX_INFO_STRING); /* FS: EZQ Chat */
 
-//	Info_SetValueForStarKey (cls.userinfo, "*cap", "h", MAX_INFO_STRING); /* FS: HTTP downloading from QuakeForge */
 	CL_InitInput ();
 	CL_InitTEnts ();
 	CL_InitPrediction ();
@@ -1404,6 +1403,11 @@ void CL_Init (void)
 	memset(&browserListAll, 0, sizeof(browserListAll));
 
 	dstring_delete(version);
+
+#ifdef USE_CURL
+	Info_SetValueForStarKey (cls.userinfo, "*cap", "h", MAX_INFO_STRING); /* FS: HTTP downloading from QuakeForge */
+	CL_HTTP_Init();
+#endif
 }
 
 
@@ -1581,6 +1585,10 @@ void Host_Frame (float time)
 		host_frametime = 0.2;
 
 	GameSpy_Async_Think();
+
+#ifdef USE_CURL
+	CL_HTTP_Update();
+#endif
 
 	// get new key events
 	Sys_SendKeyEvents ();
@@ -1791,7 +1799,11 @@ void Host_Shutdown(void)
 	isdown = true;
 
 	Host_WriteConfiguration ("config"); 
-      
+
+#ifdef USE_CURL
+	CL_HTTP_Shutdown();
+#endif
+
 	CDAudio_Shutdown ();
 	NET_Shutdown ();
 	S_Shutdown();

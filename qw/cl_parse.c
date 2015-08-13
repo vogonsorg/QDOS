@@ -666,7 +666,7 @@ void CL_ParseDownload (void)
 #endif // PFTE_PEXT_CHUNKEDDOWNLOADS
 
 	// read the data
-	size = MSG_ReadShort ();
+	size = (short)MSG_ReadShort ();
 	percent = MSG_ReadByte ();
 
 	if (cls.demoplayback) {
@@ -687,7 +687,41 @@ void CL_ParseDownload (void)
 		CL_RequestNextDownload ();
 		return;
 	}
+	if (size == DL_HTTP)
+	{
+#ifdef USE_CURL
+		const char *url;
+		const char *newname;
 
+		url = MSG_ReadString ();
+		dstring_copystr (cls.downloadurl, url);
+
+		newname = MSG_ReadString ();
+		if (*newname)
+		{
+			if (strncmp (newname, cls.downloadname->str,
+						 strlen (cls.downloadname->str))
+				|| strstr (newname + strlen (cls.downloadname->str), "/")) {
+				Con_Warning("Server tried to give a strange new name: %s\n", newname);
+				CL_RequestNextDownload ();
+				return;
+			}
+			if (cls.download)
+			{
+				fclose(cls.download);
+
+			}
+			dstring_copystr (cls.downloadname, newname);
+		}
+		CL_HTTP_StartDownload ();
+#else
+		MSG_ReadString ();
+		MSG_ReadString ();
+		Con_Warning ("Server sent HTTP redirect but QWDOS was compiled without CURL.\n");
+#endif
+		CL_CreateDownload(0, true);
+		return;
+	}
 	// open the file if not opened yet
 	if (!cls.download)
 	{
