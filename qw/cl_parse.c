@@ -658,7 +658,7 @@ void CL_ParseDownload (void)
 
 
 #ifdef FTE_PEXT_CHUNKEDDOWNLOADS
-	if (cls.fteprotocolextensions & FTE_PEXT_CHUNKEDDOWNLOADS)
+	if ((cls.fteprotocolextensions & FTE_PEXT_CHUNKEDDOWNLOADS) && !cls.quakeforge_http_dl) /* FS: QuakeForge HTTP DL and FTE chunked downloads will clash */
 	{
 		CL_ParseChunkedDownload();
 		return;

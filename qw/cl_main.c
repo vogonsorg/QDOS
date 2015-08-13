@@ -583,6 +583,8 @@ void CL_Disconnect (void)
 
 	key_dest = 0; /* FS: Fix so main menu still works after disconnect */
 	cl.intermission = 0; /* FS: Baker fix */
+
+	cls.quakeforge_http_dl = false; /* FS */
 }
 
 void CL_Disconnect_f (void)
@@ -1066,6 +1068,11 @@ void CL_ConnectionlessPacket (void)
 
 		s = MSG_ReadString ();
 		cls.challenge = atoi(s);
+
+		if(strstr(s, "QF")) /* FS */
+		{
+			cls.quakeforge_http_dl = true;
+		}
 #ifdef PROTOCOL_VERSION_FTE
 		for(;;)
 		{

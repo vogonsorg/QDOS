@@ -233,6 +233,7 @@ typedef struct
 #ifdef PROTOCOL_VERSION_FTE
 	unsigned int fteprotocolextensions; ///< the extensions we told the server that we support.
 #endif
+	qboolean	quakeforge_http_dl; /* FS */
 
 // demo loop control
 	int			demonum;		// -1 = don't play demos
