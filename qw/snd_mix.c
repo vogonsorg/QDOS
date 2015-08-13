@@ -42,7 +42,7 @@ void Snd_WriteLinearBlastStereo16 (void)
 
 	for (i=0 ; i<snd_linear_count ; i+=2)
 	{
-		val = (snd_p[i]*snd_vol)>>8;
+		val = snd_p[i] >> 8;
 		if (val > 0x7fff)
 			snd_out[i] = 0x7fff;
 		else if (val < (short)0x8000)
@@ -50,7 +50,7 @@ void Snd_WriteLinearBlastStereo16 (void)
 		else
 			snd_out[i] = val;
 
-		val = (snd_p[i+1]*snd_vol)>>8;
+		val = snd_p[i+1] >> 8;
 		if (val > 0x7fff)
 			snd_out[i+1] = 0x7fff;
 		else if (val < (short)0x8000)
@@ -72,8 +72,6 @@ void S_TransferStereo16 (int endtime)
 	DWORD	*pbuf2;
 	HRESULT	hresult;
 #endif
-	
-	snd_vol = volume.value*256;
 
 	snd_p = (int *) paintbuffer;
 	lpaintedtime = paintedtime;
@@ -143,7 +141,6 @@ void S_TransferPaintBuffer(int endtime)
 	int 	*p;
 	int 	step;
 	int		val;
-	int		snd_vol;
 	DWORD	*pbuf;
 #ifdef _WIN32
 	int		reps;
@@ -163,7 +160,6 @@ void S_TransferPaintBuffer(int endtime)
 	out_mask = shm->samples - 1; 
 	out_idx = paintedtime * shm->channels & out_mask;
 	step = 3 - shm->channels;
-	snd_vol = volume.value*256;
 
 #ifdef _WIN32
 	if (pDSBuf)
@@ -201,7 +197,7 @@ void S_TransferPaintBuffer(int endtime)
 		short *out = (short *) pbuf;
 		while (count--)
 		{
-			val = (*p * snd_vol) >> 8;
+			val = *p >> 8;
 			p+= step;
 			if (val > 0x7fff)
 				val = 0x7fff;
@@ -216,7 +212,7 @@ void S_TransferPaintBuffer(int endtime)
 		unsigned char *out = (unsigned char *) pbuf;
 		while (count--)
 		{
-			val = (*p * snd_vol) >> 8;
+			val = *p >> 8;
 			p+= step;
 			if (val > 0x7fff)
 				val = 0x7fff;
@@ -265,6 +261,8 @@ void S_PaintChannels(int endtime)
 	sfxcache_t	*sc;
 	int		ltime, count;
 
+	snd_vol = volume.value * 256;
+
 	while (paintedtime < endtime)
 	{
 	// if paintbuffer is smaller than DMA buffer
@@ -290,10 +288,10 @@ void S_PaintChannels(int endtime)
 				s = i&(MAX_RAW_SAMPLES-1);
 				paintbuffer[i-paintedtime] = s_rawsamples[s];
 			}
-//		if (i != end)
-//			Com_Printf ("partial stream\n");
-//		else
-//			Com_Printf ("full stream\n");
+		//	if (i != end)
+		//		Con_Printf ("partial stream\n");
+		//	else
+		//		Con_Printf ("full stream\n");
 			for ( ; i<end ; i++)
 			{
 				paintbuffer[i-paintedtime].left =
@@ -346,7 +344,6 @@ void S_PaintChannels(int endtime)
 					}
 				}
 			}
-															  
 		}
 
 	// transfer out according to DMA format
@@ -358,10 +355,24 @@ void S_PaintChannels(int endtime)
 void SND_InitScaletable (void)
 {
 	int		i, j;
-	
-	for (i=0 ; i<32 ; i++)
-		for (j=0 ; j<256 ; j++)
-			snd_scaletable[i][j] = ((signed char)j) * i * 8;
+	int		scale;
+
+	volume.modified = false;
+	for (i = 0; i < 32; i++)
+	{
+		scale = i * 8 * 256 * volume.value;
+		for (j = 0; j < 256; j++)
+		{
+		/* When compiling with gcc-4.1.0 at optimisations O1 and
+		   higher, the tricky signed char type conversion is not
+		   guaranteed. Therefore we explicity calculate the signed
+		   value from the index as required. From Kevin Shanahan.
+		   See: http://gcc.gnu.org/bugzilla/show_bug.cgi?id=26719
+		*/
+		//	snd_scaletable[i][j] = ((signed char)j) * scale;
+			snd_scaletable[i][j] = ((j < 128) ?  j : j - 256) * scale;
+		}
+	}
 }
 
 
@@ -404,15 +415,21 @@ void SND_PaintChannelFrom16 (channel_t *ch, sfxcache_t *sc, int count)
 	signed short *sfx;
 	int	i;
 
-	leftvol = ch->leftvol;
-	rightvol = ch->rightvol;
+	leftvol = ch->leftvol * snd_vol;
+	rightvol = ch->rightvol * snd_vol;
+	leftvol >>= 8;
+	rightvol >>= 8;
 	sfx = (signed short *)sc->data + ch->pos;
 
 	for (i=0 ; i<count ; i++)
 	{
 		data = sfx[i];
-		left = (data * leftvol) >> 8;
-		right = (data * rightvol) >> 8;
+	// this was causing integer overflow as observed in quakespasm
+	// with the warpspasm mod moved >>8 to left/right volume above.
+	//	left = (data * leftvol) >> 8;
+	//	right = (data * rightvol) >> 8;
+		left = data * leftvol;
+		right = data * rightvol;
 		paintbuffer[i].left += left;
 		paintbuffer[i].right += right;
 	}

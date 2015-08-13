@@ -183,6 +183,8 @@ void S_Init (void)
 {
 	char *read_vars[] = {
 		"s_khz",
+		"bgmvolume",
+		"volume"
 	};
 #define num_readvars	(int)(sizeof(read_vars) / sizeof(read_vars[0]))
 	/* FS: Parse CFG early -- sezero */
@@ -228,6 +230,15 @@ void S_Init (void)
 	// check for command line overrides -- sezero
 	CFG_ReadCvarOverrides (read_vars, num_readvars);
 
+	if (volume.value < 0)
+		Cvar_Set("volume", "0");
+	else if (volume.value > 1.0)
+		Cvar_Set("volume", "1");
+	if (bgmvolume.value < 0)
+		Cvar_Set("bgmvolume", "0");
+	else if (bgmvolume.value > 1.0)
+		Cvar_Set("bgmvolume", "1");
+
 	snd_initialized = true;
 
 	S_Startup ();
@@ -254,10 +265,8 @@ void S_Init (void)
 		shm->buffer = Hunk_AllocName(1<<16, "shmbuf");
 	}
 
-	if (shm) //FS: GPF no BLASTER set Fix (QIP)
+	if (shm) /* FS: GPF no BLASTER set Fix (QIP) */
 		Con_Printf ("Sound sampling rate: %i\n", shm->speed);
-
-	// provides a tick sound until washed clean
 
 //	if (shm->buffer)
 //		shm->buffer[4] = shm->buffer[5] = 0x7f; // force a pop for debugging
@@ -741,12 +750,6 @@ void S_UpdateAmbientSounds (void)
 	if (!cl.worldmodel)
 		return;
 
-	if (volume.modified)
-	{
-		SND_InitScaletable();
-		volume.modified = false;
-	}
-
 	l = Mod_PointInLeaf (listener_origin, cl.worldmodel);
 	if (!l || !ambient_level.value)
 	{
@@ -799,6 +802,9 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 
 	if (!sound_started || (snd_blocked > 0))
 		return;
+
+	if (volume.modified)
+		SND_InitScaletable();
 
 	VectorCopy(origin, listener_origin);
 	VectorCopy(forward, listener_forward);

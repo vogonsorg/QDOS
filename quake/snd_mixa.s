@@ -142,7 +142,7 @@ LDone:
 
 .globl C(Snd_WriteLinearBlastStereo16)
 C(Snd_WriteLinearBlastStereo16):
-	pushl	%esi				// preserve register variables
+//	pushl	%esi				// preserve register variables
 	pushl	%edi
 	pushl	%ebx
 
@@ -150,7 +150,7 @@ C(Snd_WriteLinearBlastStereo16):
 //	int		val;
 	movl	C(snd_linear_count),%ecx
 	movl	C(snd_p),%ebx
-	movl	C(snd_vol),%esi
+//	movl	C(snd_vol),%esi
 	movl	C(snd_out),%edi
 
 //	for (i=0 ; i<snd_linear_count ; i+=2)
@@ -165,7 +165,7 @@ LWLBLoopTop:
 //		else
 //			snd_out[i] = val;
 	movl	-8(%ebx,%ecx,4),%eax
-	imull	%esi,%eax
+//	imull	%esi,%eax
 	sarl	$8,%eax
 	cmpl	$0x7FFF,%eax
 	jg		LClampHigh
@@ -185,7 +185,7 @@ LClampDone:
 //		else
 //			snd_out[i+1] = val;
 	movl	-4(%ebx,%ecx,4),%edx
-	imull	%esi,%edx
+//	imull	%esi,%edx
 	sarl	$8,%edx
 	cmpl	$0x7FFF,%edx
 	jg		LClampHigh2
@@ -209,7 +209,7 @@ LClampDone2:
 
 	popl	%ebx
 	popl	%edi
-	popl	%esi
+//	popl	%esi
 
 	ret
 

@@ -181,6 +181,8 @@ void S_Init (void)
 {
 	char *read_vars[] = {
 		"s_khz",
+		"bgmvolume",
+		"volume"
 	};
 #define num_readvars	(int)(sizeof(read_vars) / sizeof(read_vars[0]))
 	/* FS: Parse CFG early -- sezero */
@@ -226,6 +228,15 @@ void S_Init (void)
 	CFG_ReadCvars (read_vars, num_readvars);
 	// check for command line overrides -- sezero
 	CFG_ReadCvarOverrides (read_vars, num_readvars);
+
+	if (volume.value < 0)
+		Cvar_Set("volume", "0");
+	else if (volume.value > 1.0)
+		Cvar_Set("volume", "1");
+	if (bgmvolume.value < 0)
+		Cvar_Set("bgmvolume", "0");
+	else if (bgmvolume.value > 1.0)
+		Cvar_Set("bgmvolume", "1");
 
 	snd_initialized = true;
 
@@ -738,12 +749,6 @@ void S_UpdateAmbientSounds (void)
 	if (!cl.worldmodel)
 		return;
 
-	if (volume.modified)
-	{
-		SND_InitScaletable();
-		volume.modified = false;
-	}
-
 	l = Mod_PointInLeaf (listener_origin, cl.worldmodel);
 	if (!l || !ambient_level.value)
 	{
@@ -796,6 +801,9 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 
 	if (!sound_started || (snd_blocked > 0))
 		return;
+
+	if (volume.modified)
+		SND_InitScaletable();
 
 	VectorCopy(origin, listener_origin);
 	VectorCopy(forward, listener_forward);
