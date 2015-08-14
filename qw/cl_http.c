@@ -47,7 +47,7 @@ static CURL *easy_handle;
 static CURLM *multi_handle;
 static qboolean httpDlAborted = false;
 
-// FS: For KBps calculator
+/* FS: For KBps calculator */
 int		prevSize;
 
 void CL_HTTP_Reset_KBps_Counter (void)
@@ -64,6 +64,19 @@ void CL_HTTP_Calculate_KBps (int curSize, int totalSize)
 	prevSize = curSize;
 }
 
+void CL_HTTP_RemoveTemp(void)
+{
+	char removeFile[MAX_OSPATH];
+
+	if (cls.download)
+		fclose(cls.download);
+
+	Com_sprintf(removeFile, sizeof(removeFile), "%s/%s", com_gamedir, cls.downloadtempname->str);
+	Con_DPrintf(DEVELOPER_MSG_NET, "Removing temp file: %s\n", cls.downloadtempname->str);
+	if(remove(removeFile) != 0)
+		Con_Printf("Error removing file: %s\n", cls.downloadtempname->str);
+}
+
 static int http_progress (void *clientp, double dltotal, double dlnow,
 			   double ultotal, double uplow)
 {
@@ -78,13 +91,11 @@ static int http_progress (void *clientp, double dltotal, double dlnow,
 }
 
 
-static size_t
-http_write (void *ptr, size_t size, size_t nmemb, void *stream)
+static size_t http_write (void *ptr, size_t size, size_t nmemb, void *stream)
 {
 	if (!cls.download)
 	{
-		// FS: If this fails here delete the temp file, don't make it go to response code 200!
-		/* FS: TODO: Add tmp file removal */
+		/* FS: If this fails here delete the temp file, don't make it go to response code 200! */
 		httpDlAborted = true;
 		Con_DPrintf (DEVELOPER_MSG_NET, "http_write: unexpected call, likely transfer manually aborted\n");
 		return -1;
@@ -92,16 +103,14 @@ http_write (void *ptr, size_t size, size_t nmemb, void *stream)
 	return fwrite (ptr, 1, size *nmemb, cls.download);
 }
 
-void
-CL_HTTP_Init (void)
+void CL_HTTP_Init (void)
 {
 	if ((curl_borked = curl_global_init (CURL_GLOBAL_NOTHING)))
 		return;
 	multi_handle = curl_multi_init ();
 }
 
-void
-CL_HTTP_Shutdown (void)
+void CL_HTTP_Shutdown (void)
 {
 	if (curl_borked)
 		return;
@@ -109,8 +118,7 @@ CL_HTTP_Shutdown (void)
 	curl_global_cleanup ();
 }
 
-void
-CL_HTTP_StartDownload (void)
+void CL_HTTP_StartDownload (void)
 {
 	Con_DPrintf(DEVELOPER_MSG_NET, "In CL_HTTP_StartDownload\n");
 	CL_HTTP_Reset_KBps_Counter();
@@ -127,8 +135,7 @@ CL_HTTP_StartDownload (void)
 	Con_DPrintf(DEVELOPER_MSG_NET, "HTTP Download URL: %s\n", cls.downloadurl->str);
 }
 
-void
-CL_HTTP_Update (void)
+void CL_HTTP_Update (void)
 {
 	int         running_handles;
 	int         messages_in_queue;
@@ -143,23 +150,20 @@ CL_HTTP_Update (void)
 
 			curl_easy_getinfo (msg->easy_handle, CURLINFO_RESPONSE_CODE, &response_code);
 			Con_DPrintf(DEVELOPER_MSG_NET, "HTTP URL response code: %li\n", response_code);
-			if ( (response_code == HTTP_OK || response_code == HTTP_REST) && !(httpDlAborted))
+			if ( (response_code == HTTP_OK || response_code == HTTP_REST) && !(httpDlAborted)) /* FS: Have to check for the abort boolean, very rarely a ctrl+c to stop the transfer ends up here instead and thinks it's a good file to load fucking everything up */
 			{
-				Con_Printf ("HTTP Download of %s completed\n", cls.downloadname->str); // FS: Tell me when it's done
+				Con_Printf ("HTTP Download of %s completed\n", cls.downloadname->str); /* FS: Tell me when it's done */
 
-				CL_FinishDownload (true);
+				CL_FinishDownload (true); /* FS: Temp file renames are handled here if successful */
 			}
 			else
 			{
 				Con_Printf ("HTTP download failed: %ld\n", response_code);
 
-//				CL_HTTP_RemoveTemp(); // FS: Remove stray temp files so the server doesn't think we're resuming 0 length files or files that now have just header information
+				CL_HTTP_RemoveTemp(); /* FS: Remove stray temp files so the server doesn't think we're resuming 0 length files or files that now have just header information */
 
-				if(httpDlAborted) // FS: Abort this whole thing if http_write had something silly happen (disconnecting during dl)
-				{
+				if(httpDlAborted)
 					httpDlAborted = false;
-					return;
-				}
 
 				CL_FinishDownload (false);
 			}
@@ -168,8 +172,7 @@ CL_HTTP_Update (void)
 	}
 }
 
-void
-CL_HTTP_Reset (void)
+void CL_HTTP_Reset (void)
 {
 	curl_multi_remove_handle (multi_handle, easy_handle);
 	curl_easy_cleanup (easy_handle);
