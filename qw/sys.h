@@ -62,7 +62,7 @@ void Sys_Quit (void);
 
 double Sys_DoubleTime (void); /* FS: -Werror */
 
-void Sys_Sleep (int ms);
+void Sys_Sleep (unsigned msec);
 // called to yield for a little bit so as
 // not to hog cpu when paused or debugging
 

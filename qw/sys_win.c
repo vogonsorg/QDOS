@@ -345,10 +345,17 @@ double Sys_DoubleTime (void)
 	return (now - starttime) / 1000.0;
 }
 
-void Sys_Sleep (int ms)
-{
-}
+/*
+================
+Sys_Sleep
 
+Knightmare- added this to fix CPU usage
+================
+*/
+void Sys_Sleep (unsigned msec)
+{
+	Sleep (msec);
+}
 
 void Sys_SendKeyEvents (void)
 {
