@@ -707,6 +707,23 @@ void Sys_DefaultExceptionHandler(int whatever)
 {
 }
 
+void Sys_DebugLog(const char *file, const char *fmt, ...)
+{
+	va_list argptr;
+	static dstring_t *data;
+	int fd;
+
+	if(!data)
+		data = dstring_new();
+
+	va_start(argptr, fmt);
+	dvsprintf(data, fmt, argptr);
+	va_end(argptr);
+
+	fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
+	write(fd, data->str, data->size - 1);
+	close(fd);
+}
 
 /*
 ================

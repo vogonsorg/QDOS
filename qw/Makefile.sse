@@ -111,7 +111,6 @@ CLIENT = $(O)/cd_audio.o  \
 	$(O)/d_copy.o \
 	$(O)/sys_dosa.o \
 	$(O)/vid_dos.o   \
-	$(O)/j.o \
 	$(O)/Goa/CEngine/darray.o \
 	$(O)/Goa/CEngine/gserver.o \
 	$(O)/Goa/CEngine/gserverlist.o \

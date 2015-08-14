@@ -495,6 +495,14 @@ void VID_TestMode_f (void)
 	}
 }
 
+void VID_LockBuffer(void)
+{
+	/* FS: Nothing in DOS */
+}
+void VID_UnlockBuffer(void)
+{
+	/* FS: Nothing in DOS */
+}
 
 /*
 ================

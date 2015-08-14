@@ -148,6 +148,45 @@ SOURCE=.\Goa\nonport.c
 SOURCE=.\Goa\nonport.h
 # End Source File
 # End Group
+# Begin Group "DOS"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\dos_v2.c
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=.\in_dos.c
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=.\net_udp.c
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=.\sys_dos.c
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=.\vid_dos.c
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=.\vid_ext.c
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=.\vregset.c
+# PROP Exclude_From_Build 1
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=.\cd_win.c
