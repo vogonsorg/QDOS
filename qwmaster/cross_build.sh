@@ -8,4 +8,4 @@ if test "$1" = "strip"; then
 	exit 0
 fi
 
-exec make CC=$TARGET-g++ STRIP=$TARGET-strip -f makefile.dj $*
+exec make CC=$TARGET-gcc STRIP=$TARGET-strip -f makefile.dj $*

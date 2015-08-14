@@ -95,7 +95,7 @@ SOURCE=.\readme.txt
 # End Group
 # Begin Source File
 
-SOURCE=.\curl_dl.cpp
+SOURCE=.\curl_dl.c
 # End Source File
 # Begin Source File
 
@@ -107,7 +107,7 @@ SOURCE=.\dg_misc.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\dk_essentials.cpp
+SOURCE=.\dk_essentials.c
 # End Source File
 # Begin Source File
 
@@ -115,15 +115,15 @@ SOURCE=.\dk_essentials.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\gamestable.cpp
+SOURCE=.\gamestable.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\gsmalg.cpp
+SOURCE=.\gsmalg.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\master.cpp
+SOURCE=.\master.c
 # End Source File
 # Begin Source File
 
@@ -131,7 +131,7 @@ SOURCE=.\master.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\performance.cpp
+SOURCE=.\performance.c
 # End Source File
 # Begin Source File
 
@@ -139,7 +139,7 @@ SOURCE=.\performance.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\service.cpp
+SOURCE=.\service.c
 # End Source File
 # Begin Source File
 

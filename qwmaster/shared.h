@@ -7,6 +7,12 @@
 #include "dg_misc.h" // FS: Caedes special safe string stuff
 #include "curl_dl.h" // FS: Libcurl
 
+#ifndef __cplusplus
+enum {
+  false = 0, true = 1
+};
+#endif
+
 #define SRV_RUN		1
 #define SRV_STOP	0
 #define SRV_STOPPED	-1
