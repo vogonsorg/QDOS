@@ -33,6 +33,7 @@ void S_SoundList(void);
 void S_Update_();
 void S_StopAllSounds(qboolean clear);
 void S_StopAllSoundsC(void);
+
 #ifndef _WINDOWS
 extern void GUS_ClearDMA(void); /* FS: Added */
 extern int havegus; /* FS: Added */
@@ -66,7 +67,7 @@ vec_t		sound_nominal_clip_dist=1000.0;
 int		soundtime;	// sample PAIRS
 int		paintedtime;	// sample PAIRS
 
- /* FS: Quake 2 raw samples for music streaming */
+/* FS: Quake 2 raw samples for music streaming */
 int		s_rawend;
 portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 
@@ -740,13 +741,8 @@ void S_UpdateAmbientSounds (void)
 	if (!snd_ambient)
 		return;
 
-	//johnfitz -- no ambients when disconnected
-	if (cls.state != ca_connected)
-		return;
-	//johnfitz
-
 // calc ambient sound levels
-	if (!cl.worldmodel)
+	if (!cl.worldmodel || cls.state != ca_active)
 		return;
 
 	l = Mod_PointInLeaf (listener_origin, cl.worldmodel);
