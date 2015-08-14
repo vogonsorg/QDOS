@@ -1826,18 +1826,16 @@ static void FormatGamespyList (void)
 					Q_strlcpy(gamespy_server_names[m_num_gamespy_servers], browserList[j].hostname, 20);
 
 					if(Q_strlen(browserList[j].hostname) >= 20)
-					{
-						Q_strcat(gamespy_server_names[m_num_gamespy_servers], "...");
-					}
+						Q_strlcat(gamespy_server_names[m_num_gamespy_servers], "...", sizeof(gamespy_server_names[0]));
 
 					Com_sprintf(buffer, sizeof(buffer), " [%d] %d/%d", browserList[j].ping, browserList[j].curPlayers, browserList[j].maxPlayers);
-					DG_strlcat(gamespy_server_names[m_num_gamespy_servers], buffer, sizeof(gamespy_server_names[m_num_gamespy_servers]));
+					Q_strlcat(gamespy_server_names[m_num_gamespy_servers], buffer, sizeof(gamespy_server_names[0]));
 				}
 				else
 				{
-					Com_sprintf(gamespy_server_names[m_num_gamespy_servers], sizeof(gamespy_server_names[m_num_gamespy_servers]), "%s [%d] %d/%d", browserList[j].hostname, browserList[j].ping, browserList[j].curPlayers, browserList[j].maxPlayers);
+					Com_sprintf(gamespy_server_names[m_num_gamespy_servers], sizeof(gamespy_server_names[0]), "%s [%d] %d/%d", browserList[j].hostname, browserList[j].ping, browserList[j].curPlayers, browserList[j].maxPlayers);
 				}
-				Com_sprintf(gamespy_connect_string[m_num_gamespy_servers], sizeof(gamespy_connect_string[m_num_gamespy_servers]), "connect %s:%d", browserList[j].ip, browserList[j].port);
+				Com_sprintf(gamespy_connect_string[m_num_gamespy_servers], sizeof(gamespy_connect_string[0]), "connect %s:%d", browserList[j].ip, browserList[j].port);
 				m_num_gamespy_servers++;
 				m_num_active_gamespy_servers++;
 			}
@@ -1847,8 +1845,6 @@ static void FormatGamespyList (void)
 			break;
 		}
 	}
-
-	j = 0;
 
 	for(j = 0; j< MAX_SERVERS; j++)
 	{
@@ -1864,18 +1860,16 @@ static void FormatGamespyList (void)
 				Q_strlcpy(gamespy_server_names[m_num_gamespy_servers-skip], browserListAll[j].hostname, 20);
 
 				if(Q_strlen(browserListAll[j].hostname) >= 20)
-				{
-					Q_strcat(gamespy_server_names[m_num_gamespy_servers-skip], "...");
-				}
+					Q_strlcat(gamespy_server_names[m_num_gamespy_servers-skip], "...", sizeof(gamespy_server_names[0]));
 
 				Com_sprintf(buffer, sizeof(buffer), " [%d] %d/%d", browserListAll[j].ping, browserListAll[j].curPlayers, browserListAll[j].maxPlayers);
-				DG_strlcat(gamespy_server_names[m_num_gamespy_servers-skip], buffer, sizeof(gamespy_server_names[m_num_gamespy_servers-skip]));
+				Q_strlcat(gamespy_server_names[m_num_gamespy_servers-skip], buffer, sizeof(gamespy_server_names[0]));
 			}
 			else
 			{
-				Com_sprintf(gamespy_server_names[m_num_gamespy_servers-skip], sizeof(gamespy_server_names[m_num_gamespy_servers-skip]), "%s [%d] %d/%d", browserListAll[j].hostname, browserListAll[j].ping, browserListAll[j].curPlayers, browserListAll[j].maxPlayers);
+				Com_sprintf(gamespy_server_names[m_num_gamespy_servers-skip], sizeof(gamespy_server_names[0]), "%s [%d] %d/%d", browserListAll[j].hostname, browserListAll[j].ping, browserListAll[j].curPlayers, browserListAll[j].maxPlayers);
 			}
-			Com_sprintf(gamespy_connect_string[m_num_gamespy_servers-skip], sizeof(gamespy_connect_string[m_num_gamespy_servers-skip]), "connect %s:%d", browserListAll[j].ip, browserListAll[j].port);
+			Com_sprintf(gamespy_connect_string[m_num_gamespy_servers-skip], sizeof(gamespy_connect_string[0]), "connect %s:%d", browserListAll[j].ip, browserListAll[j].port);
 			m_num_gamespy_servers++;
 		}
 		else

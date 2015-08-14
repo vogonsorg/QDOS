@@ -58,9 +58,9 @@ void ServerParsePlayerCount(GServer server, char *savedkeyvals)
 	GKeyValuePair kvpair;
 
 	numplayers = 0;
-	test = DG_strtok_r(savedkeyvals, playerSeperators, &p);
+	test = strtok_r(savedkeyvals, playerSeperators, &p);
 	if (test) {
-		test = DG_strtok_r(NULL, playerSeperators, &p);
+		test = strtok_r(NULL, playerSeperators, &p);
 	}
 
 	while (test != NULL)
@@ -72,7 +72,7 @@ void ServerParsePlayerCount(GServer server, char *savedkeyvals)
 			numplayers++;
 		}
 
-		test = DG_strtok_r(NULL, playerSeperators, &p);
+		test = strtok_r(NULL, playerSeperators, &p);
 	}
 
 	kvpair.key = _strdup("numplayers");
@@ -118,27 +118,27 @@ void ServerParseQ1KeyVals(GServer server, char *data, int length)
 	strcat(reformatted, maxPlayers);
 
 	/* FS: Yeah, yeah, this is kind of dangerous... */
-	test = DG_strtok_r(reformatted, playerSeperators, &p);
+	test = strtok_r(reformatted, playerSeperators, &p);
 	kvpair.key = _strdup("ip");
 	kvpair.value = _strdup(test);
 	TableEnter(server->keyvals, &kvpair);
 
-	test = DG_strtok_r(NULL, playerSeperators, &p);
+	test = strtok_r(NULL, playerSeperators, &p);
 	kvpair.key = _strdup("hostname");
 	kvpair.value = _strdup(test);
 	TableEnter(server->keyvals, &kvpair);
 
-	test = DG_strtok_r(NULL, playerSeperators, &p);
+	test = strtok_r(NULL, playerSeperators, &p);
 	kvpair.key = _strdup("map");
 	kvpair.value = _strdup(test);
 	TableEnter(server->keyvals, &kvpair);
 
-	test = DG_strtok_r(NULL, playerSeperators, &p);
+	test = strtok_r(NULL, playerSeperators, &p);
 	kvpair.key = _strdup("numplayers");
 	kvpair.value = _strdup(test);
 	TableEnter(server->keyvals, &kvpair);
 
-	test = DG_strtok_r(NULL, playerSeperators, &p);
+	test = strtok_r(NULL, playerSeperators, &p);
 	kvpair.key = _strdup("maxclients");
 	kvpair.value = _strdup(test);
 	TableEnter(server->keyvals, &kvpair);
@@ -169,11 +169,11 @@ void ServerParseKeyVals(GServer server, char *keyvals)
 	strncpy(savedkeyvals, keyvals, sizeof(savedkeyvals));
 	savedkeyvals[sizeof(savedkeyvals) - 1] = '\0';
 
-	k = DG_strtok_r(keyvals, tokenSeperators, &kPtr);
+	k = strtok_r(keyvals, tokenSeperators, &kPtr);
 
 	while (k != NULL)
 	{
-		v = DG_strtok_r(NULL, tokenSeperators, &kPtr);
+		v = strtok_r(NULL, tokenSeperators, &kPtr);
 
 		if (v != NULL)
 		{
@@ -191,7 +191,7 @@ void ServerParseKeyVals(GServer server, char *keyvals)
 			}
 		}
 
-		k = DG_strtok_r(NULL, tokenSeperators, &kPtr);
+		k = strtok_r(NULL, tokenSeperators, &kPtr);
 	}
 
 	ServerParsePlayerCount(server, savedkeyvals);
