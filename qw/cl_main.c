@@ -1719,7 +1719,7 @@ void Host_Init (quakeparms_t *parms)
 	V_Init ();
 
 	COM_Init ();
-	Cvar_Init (); /* FS: FIXME Move this -- For cvarlist */
+	Cvar_Init (); /* FS: from fitzquake */
 
 	CFG_OpenConfig("config.cfg"); /* FS: Parse CFG early -- sezero */
 

@@ -796,16 +796,16 @@ void Con_DrawConsole (int lines)
 
 		if (cls.downloadrate > 0.0f)
 		{
-			if(con_linewidth >= CONWIDTH_AT_640X480)
-				y = x - strlen(text) - 19;
+			if(con_linewidth > CONWIDTH_AT_640X480)
+				y = x - strlen(text) - 25;
 			else
 			{
-				y = x - strlen(text) - 9;
+				y = x - strlen(text) - 19;
 			}
 		}
 		else
 		{
-			if(con_linewidth >= CONWIDTH_AT_640X480)
+			if(con_linewidth > CONWIDTH_AT_640X480)
 				y = x - strlen(text) - 8;
 			else
 			{
