@@ -62,8 +62,6 @@ vmode_t	*pvidmodes;
 
 static int	firstupdate = 1;
 
-extern regs_t regs;
-
 void VID_TestMode_f (void);
 void VID_NumModes_f (void);
 void VID_DescribeCurrentMode_f (void);

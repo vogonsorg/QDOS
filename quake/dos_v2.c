@@ -17,31 +17,33 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 #include <sys/segments.h>
 #include <go32.h>
 #include <unistd.h>
 #include <sys/nearptr.h>
 #include <dos.h>
-#include <string.h>
 #include <dpmi.h>
+#include <crt0.h>
 #include <bios.h>
+#include <string.h>
 
+#ifndef DJGPP_NO_INLINES
+#define DJGPP_NO_INLINES 1
+#endif
 #include "dosisms.h"
 #include "sys.h"
 
-_go32_dpmi_registers hmm;
+/* global variables: */
+__dpmi_regs		regs;
 
-/* globals */
-regs_t regs;
-void (*dos_error_func)(char *msg, ...);
 
-static unsigned conventional_memory = -1;
+static unsigned int	conventional_memory = (unsigned int)-1;
 
-__dpmi_regs callback_regs;
-
-void map_in_conventional_memory(void)
+static void map_in_conventional_memory (void)
 {
-	if (conventional_memory == -1)
+//	if (! (_crt0_startup_flags & _CRT0_FLAG_NEARPTR))
+	if (conventional_memory == (unsigned int)-1)
 	{
 		if (__djgpp_nearptr_enable())
 		{
@@ -50,200 +52,184 @@ void map_in_conventional_memory(void)
 	}
 }
 
-unsigned int ptr2real(void *ptr)
+unsigned int ptr2real (void *ptr)
 {
 	map_in_conventional_memory();
 	return (int)ptr - conventional_memory;
 }
 
-void *real2ptr(unsigned int real)
+void *real2ptr (unsigned int real)
 {
 	map_in_conventional_memory();
 	return (void *) (real + conventional_memory);
 }
 
-void *far2ptr(unsigned int farptr)
+void *far2ptr (unsigned int farptr)
 {
 	return real2ptr(((farptr & ~0xffff) >>12) + (farptr&0xffff));
 }
 
-unsigned int ptr2far(void *ptr)
+unsigned int ptr2far (void *ptr)
 {
 	return ((ptr2real(ptr)&~0xf) << 12) + (ptr2real(ptr) & 0xf);
 }
 
-int dos_inportb(int port)
+int dos_inportb (int port)
 {
 	return inportb(port);
 }
 
-int dos_inportw(int port)
+int dos_inportw (int port)
 {
 	return inportw(port);
 }
 
-void dos_outportb(int port, int val)
+void dos_outportb (int port, int val)
 {
 	outportb(port, val);
 }
 
-void dos_outportw(int port, int val)
+void dos_outportw (int port, int val)
 {
 	outportw(port, val);
 }
 
-void dos_irqenable(void)
+void dos_irqenable (void)
 {
 	enable();
 }
 
-void dos_irqdisable(void)
+void dos_irqdisable (void)
 {
 	disable();
 }
 
-/* Returns 0 on success */
-int	dos_int86(int vec)
+//
+// Returns 0 on success
+//
+int dos_int86 (int vec)
 {
-    int rc;
-    regs.x.ss = regs.x.sp = 0;
-    rc = _go32_dpmi_simulate_int(vec, (_go32_dpmi_registers *) &regs);
-    return rc || (regs.x.flags & 1);
+	int		rc;
+	regs.x.ss = regs.x.sp = 0;
+	rc = _go32_dpmi_simulate_int(vec, &regs);
+	return rc || (regs.x.flags & 1);
 }
 
-int	dos_int386(int vec, regs_t *inregs, regs_t *outregs)
+int dos_int386 (int vec, __dpmi_regs *inregs, __dpmi_regs *outregs)
 {
-	int rc;
-	memcpy(outregs, inregs, sizeof(regs_t));
+	int		rc;
+	memcpy(outregs, inregs, sizeof(__dpmi_regs));
 	outregs->x.ss = outregs->x.sp = 0;
-	rc = _go32_dpmi_simulate_int(vec, (_go32_dpmi_registers *) outregs);
+	rc = _go32_dpmi_simulate_int(vec, outregs);
 	return rc || (outregs->x.flags & 1);
 }
 
-/*
-Because of a quirk in dj's alloc-dos-memory wrapper, you need to keep
-the seginfo structure around for when you free the mem.
-*/
-
-#define MAX_SEGINFO 10 /* FS: sezero's code from uHexen2 */
+//
+// Because of a quirk in dj's alloc-dos-memory wrapper, you need to keep
+// the seginfo structure around for when you free the mem.
+//
+#define MAX_SEGINFO 10
 static _go32_dpmi_seginfo seginfo[MAX_SEGINFO];
 
-void *dos_getmemory(int size)
+void *dos_getmemory (int size)
 {
-
-	int rc;
+	int		rc;
 	_go32_dpmi_seginfo info;
-	static int firsttime=1;
-	int i;
+	static int	firsttime = 1;
+	int		i;
 
 	if (firsttime)
 	{
-		memset(seginfo, 0, sizeof(seginfo));
 		firsttime = 0;
+		memset(seginfo, 0, sizeof(seginfo));
 	}
 
-	info.size = (size+15) / 16;
+	info.size = (size + 15) / 16;
 	rc = _go32_dpmi_allocate_dos_memory(&info);
-
 	if (rc)
-		return NULL; /* FS: sezero's code from uHexen2 */
+		return NULL;
 
-	for (i=0;i<MAX_SEGINFO;i++)
+	for (i = 0; i < MAX_SEGINFO; i++)
 	{
-		if (!seginfo[i].rm_segment) /* FS: sezero's code from uHexen2 */
+		if (!seginfo[i].rm_segment)
 		{
 			seginfo[i] = info;
 			return real2ptr((int) info.rm_segment << 4);
 		}
 	}
 
-	Sys_Error("Reached MAX_SEGINFO"); /* FS: sezero's code from uHexen2 */
-	return NULL; /* silence compiler warning */
+	Sys_Error("%s: Reached MAX_SEGINFO", __FUNCTION__);
+	return NULL;/* silence compiler */ /* FIXME: use noreturn attributes */
 }
 
-void dos_freememory(void *ptr)
+void dos_freememory (void *ptr)
 {
-
-	int i;
-	int segment;
+	int		i;
+	int		segment;
 
 	segment = ptr2real(ptr) >> 4;
-	for (i=0 ; i<MAX_SEGINFO ; i++) /* FS: sezero's code from uHexen2 */
+	for (i = 0; i < MAX_SEGINFO; i++)
 	{
 		if (seginfo[i].rm_segment == segment)
 		{
 			_go32_dpmi_free_dos_memory(&seginfo[i]);
 			seginfo[i].rm_segment = 0;
-                        return;
+			return;
 		}
 	}
 
-  Sys_Error("Unknown seginfo");
+	Sys_Error("%s: Unknown seginfo", __FUNCTION__);
 }
 
 static struct handlerhistory_s
 {
-	int intr;
-	_go32_dpmi_seginfo pm_oldvec;
+	int		intr;
+	_go32_dpmi_seginfo	pm_oldvec;
 } handlerhistory[4];
 
-static int handlercount=0;
+static int	handlercount = 0;
 
-void	dos_registerintr(int intr, void (*handler)(void))
+void dos_registerintr (int intr, void (*handler)(void))
 {
-	_go32_dpmi_seginfo info;
-	struct handlerhistory_s *oldstuff;
+	_go32_dpmi_seginfo	info;
+	struct handlerhistory_s	*oldstuff;
 
 	oldstuff = &handlerhistory[handlercount];
 
-/* remember old handler */
+// remember old handler
 	_go32_dpmi_get_protected_mode_interrupt_vector(intr, &oldstuff->pm_oldvec);
 	oldstuff->intr = intr;
 
 	info.pm_offset = (int) handler;
 	_go32_dpmi_allocate_iret_wrapper(&info);
 
-/* set new protected mode handler */
+// set new protected mode handler
 	_go32_dpmi_set_protected_mode_interrupt_vector(intr, &info);
 
 	handlercount++;
-
 }
 
-void	dos_restoreintr(int intr)
+void dos_restoreintr (int intr)
 {
-
-	int i;
-	struct handlerhistory_s *oldstuff;
+	int		i;
+	struct handlerhistory_s	*oldstuff;
 
 // find and reinstall previous interrupt
-	for (i=0 ; i<handlercount ; i++)
+	for (i = 0; i < handlercount; i++)
 	{
 		oldstuff = &handlerhistory[i];
 		if (oldstuff->intr == intr)
 		{
-			_go32_dpmi_set_protected_mode_interrupt_vector(intr,
-				&oldstuff->pm_oldvec);
+			_go32_dpmi_set_protected_mode_interrupt_vector(intr, &oldstuff->pm_oldvec);
 			oldstuff->intr = -1;
 			break;
 		}
 	}
-
 }
 
-void	dos_usleep(int usecs)
+int dos_lockmem (void *addr, int size)
 {
-	usleep(usecs);
-}
-
-int dos_getheapsize(void)
-{
-	return _go32_dpmi_remaining_physical_memory();
-}
-
-int dos_lockmem(void *addr, int size)
-{
-	__dpmi_meminfo info;
+	__dpmi_meminfo	info;
 	info.address = (long) addr + __djgpp_base_address;
 	info.size = size;
 	if (__dpmi_lock_linear_region(&info))
@@ -252,9 +238,9 @@ int dos_lockmem(void *addr, int size)
 		return 0;
 }
 
-int dos_unlockmem(void *addr, int size)
+int dos_unlockmem (void *addr, int size)
 {
-	__dpmi_meminfo info;
+	__dpmi_meminfo	info;
 	info.address = (long) addr + __djgpp_base_address;
 	info.size = size;
 	if (__dpmi_unlock_linear_region(&info))

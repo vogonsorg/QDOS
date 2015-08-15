@@ -31,8 +31,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "d_local.h"
 #include "dosisms.h"
 #include "vid_dos.h"
-#include "sys.h"
-#include <dpmi.h>
 
 #define MODE_SUPPORTED_IN_HW	0x0001
 #define COLOR_MODE				0x0008
@@ -58,8 +56,6 @@ static vmode_t		vesa_modes[MAX_VESA_MODES] =
 	{{NULL, NULL, "    ********* VESA modes *********    "}};
 static vesa_extra_t	vesa_extra[MAX_VESA_MODES];
 static char			names[MAX_VESA_MODES][10];
-
-extern regs_t regs;
 
 static int		VID_currentpage;
 static int		VID_displayedpage;

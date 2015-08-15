@@ -745,7 +745,6 @@ void Sys_DebugLog(const char *file, const char *fmt, ...)
 int main (int c, char **v)
 {
 	double time, oldtime, newtime;
-	extern void (*dos_error_func)(const char *, ...);
 	static char cwd[1024];
 
 	printf ("QuakeWorld DOS v%4.2f\n", VERSION);
@@ -767,8 +766,6 @@ int main (int c, char **v)
 
 	quakeparms.argc = com_argc;
 	quakeparms.argv = com_argv;
-
-	dos_error_func = Sys_Error;
 
 	Sys_DetectLFN ();
 	Sys_DetectWin95 ();
