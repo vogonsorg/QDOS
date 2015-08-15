@@ -26,3 +26,4 @@ rm -rf Release
 cd ..
 cd DOS
 del /s *.o
+cd ..
