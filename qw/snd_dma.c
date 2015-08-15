@@ -139,7 +139,7 @@ void S_SoundInfo_f(void)
 	Con_Printf("%5d samplebits\n", shm->samplebits);
 	Con_Printf("%5d submission_chunk\n", shm->submission_chunk);
 	Con_Printf("%5d speed\n", shm->speed);
-	Con_Printf("0x%x dma buffer\n", shm->buffer);
+	Con_Printf("%p dma buffer\n", shm->buffer);
 	Con_Printf("%5d total_channels\n", total_channels);
 }
 
@@ -203,7 +203,7 @@ void S_Init (void)
 	Cmd_AddCommand("soundlist", S_SoundList);
 	Cmd_AddCommand("soundinfo", S_SoundInfo_f);
 #ifdef OGG_SUPPORT
-	Cmd_AddCommand("ogg_restart", S_OGG_Restart); // Knightmare added
+	Cmd_AddCommand("ogg_restart", S_OGG_Restart); /* Knightmare added */
 #endif
 	Cmd_AddCommand("wav_restart", S_WAV_Restart); /* FS: Added */
 
@@ -218,7 +218,7 @@ void S_Init (void)
 	Cvar_RegisterVariable(&snd_show);
 	Cvar_RegisterVariable(&_snd_mixahead);
 	Cvar_RegisterVariable(&s_khz); /* FS: Added */
-	Cvar_RegisterVariable(&s_musicvolume); // Knightmare: added
+	Cvar_RegisterVariable(&s_musicvolume); /* Knightmare: added */
 
 	if (host_parms.memsize < 0x800000)
 	{
@@ -277,9 +277,8 @@ void S_Init (void)
 
 #ifdef OGG_SUPPORT
 	if(!COM_CheckParm("-noogg"))
-		S_OGG_Init(); // Knightmare added
+		S_OGG_Init(); /* Knightmare added */
 #endif
-
 	if(!COM_CheckParm("-nowavstream"))
 		S_WAV_Init(); /* FS: Added */
 
@@ -300,10 +299,8 @@ void S_Shutdown(void)
 	}
 
 #ifdef OGG_SUPPORT
-//	Com_DPrintf ("S_Shutdown: calling S_OGG_Shutdown\n");	// debug
-	S_OGG_Shutdown(); // Knightmare added
+	S_OGG_Shutdown(); /* Knightmare added */
 #endif
-
 	S_WAV_Shutdown(); /* FS: Added */
 
 	if (shm)
@@ -607,7 +604,7 @@ void S_StopAllSounds(qboolean clear)
 
 	Q_memset(channels, 0, MAX_CHANNELS * sizeof(channel_t));
 
-	S_StopBackgroundTrack (); // Knightmare added
+	S_StopBackgroundTrack (); /* Knightmare added */
 
 	if (clear)
 		S_ClearBuffer ();
@@ -879,10 +876,8 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 	}
 
 #ifdef OGG_SUPPORT
-//	Com_DPrintf ("S_Update: calling S_UpdateBackgroundTrack\n");	// debug
-	S_UpdateBackgroundTrack ();	//  Knightmare added
+	S_UpdateBackgroundTrack (); /* Knightmare added */
 #endif
-
 	S_UpdateWavTrack(); /* FS: Added */
 
 // mix some sound

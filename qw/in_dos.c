@@ -561,7 +561,7 @@ void IN_StartupExternal (void)
 		extern_control->numButtons = 32;
 
 	Con_Printf("%s Initialized\n", extern_control->deviceName);
-	Con_Printf("  %u axes  %u buttons\n", extern_control->numAxes, extern_control->numButtons);
+	Con_Printf("  %ld axes  %ld buttons\n", extern_control->numAxes, extern_control->numButtons);
 
 	extern_avail = true;
 	extern_buttons = extern_control->numButtons;

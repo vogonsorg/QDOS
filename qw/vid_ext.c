@@ -210,14 +210,12 @@ void VID_SetVESAPalette (viddef_t *lvid, vmode_t *pcurrentmode,
 
 	if (regs.x.ax != 0x4f)
 	{
+		//Sys_Error ("Unable to load VESA palette\n");
+		//QEMU's SVGA BIOS kind of screws this up so as a fallback...
+		Con_DPrintf (DEVELOPER_MSG_VIDEO, "Unable to load VESA palette. Using fallback.\n");
 		VGA_SetPalette(lvid, pcurrentmode, jpal);
-		Con_DPrintf (DEVELOPER_MSG_VIDEO, "Unable to load VESA palette\nUsing fallback.");
 	}
-        //QEMU's SVGA BIOS kind of screws this up so as a fallback...
-//        Sys_Error ("Unable to load VESA palette\n");
 }
-
-
 
 
 /*
@@ -225,12 +223,9 @@ void VID_SetVESAPalette (viddef_t *lvid, vmode_t *pcurrentmode,
 VID_ExtraFarToLinear
 ================
 */
-void *VID_ExtraFarToLinear (void *ptr)
+void *VID_ExtraFarToLinear (unsigned long addr)
 {
-	int		temp;
-
-	temp = (int)ptr;
-	return real2ptr(((temp & 0xFFFF0000) >> 12) + (temp & 0xFFFF));
+	return real2ptr(((addr & 0xFFFF0000) >> 12) + (addr & 0xFFFF));
 }
 
 
@@ -308,11 +303,19 @@ void VID_InitExtra (void)
 	int				nummodes;
 	short			*pmodenums;
 	vbeinfoblock_t	*pinfoblock;
+	unsigned long	addr;
 	__dpmi_meminfo	phys_mem_info;
 
-	pinfoblock = dos_getmemory(sizeof(vbeinfoblock_t));
+	pinfoblock = (vbeinfoblock_t *) dos_getmemory(sizeof(vbeinfoblock_t));
+	if (!pinfoblock) {
+		Con_Printf("VID_InitExtra: Unable to allocate low memory.\n");
+		return;
+	}
 
-	*(long *)pinfoblock->VbeSignature = 'V' + ('B'<<8) + ('E'<<16) + ('2'<<24);
+	pinfoblock->VbeSignature[0] = 'V';
+	pinfoblock->VbeSignature[1] = 'B';
+	pinfoblock->VbeSignature[2] = 'E';
+	pinfoblock->VbeSignature[3] = '2';
 
 // see if VESA support is available
 	regs.x.ax = 0x4f00;
@@ -322,23 +325,32 @@ void VID_InitExtra (void)
 
 	if (regs.x.ax != 0x4f)
 	{
-		dos_freememory(pinfoblock); /* FS: sezero's code from uHexen2 */
+		dos_freememory(pinfoblock);
 		return;		// no VESA support
 	}
 
 	if (pinfoblock->VbeVersion[1] < 0x02)
 	{
-		dos_freememory(pinfoblock); /* FS: sezero's code from uHexen2 */
+		dos_freememory(pinfoblock);
 		return;		// not VESA 2.0 or greater
 	}
 
+	addr = ( (pinfoblock->OemStringPtr[0]      ) |
+		 (pinfoblock->OemStringPtr[1] <<  8) |
+		 (pinfoblock->OemStringPtr[2] << 16) |
+		 (pinfoblock->OemStringPtr[3] << 24));
 	Con_Printf ("VESA 2.0 compliant adapter:\n%s\n",
-				VID_ExtraFarToLinear (*(byte **)&pinfoblock->OemStringPtr[0]));
+			(char *) VID_ExtraFarToLinear(addr));
 
-	totalvidmem = *(unsigned short *)&pinfoblock->TotalMemory[0] << 16;
+	totalvidmem  = ( (pinfoblock->TotalMemory[0]     ) |
+			 (pinfoblock->TotalMemory[1] << 8) ) << 16;
+//	Con_Printf ("%dk video memory\n", totalvidmem >> 10);
 
-	pmodenums = (short *)
-			VID_ExtraFarToLinear (*(byte **)&pinfoblock->VideoModePtr[0]);
+	addr = ( (pinfoblock->VideoModePtr[0]      ) |
+		 (pinfoblock->VideoModePtr[1] <<  8) |
+		 (pinfoblock->VideoModePtr[2] << 16) |
+		 (pinfoblock->VideoModePtr[3] << 24));
+	pmodenums = (short *) VID_ExtraFarToLinear(addr);
 
 // find 8 bit modes until we either run out of space or run out of modes
 	nummodes = 0;
@@ -383,8 +395,7 @@ void VID_InitExtra (void)
 			vesa_modes[nummodes].width = modeinfo.width;
 			vesa_modes[nummodes].height = modeinfo.height;
 			vesa_modes[nummodes].aspect =
-					((float)modeinfo.height / (float)modeinfo.width) *
-					(320.0 / 240.0);
+					((float)modeinfo.height / (float)modeinfo.width) * (320.0 / 240.0);
 			vesa_modes[nummodes].rowbytes = modeinfo.bytes_per_scanline;
 			vesa_modes[nummodes].planar = 0;
 			vesa_modes[nummodes].pextradata = &vesa_extra[nummodes];
@@ -421,8 +432,7 @@ void VID_InitExtra (void)
 				vesa_extra[nummodes].plinearmem =
 						real2ptr(modeinfo.winasegment<<4);
 
-				vesa_modes[nummodes].begindirectrect =
-						VGA_BankedBeginDirectRect;
+				vesa_modes[nummodes].begindirectrect = VGA_BankedBeginDirectRect;
 				vesa_modes[nummodes].enddirectrect = VGA_BankedEndDirectRect;
 				vesa_extra[nummodes].pages[1] = modeinfo.pagesize;
 				vesa_extra[nummodes].pages[2] = modeinfo.pagesize * 2;
@@ -444,7 +454,7 @@ NextMode:
 		vesa_modes[nummodes-1].pnext = pvidmodes;
 		pvidmodes = &vesa_modes[0];
 		numvidmodes += nummodes;
-		ppal = dos_getmemory(256*4);
+		ppal = (byte *) dos_getmemory(256 * 4);
 	}
 
 	dos_freememory(pinfoblock);
@@ -461,17 +471,16 @@ qboolean VID_ExtraGetModeInfo(int modenum)
 	char	*infobuf;
 	int		numimagepages;
 
-	infobuf = dos_getmemory(256);
+	infobuf = (char *) dos_getmemory(256);
 
 	regs.x.ax = 0x4f01;
 	regs.x.cx = modenum;
 	regs.x.es = ptr2real(infobuf) >> 4;
 	regs.x.di = ptr2real(infobuf) & 0xf;
 	dos_int86(0x10);
-
 	if (regs.x.ax != 0x4f)
 	{
-		dos_freememory(infobuf); /* FS: sezero's code from uHexen2 */
+		dos_freememory(infobuf);
 		return false;
 	}
 	else
@@ -483,23 +492,20 @@ qboolean VID_ExtraGetModeInfo(int modenum)
 		modeinfo.height = *(short*)(infobuf+20);
 
 	// we do only 8-bpp in software
-		if ((modeinfo.bits_per_pixel != 8) ||
-			(modeinfo.bytes_per_pixel != 1) ||
-			(modeinfo.width > MAXWIDTH) ||
-			(modeinfo.height > MAXHEIGHT))
+		if ((modeinfo.bits_per_pixel != 8) || (modeinfo.bytes_per_pixel != 1) ||
+			(modeinfo.width > MAXWIDTH) || (modeinfo.height > MAXHEIGHT))
 		{
-			dos_freememory(infobuf); /* FS: sezero's code from uHexen2 */
+			dos_freememory(infobuf);
 			return false;
 		}
 
 		modeinfo.mode_attributes = *(short*)infobuf;
 
 	// we only want color graphics modes that are supported by the hardware
-		if ((modeinfo.mode_attributes &
-			 (MODE_SUPPORTED_IN_HW | COLOR_MODE | GRAPHICS_MODE)) !=
+		if ((modeinfo.mode_attributes & (MODE_SUPPORTED_IN_HW | COLOR_MODE | GRAPHICS_MODE)) !=
 			(MODE_SUPPORTED_IN_HW | COLOR_MODE | GRAPHICS_MODE))
 		{
-			dos_freememory(infobuf); /* FS: sezero's code from uHexen2 */
+			dos_freememory(infobuf);
 			return false;
 		}
 
@@ -509,7 +515,7 @@ qboolean VID_ExtraGetModeInfo(int modenum)
 		{
 			if ((modeinfo.width != 320) || (modeinfo.height != 200))
 			{
-				dos_freememory(infobuf); /* FS: sezero's code from uHexen2 */
+				dos_freememory(infobuf);
 				return false;
 			}
 		}
@@ -520,9 +526,10 @@ qboolean VID_ExtraGetModeInfo(int modenum)
 
 		if (modeinfo.pagesize > totalvidmem)
 		{
-			dos_freememory(infobuf); /* FS: sezero's code from uHexen2 */
+			dos_freememory(infobuf);
 			return false;
 		}
+
 	// force to one page if the adapter reports it doesn't support more pages
 	// than that, no matter how much memory it has--it may not have hardware
 	// support for page flipping

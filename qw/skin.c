@@ -220,7 +220,7 @@ byte	*Skin_Cache (skin_t *skin)
 
 	}
 
-	Con_DPrintf(DEVELOPER_MSG_IO, "Skin: %s Size: %d Width: %d\n", name->str, pix, x); /* FS */
+	Con_DPrintf(DEVELOPER_MSG_IO, "Skin: %s Size: %d Width: %d\n", name->str, com_filesize, x); /* FS */
 	
 	if ( raw - (byte *)pcx > com_filesize)
 	{

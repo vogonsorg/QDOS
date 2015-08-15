@@ -300,7 +300,7 @@ void CL_PlayDemo_f (void)
 	COM_FOpenFile (name->str, &cls.demofile);
 	if (!cls.demofile)
 	{
-		Con_Printf ("ERROR: couldn't open %s.\n", name->str); /* FS: Tell me the filename, please */
+		Con_Printf ("ERROR: couldn't open %s.\n", name->str);
 		cls.demonum = -1;		// stop demo loop
 		dstring_delete(name);
 		return;
@@ -331,7 +331,7 @@ void CL_PlayDemo_f (void)
 		fclose (cls.demofile);
 		cls.demofile = NULL;
 		cls.demonum = -1;	// stop demo loop
-		Con_Printf ("ERROR: demo \"%s\" is invalid\n", name);
+		Con_Printf ("ERROR: demo \"%s\" is invalid\n", name->str);
 		dstring_delete(name);
 		return;
 	}
