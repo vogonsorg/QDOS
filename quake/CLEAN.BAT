@@ -16,3 +16,5 @@ rd Release /S /Q
 cd gas2masm
 rd Debug /S /Q
 rd Release /S /Q
+
+cd..

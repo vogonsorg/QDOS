@@ -1,7 +1,7 @@
 # ignore all make dependency files
 *.d
 *.o
-q*.7z
+*.7z
 *.ncb
 *.ilk
 *.opt
@@ -25,7 +25,7 @@ qdos.exe
 qdossse.exe
 dquake.exe
 gspydos.exe
-relqw.bat
+relwqwexe.bat
 relqwexe.bat
-relqdos.bat
+relwqdexe.bat
 relqdexe.bat
