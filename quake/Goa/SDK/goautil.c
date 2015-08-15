@@ -31,7 +31,6 @@ INCLUDES
 #include <stdio.h>
 #include "../nonport.h"
 #include <string.h>
-#include <assert.h> /* FS: TODO convert to Sys_Error */
 
 extern cvar_t	public_server; /* should heartbeats be sent */
 #ifdef __cplusplus
@@ -398,7 +397,9 @@ void send_basic(struct sockaddr *sender, char *outbuf)
 {
 	char keyvalue[BUF_SIZE] = "";
 
-	assert(goa_basic_callback);
+	if(!goa_basic_callback)
+		Sys_Error("send_basic: goa_basic_callback is NULL.");
+
 	goa_basic_callback(keyvalue, sizeof(keyvalue), udata);
 
 	buffer_send(sender, outbuf, keyvalue);
@@ -409,7 +410,9 @@ void send_info(struct sockaddr *sender, char *outbuf)
 {
 	char keyvalue[BUF_SIZE] = "";
 
-	assert(goa_info_callback);
+	if(!goa_info_callback)
+		Sys_Error("send_info: goa_info_callback is NULL.");
+
 	goa_info_callback(keyvalue, sizeof(keyvalue), udata);
 	buffer_send(sender, outbuf, keyvalue);
 
@@ -420,7 +423,9 @@ void send_rules(struct sockaddr *sender, char *outbuf)
 {
 	char keyvalue[BUF_SIZE] = "";
 
-	assert(goa_rules_callback);
+	if(!goa_rules_callback)
+		Sys_Error("send_rules: goa_rules_callback is NULL.");
+
 	goa_rules_callback(keyvalue, sizeof(keyvalue), udata);
 	buffer_send(sender, outbuf, keyvalue);
 
@@ -431,7 +436,9 @@ void send_players(struct sockaddr *sender, char *outbuf)
 {
 	char keyvalue[BUF_SIZE] = "";
 
-	assert(goa_players_callback);
+	if(!goa_players_callback)
+		Sys_Error("send_players: goa_players_callback is NULL.");
+
 	goa_players_callback(keyvalue, sizeof(keyvalue), udata);
 	buffer_send(sender, outbuf, keyvalue);
 
