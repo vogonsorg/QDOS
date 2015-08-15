@@ -101,8 +101,8 @@ void MaskExceptions (void);
 void Sys_PushFPCW_SetHigh (void);
 void Sys_PopFPCW (void);
 
-#define LEAVE_FOR_CACHE (512*1024)              //FIXME: tune
-#define LOCKED_FOR_MALLOC (128*1024)    //FIXME: tune
+#define LEAVE_FOR_CACHE (512*1024)		//FIXME: tune
+#define LOCKED_FOR_MALLOC (128*1024)	//FIXME: tune
 
 /* FS: QW needs it badly -- See http://www.delorie.com/djgpp/doc/libc/libc_380.html for more information
 
@@ -491,7 +491,7 @@ void Sys_Quit (void)
 		memcpy (screen, d, sizeof(screen));
 
 // write the version number directly to the end screen
-	sprintf (ver, " v%4.2f", VERSION);
+	Com_sprintf (ver, sizeof(ver), " v%4.2f", VERSION);
 	for (i=0 ; i<6 ; i++)
 		screen[0*80*2 + 72*2 + i*2] = ver[i];
 
@@ -639,6 +639,7 @@ void Sys_GetMemory(void)
 		printf("Done!  Continuing to load Quake.\n");
 	}
 }
+
 /*
 ================
 Sys_PageInProgram

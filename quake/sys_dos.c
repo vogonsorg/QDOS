@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <limits.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <dos.h>
 #include <dir.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -32,9 +33,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/stat.h>
 #include <string.h>
 #include <dpmi.h>
+#include <crt0.h> /* FS: Fake Mem Fix for Win9x (QIP) */
 #include <sys/nearptr.h>
 #include <conio.h>
-#include <crt0.h> /* FS: Fake Mem Fix (QIP) */
 
 int _crt0_startup_flags = _CRT0_FLAG_UNIX_SBRK; /* FS: Fake Mem Fix for Win9x (QIP) */
 
@@ -44,88 +45,59 @@ int _crt0_startup_flags = _CRT0_FLAG_UNIX_SBRK; /* FS: Fake Mem Fix for Win9x (Q
 #define MINIMUM_WIN_MEMORY                      0x800000
 #define MINIMUM_WIN_MEMORY_LEVELPAK     (MINIMUM_WIN_MEMORY + 0x100000)
 
-int                     end_of_memory;
-qboolean        lockmem, lockunlockmem, unlockmem;
-static int      win95;
-
 #define STDOUT  1
 
-#define KEYBUF_SIZE     256
-static unsigned char    keybuf[KEYBUF_SIZE];
-static int                              keybuf_head=0;
-static int                              keybuf_tail=0;
+#define	KEYBUF_SIZE	256
+static unsigned char	keybuf[KEYBUF_SIZE];
+static int	keybuf_head = 0;
+static int	keybuf_tail = 0;
 
-static quakeparms_t     quakeparms;
-int                                     sys_checksum;
+
+static quakeparms_t	quakeparms;
 
 qboolean                isDedicated;
 
-static int                      minmem;
+static int	minmem;
 
-float                           fptest_temp;
+float			fptest_temp;
 
-extern char     start_of_memory __asm__("start");
+extern char	start_of_memory __asm__("start");
 
-//=============================================================================
+static byte scantokey[128] =
+{
+//	0        1       2       3       4       5       6       7
+//	8        9       A       B       C       D       E       F
+	0  ,    27,     '1',    '2',    '3',    '4',    '5',    '6',
+	'7',    '8',    '9',    '0',    '-',    '=', K_BACKSPACE, 9,	// 0
+	'q',    'w',    'e',    'r',    't',    'y',    'u',    'i',
+	'o',    'p',    '[',    ']',     13,   K_CTRL,  'a',    's',	// 1
+	'd',    'f',    'g',    'h',    'j',    'k',    'l',    ';',
+	'\'',   '`',  K_SHIFT,  '\\',   'z',    'x',    'c',    'v',	// 2
+	'b',    'n',    'm',    ',',    '.',    '/',  K_SHIFT,  '*',
+	K_ALT,  ' ',     0 ,    K_F1,   K_F2,   K_F3,   K_F4,  K_F5,	// 3
+	K_F6,  K_F7,   K_F8,    K_F9,  K_F10,    0 ,     0 , K_HOME,
+	K_UPARROW,K_PGUP,'-',K_LEFTARROW,'5',K_RIGHTARROW,'+',K_END,	// 4
+	K_DOWNARROW,K_PGDN,K_INS,K_DEL,   0 ,    0 ,     0 ,  K_F11,
+	K_F12,   0 ,     0 ,     0 ,      0 ,    0 ,     0 ,     0 ,	// 5
+	0  ,     0 ,     0 ,     0 ,      0 ,    0 ,     0 ,     0 ,
+	0  ,     0 ,     0 ,     0 ,      0 ,    0 ,     0 ,     0 ,	// 6
+	0  ,     0 ,     0 ,     0 ,      0 ,    0 ,     0 ,     0 ,
+	0  ,     0 ,     0 ,     0 ,      0 ,    0 ,     0 ,     0	// 7
+};
 
-byte        scantokey[128] = 
-					{ 
-//  0           1       2       3       4       5       6       7 
-//  8           9       A       B       C       D       E       F 
-	0  ,    27,     '1',    '2',    '3',    '4',    '5',    '6', 
-	'7',    '8',    '9',    '0',    '-',    '=',    K_BACKSPACE, 9, // 0 
-	'q',    'w',    'e',    'r',    't',    'y',    'u',    'i', 
-	'o',    'p',    '[',    ']',    13 ,    K_CTRL,'a',  's',      // 1 
-	'd',    'f',    'g',    'h',    'j',    'k',    'l',    ';', 
-	'\'' ,    '`',    K_SHIFT,'\\',  'z',    'x',    'c',    'v',      // 2 
-	'b',    'n',    'm',    ',',    '.',    '/',    K_SHIFT,'*', 
-	K_ALT,' ',   0  ,    K_F1, K_F2, K_F3, K_F4, K_F5,   // 3 
-	K_F6, K_F7, K_F8, K_F9, K_F10,0  ,    0  , K_HOME, 
-	K_UPARROW,K_PGUP,'-',K_LEFTARROW,'5',K_RIGHTARROW,'+',K_END, //4 
-	K_DOWNARROW,K_PGDN,K_INS,K_DEL,0,0,             0,              K_F11, 
-	K_F12,0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0,        // 5 
-	0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0, 
-	0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0,        // 6 
-	0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0, 
-	0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0         // 7 
-					}; 
-
-byte        shiftscantokey[128] = 
-					{ 
-//  0           1       2       3       4       5       6       7 
-//  8           9       A       B       C       D       E       F 
-	0  ,    27,     '!',    '@',    '#',    '$',    '%',    '^', 
-	'&',    '*',    '(',    ')',    '_',    '+',    K_BACKSPACE, 9, // 0 
-	'Q',    'W',    'E',    'R',    'T',    'Y',    'U',    'I', 
-	'O',    'P',    '{',    '}',    13 ,    K_CTRL,'A',  'S',      // 1 
-	'D',    'F',    'G',    'H',    'J',    'K',    'L',    ':', 
-	'"' ,    '~',    K_SHIFT,'|',  'Z',    'X',    'C',    'V',      // 2 
-	'B',    'N',    'M',    '<',    '>',    '?',    K_SHIFT,'*', 
-	K_ALT,' ',   0  ,    K_F1, K_F2, K_F3, K_F4, K_F5,   // 3 
-	K_F6, K_F7, K_F8, K_F9, K_F10,0  ,    0  , K_HOME, 
-	K_UPARROW,K_PGUP,'_',K_LEFTARROW,'%',K_RIGHTARROW,'+',K_END, //4 
-	K_DOWNARROW,K_PGDN,K_INS,K_DEL,0,0,             0,              K_F11, 
-	K_F12,0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0,        // 5 
-	0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0, 
-	0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0,        // 6 
-	0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0, 
-	0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0         // 7 
-					}; 
-
-void TrapKey(void)
+static void TrapKey(void)
 {
 	keybuf[keybuf_head] = dos_inportb(0x60);
 	dos_outportb(0x20, 0x20);
+
 	keybuf_head = (keybuf_head + 1) & (KEYBUF_SIZE-1);
 }
 
-#define SC_UPARROW              0x48
-#define SC_DOWNARROW    0x50
-#define SC_LEFTARROW            0x4b
-#define SC_RIGHTARROW   0x4d
-#define SC_LEFTSHIFT   0x2a
-#define SC_RIGHTSHIFT   0x36
-#define SC_RIGHTARROW   0x4d
+int	sys_checksum;
+
+int		end_of_memory;
+static qboolean	lockmem, lockunlockmem, unlockmem;
+static qboolean	skipwincheck, win95;
 
 void MaskExceptions (void);
 void Sys_PushFPCW_SetHigh (void);
@@ -134,15 +106,22 @@ void Sys_PopFPCW (void);
 #define LEAVE_FOR_CACHE (512*1024)		//FIXME: tune
 #define LOCKED_FOR_MALLOC (128*1024)	//FIXME: tune
 
-
-void Sys_DetectWin95 (void)
+static qboolean Sys_DetectWinNT (void) /* FS: Wisdom from Gisle Vanem */
 {
-	__dpmi_regs	r;
+	/* FS: Might sound crazy, but you could use that swsvpkt driver in NTVDM... */
+	if(_get_dos_version(1) == 0x0532)
+		return true;
+	return false;
+}
 
-	r.x.ax = 0x160a;			/* Get Windows Version */
+static void Sys_DetectWin95 (void)
+{
+	__dpmi_regs r;
+
+	r.x.ax = 0x160a; /* Get Windows Version */
 	__dpmi_int(0x2f, &r);
 
-	if(r.x.ax || r.h.bh < 4)	/* Not windows or earlier than Win95 */
+	if (((r.x.ax || r.h.bh < 4) && !Sys_DetectWinNT())) /* Not windows or earlier than Win95 */
 	{
 		win95 = 0;
 		lockmem = true;
@@ -151,15 +130,13 @@ void Sys_DetectWin95 (void)
 	}
 	else
 	{
-		printf("Microsoft Windows detected.  Please run QDOS in pure MS-DOS for best stability.\n"); /* FS: Warning */
+		printf("Microsoft Windows detected.  Please run QDOS in pure DOS for best stability.\n"); /* FS: Warning */
 		win95 = 1;
 		lockunlockmem = COM_CheckParm ("-winlockunlock");
-
 		if (lockunlockmem)
 			lockmem = true;
 		else
 			lockmem = COM_CheckParm ("-winlock");
-
 		unlockmem = lockmem && !lockunlockmem;
 	}
 }
@@ -194,7 +171,7 @@ void *dos_getmaxlockedmem(int *size)
 
 	__dpmi_get_free_memory_information(&meminfo);
 
-	if (!win95)	/* Not windows or earlier than Win95 */
+	if (!win95)             /* Not windows or earlier than Win95 */
 	{
 		ul = meminfo.maximum_locked_page_allocation_in_pages * 4096; /* FS: 2GB Fix */
 	}
@@ -207,12 +184,12 @@ void *dos_getmaxlockedmem(int *size)
 	if (ul > 0x7fffffff)
 		ul = 0x7fffffff; /* limit to 2GB */
 	working_size = (int) ul;
-	working_size &= ~0xffff;			/* Round down to 64K */
+	working_size &= ~0xffff;                /* Round down to 64K */
 	working_size += 0x10000;
 
 	do
 	{
-		working_size -= 0x10000;		/* Decrease 64K and try again */
+		working_size -= 0x10000;                /* Decrease 64K and try again */
 		working_memory = sbrk(working_size);
 	} while (working_memory == (void *)-1);
 
@@ -239,7 +216,7 @@ void *dos_getmaxlockedmem(int *size)
 		}
 	}
 	else
-	{	/* Win95 section */
+	{                       /* Win95 section */
 		j = COM_CheckParm("-winmem");
 
 		if (standard_quake)
@@ -363,12 +340,6 @@ void Sys_mkdir (char *path)
 	mkdir (path, 0777);
 }
 
-
-void Sys_Sleep(void)
-{
-}
-
-
 char *Sys_ConsoleInput(void)
 {
 	static char     text[256];
@@ -436,8 +407,19 @@ void Sys_Shutdown(void)
 	}
 }
 
-#define SC_RSHIFT       0x36 
-#define SC_LSHIFT       0x2a 
+// Knightmare- added this to fix CPU usage
+void Sys_Sleep (unsigned msec) /* FS: TODO: Currently unused */
+{
+	usleep (msec*1000);
+}
+
+#define	SC_UPARROW	0x48
+#define	SC_DOWNARROW	0x50
+#define	SC_LEFTARROW	0x4b
+#define	SC_RIGHTARROW	0x4d
+#define	SC_LEFTSHIFT	0x2a
+#define	SC_RIGHTSHIFT	0x36
+
 void Sys_SendKeyEvents (void)
 {
 	int k, next;
@@ -463,12 +445,12 @@ void Sys_SendKeyEvents (void)
 		} 
 
 		// extended keyboard shift key bullshit 
-		if ( (k&0x7f)==SC_LSHIFT || (k&0x7f)==SC_RSHIFT ) 
+		if ( (k&0x7f)==SC_LEFTSHIFT || (k&0x7f)==SC_RIGHTSHIFT ) 
 		{ 
 			if ( keybuf[(keybuf_tail-2)&(KEYBUF_SIZE-1)]==0xe0 ) 
 				continue; 
 			k &= 0x80; 
-			k |= SC_RSHIFT; 
+			k |= SC_RIGHTSHIFT; 
 		} 
 
 		if (k==0xc5 && keybuf[(keybuf_tail-2)&(KEYBUF_SIZE-1)] == 0x9d)
@@ -557,6 +539,8 @@ void Sys_Quit (void)
 	else
 		printf ("couldn't load endscreen.\n");
 
+	__djgpp_nearptr_disable(); /* FS: Everyone else is a master DOS DPMI programmer.  Pretty sure CWSDPMI is already taking care of this... */
+
 	exit(0);
 }
 
@@ -575,8 +559,10 @@ void Sys_Error (const char *error, ...)
 	Host_Shutdown();
 	fprintf(stderr, "Error: %s\n", string->str);
 
+	__djgpp_nearptr_disable(); /* FS: Everyone else is a master DOS DPMI programmer.  Pretty sure CWSDPMI is already taking care of this... */
+
 	// Sys_AtExit is called by exit to shutdown the system
-	exit(0);
+	exit(1);
 } 
 
      
@@ -667,7 +653,7 @@ void Sys_GetMemory(void)
 	if ((j = COM_CheckParm("-mem")) != 0 && j < com_argc-1)
 		quakeparms.memsize = Q_atoi(com_argv[j+1]) * 1024 * 1024;
 
-	if ((j = COM_CheckParm("-heapsize")) != 0 && j < com_argc-1)
+	if ((j = COM_CheckParm ("-heapsize")) != 0 && j < com_argc-1)
 		quakeparms.memsize = Q_atoi(com_argv[j+1]) * 1024;
 
 	quakeparms.membase = malloc (quakeparms.memsize);
@@ -682,7 +668,6 @@ void Sys_GetMemory(void)
 	}
 }
 
-
 /*
 ================
 Sys_PageInProgram
@@ -691,9 +676,9 @@ walks the text, data, and bss to make sure it's all paged in so that the
 actual physical memory detected by Sys_GetMemory is correct.
 ================
 */
-void Sys_PageInProgram(void)
+static void Sys_PageInProgram(void)
 {
-	int             i, j;
+	int		i, j;
 
 	end_of_memory = (int)sbrk(0);
 
@@ -734,38 +719,43 @@ void Sys_PageInProgram(void)
 	}
 }
 
+static void Sys_ParseEarlyArgs(int argc, char **argv) /* FS: Parse some very specific args before Qcommon_Init */
+{
+	int i;
+	for (i = 1; i < argc; i++)
+	{
+		if(stricmp(argv[i],"-skipwincheck") == 0)
+			skipwincheck = true;
+	}
+}
 
 /*
 ================
 Sys_NoFPUExceptionHandler
 ================
 */
-void Sys_NoFPUExceptionHandler(int whatever)
+static void Sys_NoFPUExceptionHandler(int whatever)
 {
 	printf ("\nError: Quake requires a floating-point processor\n");
 	exit (0);
 }
-
 
 /*
 ================
 Sys_DefaultExceptionHandler
 ================
 */
-void Sys_DefaultExceptionHandler(int whatever)
+static void Sys_DefaultExceptionHandler(int whatever)
 {
 }
 
 
-/*
-================
-main
-================
-*/
+//=============================================================================
+
 int main (int c, char **v)
 {
-	double                  time, oldtime, newtime;
-	static  char    cwd[1024];
+	double time, oldtime, newtime;
+	static char cwd[1024];
 
 	printf ("Quake v%4.2f\n", VERSION);
 	
@@ -779,6 +769,8 @@ int main (int c, char **v)
 
 	if (fptest_temp >= 0.0)
 		fptest_temp += 0.1;
+
+	Sys_ParseEarlyArgs(c, v);
 
 	COM_InitArgv (c, v);
 
@@ -821,5 +813,3 @@ int main (int c, char **v)
 		oldtime = newtime;
 	}
 }
-
-
