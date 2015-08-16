@@ -39,10 +39,10 @@ vmode_t		*pcurrentmode = NULL;
 int			vid_testingmode, vid_realmode;
 double		vid_testendtime;
 
-cvar_t		vid_mode = {"vid_mode","0", false};
-cvar_t		vid_wait = {"vid_wait","0"};
-cvar_t		vid_nopageflip = {"vid_nopageflip","0", true};
-cvar_t		_vid_wait_override = {"_vid_wait_override", "0", true};
+cvar_t		vid_mode = {"vid_mode","0", false, false, "Current video mode."};
+cvar_t		vid_wait = {"vid_wait","0", true, false, "Vsync modes.  0 - off.  1 - on.  2 - Double buffer no vsync."};
+cvar_t		vid_nopageflip = {"vid_nopageflip","0", true, false, "Disable page flipping for modes that support it."};
+cvar_t		_vid_wait_override = {"_vid_wait_override", "0", true, false, "Allow the engine to control the vsync automatically.  0 will override vid_wait for no vsync on double buffered modes."};
 cvar_t		_vid_default_mode = {"_vid_default_mode","0", true};
 cvar_t		_vid_default_mode_win = {"_vid_default_mode_win","1", true};
 cvar_t		vid_config_x = {"vid_config_x","800", true};
@@ -679,7 +679,7 @@ void VID_MenuDraw (void)
 
 		if (ptr)
 		{
-			sprintf (temp, "Current default is %s", ptr);
+			Com_sprintf (temp, sizeof(temp), "Current default is %s", ptr);
 			M_Print (7*8, 36 + MAX_COLUMN_SIZE * 8 + 8*6, temp);
 		}
 
