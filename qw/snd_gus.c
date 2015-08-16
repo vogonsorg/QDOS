@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // Author(s): Jayeson Lee-Steere
 //=============================================================================
 
+#include <dos.h>
 #include "quakedef.h"
 #include "dosisms.h"
 
@@ -31,9 +32,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define INI_STRING_SIZE 0x100
 
-FILE *ini_fopen(const char *filename, const char *modes);
-int ini_fclose(FILE *f);
-void ini_fgets(FILE *f, const char *section, const char *field, char *s);
+static FILE *ini_fopen(const char *filename, const char *modes);
+static int ini_fclose(FILE *f);
+static void ini_fgets(FILE *f, const char *section, const char *field, char *s);
 
 // Routines for reading from .INI files
 // The read routines are fairly efficient.
@@ -59,7 +60,7 @@ struct field_buffer
 	char name[MAX_FIELD_WIDTH+1];
 };
 
-static FILE *current_file=NULL;
+static FILE *current_file = NULL;
 static int	current_section;
 
 static int current_section_buffer=0;
@@ -67,19 +68,12 @@ static int current_field_buffer=0;
 
 static struct section_buffer section_buffers[NUM_SECTION_BUFFERS];
 static struct field_buffer field_buffers[NUM_FIELD_BUFFERS];
-
-byte	extVoices,extCodecVoices; /* FS: For GUS Clear Buffer Fix */
+static byte	extVoices,extCodecVoices; /* FS: GUS clicking sounds during map transitions and pauseing fix */
+int	havegus; /* FS: Is GUS our sound card? */
 
 //***************************************************************************
 // Internal routines
 //***************************************************************************
-static char toupper(char c)
-{
-	if (c>='a' && c<='z')
-		c-=('a'-'A');
-	return(c);
-}
-
 static void reset_buffer(FILE *f)
 {
 	int i;
@@ -114,7 +108,7 @@ static int is_section(char *s,const char *name)
 	while (s[0]!=']' && s[0]!=13 && s[0]!=10 && s[0]!=0 && name[0]!=0)
 	{
 		if (!wild)
-			if (toupper(s[0])!=toupper(name[0]))
+			if (Q_toupper(s[0])!=Q_toupper(name[0]))
 				return(0);
 		s++;
 		if (!wild)
@@ -151,7 +145,7 @@ static int is_field(char *s,const char *name)
 	while (s[0]!='=' && s[0]!=13 && s[0]!=10 && s[0]!=0 && name[0]!=0)
 	{
 		if (!wild)
-			if (toupper(s[0])!=toupper(name[0]))
+			if (Q_toupper(s[0])!=Q_toupper(name[0]))
 				return(0);
 		s++;
 		if (!wild)
@@ -333,17 +327,14 @@ static char *stripped_fgets(char *s, int n, FILE *f)
 	return(s);
 }
 
-//***************************************************************************
-// Externally accessable routines
-//***************************************************************************
 // Opens an .INI file. Works like fopen
-FILE *ini_fopen(const char *filename, const char *modes)
+static FILE *ini_fopen(const char *filename, const char *modes)
 {
 	return(fopen(filename,modes));
 }
 
 // Closes a .INI file. Works like fclose
-int ini_fclose(FILE *f)
+static int ini_fclose(FILE *f)
 {
 	if (f==current_file)
 		reset_buffer(NULL);
@@ -353,7 +344,7 @@ int ini_fclose(FILE *f)
 // Puts "field" from "section" from .ini file "f" into "s".
 // If "section" does not exist or "field" does not exist in
 // section then s="";
-void ini_fgets(FILE *f, const char *section, const char *field, char *s)
+static void ini_fgets(FILE *f, const char *section, const char *field, char *s)
 {
 	int i;
 	long start_pos,string_start_pos;
@@ -602,31 +593,31 @@ static struct Gf1RateStruct Gf1Rates[]=
 //=============================================================================
 // Basic GF1 functions
 //=============================================================================
-void SetGf18(BYTE reg,BYTE data)
+static void SetGf18(BYTE reg,BYTE data)
 {
 	dos_outportb(Gf1RegisterSelect,reg);
 	dos_outportb(Gf1DataHigh,data);
 }
 
-void SetGf116(BYTE reg,WORD data)
+static void SetGf116(BYTE reg,WORD data)
 {
 	dos_outportb(Gf1RegisterSelect,reg);
 	dos_outportw(Gf1DataLow,data);
 }
 
-BYTE GetGf18(BYTE reg)
+static BYTE GetGf18(BYTE reg)
 {
 	dos_outportb(Gf1RegisterSelect,reg);
 	return(dos_inportb(Gf1DataHigh));
 }
 
-WORD GetGf116(BYTE reg)
+static WORD GetGf116(BYTE reg)
 {
 	dos_outportb(Gf1RegisterSelect,reg);
 	return(dos_inportw(Gf1DataLow));
 }
 
-void Gf1Delay(void)
+static void Gf1Delay(void)
 {
 	int i;
 
@@ -634,12 +625,12 @@ void Gf1Delay(void)
 		dos_inportb(Gf1TimerControl);
 }
 
-DWORD ConvertTo16(DWORD Address)
+static DWORD ConvertTo16(DWORD Address)
 {
 	return( ((Address>>1) & 0x0001FFFF) | (Address & 0x000C0000L) );
 }
 
-void ClearGf1Ints(void)
+static void ClearGf1Ints(void)
 {
 	int i;
 
@@ -1084,7 +1075,7 @@ qboolean GUS_Init(void)
 	struct Gf1RateStruct *Gf1Rate;
 
 	if (COM_CheckParm("-nogus"))
-		return false;	/* FS: Disables GUS, useful if you want to use SB16 instead.  Thanks to Oz of HoT for oneliner. */
+		return false; /* FS: Disables GUS, useful if you want to use SB16 instead.  Thanks to sezero for oneliner. */
 
 	// See what kind of UltraSound we have, if any
 	if (GUS_GetIWData()==false)
@@ -1108,7 +1099,7 @@ qboolean GUS_Init(void)
 			// Make sure rate not too high
 			if (shm->speed>48000)
 				shm->speed=48000;
-	
+
 			// Adjust speed to match one of the possible CODEC rates
 			for (CodecRate=CodecRates;CodecRate->Rate!=0;CodecRate++)
 			{
@@ -1135,7 +1126,7 @@ qboolean GUS_Init(void)
 				if (shm->speed <= CodecRate->Rate)
 				{
 					shm->speed=CodecRate->Rate;
-					FSVal=extCodecVoices=CodecRate->FSVal;/* FS: Added extCodecVoices */
+					FSVal=extCodecVoices=CodecRate->FSVal; /* FS: Added extCodecVoices */
 					break;
 				}
 			}
@@ -1171,12 +1162,13 @@ qboolean GUS_Init(void)
 
 		GUS_StartDMA(DmaChannel,dma_buffer,SND_BUFFER_SIZE);
 		GUS_StartCODEC(SND_BUFFER_SIZE,FSVal);
+		havegus = 2; /* FS: GUS MAX/IWPNP */
 	}
 	else /* FS: No CODEC?  You must have a Gravis UltraSound "Classic", ACE/SoundBuddy or compatible OEM CLONE! */
 	{
 		// do 19khz sampling rate unless command line parameter wants different
 		shm->speed = 19293; /* FS: Maximum kHZ at 32 Voices.  14 voices gets you 44kHZ. */
-		Voices=extVoices=32;/* FS: Added extVoices */
+		Voices=extVoices=32; /* FS: Added extVoices */
 		rc = COM_CheckParm("-sspeed");
 
 		if (s_khz.value > 19292)/* FS: S_KHZ */
@@ -1193,7 +1185,7 @@ qboolean GUS_Init(void)
 				if (shm->speed <= Gf1Rate->Rate)
 				{
 					shm->speed=Gf1Rate->Rate;
-					Voices=extVoices=Gf1Rate->Voices;/* FS: Added extVoices */
+					Voices=extVoices=Gf1Rate->Voices; /* FS: Added extVoices */
 					break;
 				}
 			}
@@ -1213,7 +1205,7 @@ qboolean GUS_Init(void)
 				if (shm->speed <= Gf1Rate->Rate)
 				{
 					shm->speed=Gf1Rate->Rate;
-					Voices=extVoices=Gf1Rate->Voices;/* FS: Added extVoices */
+					Voices=extVoices=Gf1Rate->Voices; /* FS: Added extVoices */
 					break;
 				}
 			}
@@ -1252,7 +1244,12 @@ qboolean GUS_Init(void)
 		else
 			SetGf18(DMA_CONTROL,0x45);
 		GUS_StartGf1(SND_BUFFER_SIZE,Voices);
+		havegus = 1; /* FS: Classic GUS */
+
+		if (_snd_mixahead.value <= 0.2) /* FS: GUS Classic needs 0.3 to work properly. */
+			Cvar_SetValue ("_snd_mixahead", 0.3);
 	}
+
 	return(true);
 }
 
@@ -1266,26 +1263,25 @@ int GUS_GetDMAPos(void)
 	if (HaveCodec)
 	{
 		// clear 16-bit reg flip-flop
- 	  // load the current dma count register
- 	  if (DmaChannel < 4)
- 	  {
- 		  dos_outportb(0x0C, 0);
- 		  count = dos_inportb(CountReg);
- 		  count += dos_inportb(CountReg) << 8;
- 		  if (shm->samplebits == 16)
- 			  count /= 2;
- 		  count = shm->samples - (count+1);
- 	  }
- 	  else
- 	  {
- 		  dos_outportb(0xD8, 0);
- 		  count = dos_inportb(CountReg);
- 		  count += dos_inportb(CountReg) << 8;
- 		  if (shm->samplebits == 8)
- 			  count *= 2;
- 		  count = shm->samples - (count+1);
- 	  }
-
+		// load the current dma count register
+		if (DmaChannel < 4)
+		{
+			dos_outportb(0x0C, 0);
+			count = dos_inportb(CountReg);
+			count += dos_inportb(CountReg) << 8;
+			if (shm->samplebits == 16)
+				count /= 2;
+			count = shm->samples - (count+1);
+		}
+		else
+		{
+			dos_outportb(0xD8, 0);
+			count = dos_inportb(CountReg);
+			count += dos_inportb(CountReg) << 8;
+			if (shm->samplebits == 8)
+				count *= 2;
+			count = shm->samples - (count+1);
+		}
 	}
 	else
 	{

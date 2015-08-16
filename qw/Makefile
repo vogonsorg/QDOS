@@ -9,10 +9,18 @@ USE_OGG=yes
 USE_TREMOR=1
 # whether to use ASM
 USE_ASM=1
+# pci sound card support:
+USE_SNDPCI=1
 
 CFLAGS= -g -Wall -Werror -O0 -fno-strict-aliasing -fomit-frame-pointer -DWATT32_NO_OLDIES -I../wat/inc
 LDFLAGS= -L../wat/lib
 LIBS= -lwatt
+
+ifeq ($(USE_SNDPCI),1)
+CFLAGS+= -DUSE_SNDPCI
+CFLAGS+= -I../3rdparty/include
+LIBS += -L../3rdparty/lib -lau
+endif
 
 ifeq ($(USE_OGG),yes)
 CFLAGS+= -DOGG_SUPPORT
@@ -100,6 +108,8 @@ CLIENT = $(O)/cd_audio.o  \
 	$(O)/snd_gus.o  \
 	$(O)/snd_mix.o  \
 	$(O)/snd_mem.o  \
+	$(O)/snd_pci.o  \
+	$(O)/snd_sb.o  \
 	$(O)/sys_find.o  \
 	$(O)/snd_strm.o  \
 	$(O)/snd_wavstream.o  \

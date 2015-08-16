@@ -272,6 +272,10 @@ void COM_LoadCacheFile (char *path, struct cache_user_s *cu);
 void COM_CreatePath (char *path);
 void COM_Gamedir (char *dir);
 
+/* FS: New Stuff */
+int Q_toupper (int c);
+int Q_tolower (int c);
+
 /* FS: From Q2 */
 char *COM_NextPath (char *prevpath);
 void COM_FreeFileList (char **list, int n);
