@@ -84,6 +84,8 @@ int		desired_bits = 16;
 
 int		sound_started = 0;
 
+int		havegus; /* FS: Is GUS our sound card? */
+
 cvar_t bgmvolume = {"bgmvolume", "1", true};
 cvar_t volume = {"volume", "0.7", true};
 

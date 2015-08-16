@@ -300,6 +300,9 @@ extern	cvar_t	cl_wav_music; /* FS: Added */
 
 extern	cvar_t	cl_autorepeat_allkeys; /* FS: Added */
 
+extern	cvar_t	_vid_wait_override;
+extern	cvar_t	vid_wait;
+
 #define	MAX_TEMP_ENTITIES	256		//johnfitz -- was 64
 #define	MAX_STATIC_ENTITIES	512		//johnfitz -- was 128
 #define	MAX_VISEDICTS		1024	//johnfitz -- was 256

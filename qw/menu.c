@@ -87,21 +87,12 @@ void M_GameOptions_Key (int key);
 void M_Search_Key (int key);
 void M_ServerList_Key (int key);
 void M_Extended_Key (int key); /* FS: Extended options unique to QDOS */
-extern void snd_restart_f (void); /* FS: For extended options */
-void M_Extended_Set_Sound_KHz (int dir, int khz); /* FS: Extended options unique to QDOS */
 
 /* FS: Gamespy stuff */
 void M_Gamespy_Key (int key);
 static void SearchGamespyGames (void);
 static void JoinGamespyServer_Redraw(int serverscale);
 static int serverscale;
-
-/* FS: Gravis Ultrasound stuff */
-#ifdef _WIN32
-int havegus = 0;
-#else
-extern int havegus;
-#endif
 
 qboolean	m_entersound;		// play after drawing a frame, so caching
 								// won't disrupt the sound
@@ -649,24 +640,6 @@ void M_Options_Key (int k)
 	case K_RIGHTARROW:
 		M_AdjustSliders (1);
 		break;
-	}
-
-	/* FS: Needed to readjust and that Use Mouse shit was getting in the way. */
-	if ( (options_cursor == 17) && (vid_menudrawfn == NULL) )
-	{
-		if (k == K_UPARROW)
-			options_cursor = 16;
-		else
-			options_cursor = 0;
-	}
-
-	if (options_cursor == 17) 
-	
-	{
-		if (k == K_UPARROW)
-			options_cursor = 16;
-		else
-			options_cursor = 0;
 	}
 }
 
@@ -1358,10 +1331,18 @@ void M_Keydown (int key)
 }
 
 /* FS: Extended options unique to QDOS */
+#define Y_SPACE 8
+#define EXTENDED_OPTIONS 12
+
 int extended_cursor;
-#define EXTENDED_OPTIONS 11
+
 extern cvar_t r_waterwarp;
 extern cvar_t scr_fov;
+
+int M_Extended_Get_Vsync(void);
+void M_Extended_Set_Vsync(int dir);
+void M_Extended_Set_Sound_KHz (int dir, int khz); /* FS: Extended options unique to QDOS */
+extern void snd_restart_f (void); /* FS: For extended options */
 
 void M_Menu_Extended_f(void)
 {
@@ -1373,6 +1354,7 @@ void M_Menu_Extended_f(void)
 
 void M_Extended_Draw()
 {
+	int		y = 32;
 	float	r;
 	qpic_t  *p;
 
@@ -1380,55 +1362,64 @@ void M_Extended_Draw()
 	p = Draw_CachePic ("gfx/p_option.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
 
-	M_Print (16, 32, "     Chat Broadcasting");
-	M_DrawCheckbox (220, 32, net_broadcast_chat.intValue);
+	M_Print (16, y, "     Chat Broadcasting");
+	M_DrawCheckbox (220, y, net_broadcast_chat.intValue);
 
-	M_Print (16, 40, "     Chat Notification");
-	M_DrawCheckbox (220, 40, net_showchat.intValue);
+	M_Print (16, y = y + Y_SPACE, "     Chat Notification");
+	M_DrawCheckbox (220, y, net_showchat.intValue);
 
-	M_Print (16, 48, "         Chat Graphics");
-	M_DrawCheckbox (220, 48, net_showchatgfx.intValue);
+	M_Print (16, y = y + Y_SPACE, "         Chat Graphics");
+	M_DrawCheckbox (220, y, net_showchatgfx.intValue);
 
-	M_Print (16, 56,  "      Content Blending");
-	M_DrawCheckbox (220, 56, v_contentblend.intValue);
+	M_Print (16, y = y + Y_SPACE,  "      Content Blending");
+	M_DrawCheckbox (220, y, v_contentblend.intValue);
 
-	M_Print (16, 64,  "     Unbindall Protect");
-	M_DrawCheckbox (220, 64, cl_unbindall_protection.intValue);
+	M_Print (16, y = y + Y_SPACE,  "     Unbindall Protect");
+	M_DrawCheckbox (220, y, cl_unbindall_protection.intValue);
 
-	M_Print (16, 72,  "           Show Uptime");
-	M_DrawCheckbox (220, 72, show_uptime.intValue);
+	M_Print (16, y = y + Y_SPACE,  "           Show Uptime");
+	M_DrawCheckbox (220, y, show_uptime.intValue);
 
-	M_Print (16, 80,  "             Show Time");
+	M_Print (16, y = y + Y_SPACE,  "             Show Time");
 	if (show_time.value < 1 )
-		M_Print (220, 80, "off");
+		M_Print (220, y, "off");
 	else if (show_time.value == 1)
-		M_Print (220, 80, "Military");
+		M_Print (220, y, "Military");
 	else if (show_time.value >= 2)
-		M_Print (220, 80, "AM/PM");
+		M_Print (220, y, "AM/PM");
 
-	M_Print (16, 88,  "        Show Framerate");
-	M_DrawCheckbox (220, 88, show_fps.intValue);
+	M_Print (16, y = y + Y_SPACE,  "        Show Framerate");
+	M_DrawCheckbox (220, y, show_fps.intValue);
 
-	M_Print (16, 96,  "        Mouse Freelook");
-	M_DrawCheckbox (220, 96, in_freelook.intValue);
+	M_Print (16, y = y + Y_SPACE,  "        Mouse Freelook");
+	M_DrawCheckbox (220, y, in_freelook.intValue);
 
-	M_Print (16,104,  "       Water View-warp");
-	M_DrawCheckbox (220, 104, r_waterwarp.intValue);
+	M_Print (16, y = y + Y_SPACE,  "       Water View-warp");
+	M_DrawCheckbox (220, y, r_waterwarp.intValue);
 
-	M_Print (16, 112, "       Field of Vision");
+	M_Print (16, y = y + Y_SPACE, "       Field of Vision");
 	r = (scr_fov.value - 30) / (175 - 30);
-	M_DrawSlider (220, 112, r);
-	M_DrawCharacter (200, 32 + extended_cursor*8, 12+((int)(realtime*4)&1));
+	M_DrawSlider (220, y, r);
 
-	M_Print (16, 120, "            Sound Rate");
-	if (s_khz.intValue <= 0)
+	M_Print (16, y = y + Y_SPACE, "            Sound Rate");
+	if (s_khz.intValue < 22050)
 	{
 		if (havegus)
-			Cvar_SetValue("s_khz", 19293);
+		{
+			if(havegus == GUS_CLASSIC)
+				Cvar_SetValue("s_khz", 19293);
+			else
+				Cvar_SetValue("s_khz", 11025);
+		}
 		else
 			Cvar_SetValue("s_khz", 11025);
 	}
-	M_Print (220, 120, s_khz.string);
+	M_Print (220, y, s_khz.string);
+
+	M_Print (16, y = y + Y_SPACE,  "               V-Sync");
+	M_DrawCheckbox (220, y, M_Extended_Get_Vsync());
+
+	M_DrawCharacter (200, 32 + extended_cursor*8, 12+((int)(realtime*4)&1));
 }
 
 void M_AdjustSliders_Extended (int dir)
@@ -1480,6 +1471,9 @@ void M_AdjustSliders_Extended (int dir)
 		break;
 	case 11:
 		M_Extended_Set_Sound_KHz(dir, s_khz.intValue);
+		break;
+	case 12:
+		M_Extended_Set_Vsync(dir);
 		break;
 	default:
 		break;
@@ -1563,13 +1557,37 @@ void M_Extended_Key(int k)
 		case 11:
 			M_AdjustSliders_Extended(1);
 			break;
+		case 12:
+			M_Extended_Set_Vsync( !M_Extended_Get_Vsync() );
+			break;
 		default:
 			break;
 		}
 	}
 }
 
-/* FS: FIXME this is somewhat crappy, use Q2DOS version instead */
+int M_Extended_Get_Vsync(void)
+{
+	if((!_vid_wait_override.intValue) && (vid_wait.intValue != 1))
+		return 0;
+
+	return 1;
+}
+
+void M_Extended_Set_Vsync(int dir)
+{
+	if (dir > 0)
+	{
+		Cvar_SetValue("_vid_wait_override", 1.0f);
+		Cvar_SetValue("vid_wait", 1.0f);
+	}
+	else
+	{
+		Cvar_SetValue("_vid_wait_override", 0.0f);
+		Cvar_SetValue("vid_wait", 0.0f);
+	}
+}
+
 void M_Extended_Set_Sound_KHz (int dir, int khz)
 {
 	switch(khz)
@@ -1586,7 +1604,10 @@ void M_Extended_Set_Sound_KHz (int dir, int khz)
 		case 44100:
 			if (dir > 0)
 			{
-				Cvar_SetValue("s_khz", 48000);
+				if (havegus != GUS_CLASSIC)
+					Cvar_SetValue("s_khz", 48000);
+				else
+					break;
 			}
 			else
 			{
@@ -1602,7 +1623,12 @@ void M_Extended_Set_Sound_KHz (int dir, int khz)
 			else
 			{
 				if(havegus)
-					Cvar_SetValue("s_khz", 19293);
+				{
+					if (havegus == GUS_CLASSIC)
+						Cvar_SetValue("s_khz", 19293);
+					else
+						Cvar_SetValue("s_khz", 11025);
+				}
 				else
 					Cvar_SetValue("s_khz", 11025);
 			}
@@ -1615,7 +1641,10 @@ void M_Extended_Set_Sound_KHz (int dir, int khz)
 			}
 			else
 			{
-				Cvar_SetValue("s_khz", 11025);
+				if(havegus != GUS_CLASSIC)
+					Cvar_SetValue("s_khz", 11025);
+				else
+					break;
 			}
 			Cbuf_AddText("snd_restart\n");
 			break;
@@ -1623,7 +1652,12 @@ void M_Extended_Set_Sound_KHz (int dir, int khz)
 			if (dir > 0)
 			{
 				if(havegus)
-					Cvar_SetValue("s_khz", 19293);
+				{
+					if(havegus == GUS_CLASSIC)
+						Cvar_SetValue("s_khz", 19293);
+					else
+						Cvar_SetValue("s_khz", 22050);
+				}
 				else
 					Cvar_SetValue("s_khz", 22050);
 				Cbuf_AddText("snd_restart\n");
@@ -1641,7 +1675,12 @@ void M_Extended_Set_Sound_KHz (int dir, int khz)
 				else if(khz > 11025 && khz < 22050)
 				{
 					if(havegus)
-						Cvar_SetValue("s_khz", 19293);
+					{
+						if(havegus == GUS_CLASSIC)
+							Cvar_SetValue("s_khz", 19293);
+						else
+							Cvar_SetValue("s_khz", 22050);
+					}
 					else
 						Cvar_SetValue("s_khz", 22050);
 				}
@@ -1658,7 +1697,12 @@ void M_Extended_Set_Sound_KHz (int dir, int khz)
 				else if(khz > 11025 && khz < 22050)
 				{
 					if(havegus)
-						Cvar_SetValue("s_khz", 19293);
+					{
+						if(havegus == GUS_CLASSIC)
+							Cvar_SetValue("s_khz", 19293);
+						else
+							Cvar_SetValue("s_khz", 11025);
+					}
 					else
 						Cvar_SetValue("s_khz", 11025);
 				}

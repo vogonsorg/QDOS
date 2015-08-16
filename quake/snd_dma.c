@@ -34,11 +34,6 @@ void S_Update_();
 void S_StopAllSounds(qboolean clear);
 void S_StopAllSoundsC(void);
 
-#ifndef _WINDOWS
-extern void GUS_ClearDMA(void); /* FS: Added */
-extern int havegus; /* FS: Added */
-#endif
-
 #ifdef WIN32
 extern void IN_Accumulate (void);
 #endif
@@ -81,6 +76,8 @@ int		desired_speed = 11025;
 int		desired_bits = 16;
 
 int		sound_started = 0;
+
+int		havegus; /* FS: Is GUS our sound card? */
 
 cvar_t bgmvolume = {"bgmvolume", "1", true};
 cvar_t volume = {"volume", "0.7", true};
@@ -815,6 +812,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 		if (!ch->sfx)
 			continue;
 
+		/* FS: FIXME: Use s_rawsamples stuff instead of this crap hack */
 		if (warpspasm && (strstr(ch->sfx->name, "music/warp")) ) /* FS: Fucks up tunes if we allow spatial */
 		{
 			ch->leftvol = ch->master_vol;

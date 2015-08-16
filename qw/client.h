@@ -399,6 +399,9 @@ extern	cvar_t	cl_wav_music; /* FS: Added */
 
 extern	cvar_t	cl_autorepeat_allkeys; /* FS: Added */
 
+extern	cvar_t	_vid_wait_override;
+extern	cvar_t	vid_wait;
+
 #define	MAX_STATIC_ENTITIES	128			// torches, etc
 
 extern	client_state_t	cl;

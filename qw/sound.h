@@ -225,8 +225,10 @@ void S_AmbientOn (void);
 
 void S_StopBackgroundTrack(void); /* FS: So we can suport both */
 
-/* FS: For deterimining the s_khz minimum rate */
+/* FS: Gravis UltraSound specific stuff.  Mostly for the s_khz menu. */
 #define GUS_CLASSIC 1
 #define GUS_MAXPNP 2
+extern int havegus; /* FS: Added */
+void GUS_ClearDMA(void); /* FS: Added */
 
 #endif // __SOUND__

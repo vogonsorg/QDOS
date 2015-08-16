@@ -301,16 +301,16 @@ sndinitstat SNDDMA_InitDirect (void)
 
 			if (DS_OK != pDSPBuf->lpVtbl->SetFormat (pDSPBuf, &pformat))
 			{
-//				if (snd_firsttime)
-//					Con_SafePrintf ("Set primary sound buffer format: no\n");
+				if (snd_firsttime)
+					Con_SafePrintf ("Set primary sound buffer format: no\n");
 			}
 			else
-//			{
-//				if (snd_firsttime)
-//					Con_SafePrintf ("Set primary sound buffer format: yes\n");
+			{
+				if (snd_firsttime)
+					Con_SafePrintf ("Set primary sound buffer format: yes\n");
 
 				primary_format_set = true;
-//			}
+			}
 		}
 	}
 
@@ -344,8 +344,8 @@ sndinitstat SNDDMA_InitDirect (void)
 			return SIS_FAILURE;
 		}
 
-//		if (snd_firsttime)
-//			Con_SafePrintf ("Using secondary sound buffer\n");
+		if (snd_firsttime)
+			Con_SafePrintf ("Using secondary sound buffer\n");
 	}
 	else
 	{
@@ -363,17 +363,17 @@ sndinitstat SNDDMA_InitDirect (void)
 		}
 
 		pDSBuf = pDSPBuf;
-//		Con_SafePrintf ("Using primary sound buffer\n");
+		Con_SafePrintf ("Using primary sound buffer\n");
 	}
 
 	// Make sure mixer is active
 	pDSBuf->lpVtbl->Play(pDSBuf, 0, 0, DSBPLAY_LOOPING);
 
-/*	if (snd_firsttime)
+	if (snd_firsttime)
 		Con_SafePrintf("   %d channel(s)\n"
 		               "   %d bits/sample\n"
 					   "   %d bytes/sec\n",
-					   shm->channels, shm->samplebits, shm->speed);*/
+					   shm->channels, shm->samplebits, shm->speed);
 	
 	gSndBufSize = dsbcaps.dwBufferBytes;
 

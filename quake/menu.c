@@ -89,21 +89,12 @@ void M_GameOptions_Key (int key);
 void M_Search_Key (int key);
 void M_ServerList_Key (int key);
 void M_Extended_Key (int key); /* FS: Extended options unique to QDOS */
-extern void snd_restart_f (void); /* FS: For extended options */
-void M_Extended_Set_Sound_KHz (int dir, int khz); /* FS: Extended options unique to QDOS */
 
 /* FS: Gamespy stuff */
 void M_Gamespy_Key (int key);
 static void SearchGamespyGames (void);
 static void JoinGamespyServer_Redraw(int serverscale);
 static int serverscale;
-
-/* FS: Gravis Ultrasound stuff */
-#ifdef _WIN32
-int havegus = 0;
-#else
-extern int havegus;
-#endif
 
 qboolean	m_entersound;		// play after drawing a frame, so caching
 								// won't disrupt the sound
@@ -3472,10 +3463,18 @@ void M_ConfigureNetSubsystem(void)
 }
 
 /* FS: Extended options unique to QDOS */
+#define Y_SPACE 8
+#define EXTENDED_OPTIONS 11
+
 int extended_cursor;
-#define EXTENDED_OPTIONS 10
+
 extern cvar_t r_waterwarp;
 extern cvar_t scr_fov;
+
+int M_Extended_Get_Vsync(void);
+void M_Extended_Set_Vsync(int dir);
+void M_Extended_Set_Sound_KHz (int dir, int khz); /* FS: Extended options unique to QDOS */
+extern void snd_restart_f (void); /* FS: For extended options */
 
 void M_Menu_Extended_f(void)
 {
@@ -3487,6 +3486,7 @@ void M_Menu_Extended_f(void)
 
 void M_Extended_Draw()
 {
+	int		y = 32;
 	float	r;
 	qpic_t  *p;
 
@@ -3494,57 +3494,66 @@ void M_Extended_Draw()
 	p = Draw_CachePic ("gfx/p_option.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
 
-	M_Print (16,32,  "      Content Blending");
-	M_DrawCheckbox (220, 32, v_contentblend.intValue);
+	M_Print (16, y,  "      Content Blending");
+	M_DrawCheckbox (220, y, v_contentblend.intValue);
 
-	M_Print (16, 40, "            Full Pitch");
-	M_DrawCheckbox (220, 40, pq_fullpitch.intValue);
+	M_Print (16, y = y + Y_SPACE, "            Full Pitch");
+	M_DrawCheckbox (220, y, pq_fullpitch.intValue);
 
-	M_Print (16, 48, "         Startup Demos");
-	M_DrawCheckbox (220, 48, cl_demos.intValue);
+	M_Print (16, y = y + Y_SPACE, "         Startup Demos");
+	M_DrawCheckbox (220, y, cl_demos.intValue);
 
-	M_Print (16,56,  "     Unbindall Protect");
-	M_DrawCheckbox (220, 56, cl_unbindall_protection.intValue);
+	M_Print (16, y = y + Y_SPACE,  "     Unbindall Protect");
+	M_DrawCheckbox (220, y, cl_unbindall_protection.intValue);
 
-	M_Print (16,64,  "           Show Uptime");
+	M_Print (16, y = y + Y_SPACE,  "           Show Uptime");
 	if (show_uptime.value < 1 )
-		M_Print (220, 64, "off");
+		M_Print (220, y, "off");
 	else if (show_uptime.value == 1)
-		M_Print (220, 64, "Server");
+		M_Print (220, y, "Server");
 	else if (show_uptime.value >= 2)
-		M_Print (220, 64, "Total");
+		M_Print (220, y, "Total");
 
-	M_Print (16,72,  "             Show Time");
+	M_Print (16, y = y + Y_SPACE,  "             Show Time");
 	if (show_time.value < 1 )
-		M_Print (220, 72, "off");
+		M_Print (220, y, "off");
 	else if (show_time.value == 1)
-		M_Print (220, 72, "Military");
+		M_Print (220, y, "Military");
 	else if (show_time.value >= 2)
-		M_Print (220, 72, "AM/PM");
+		M_Print (220, y, "AM/PM");
 
-	M_Print (16,80,  "        Show Framerate");
-	M_DrawCheckbox (220, 80, show_fps.intValue);
+	M_Print (16, y = y + Y_SPACE,  "        Show Framerate");
+	M_DrawCheckbox (220, y, show_fps.intValue);
 
-	M_Print (16,88,  "        Mouse Freelook");
-	M_DrawCheckbox (220, 88, in_freelook.intValue);
+	M_Print (16, y = y + Y_SPACE,  "        Mouse Freelook");
+	M_DrawCheckbox (220, y, in_freelook.intValue);
 
-	M_Print (16,96,  "       Water View-warp");
-	M_DrawCheckbox (220, 96, r_waterwarp.intValue);
+	M_Print (16, y = y + Y_SPACE,  "       Water View-warp");
+	M_DrawCheckbox (220, y, r_waterwarp.intValue);
 
-	M_Print (16, 104, "       Field of Vision");
+	M_Print (16, y = y + Y_SPACE, "       Field of Vision");
 	r = (scr_fov.value - 30) / (175 - 30);
-	M_DrawSlider (220, 104, r);
-	M_DrawCharacter (200, 32 + extended_cursor*8, 12+((int)(realtime*4)&1));
+	M_DrawSlider (220, y, r);
 
-	M_Print (16, 112, "            Sound Rate");
-	if (s_khz.intValue <= 0)
+	M_Print (16, y = y + Y_SPACE, "            Sound Rate");
+	if (s_khz.intValue < 22050)
 	{
 		if (havegus)
-			Cvar_SetValue("s_khz", 19293);
+		{
+			if(havegus == GUS_CLASSIC)
+				Cvar_SetValue("s_khz", 19293);
+			else
+				Cvar_SetValue("s_khz", 11025);
+		}
 		else
 			Cvar_SetValue("s_khz", 11025);
 	}
-	M_Print (220, 112, s_khz.string);
+	M_Print (220, y, s_khz.string);
+
+	M_Print (16, y = y + Y_SPACE,  "               V-Sync");
+	M_DrawCheckbox (220, y, M_Extended_Get_Vsync());
+
+	M_DrawCharacter (200, 32 + extended_cursor*8, 12+((int)(realtime*4)&1));
 }
 
 void M_AdjustSliders_Extended (int dir)
@@ -3599,6 +3608,9 @@ void M_AdjustSliders_Extended (int dir)
 		break;
 	case 10:
 		M_Extended_Set_Sound_KHz(dir, s_khz.intValue);
+		break;
+	case 11:
+		M_Extended_Set_Vsync(dir);
 		break;
 	default:
 		break;
@@ -3685,13 +3697,37 @@ void M_Extended_Key(int k)
 		case 10:
 			M_AdjustSliders_Extended(1);
 			break;
+		case 11:
+			M_Extended_Set_Vsync( !M_Extended_Get_Vsync() );
+			break;
 		default:
 			break;
 		}
 	}
 }
 
-/* FS: FIXME this is somewhat crappy, use Q2DOS version instead */
+int M_Extended_Get_Vsync(void)
+{
+	if((!_vid_wait_override.intValue) && (vid_wait.intValue != 1))
+		return 0;
+
+	return 1;
+}
+
+void M_Extended_Set_Vsync(int dir)
+{
+	if (dir > 0)
+	{
+		Cvar_SetValue("_vid_wait_override", 1.0f);
+		Cvar_SetValue("vid_wait", 1.0f);
+	}
+	else
+	{
+		Cvar_SetValue("_vid_wait_override", 0.0f);
+		Cvar_SetValue("vid_wait", 0.0f);
+	}
+}
+
 void M_Extended_Set_Sound_KHz (int dir, int khz)
 {
 	switch(khz)
@@ -3708,7 +3744,10 @@ void M_Extended_Set_Sound_KHz (int dir, int khz)
 		case 44100:
 			if (dir > 0)
 			{
-				Cvar_SetValue("s_khz", 48000);
+				if (havegus != GUS_CLASSIC)
+					Cvar_SetValue("s_khz", 48000);
+				else
+					break;
 			}
 			else
 			{
@@ -3724,7 +3763,12 @@ void M_Extended_Set_Sound_KHz (int dir, int khz)
 			else
 			{
 				if(havegus)
-					Cvar_SetValue("s_khz", 19293);
+				{
+					if (havegus == GUS_CLASSIC)
+						Cvar_SetValue("s_khz", 19293);
+					else
+						Cvar_SetValue("s_khz", 11025);
+				}
 				else
 					Cvar_SetValue("s_khz", 11025);
 			}
@@ -3737,7 +3781,10 @@ void M_Extended_Set_Sound_KHz (int dir, int khz)
 			}
 			else
 			{
-				Cvar_SetValue("s_khz", 11025);
+				if(havegus != GUS_CLASSIC)
+					Cvar_SetValue("s_khz", 11025);
+				else
+					break;
 			}
 			Cbuf_AddText("snd_restart\n");
 			break;
@@ -3745,7 +3792,12 @@ void M_Extended_Set_Sound_KHz (int dir, int khz)
 			if (dir > 0)
 			{
 				if(havegus)
-					Cvar_SetValue("s_khz", 19293);
+				{
+					if(havegus == GUS_CLASSIC)
+						Cvar_SetValue("s_khz", 19293);
+					else
+						Cvar_SetValue("s_khz", 22050);
+				}
 				else
 					Cvar_SetValue("s_khz", 22050);
 				Cbuf_AddText("snd_restart\n");
@@ -3763,7 +3815,12 @@ void M_Extended_Set_Sound_KHz (int dir, int khz)
 				else if(khz > 11025 && khz < 22050)
 				{
 					if(havegus)
-						Cvar_SetValue("s_khz", 19293);
+					{
+						if(havegus == GUS_CLASSIC)
+							Cvar_SetValue("s_khz", 19293);
+						else
+							Cvar_SetValue("s_khz", 22050);
+					}
 					else
 						Cvar_SetValue("s_khz", 22050);
 				}
@@ -3780,7 +3837,12 @@ void M_Extended_Set_Sound_KHz (int dir, int khz)
 				else if(khz > 11025 && khz < 22050)
 				{
 					if(havegus)
-						Cvar_SetValue("s_khz", 19293);
+					{
+						if(havegus == GUS_CLASSIC)
+							Cvar_SetValue("s_khz", 19293);
+						else
+							Cvar_SetValue("s_khz", 11025);
+					}
 					else
 						Cvar_SetValue("s_khz", 11025);
 				}
@@ -3948,18 +4010,16 @@ static void FormatGamespyList (void)
 					Q_strlcpy(gamespy_server_names[m_num_gamespy_servers], browserList[j].hostname, 20);
 
 					if(Q_strlen(browserList[j].hostname) >= 20)
-					{
-						Q_strcat(gamespy_server_names[m_num_gamespy_servers], "...");
-					}
+						Q_strlcat(gamespy_server_names[m_num_gamespy_servers], "...", sizeof(gamespy_server_names[0]));
 
 					Com_sprintf(buffer, sizeof(buffer), " [%d] %d/%d", browserList[j].ping, browserList[j].curPlayers, browserList[j].maxPlayers);
-					Q_strlcat(gamespy_server_names[m_num_gamespy_servers], buffer, sizeof(gamespy_server_names[m_num_gamespy_servers]));
+					Q_strlcat(gamespy_server_names[m_num_gamespy_servers], buffer, sizeof(gamespy_server_names[0]));
 				}
 				else
 				{
-					Com_sprintf(gamespy_server_names[m_num_gamespy_servers], sizeof(gamespy_server_names[m_num_gamespy_servers]), "%s [%d] %d/%d", browserList[j].hostname, browserList[j].ping, browserList[j].curPlayers, browserList[j].maxPlayers);
+					Com_sprintf(gamespy_server_names[m_num_gamespy_servers], sizeof(gamespy_server_names[0]), "%s [%d] %d/%d", browserList[j].hostname, browserList[j].ping, browserList[j].curPlayers, browserList[j].maxPlayers);
 				}
-				Com_sprintf(gamespy_connect_string[m_num_gamespy_servers], sizeof(gamespy_connect_string[m_num_gamespy_servers]), "connect %s:%d", browserList[j].ip, browserList[j].port);
+				Com_sprintf(gamespy_connect_string[m_num_gamespy_servers], sizeof(gamespy_connect_string[0]), "connect %s:%d", browserList[j].ip, browserList[j].port);
 				m_num_gamespy_servers++;
 				m_num_active_gamespy_servers++;
 			}
@@ -3969,8 +4029,6 @@ static void FormatGamespyList (void)
 			break;
 		}
 	}
-
-	j = 0;
 
 	for(j = 0; j< MAX_SERVERS; j++)
 	{
@@ -3986,18 +4044,16 @@ static void FormatGamespyList (void)
 				Q_strlcpy(gamespy_server_names[m_num_gamespy_servers-skip], browserListAll[j].hostname, 20);
 
 				if(Q_strlen(browserListAll[j].hostname) >= 20)
-				{
-					Q_strcat(gamespy_server_names[m_num_gamespy_servers-skip], "...");
-				}
+					Q_strlcat(gamespy_server_names[m_num_gamespy_servers-skip], "...", sizeof(gamespy_server_names[0]));
 
 				Com_sprintf(buffer, sizeof(buffer), " [%d] %d/%d", browserListAll[j].ping, browserListAll[j].curPlayers, browserListAll[j].maxPlayers);
-				Q_strlcat(gamespy_server_names[m_num_gamespy_servers-skip], buffer, sizeof(gamespy_server_names[m_num_gamespy_servers-skip]));
+				Q_strlcat(gamespy_server_names[m_num_gamespy_servers-skip], buffer, sizeof(gamespy_server_names[0]));
 			}
 			else
 			{
-				Com_sprintf(gamespy_server_names[m_num_gamespy_servers-skip], sizeof(gamespy_server_names[m_num_gamespy_servers-skip]), "%s [%d] %d/%d", browserListAll[j].hostname, browserListAll[j].ping, browserListAll[j].curPlayers, browserListAll[j].maxPlayers);
+				Com_sprintf(gamespy_server_names[m_num_gamespy_servers-skip], sizeof(gamespy_server_names[0]), "%s [%d] %d/%d", browserListAll[j].hostname, browserListAll[j].ping, browserListAll[j].curPlayers, browserListAll[j].maxPlayers);
 			}
-			Com_sprintf(gamespy_connect_string[m_num_gamespy_servers-skip], sizeof(gamespy_connect_string[m_num_gamespy_servers-skip]), "connect %s:%d", browserListAll[j].ip, browserListAll[j].port);
+			Com_sprintf(gamespy_connect_string[m_num_gamespy_servers-skip], sizeof(gamespy_connect_string[0]), "connect %s:%d", browserListAll[j].ip, browserListAll[j].port);
 			m_num_gamespy_servers++;
 		}
 		else

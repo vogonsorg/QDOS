@@ -69,7 +69,6 @@ static int current_field_buffer=0;
 static struct section_buffer section_buffers[NUM_SECTION_BUFFERS];
 static struct field_buffer field_buffers[NUM_FIELD_BUFFERS];
 static byte	extVoices,extCodecVoices; /* FS: GUS clicking sounds during map transitions and pauseing fix */
-int	havegus; /* FS: Is GUS our sound card? */
 
 //***************************************************************************
 // Internal routines
@@ -1092,7 +1091,7 @@ qboolean GUS_Init(void)
 		FSVal = extCodecVoices = 0x03; /* FS: Added extCodecVoices */
 		rc = COM_CheckParm("-sspeed");
 
-		if (s_khz.value > 11024) /* FS: S_KHZ */
+		if (s_khz.value >= 22050) /* FS: S_KHZ */
 		{
 			shm->speed = s_khz.value;
 
@@ -1162,7 +1161,7 @@ qboolean GUS_Init(void)
 
 		GUS_StartDMA(DmaChannel,dma_buffer,SND_BUFFER_SIZE);
 		GUS_StartCODEC(SND_BUFFER_SIZE,FSVal);
-		havegus = 2; /* FS: GUS MAX/IWPNP */
+		havegus = GUS_MAXPNP; /* FS: GUS MAX/IWPNP */
 	}
 	else /* FS: No CODEC?  You must have a Gravis UltraSound "Classic", ACE/SoundBuddy or compatible OEM CLONE! */
 	{
@@ -1171,7 +1170,7 @@ qboolean GUS_Init(void)
 		Voices=extVoices=32; /* FS: Added extVoices */
 		rc = COM_CheckParm("-sspeed");
 
-		if (s_khz.value > 19292)/* FS: S_KHZ */
+		if (s_khz.value >= 19293) /* FS: S_KHZ */
 		{
 			shm->speed = s_khz.value;
 
@@ -1244,10 +1243,8 @@ qboolean GUS_Init(void)
 		else
 			SetGf18(DMA_CONTROL,0x45);
 		GUS_StartGf1(SND_BUFFER_SIZE,Voices);
-		havegus = 1; /* FS: Classic GUS */
+		havegus = GUS_CLASSIC; /* FS: Classic GUS */
 
-		if (_snd_mixahead.value <= 0.2) /* FS: GUS Classic needs 0.3 to work properly. */
-			Cvar_SetValue ("_snd_mixahead", 0.3);
 	}
 
 	return(true);
