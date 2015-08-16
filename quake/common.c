@@ -519,6 +519,20 @@ size_t Q_strlcat (char *dst, const char *src, size_t siz)
 	return(dlen + (s - src));	/* count does not include NUL */
 }
 
+int Q_toupper (int c) /* FS: Added */
+{
+	if (c>='a' && c<='z')
+		c-=('a'-'A');
+	return(c);
+}
+
+int Q_tolower (int c) /* FS: Added */
+{
+	if (c>='A' && c<='Z')
+		c+=('a'-'A');
+	return(c);
+}
+
 /*
 ============================================================================
 

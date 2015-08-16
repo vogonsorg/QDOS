@@ -199,6 +199,10 @@ byte *COM_LoadTempFile (char *path);
 byte *COM_LoadHunkFile (char *path);
 void COM_LoadCacheFile (char *path, struct cache_user_s *cu);
 
+/* FS: New stuff */
+int Q_tolower(int c);
+int Q_toupper(int c);
+
 /* FS: From Q2 */
 char *COM_NextPath (char *prevpath);
 void COM_FreeFileList (char **list, int n);

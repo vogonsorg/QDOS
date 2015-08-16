@@ -11,24 +11,35 @@ USE_MPATH=no
 USE_OGG=yes
 # use tremor library for ogg/vorbis:
 USE_TREMOR=1
+# pci sound card support:
+USE_SNDPCI=1
 # whether to use BSP2 Support (needs further testing, but appears OK)
 USE_BSP2=yes
 
 CFLAGS = -g -Wall -O2 -DNDEBUG=1 -fno-strict-aliasing -fomit-frame-pointer
 LIBS   =
 
+ifeq ($(USE_SNDPCI),1)
+CFLAGS+= -DUSE_SNDPCI
+CFLAGS+= -I../3rdparty/include
+LIBS += -L../3rdparty/lib -lau
+endif
+
 ifeq ($(USE_BWTCP),yes)
 CFLAGS+= -DUSE_BWTCP
 endif
+
 ifeq ($(USE_MPATH),yes)
 CFLAGS+= -DUSE_MPATH
 endif
+
 ifeq ($(USE_WATT32),yes)
 CFLAGS+= -DUSE_WATT32 -DWATT32_NO_OLDIES
 CFLAGS+= -I../wat/inc
 LDFLAGS= -L../wat/lib
 LIBS  += -lwatt
 endif
+
 ifeq ($(USE_OGG),yes)
 CFLAGS+= -DOGG_SUPPORT
 CFLAGS+= -I../3rdparty/include
@@ -39,6 +50,7 @@ CFLAGS+= -DVORBIS_USE_TREMOR
 LIBS  += -L../3rdparty/lib -lvorbisidec -logg
 endif
 endif
+
 ifeq ($(USE_BSP2),yes)
 CFLAGS+= -DBSP2_SUPPORT
 endif
@@ -135,6 +147,8 @@ $(DOSTCP)       \
 $(O)/snd_dos.o  \
 $(O)/snd_dma.o  \
 $(O)/snd_gus.o  \
+$(O)/snd_pci.o  \
+$(O)/snd_sb.o  \
 $(O)/snd_mix.o  \
 $(O)/snd_mem.o  \
 $(O)/sys_find.o  \

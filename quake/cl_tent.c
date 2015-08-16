@@ -253,6 +253,9 @@ void CL_ParseTEnt (void)
 		color[0] = MSG_ReadCoord();
 		color[1] = MSG_ReadCoord();
 		color[2] = MSG_ReadCoord();
+
+		color[0] = color[0]; /* FS: Set but unused warning */
+
 		R_ParticleExplosion (pos);
 		dl = CL_AllocDlight (0);
 		VectorCopy (pos, dl->origin);
@@ -263,6 +266,7 @@ void CL_ParseTEnt (void)
 		Con_DPrintf(DEVELOPER_MSG_VERBOSE, "TE_EXPLOSION3 Not fully implemented!\n"); /* FS: FIXME: For Nehahra */
 		break;
 	case TE_LIGHTNING4NEH:
+		/* FS: TODO */
 		pos[0] = MSG_ReadCoord ();
 		pos[1] = MSG_ReadCoord ();
 		pos[2] = MSG_ReadCoord ();

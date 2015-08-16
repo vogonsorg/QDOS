@@ -134,6 +134,7 @@ void S_StartSound (int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float 
 void S_StaticSound (sfx_t *sfx, vec3_t origin, float vol, float attenuation);
 void S_StopSound (int entnum, int entchannel);
 void S_StopAllSounds(qboolean clear);
+void S_StopAllSoundsC (void);
 void S_ClearBuffer (void);
 void S_Update (vec3_t origin, vec3_t v_forward, vec3_t v_right, vec3_t v_up);
 void S_ExtraUpdate (void);
@@ -200,6 +201,7 @@ extern vec_t sound_nominal_clip_dist;
 extern	cvar_t	loadas8bit;
 extern	cvar_t	bgmvolume;
 extern	cvar_t	volume;
+extern	cvar_t	_snd_mixahead;
 extern  cvar_t	s_khz; /* FS: Added */
 extern	cvar_t	s_musicvolume; /* FS: Added */
 
