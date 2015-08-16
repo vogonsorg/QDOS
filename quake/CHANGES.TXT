@@ -6,11 +6,15 @@ Additional code from sezero, taniwha, spoike, LordHavoc,
    QuakeForge, FitzQuake, QuakeSpasm, Darkplaces and more.
 ---------------------------------------------------------
 
+* Scaleable maximum bmodel edges with r_maxbmodeledges.
+* V-Sync control via extended menu options.
+* Gamespy Server Browser accessible from Multiplayer Menu and with slist2
+  command.  Adapted from Q2DOS.
 * BSP2 and 2PSB support.  Code (with some slight readaptions) from QuakeSpasm.
   Additional help from sezero.
 * Scaleable particle sizes for SVGA resolutions.  Use sw_particle_size_override
   and friends to set more custom values.
-* OGG and WAV music support in format of /id1/music/trackXX
+* OGG and WAV music support in format of /id1/music/trackXX.
 * DEVELOPER values are now set with flags.  Setting to Developer 1 will still
   show all types of developer printfs, EXCEPT extreme verbose stuff (which was
   normally commented out in the code).  These flags are set just like dmflags

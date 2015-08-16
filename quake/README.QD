@@ -33,6 +33,8 @@ Why code for DOS in 2012 you ask?  Pretty much the same reason anybody
 QDOS has many features, I can't remember each one that me or others have added
    but are some highlights:
 
+* Gamespy Server Browser accessible from Multiplayer Menu and with slist2
+  command.  Adapted from Q2DOS.
 * BSP2 and 2PSB support. Code (with some slight readaptations) from QuakeSpasm.
   Additonal help from sezero.  These maps may need things like:
   r_maxedges and r_maxsurfs set to very high values.  Try setting both
@@ -62,7 +64,7 @@ QDOS has many features, I can't remember each one that me or others have added
    code.
 * Gun model is drawn if FOV > 90.
 
-New CVARs and CMDs:
+Some new CVARs and CMDs:
 * CL_NODEMO -- Startup demos are disabled > 1.
 * CL_UNBINDALL_PROTECTION -- Protects your CVARs from accidentally being
    cleared from UNBINDALL.  Very useful if you use autocomplete and
@@ -143,9 +145,6 @@ To summarize:
 5 - Known Bugs and Limitations
 ---------------------------------------------------------
 
-* Limited Win9x support.  It will most likely bomb when closing
-   among other random things.  I will not accept symify crash dumps
-   that are from a Win9x environment.
 * Some of the health and ammo boxes in Warp Spasm clip improperly.
   From what I have read, it appears to be related to a QC issue with
   rotating these at odd angles.
