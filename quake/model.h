@@ -84,11 +84,11 @@ typedef struct texture_s
 #define SURF_DRAWTURB		0x10
 #define SURF_DRAWTILED		0x20
 #define SURF_DRAWBACKGROUND	0x40
+#define SURF_UNDERWATER		0x80
 
 /* FS: From QuakeSpasm */
 #define SURF_NOTEXTURE		0x100 //johnfitz
 #define SURF_DRAWFENCE		0x200
-
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
 typedef struct

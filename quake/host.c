@@ -544,7 +544,9 @@ void Host_ClearMemory (void)
 	Con_DPrintf (DEVELOPER_MSG_MEM, "Clearing memory\n");
 	D_FlushCaches ();
 	Mod_ClearAll ();
+#ifndef GLQUAKE
 	R_ClearDynamic(); /* FS */
+#endif
 
 	if (host_hunklevel)
 		Hunk_FreeToLowMark (host_hunklevel);
@@ -894,17 +896,26 @@ void Host_Init (quakeparms_t *parms)
 		if (!host_colormap)
 			Sys_Error ("Couldn't load gfx/colormap.lmp");
 
+#ifndef _WIN32 // on non win32, mouse comes before video for security reasons
+		IN_Init ();
+#endif
 		VID_Init (host_basepal);
 		Draw_Init ();
 		SCR_Init ();
 		R_Init ();
 #ifndef _WIN32 /* FS: Tired of warnings about things already registered.  See vid_win.c */
 		S_Init ();
+#else
+#ifdef	GLQUAKE
+		S_Init ();
 #endif
+#endif	// _WIN32
 		CDAudio_Init ();
 		Sbar_Init ();
 		CL_Init ();
+#ifdef _WIN32 // on non win32, mouse comes before video for security reasons
 		IN_Init ();
+#endif
 
 		if(COM_CheckParm("-safevga")) /* FS: Safe VGA mode */
 		{

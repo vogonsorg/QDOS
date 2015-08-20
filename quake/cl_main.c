@@ -794,7 +794,9 @@ void CL_Init (void)
 	Cmd_AddCommand ("flashlight", CL_Flashlight_f);
 	Cmd_AddCommand ("writeconfig", CL_WriteConfig_f);
 
+#ifndef GLQUAKE
 	Cmd_AddCommand ("r_restart", R_Restart_f); /* FS: Unfinished */
+#endif
 
 	/* FS: Gamespy stuff */
 	Cmd_AddCommand ("slist2", CL_PingNetServers_f);
