@@ -843,21 +843,33 @@ void M_Keys_Key (int k)
 
 void M_Menu_Video_f (void)
 {
+#ifndef _WIN32
+#ifndef GLQUAKE /* FS: TODO FIXME */
 	key_dest = key_menu;
 	m_state = m_video;
 	m_entersound = true;
+#endif
+#endif
 }
 
 
 void M_Video_Draw (void)
 {
+#ifndef _WIN32
+#ifndef GLQUAKE /* FS: TODO FIXME */
 	(*vid_menudrawfn) ();
+#endif
+#endif
 }
 
 
 void M_Video_Key (int key)
 {
+#ifndef _WIN32
+#ifndef GLQUAKE /* FS: TODO FIXME */
 	(*vid_menukeyfn) (key);
+#endif
+#endif
 }
 
 //=============================================================================

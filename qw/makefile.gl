@@ -9,8 +9,16 @@ USE_OGG=yes
 USE_TREMOR=1
 # pci sound card support:
 USE_SNDPCI=1
+# use SSE optimizations for P3 (could be dangerous)
+USE_SSE=0
 
-CFLAGS = -g -Wall -O2 -Wno-unused-variable -Wno-unused-but-set-variable -fno-strict-aliasing -fomit-frame-pointer -DWATT32_NO_OLDIES -I../wat/inc -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE -DNDEBUG -mtune=pentium
+CFLAGS = -g -Wall -O2 -Wno-unused-variable -Wno-unused-but-set-variable -fno-strict-aliasing -fomit-frame-pointer -DWATT32_NO_OLDIES -I../wat/inc -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE -DNDEBUG
+
+ifeq ($(USE_SSE),1)
+CFLAGS += -mtune=pentium3 -march=pentium3 -mfpmath=sse
+else
+CFLAGS += -mtune=pentium
+endif
 
 LDFLAGS= -L../wat/lib
 LIBS= -lwatt

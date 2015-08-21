@@ -15,8 +15,16 @@ USE_TREMOR=1
 USE_SNDPCI=1
 # whether to use BSP2 Support (needs further testing, but appears OK)
 USE_BSP2=yes
+# use SSE optimizations for P3 (could be dangerous)
+USE_SSE=0
 
-CFLAGS = -g -Wall -O2 -Wno-unused-variable -Wno-unused-but-set-variable -fno-strict-aliasing -fomit-frame-pointer -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE -DNDEBUG -mtune=pentium
+CFLAGS = -g -Wall -O2 -Wno-unused-variable -Wno-unused-but-set-variable -fno-strict-aliasing -fomit-frame-pointer -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE -DNDEBUG
+
+ifeq ($(USE_SSE),1)
+CFLAGS += -mtune=pentium3 -march=pentium3 -mfpmath=sse
+else
+CFLAGS += -mtune=pentium
+endif
 
 ifeq ($(H5),1)
 LIBS   = -L../3rdparty/lib -lgl -lglid3_v5
