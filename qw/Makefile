@@ -128,6 +128,7 @@ CLIENT = $(O)/cd_audio.o  \
 	$(O)/Goa/CEngine/hashtable.o \
 	$(O)/Goa/nonport.o \
 	$(O)/sys_dos.o \
+	$(O)/dxe.o \
 
 ifeq ($(USE_ASM),1)
 ASM = $(O)/d_draw.o \

@@ -186,6 +186,7 @@ $(O)/Goa/CEngine/gserverlist.o \
 $(O)/Goa/SDK/goautil.o \
 $(O)/Goa/CEngine/hashtable.o \
 $(O)/Goa/nonport.o \
+$(O)/dxe.o \
 $(O)/sys_dos.o
 #$(O)/dosasm.o
 
