@@ -32,12 +32,12 @@ int		lightmap_bytes;		// 1, 2, or 4
 
 int		lightmap_textures;
 
-unsigned		blocklights[18*18];
-
 #define	BLOCK_WIDTH		128
 #define	BLOCK_HEIGHT	128
 
-#define	MAX_LIGHTMAPS	64
+unsigned		blocklights[BLOCK_WIDTH*BLOCK_HEIGHT*3];
+
+#define	MAX_LIGHTMAPS	256 // johnfitz -- was 64
 int			active_lightmaps;
 
 typedef struct glRect_s {

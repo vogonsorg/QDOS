@@ -13,6 +13,7 @@
 # ignore all the windows binaries - they shouldn't be committed! 
 Debug/
 Release/
+release_gl/
 out.txt
 gas2masm.exe
 gas2masm.ilk
