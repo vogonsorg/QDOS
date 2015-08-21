@@ -166,6 +166,7 @@ void	VID_SetPalette (unsigned char *palette)
 
 void CheckMultiTextureExtensions(void) 
 {
+#if 0 /* FS: TODO Use ARB multitexture */
 	void *prjobj;
 
 	if (strstr(gl_extensions, "GL_SGIS_multitexture ") && !COM_CheckParm("-nomtex")) {
@@ -187,6 +188,7 @@ void CheckMultiTextureExtensions(void)
 
 		dlclose(prjobj);
 	}
+#endif
 }
 
 /*
@@ -208,7 +210,7 @@ void GL_Init (void)
 
 //	Con_Printf ("%s %s\n", gl_renderer, gl_version);
 
-//	CheckMultiTextureExtensions ();
+	CheckMultiTextureExtensions ();
 
 	glClearColor (1,0,0,0);
 	glCullFace(GL_FRONT);
@@ -296,61 +298,6 @@ qboolean VID_Is8bit(void)
 	return is8bit;
 }
 
-void VID_Init8bitPalette(void) 
-{
-	// Check for 8bit Extensions and initialize them.
-	int i;
-	void *prjobj;
-
-	if (COM_CheckParm("-no8bit"))
-		return;
-
-	if ((prjobj = dlopen(NULL, RTLD_LAZY)) == NULL) {
-		Con_Printf("Unable to open symbol list for main program.\n");
-		return;
-	}
-
-	if (strstr(gl_extensions, "3DFX_set_global_palette") &&
-		(qgl3DfxSetPaletteEXT = dlsym(prjobj, "gl3DfxSetPaletteEXT")) != NULL) {
-		GLubyte table[256][4];
-		char *oldpal;
-
-		Con_SafePrintf("... Using 3DFX_set_global_palette\n");
-		glEnable( GL_SHARED_TEXTURE_PALETTE_EXT );
-		oldpal = (char *) d_8to24table; //d_8to24table3dfx;
-		for (i=0;i<256;i++) {
-			table[i][2] = *oldpal++;
-			table[i][1] = *oldpal++;
-			table[i][0] = *oldpal++;
-			table[i][3] = 255;
-			oldpal++;
-		}
-		qgl3DfxSetPaletteEXT((GLuint *)table);
-		is8bit = true;
-
-	} else if (strstr(gl_extensions, "GL_EXT_shared_texture_palette") &&
-		(qglColorTableEXT = dlsym(prjobj, "glColorTableEXT")) != NULL) {
-		char thePalette[256*3];
-		char *oldPalette, *newPalette;
-
-		Con_SafePrintf("... Using GL_EXT_shared_texture_palette\n");
-		glEnable( GL_SHARED_TEXTURE_PALETTE_EXT );
-		oldPalette = (char *) d_8to24table; //d_8to24table3dfx;
-		newPalette = thePalette;
-		for (i=0;i<256;i++) {
-			*newPalette++ = *oldPalette++;
-			*newPalette++ = *oldPalette++;
-			*newPalette++ = *oldPalette++;
-			oldPalette++;
-		}
-		qglColorTableEXT(GL_SHARED_TEXTURE_PALETTE_EXT, GL_RGB, 256, GL_RGB, GL_UNSIGNED_BYTE, (void *) thePalette);
-		is8bit = true;
-	
-	}
-
-	dlclose(prjobj);
-}
-
 static void Check_Gamma (unsigned char *pal)
 {
 	float	f, inf;
@@ -386,8 +333,6 @@ void VID_Init(unsigned char *palette)
 	GLint attribs[32];
 	char	gldir[MAX_OSPATH];
 	int width = 640, height = 480;
-
-//	Init_KBD(); /* FS: Probably unnecssary here */
 
 	Cvar_RegisterVariable (&vid_mode);
 	Cvar_RegisterVariable (&vid_redrawfull);
@@ -435,8 +380,9 @@ void VID_Init(unsigned char *palette)
 	if (vid.conheight < 200)
 		vid.conheight = 200;
 
-	fc = fxMesaCreateContext(0, findres(&width, &height), GR_REFRESH_75Hz, 
-		attribs);
+//	fc = fxMesaCreateContext(0, findres(&width, &height), GR_REFRESH_75Hz, attribs);
+	fc = fxMesaCreateBestContext(0, (GLint)width, (GLint)height, attribs); /* FS: This will allow us to use SST_SCREENREFRESH to set the refresh rate */
+
 	if (!fc)
 		Sys_Error("Unable to create 3DFX context.\n");
 
@@ -463,9 +409,6 @@ void VID_Init(unsigned char *palette)
 
 	Check_Gamma(palette);
 	VID_SetPalette(palette);
-
-	// Check for 3DFX Extensions and initialize them.
-//	VID_Init8bitPalette();
 
 	Con_SafePrintf ("Video mode %dx%d initialized.\n", width, height);
 
