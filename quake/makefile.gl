@@ -155,6 +155,7 @@ $(O)/gl_screen.o \
 $(O)/gl_test.o \
 $(O)/gl_warp.o \
 $(O)/gl_viddos.o \
+$(O)/dxe.o \
 $(O)/sys_dos.o
 #$(O)/dosasm.o
 
