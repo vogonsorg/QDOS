@@ -900,17 +900,22 @@ void CL_LinkPlayers (void)
 			continue;   // not present this frame
 
       // spawn light flashes, even ones coming from invisible objects
-		if ((state->effects & (EF_BLUE | EF_RED)) == (EF_BLUE | EF_RED))
-			CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 3);
-		else if (state->effects & EF_BLUE)
-			CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 1);
-		else if (state->effects & EF_RED)
-			CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 2);
-		else if (state->effects & EF_BRIGHTLIGHT)
-			CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2] + 16, 400 + (rand()&31), 0.1, 0);
-		else if (state->effects & EF_DIMLIGHT)
-			CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 0);
-
+#ifdef GLQUAKE
+		if (!gl_flashblend.value || j != cl.playernum) {
+#endif
+			if ((state->effects & (EF_BLUE | EF_RED)) == (EF_BLUE | EF_RED))
+				CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 3);
+			else if (state->effects & EF_BLUE)
+				CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 1);
+			else if (state->effects & EF_RED)
+				CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 2);
+			else if (state->effects & EF_BRIGHTLIGHT)
+				CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2] + 16, 400 + (rand()&31), 0.1, 0);
+			else if (state->effects & EF_DIMLIGHT)
+				CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 0);
+#ifdef GLQUAKE
+		}
+#endif
 		if(!stricmp(cl.players[j].name, Info_ValueForKey(cls.userinfo,"name")) && !stricmp(Info_ValueForKey(cl.players[j].userinfo, "ip"), Info_ValueForKey(cls.userinfo, "ip")) && bFlashlight) 
 			CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2] + 16, 400 + (rand()&31), 0.1, 0);
 

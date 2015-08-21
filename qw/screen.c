@@ -891,12 +891,12 @@ SCR_RSShot_f
 */  
 void SCR_RSShot_f (void) 
 { 
-        int     x,y;//i, x, y;
+	int     x,y;//i, x, y;
 	unsigned char		*src, *dest;
 	char		pcxname[80]; 
-        //char            checkname[MAX_OSPATH];
-        unsigned char           *newbuf;//, *srcbuf;
-        //int srcrowbytes;
+	//char		checkname[MAX_OSPATH];
+	unsigned char	*newbuf;//, *srcbuf;
+	//int srcrowbytes;
 	int w, h;
 	int dx, dy, dex, dey, nx;
 	int r, b, g;
@@ -970,7 +970,7 @@ void SCR_RSShot_f (void)
 	st[strlen(st) - 1] = 0;
 	SCR_DrawStringToSnap (st, newbuf, w - strlen(st)*8, 0, w);
 
-        strncpy(st, cls.servername->str, sizeof(st));
+	strncpy(st, cls.servername->str, sizeof(st));
 	st[sizeof(st) - 1] = 0;
 	SCR_DrawStringToSnap (st, newbuf, w - strlen(st)*8, 10, w);
 

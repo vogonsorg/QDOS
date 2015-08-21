@@ -1759,8 +1759,11 @@ void Host_Init (quakeparms_t *parms)
 	R_Init ();
 #ifndef _WIN32
 	S_Init ();
+#else
+#ifdef GLQUAKE
+	S_Init();
 #endif
-
+#endif
 	cls.state = ca_disconnected;
 	CDAudio_Init ();
 	Sbar_Init ();

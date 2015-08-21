@@ -1255,6 +1255,13 @@ CL_NewTranslation
 */
 void CL_NewTranslation (int slot)
 {
+#ifdef GLQUAKE
+	if (slot > MAX_CLIENTS)
+		Sys_Error ("CL_NewTranslation: slot > MAX_CLIENTS");
+
+	R_TranslatePlayerSkin(slot);
+#else
+
 	int		i, j;
 	int		top, bottom;
 	byte	*dest, *source;
@@ -1303,6 +1310,7 @@ void CL_NewTranslation (int slot)
 					dest[BOTTOM_RANGE+j] = source[bottom+15-j];		
 		}
 	}
+#endif
 }
 
 /*
@@ -1472,6 +1480,12 @@ void CL_MuzzleFlash (void)
 
 	if ((unsigned)(i-1) >= MAX_CLIENTS)
 		return;
+
+#ifdef GLQUAKE
+	// don't draw our own muzzle flash in gl if flashblending
+	if (i-1 == cl.playernum && gl_flashblend.value)
+		return;
+#endif
 
 	pl = &cl.frames[parsecountmod].playerstate[i-1];
 

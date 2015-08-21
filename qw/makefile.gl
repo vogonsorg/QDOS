@@ -1,0 +1,143 @@
+CC   = gcc
+STRIP= strip
+
+# libcurl/http downloads:
+USE_CURL=1
+# whether to use OGG VORBIS
+USE_OGG=yes
+# use tremor library for ogg/vorbis:
+USE_TREMOR=1
+# pci sound card support:
+USE_SNDPCI=1
+
+CFLAGS = -g -Wall -O0 -Wno-unused-variable -Wno-unused-but-set-variable -fno-strict-aliasing -fomit-frame-pointer -DWATT32_NO_OLDIES -I../wat/inc -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE
+
+LDFLAGS= -L../wat/lib
+LIBS= -lwatt
+
+ifeq ($(H5),1)
+LIBS   += -L../3rdparty/lib -lgl -lglid3_v5
+else
+LIBS   += -L../3rdparty/lib -lgl -lglid3_v1
+endif
+
+ifeq ($(USE_SNDPCI),1)
+CFLAGS+= -DUSE_SNDPCI
+CFLAGS+= -I../3rdparty/include
+LIBS += -L../3rdparty/lib -lau
+endif
+
+ifeq ($(USE_OGG),yes)
+CFLAGS+= -DOGG_SUPPORT
+CFLAGS+= -I../3rdparty/include
+ifneq ($(USE_TREMOR),1)
+LIBS  += -L../3rdparty/lib -lvorbisfile -lvorbis -logg
+else
+CFLAGS+= -DVORBIS_USE_TREMOR
+LIBS  += -L../3rdparty/lib -lvorbisidec -logg
+endif
+endif
+
+ifeq ($(USE_CURL),1)
+CFLAGS+= -DUSE_CURL -DCURL_NO_OLDIES
+CFLAGS+= -I../libcurl/include
+LIBS+= -L../libcurl/lib -lcurl
+endif
+LIBS  += -lm
+
+# subdirectory for objects
+O=dos
+
+
+# not too sophisticated dependency
+CLIENT = $(O)/cd_audio.o  \
+	$(O)/mathlib.o  \
+	$(O)/cfgfile.o   \
+	$(O)/dstring.o   \
+	$(O)/sbar.o     \
+	$(O)/cl_demo.o  \
+	$(O)/keys.o     \
+	$(O)/cl_input.o \
+	$(O)/cl_main.o  \
+	$(O)/cl_http.o  \
+	$(O)/menu.o     \
+	$(O)/cl_parse.o \
+	$(O)/cl_tent.o  \
+	$(O)/cmd.o      \
+	$(O)/view.o     \
+	$(O)/common.o   \
+	$(O)/wad.o      \
+	$(O)/console.o  \
+	$(O)/zone.o     \
+	$(O)/crc.o      \
+	$(O)/cvar.o     \
+	$(O)/pmove.o   \
+	$(O)/pmovetst.o   \
+	$(O)/cl_ents.o   \
+	$(O)/cl_pred.o   \
+	$(O)/cl_cam.o   \
+	$(O)/skin.o   \
+	$(O)/md4.o   \
+	$(O)/net_udp.o  \
+	$(O)/net_chan.o \
+	$(O)/snd_dos.o  \
+	$(O)/snd_dma.o  \
+	$(O)/snd_gus.o  \
+	$(O)/snd_mix.o  \
+	$(O)/snd_mem.o  \
+	$(O)/snd_pci.o  \
+	$(O)/snd_sb.o  \
+	$(O)/sys_find.o  \
+	$(O)/snd_strm.o  \
+	$(O)/snd_wavstream.o  \
+	$(O)/dos_v2.o   \
+	$(O)/in_dos.o   \
+	$(O)/sys_dosa.o \
+	$(O)/Goa/CEngine/darray.o \
+	$(O)/Goa/CEngine/gserver.o \
+	$(O)/Goa/CEngine/gserverlist.o \
+	$(O)/Goa/CEngine/gutil.o \
+	$(O)/Goa/CEngine/hashtable.o \
+	$(O)/Goa/nonport.o \
+	$(O)/r_part.o \
+	$(O)/gl_draw.o \
+	$(O)/gl_mesh.o \
+	$(O)/gl_model.o \
+	$(O)/gl_ngraph.o \
+	$(O)/gl_refrag.o \
+	$(O)/gl_rlight.o \
+	$(O)/gl_rmain.o \
+	$(O)/gl_rmisc.o \
+	$(O)/gl_rsurf.o \
+	$(O)/gl_screen.o \
+	$(O)/gl_test.o \
+	$(O)/gl_warp.o \
+	$(O)/gl_viddos.o \
+	$(O)/dxe.o \
+	$(O)/sys_dos.o \
+	$(O)/math.o \
+	$(O)/snd_mixa.o
+
+OBJECTS =  $(CLIENT)
+all: qwdosfx.exe
+
+clean:
+	rm -f $(O)/*.o
+	rm -f $(O)/Goa/*.o
+	rm -f $(O)/Goa/CEngine/*.o
+	rm -f $(O)/Goa/SDK/*.o
+
+qwdosfx.exe: $(OBJECTS)
+	$(CC) $(OBJECTS) $(LDFLAGS) $(LIBS) -o dqwfx.exe
+	rm -f qwdosfx.exe
+	cp -p dqwfx.exe qwdosfx.exe
+	$(STRIP) qwdosfx.exe
+
+DO_AS=$(CC) -x assembler-with-cpp
+
+$(O)/%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+$(O)/%.o: %.S
+	$(DO_AS) $(CFLAGS) -c $< -o $@
+$(O)/%.o: %.s
+	$(DO_AS) $(CFLAGS) -c $< -o $@

@@ -27,6 +27,9 @@ extern  cvar_t		v_contentblend; /* FS: Fucking hate palette blends */
 extern  cvar_t		show_time; /* FS: Added */
 extern  cvar_t		show_uptime; /* FS: Added */
 extern	cvar_t		show_ping; /* FS: Added */
+#ifdef GLQUAKE
+extern float v_blend[4];
+#endif
 
 void V_Init (void);
 void V_RenderView (void);
