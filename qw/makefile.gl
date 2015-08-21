@@ -10,7 +10,7 @@ USE_TREMOR=1
 # pci sound card support:
 USE_SNDPCI=1
 
-CFLAGS = -g -Wall -O0 -Wno-unused-variable -Wno-unused-but-set-variable -fno-strict-aliasing -fomit-frame-pointer -DWATT32_NO_OLDIES -I../wat/inc -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE
+CFLAGS = -g -Wall -O2 -Wno-unused-variable -Wno-unused-but-set-variable -fno-strict-aliasing -fomit-frame-pointer -DWATT32_NO_OLDIES -I../wat/inc -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE -DNDEBUG -mtune=pentium
 
 LDFLAGS= -L../wat/lib
 LIBS= -lwatt

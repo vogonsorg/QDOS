@@ -16,7 +16,7 @@ USE_SNDPCI=1
 # whether to use BSP2 Support (needs further testing, but appears OK)
 USE_BSP2=yes
 
-CFLAGS = -g -Wall -O0 -Wno-unused-variable -Wno-unused-but-set-variable -fno-strict-aliasing -fomit-frame-pointer -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE
+CFLAGS = -g -Wall -O2 -Wno-unused-variable -Wno-unused-but-set-variable -fno-strict-aliasing -fomit-frame-pointer -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE -DNDEBUG -mtune=pentium
 
 ifeq ($(H5),1)
 LIBS   = -L../3rdparty/lib -lgl -lglid3_v5
