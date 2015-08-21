@@ -120,10 +120,6 @@ DXE_EXPORT_TABLE (syms)
 	DXE_EXPORT (strrchr)
 	DXE_EXPORT (strstr)
 	DXE_EXPORT (strtod)
-#if 0
-	DXE_EXPORT (strtok)
-	DXE_EXPORT (strtok_r)
-#endif
 	DXE_EXPORT (strtol)
 	DXE_EXPORT (tan)
 	DXE_EXPORT (time)
@@ -217,41 +213,3 @@ int Sys_dlclose (void *handle)
 {
 	return dlclose (handle);
 }
-
-static void (*fxmesa_library)(void);
-
-void *Sys_GetFxMesaAPI(void *parms)
-{
-	const char *dxename = "gl.dxe";
-	char name[MAX_OSPATH];
-	char curpath[MAX_OSPATH];
-	void	*(*GetFxMesaAPI) (void *);
-
-	getcwd(curpath, sizeof(curpath));
-
-	Con_Printf("------- Loading %s -------\n", dxename);
-
-	Com_sprintf(name, sizeof(name), "%s/%s", curpath, dxename);
-	fxmesa_library = Sys_dlopen (name, false);
-	if (!fxmesa_library)
-		return NULL;
-
-	GetFxMesaAPI = (void *) dlsym (fxmesa_library, "_fxMesaCreateBestContext");
-	if (!GetFxMesaAPI)
-	{
-		dlclose(fxmesa_library);
-		Con_Printf("dlsym() failed on %s\n", dxename);
-		fxmesa_library = NULL;
-		return NULL;
-	}
-
-	return GetFxMesaAPI (parms);
-}
-
-void Sys_UnloadFxMesa(void)
-{
-	if (fxmesa_library)
-		dlclose(fxmesa_library);
-	fxmesa_library = NULL;
-}
-

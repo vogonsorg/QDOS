@@ -101,6 +101,7 @@ static qboolean	skipwincheck, skiplfncheck, win95;
 void MaskExceptions (void);
 void Sys_PushFPCW_SetHigh (void);
 void Sys_PopFPCW (void);
+extern void Sys_InitDXE3 (void);
 
 #define LEAVE_FOR_CACHE (512*1024)		//FIXME: tune
 #define LOCKED_FOR_MALLOC (128*1024)	//FIXME: tune
@@ -367,6 +368,8 @@ void Sys_Init(void)
 
 	_go32_interrupt_stack_size = 4 * 1024;
 	_go32_rmcb_stack_size = 4 * 1024;
+
+	Sys_InitDXE3();
 }
 
 void Sys_Shutdown(void)

@@ -26,11 +26,7 @@ else
 CFLAGS += -mtune=pentium
 endif
 
-ifeq ($(H5),1)
-LIBS   = -L../3rdparty/lib -lgl -lglid3_v5
-else
-LIBS   = -L../3rdparty/lib -lgl -lglid3_v1
-endif
+LIBS   = -L../3rdparty/lib -lgl -lglid3
 
 ifeq ($(USE_SNDPCI),1)
 CFLAGS+= -DUSE_SNDPCI
