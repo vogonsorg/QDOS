@@ -189,45 +189,26 @@ void R_AddEfrags (entity_t *ent)
 
 /*
 ================
-R_StoreEfrags
-
-// FIXME: a lot of this goes away with edge-based
+R_StoreEfrags -- johnfitz -- pointless switch statement removed.
 ================
 */
 void R_StoreEfrags (efrag_t **ppefrag)
 {
 	entity_t	*pent;
-	model_t		*clmodel;
 	efrag_t		*pefrag;
-
 
 	while ((pefrag = *ppefrag) != NULL)
 	{
 		pent = pefrag->entity;
-		clmodel = pent->model;
 
-		switch (clmodel->type)
-		{
-		case mod_alias:
-		case mod_brush:
-		case mod_sprite:
-			pent = pefrag->entity;
-
-			if ((pent->visframe != r_framecount) &&
-				(cl_numvisedicts < MAX_VISEDICTS))
+		if ((pent->visframe != r_framecount) && (cl_numvisedicts < MAX_VISEDICTS))
 			{
-				cl_visedicts[cl_numvisedicts++] = *pent;
-
+			cl_visedicts[cl_numvisedicts++] = *pent;
 			// mark that we've recorded this entity for this frame
 				pent->visframe = r_framecount;
 			}
 
 			ppefrag = &pefrag->leafnext;
-			break;
-
-		default:	
-			Sys_Error ("R_StoreEfrags: Bad entity type %d\n", clmodel->type);
-		}
 	}
 }
 

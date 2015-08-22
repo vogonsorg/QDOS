@@ -199,13 +199,7 @@ void BuildTris (void)
 {
 	int		i, j, k;
 	int		startv;
-	mtriangle_t	*last, *check;
-	int		m1, m2;
-	int		striplength;
-	trivertx_t	*v;
-	mtriangle_t *tv;
 	float	s, t;
-	int		index;
 	int		len, bestlen, besttype;
 	int		bestverts[1024];
 	int		besttris[1024];
@@ -275,7 +269,7 @@ void BuildTris (void)
 
 	commands[numcommands++] = 0;		// end of list marker
 
-	Con_DPrintf (DEVELOPER_MSG_STANDARD, "%3i tri %3i vert %3i cmd\n", pheader->numtris, numorder, numcommands);
+	Con_DPrintf (DEVELOPER_MSG_VIDEO, "%3i tri %3i vert %3i cmd\n", pheader->numtris, numorder, numcommands);
 
 	allverts += numorder;
 	alltris += pheader->numtris;
@@ -290,13 +284,10 @@ GL_MakeAliasModelDisplayLists
 void GL_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr)
 {
 	int		i, j;
-	maliasgroup_t	*paliasgroup;
 	int			*cmds;
 	trivertx_t	*verts;
-	char	cache[MAX_QPATH], fullpath[MAX_OSPATH], *c;
+	char	cache[MAX_QPATH], fullpath[MAX_OSPATH];
 	FILE	*f;
-	int		len;
-	byte	*data;
 
 	aliasmodel = m;
 	paliashdr = hdr;	// (aliashdr_t *)Mod_Extradata (m);
@@ -331,6 +322,14 @@ void GL_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr)
 		//
 		sprintf (fullpath, "%s/%s", com_gamedir, cache);
 		f = fopen (fullpath, "wb");
+		if (!f) {
+			char gldir[MAX_OSPATH];
+
+			sprintf (gldir, "%s/glquake", com_gamedir);
+			Sys_mkdir (gldir);
+			f = fopen (fullpath, "wb");
+		}
+
 		if (f)
 		{
 			fwrite (&numcommands, 4, 1, f);

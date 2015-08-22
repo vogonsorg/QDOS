@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <dlfcn.h>
 
 #include "quakedef.h"
+#include "cfgfile.h"
 
 #include "vid_dos.h"
 #include "GL/fxmesa.h"
@@ -61,8 +62,8 @@ int scr_width, scr_height;
 //int		texture_mode = GL_NEAREST;
 //int		texture_mode = GL_NEAREST_MIPMAP_NEAREST;
 //int		texture_mode = GL_NEAREST_MIPMAP_LINEAR;
-int		texture_mode = GL_LINEAR;
-//int		texture_mode = GL_LINEAR_MIPMAP_NEAREST;
+//int		texture_mode = GL_LINEAR;
+int		texture_mode = GL_LINEAR_MIPMAP_NEAREST;
 //int		texture_mode = GL_LINEAR_MIPMAP_LINEAR;
 
 int		texture_extension_number = 1;
@@ -304,13 +305,8 @@ static void Check_Gamma (unsigned char *pal)
 	unsigned char	palette[768];
 	int		i;
 
-	if ((i = COM_CheckParm("-gamma")) == 0) {
-		if ((gl_renderer && strstr(gl_renderer, "Voodoo")) ||
-			(gl_vendor && strstr(gl_vendor, "3Dfx")))
-			vid_gamma = 1;
-		else
-			vid_gamma = 0.7; // default to 0.7 on non-3dfx hardware
-	} else
+	vid_gamma = v_gamma.value;
+	if ((i = COM_CheckParm("-gamma")) > 0)
 		vid_gamma = Q_atof(com_argv[i+1]);
 
 	for (i=0 ; i<768 ; i++)
@@ -333,6 +329,11 @@ void VID_Init(unsigned char *palette)
 	GLint attribs[32];
 	char	gldir[MAX_OSPATH];
 	int width = 640, height = 480;
+	char *read_vars[] = {
+		"gamma",
+	};
+#define num_readvars	(int)(sizeof(read_vars) / sizeof(read_vars[0]))
+
 
 	Cvar_RegisterVariable (&vid_mode);
 	Cvar_RegisterVariable (&vid_redrawfull);
@@ -401,6 +402,11 @@ void VID_Init(unsigned char *palette)
 	vid.aspect = ((float)vid.height / (float)vid.width) *
 				(320.0 / 240.0);
 	vid.numpages = 2;
+
+	// perform an early read of config.cfg -- sezero
+	CFG_ReadCvars (read_vars, num_readvars);
+	// check for command line overrides -- sezero
+	CFG_ReadCvarOverrides (read_vars, num_readvars);
 
 	GL_Init();
 

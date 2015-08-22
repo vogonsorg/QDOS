@@ -229,9 +229,6 @@ void R_DrawSpriteModel (entity_t *e)
 	glEnable (GL_ALPHA_TEST);
 	glBegin (GL_QUADS);
 
-	glEnable (GL_ALPHA_TEST);
-	glBegin (GL_QUADS);
-
 	glTexCoord2f (0, 1);
 	VectorMA (e->origin, frame->down, up, point);
 	VectorMA (point, frame->left, right, point);

@@ -424,7 +424,7 @@ void *Hunk_AllocName (int size, char *name)
 	
 	if (hunk_size - hunk_low_used - hunk_high_used < size)
 		Sys_Error ("Hunk_Alloc: failed on %i bytes",size);
-	
+
 	h = (hunk_t *)(hunk_base + hunk_low_used);
 	hunk_low_used += size;
 

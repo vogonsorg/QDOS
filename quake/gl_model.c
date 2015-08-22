@@ -734,7 +734,7 @@ void Mod_LoadTexinfo (lump_t *l)
 
 	//johnfitz: report missing textures
 	if (missing && loadmodel->numtextures > 1)
-		Con_Printf ("Mod_LoadTexinfo: %d texture(s) missing from BSP file\n", missing);
+		Con_DPrintf (DEVELOPER_MSG_STANDARD, "Mod_LoadTexinfo: %d texture(s) missing from BSP file\n", missing);
 	//johnfitz
 }
 
