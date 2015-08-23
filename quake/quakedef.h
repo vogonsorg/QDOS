@@ -103,7 +103,8 @@ void    VID_UnlockBuffer (void);
 #define ON_EPSILON              0.1                     // point on plane side epsilon
 
 #define	MAX_MSGLEN			32000	// max length of a reliable message //johnfitz -- was 8000
-#define MAX_DATAGRAM            8000 // FS: Was breaking IPX //32000   // max length of unreliable message //johnfitz -- was 1024
+/* FS: FIXME THIS BREAKS IPX */
+#define MAX_DATAGRAM            32000 // max length of unreliable message //johnfitz -- was 1024
 
 #define DATAGRAM_MTU		1400	// johnfitz -- actual limit for unreliable messages to nonlocal clients
 
