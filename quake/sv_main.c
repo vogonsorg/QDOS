@@ -1350,8 +1350,6 @@ void SV_SpawnServer (char *server)
 	//
 	Host_ClearMemory ();
 
-	memset (&sv, 0, sizeof(sv));
-
 	strcpy (sv.name, server);
 
 	sv.protocol = sv_protocol; // johnfitz
@@ -1467,7 +1465,7 @@ void SV_SpawnServer (char *server)
 	}
 
 	ED_LoadFromFile (entitystring);
-   
+
 	sv.active = true;
 
 	// all setup is completed, any further precache statements are errors
