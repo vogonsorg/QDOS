@@ -382,8 +382,17 @@ void Mod_LoadTextures (lump_t *l)
 			R_InitSky (tx);
 		else
 		{
+			// ericw -- fence textures
+			qboolean	extraflags;
+
+			extraflags = false;
+			if (tx->name[0] == '{')
+			{
+				extraflags = true;
+			}
+			// ericw
 			texture_mode = GL_LINEAR_MIPMAP_NEAREST; //_LINEAR;
-			tx->gl_texturenum = GL_LoadTexture (mt->name, tx->width, tx->height, (byte *)(tx+1), true, false);
+			tx->gl_texturenum = GL_LoadTexture (mt->name, tx->width, tx->height, (byte *)(tx+1), true, extraflags);
 			texture_mode = GL_LINEAR;
 		}
 	}
@@ -939,8 +948,7 @@ void Mod_LoadFaces_L1 (lump_t *l)
 			GL_SubdivideSurface (out);	// cut up polygon for warps
 			continue;
 		}
-		
-		if (!Q_strncmp(out->texinfo->texture->name,"*",1))		// turbulent
+		else if (!Q_strncmp(out->texinfo->texture->name,"*",1))		// turbulent
 		{
 			out->flags |= (SURF_DRAWTURB | SURF_DRAWTILED);
 			for (i=0 ; i<2 ; i++)
@@ -950,6 +958,10 @@ void Mod_LoadFaces_L1 (lump_t *l)
 			}
 			GL_SubdivideSurface (out);	// cut up polygon for warps
 			continue;
+		}
+		else if (out->texinfo->texture->name[0] == '{') // ericw -- fence textures
+		{
+			out->flags |= SURF_DRAWFENCE;
 		}
 	}
 }
@@ -1003,8 +1015,8 @@ void Mod_LoadFaces_L2 (lump_t *l)
 			GL_SubdivideSurface (out);	// cut up polygon for warps
 			continue;
 		}
-		
-		if (!Q_strncmp(out->texinfo->texture->name,"*",1))		// turbulent
+
+		else if (!Q_strncmp(out->texinfo->texture->name,"*",1))		// turbulent
 		{
 			out->flags |= (SURF_DRAWTURB | SURF_DRAWTILED);
 			for (i=0 ; i<2 ; i++)
@@ -1014,6 +1026,10 @@ void Mod_LoadFaces_L2 (lump_t *l)
 			}
 			GL_SubdivideSurface (out);	// cut up polygon for warps
 			continue;
+		}
+		else if (out->texinfo->texture->name[0] == '{') // ericw -- fence textures
+		{
+			out->flags |= SURF_DRAWFENCE;
 		}
 	}
 }

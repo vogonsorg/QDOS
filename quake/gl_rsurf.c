@@ -758,6 +758,12 @@ void R_RenderBrushPoly (msurface_t *fa)
 
 	c_brush_polys++;
 
+
+	if(fa->flags & SURF_DRAWFENCE) /* FS: Fence textures */
+	{
+		glEnable (GL_ALPHA_TEST); // Flip on alpha test
+	}
+
 	if (fa->flags & SURF_DRAWSKY)
 	{	// warp texture, no lightmaps
 		EmitBothSkyLayers (fa);
@@ -818,6 +824,12 @@ dynamic:
 			R_BuildLightMap (fa, base, BLOCK_WIDTH*lightmap_bytes);
 		}
 	}
+
+	if(fa->flags & SURF_DRAWFENCE) /* FS: Fence textures */
+	{
+		glDisable (GL_ALPHA_TEST); // Flip off alpha test
+	}
+
 }
 
 /*
