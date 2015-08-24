@@ -383,16 +383,16 @@ void Mod_LoadTextures (lump_t *l)
 		else
 		{
 			// ericw -- fence textures
-			qboolean	extraflags;
+			qboolean	alpha;
 
-			extraflags = false;
+			alpha = false;
 			if (tx->name[0] == '{')
 			{
-				extraflags = true;
+				alpha = true;
 			}
 			// ericw
 			texture_mode = GL_LINEAR_MIPMAP_NEAREST; //_LINEAR;
-			tx->gl_texturenum = GL_LoadTexture (mt->name, tx->width, tx->height, (byte *)(tx+1), true, extraflags);
+			tx->gl_texturenum = GL_LoadTexture (mt->name, tx->width, tx->height, (byte *)(tx+1), true, alpha);
 			texture_mode = GL_LINEAR;
 		}
 	}
