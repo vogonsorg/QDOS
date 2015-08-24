@@ -1507,106 +1507,7 @@ COM_Path_f
 
 ============
 */
-/* FS: From Q2 */
-char **COM_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned canthave )
-{
-	char *s;
-	int nfiles = 0;
-	char **list = 0;
 
-	s = Sys_FindFirst( findname, musthave, canthave );
-	while ( s )
-	{
-		if ( s[strlen(s)-1] != '.' )
-			nfiles++;
-		s = Sys_FindNext( musthave, canthave );
-	}
-	Sys_FindClose ();
-
-	if ( !nfiles ) {
-		*numfiles = 0;
-		return NULL;
-	}
-
-	nfiles++; // add space for a guard
-	*numfiles = nfiles;
-
-	list = malloc( sizeof( char * ) * nfiles );
-	memset( list, 0, sizeof( char * ) * nfiles );
-
-	s = Sys_FindFirst( findname, musthave, canthave );
-	nfiles = 0;
-	while ( s )
-	{
-		if ( s[strlen(s)-1] != '.' )
-		{
-			list[nfiles] = strdup( s );
-#if defined(_WIN32) || defined(__MSDOS__)
-			strlwr( list[nfiles] );
-#endif
-			nfiles++;
-		}
-		s = Sys_FindNext( musthave, canthave );
-	}
-	Sys_FindClose ();
-
-	return list;
-}
-
-/* FS: From Q2 */
-char *COM_NextPath (char *prevpath)
-{
-	searchpath_t	*s;
-	char			*prev;
-
-	if (!prevpath)
-		return com_gamedir;
-
-	prev = com_gamedir;
-	for (s=com_searchpaths ; s ; s=s->next)
-	{
-		if (s->pack)
-			continue;
-		if (prevpath == prev)
-			return s->filename;
-		prev = s->filename;
-	}
-
-	return NULL;
-}
-
-/* FS: From Q2 */
-void COM_FreeFileList (char **list, int n)
-{
-	int i;
-
-	for (i = 0; i < n; i++)
-	{
-		if (list && list[i])
-		{
-			free(list[i]);
-			list[i] = 0;
-		}
-	}
-	free(list);
-}
-
-/* FS: From Q2 */
-qboolean COM_ItemInList (char *check, int num, char **list)
-{
-	int		i;
-
-	if (!check || !list)
-		return false;
-	for (i=0; i<num; i++)
-	{
-		if (!list[i])
-			continue;
-		if (!Q_strcasecmp(check, list[i]))
-			return true;
-	}
-	return false;
-}
 
 void COM_Path_f (void)
 {
@@ -2039,6 +1940,107 @@ pack_t *COM_LoadPackFile (char *packfile)
 
 	//Con_Printf ("Added packfile %s (%i files)\n", packfile, numpackfiles);
 	return pack;
+}
+
+/* FS: From Q2 */
+char **COM_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned canthave )
+{
+	char *s;
+	int nfiles = 0;
+	char **list = 0;
+
+	s = Sys_FindFirst( findname, musthave, canthave );
+	while ( s )
+	{
+		if ( s[strlen(s)-1] != '.' )
+			nfiles++;
+		s = Sys_FindNext( musthave, canthave );
+	}
+	Sys_FindClose ();
+
+	if ( !nfiles ) {
+		*numfiles = 0;
+		return NULL;
+	}
+
+	nfiles++; // add space for a guard
+	*numfiles = nfiles;
+
+	list = malloc( sizeof( char * ) * nfiles );
+	memset( list, 0, sizeof( char * ) * nfiles );
+
+	s = Sys_FindFirst( findname, musthave, canthave );
+	nfiles = 0;
+	while ( s )
+	{
+		if ( s[strlen(s)-1] != '.' )
+		{
+			list[nfiles] = strdup( s );
+#if defined(_WIN32) || defined(__MSDOS__)
+			strlwr( list[nfiles] );
+#endif
+			nfiles++;
+		}
+		s = Sys_FindNext( musthave, canthave );
+	}
+	Sys_FindClose ();
+
+	return list;
+}
+
+/* FS: From Q2 */
+char *COM_NextPath (char *prevpath)
+{
+	searchpath_t	*s;
+	char			*prev;
+
+	if (!prevpath)
+		return com_gamedir;
+
+	prev = com_gamedir;
+	for (s=com_searchpaths ; s ; s=s->next)
+	{
+		if (s->pack)
+			continue;
+		if (prevpath == prev)
+			return s->filename;
+		prev = s->filename;
+	}
+
+	return NULL;
+}
+
+/* FS: From Q2 */
+void COM_FreeFileList (char **list, int n)
+{
+	int i;
+
+	for (i = 0; i < n; i++)
+	{
+		if (list && list[i])
+		{
+			free(list[i]);
+			list[i] = 0;
+		}
+	}
+	free(list);
+}
+
+/* FS: From Q2 */
+qboolean COM_ItemInList (char *check, int num, char **list)
+{
+	int		i;
+
+	if (!check || !list)
+		return false;
+	for (i=0; i<num; i++)
+	{
+		if (!list[i])
+			continue;
+		if (!Q_strcasecmp(check, list[i]))
+			return true;
+	}
+	return false;
 }
 
 /* FS: From Quake 2 */
