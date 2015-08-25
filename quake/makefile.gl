@@ -13,8 +13,6 @@ USE_OGG=yes
 USE_TREMOR=1
 # pci sound card support:
 USE_SNDPCI=1
-# whether to use BSP2 Support (needs further testing, but appears OK)
-USE_BSP2=yes
 # use SSE optimizations for P3 (could be dangerous)
 USE_SSE=0
 
@@ -60,9 +58,6 @@ LIBS  += -L../3rdparty/lib -lvorbisidec -logg
 endif
 endif
 
-ifeq ($(USE_BSP2),yes)
-CFLAGS+= -DBSP2_SUPPORT
-endif
 LIBS  += -lm
 
 # subdirectory for objects
@@ -147,7 +142,8 @@ $(O)/Goa/SDK/goautil.o \
 $(O)/Goa/CEngine/hashtable.o \
 $(O)/Goa/nonport.o \
 $(O)/r_part.o \
-$(O)/gl_draw.o \
+
+REFGL= $(O)/gl_draw.o \
 $(O)/gl_mesh.o \
 $(O)/gl_model.o \
 $(O)/gl_refrag.o \

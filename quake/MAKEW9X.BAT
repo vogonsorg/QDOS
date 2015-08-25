@@ -1,4 +1,4 @@
 @echo off
 CALL C:\DJGPP\SETENV.BAT
-make clean
-make -f MAKEFILE.W9X
+make -f Makefile clean
+make -f Makefile USE_MPATH=yes

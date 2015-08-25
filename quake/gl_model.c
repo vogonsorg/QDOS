@@ -820,76 +820,6 @@ void CalcSurfaceExtents (msurface_t *s)
 Mod_LoadFaces
 =================
 */
-#if 0
-void Mod_LoadFaces (lump_t *l, qboolean bsp2)
-{
-	dface_t		*in;
-	msurface_t 	*out;
-	int			i, count, surfnum;
-	int			planenum, side;
-
-	in = (void *)(mod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
-	count = l->filelen / sizeof(*in);
-	out = Hunk_AllocName ( count*sizeof(*out), loadname);	
-
-	loadmodel->surfaces = out;
-	loadmodel->numsurfaces = count;
-
-	for ( surfnum=0 ; surfnum<count ; surfnum++, in++, out++)
-	{
-		out->firstedge = LittleLong(in->firstedge);
-		out->numedges = LittleShort(in->numedges);		
-		out->flags = 0;
-
-		planenum = LittleShort(in->planenum);
-		side = LittleShort(in->side);
-		if (side)
-			out->flags |= SURF_PLANEBACK;			
-
-		out->plane = loadmodel->planes + planenum;
-
-		out->texinfo = loadmodel->texinfo + LittleShort (in->texinfo);
-
-		CalcSurfaceExtents (out);
-				
-	// lighting info
-
-		for (i=0 ; i<MAXLIGHTMAPS ; i++)
-			out->styles[i] = in->styles[i];
-		i = LittleLong(in->lightofs);
-		if (i == -1)
-			out->samples = NULL;
-		else
-			out->samples = loadmodel->lightdata + i;
-
-	// set the drawing flags flag
-		
-		if (!Q_strncmp(out->texinfo->texture->name,"sky",3))	// sky
-		{
-			out->flags |= (SURF_DRAWSKY | SURF_DRAWTILED);
-#ifndef QUAKE2
-			GL_SubdivideSurface (out);	// cut up polygon for warps
-#endif
-			continue;
-		}
-		
-		if (!Q_strncmp(out->texinfo->texture->name,"*",1))		// turbulent
-		{
-			out->flags |= (SURF_DRAWTURB | SURF_DRAWTILED);
-			for (i=0 ; i<2 ; i++)
-			{
-				out->extents[i] = 16384;
-				out->texturemins[i] = -8192;
-			}
-			GL_SubdivideSurface (out);	// cut up polygon for warps
-			continue;
-		}
-
-	}
-}
-#else
 void Mod_LoadFaces_L1 (lump_t *l)
 {
 	dface_t		*in;
@@ -1042,7 +972,6 @@ void Mod_LoadFaces (lump_t *l, qboolean bsp2)
 		Mod_LoadFaces_L1(l);
 	}
 }
-#endif
 
 /*
 =================
@@ -1063,63 +992,6 @@ void Mod_SetParent (mnode_t *node, mnode_t *parent)
 Mod_LoadNodes
 =================
 */
-#ifndef BSP2_SUPPORT
-void Mod_LoadNodes (lump_t *l, int bsp2)
-{
-	int			i, j, count, p;
-	dnode_t		*in;
-	mnode_t 	*out;
-
-	(void)bsp2;/* unused param */
-
-	in = (void *)(mod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
-	count = l->filelen / sizeof(*in);
-	out = Hunk_AllocName ( count*sizeof(*out), loadname);	
-
-	loadmodel->nodes = out;
-	loadmodel->numnodes = count;
-
-	for ( i=0 ; i<count ; i++, in++, out++)
-	{
-		for (j=0 ; j<3 ; j++)
-		{
-			out->minmaxs[j] = LittleShort (in->mins[j]);
-			out->minmaxs[3+j] = LittleShort (in->maxs[j]);
-		}
-	
-		p = LittleLong(in->planenum);
-		out->plane = loadmodel->planes + p;
-
-		out->firstsurface = (unsigned short)LittleShort (in->firstface); //johnfitz -- explicit cast as unsigned short
-		out->numsurfaces = (unsigned short)LittleShort (in->numfaces); //johnfitz -- explicit cast as unsigned short
-
-		for (j=0 ; j<2 ; j++)
-		{
-			//johnfitz -- hack to handle nodes > 32k, adapted from darkplaces
-			p = (unsigned short)LittleShort(in->children[j]);
-			if (p < count)
-				out->children[j] = loadmodel->nodes + p;
-			else
-			{
-				p = 65535 - p; //note this uses 65535 intentionally, -1 is leaf 0
-				if (p < loadmodel->numleafs)
-					out->children[j] = (mnode_t *)(loadmodel->leafs + p);
-				else
-				{
-					Con_Printf("Mod_LoadNodes: invalid leaf index %i (file has only %i leafs)\n", p, loadmodel->numleafs);
-					out->children[j] = (mnode_t *)(loadmodel->leafs); //map it to the solid leaf
-				}
-			}
-			//johnfitz
-		}
-	}
-
-	Mod_SetParent (loadmodel->nodes, NULL);	// sets nodes and leafs
-}
-
-#else
 void Mod_LoadNodes_S (lump_t *l)
 {
 	int			i, j, count, p;
@@ -1291,8 +1163,6 @@ void Mod_LoadNodes (lump_t *l, int bsp2)
 
 	Mod_SetParent (loadmodel->nodes, NULL);	// sets nodes and leafs
 }
-#endif
-
 
 /*
 =================
@@ -1754,16 +1624,7 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 	
 	header = (dheader_t *)buffer;
 
-//	i = LittleLong (header->version);
 	mod->bspversion = LittleLong (header->version);
-#if 0
-	if (i != BSPVERSION)
-		Sys_Error ("Mod_LoadBrushModel: %s has wrong version number (%i should be %i)", mod->name, i, BSPVERSION);
-
-	/* FS: From Engoo/leillol */
-	if (i == BSPVERSION91)
-		loadmodel->fromgame = FG_QUAKEOLD;
-#endif
 
 	/* FS: From QuakeSpasm */
 	switch(mod->bspversion)
@@ -1776,15 +1637,9 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 		loadmodel->fromgame = FG_QUAKEOLD;
 		break;
 	case BSP2VERSION_2PSB:
-#ifndef BSP2_SUPPORT
-		Sys_Error ("Mod_LoadBrushModel: %s is bsp2 format.\nThis QDOS version is built without bsp2 support.", mod->name);
-#endif
 		bsp2 = 1;	//first iteration
 		break;
 	case BSP2VERSION_BSP2:
-#ifndef BSP2_SUPPORT
-		Sys_Error ("Mod_LoadBrushModel: %s is bsp2 format.\nThis QDOS version is built without bsp2 support.", mod->name);
-#endif
 		bsp2 = 2;	//sanitised revision
 		break;
 	default:
