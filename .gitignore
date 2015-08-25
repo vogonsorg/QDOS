@@ -17,9 +17,10 @@ release_gl/
 out.txt
 gas2masm.exe
 gas2masm.ilk
-qw.exe
 qdos.exe
 qdosfx.exe
+qw.exe
+qwdosfx.exe
 gspydos.exe
 relwqwexe.bat
 relqwexe.bat

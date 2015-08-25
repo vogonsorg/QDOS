@@ -58,6 +58,7 @@ vec3_t	r_origin;
 
 float	r_world_matrix[16];
 float	r_base_world_matrix[16];
+float	r_fovx, r_fovy;
 
 //
 // screen size info
@@ -100,6 +101,7 @@ cvar_t	gl_reporttjunctions = {"gl_reporttjunctions","0"};
 cvar_t	gl_doubleeyes = {"gl_doubleeys", "1"};
 
 cvar_t  r_waterwarp = {"r_waterwarp","1", true}; /* FS: Shut up compiler until I fix this stuff */
+cvar_t	gl_farclip = {"gl_farclip", "4096", true};
 
 extern	cvar_t	gl_ztrick;
 
@@ -793,7 +795,6 @@ void R_SetFrustum (void)
 }
 
 
-
 /*
 ===============
 R_SetupFrame
@@ -823,6 +824,9 @@ void R_SetupFrame (void)
 
 	r_cache_thrash = false;
 
+	r_fovx = r_refdef.fov_x;
+	r_fovy = r_refdef.fov_y;
+	
 	c_brush_polys = 0;
 	c_alias_polys = 0;
 
@@ -843,6 +847,20 @@ void MYgluPerspective( GLdouble fovy, GLdouble aspect,
    glFrustum( xmin, xmax, ymin, ymax, zNear, zFar );
 }
 
+/*
+=============
+GL_SetFrustum -- johnfitz -- written to replace MYgluPerspective
+=============
+*/
+#define NEARCLIP 4
+float frustum_skew = 0.0; //used by r_stereo
+void GL_SetFrustum(float fovx, float fovy)
+{
+	float xmax, ymax;
+	xmax = NEARCLIP * tan( fovx * M_PI / 360.0 );
+	ymax = NEARCLIP * tan( fovy * M_PI / 360.0 );
+	glFrustum(-xmax + frustum_skew, xmax + frustum_skew, -ymax, ymax, NEARCLIP, gl_farclip.value);
+}
 
 /*
 =============
@@ -851,54 +869,18 @@ R_SetupGL
 */
 void R_SetupGL (void)
 {
-	float	screenaspect;
-	extern	int glwidth, glheight;
-	int		x, x2, y2, y, w, h;
-
-	//
-	// set up viewpoint
-	//
+	//johnfitz -- rewrote this section
 	glMatrixMode(GL_PROJECTION);
     glLoadIdentity ();
-	x = r_refdef.vrect.x * glwidth/vid.width;
-	x2 = (r_refdef.vrect.x + r_refdef.vrect.width) * glwidth/vid.width;
-	y = (vid.height-r_refdef.vrect.y) * glheight/vid.height;
-	y2 = (vid.height - (r_refdef.vrect.y + r_refdef.vrect.height)) * glheight/vid.height;
+	glViewport (glx + r_refdef.vrect.x,
+				gly + glheight - r_refdef.vrect.y - r_refdef.vrect.height,
+				r_refdef.vrect.width,
+				r_refdef.vrect.height);
+	//johnfitz
 
-	// fudge around because of frac screen scale
-	if (x > 0)
-		x--;
-	if (x2 < glwidth)
-		x2++;
-	if (y2 < 0)
-		y2--;
-	if (y < glheight)
-		y++;
+    GL_SetFrustum (r_fovx, r_fovy); //johnfitz -- use r_fov* vars
 
-	w = x2 - x;
-	h = y - y2;
-
-	if (envmap)
-	{
-		x = y2 = 0;
-		w = h = 256;
-	}
-
-	glViewport (glx + x, gly + y2, w, h);
-    screenaspect = (float)r_refdef.vrect.width/r_refdef.vrect.height;
-//	yfov = 2*atan((float)r_refdef.vrect.height/r_refdef.vrect.width)*180/M_PI;
-    MYgluPerspective (r_refdef.fov_y,  screenaspect,  4,  4096);
-
-	if (mirror)
-	{
-		if (mirror_plane->normal[2])
-			glScalef (1, -1, 1);
-		else
-			glScalef (-1, 1, 1);
-		glCullFace(GL_BACK);
-	}
-	else
-		glCullFace(GL_FRONT);
+//	glCullFace(GL_BACK); //johnfitz -- glquake used CCW with backwards culling -- let's do it right
 
 	glMatrixMode(GL_MODELVIEW);
     glLoadIdentity ();
