@@ -155,8 +155,7 @@ void CURL_HTTP_Update (void)
 				printf ("[E] HTTP Download Failed: %ld.\n", response_code);
 
 			}
-			curl_multi_remove_handle (multi_handle, easy_handle);
-			curl_easy_cleanup(easy_handle);
+			CURL_HTTP_Reset();
 
 			if(!strcmp(name, "qwservers.txt"))
 			{

@@ -167,7 +167,7 @@ void CL_HTTP_Update (void)
 
 				CL_FinishDownload (false);
 			}
-			curl_multi_remove_handle (multi_handle, easy_handle);
+			CL_HTTP_Reset();
 		}
 	}
 }
