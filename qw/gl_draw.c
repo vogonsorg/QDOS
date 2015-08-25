@@ -71,6 +71,7 @@ int		texels;
 
 typedef struct
 {
+	unsigned short crc;
 	int		texnum;
 	char	identifier[64];
 	int		width, height;
@@ -1307,6 +1308,59 @@ static	unsigned	trans[640*480];		// FIXME, temporary
 GL_LoadTexture
 ================
 */
+#if 1
+/* FS: From DarkPlaces 1.05 for cache mismatch issues */
+int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha)
+{
+	qboolean noalpha;
+	int   i, p, s;
+	unsigned short crc;
+	gltexture_t *glt;
+
+	// LordHavoc: do a checksum to confirm the data really is the same as previous
+	// occurances. well this isn't exactly a checksum, it's better than that but
+	// not following any standards.
+	s = width*height;
+	crc = CRC_Block(data, s);
+
+	// see if the texture is allready present
+	if (identifier[0])
+	{
+		for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
+		{
+			if (!strcmp (identifier, glt->identifier))
+			{
+				// LordHavoc: everyone hates cache mismatchs, so I fixed it
+				if (crc != glt->crc || width != glt->width || height != glt->height)
+				{
+					Con_DPrintf(DEVELOPER_MSG_VIDEO, "GL_LoadTexture: cache mismatch, replacing old texture\n");
+
+					goto GL_LoadTexture_setup; // drop out with glt pointing to the texture to replace
+				}
+				return glt->texnum;
+			}
+		}
+	}
+
+	// LordHavoc: this was an else condition, causing disasterous results,
+	// whoever at id or threewave must've been half asleep...
+	glt = &gltextures[numgltextures++];
+	glt->texnum = texture_extension_number++;
+	strcpy (glt->identifier, identifier);
+
+// LordHavoc: label to drop out of the loop into the setup code
+GL_LoadTexture_setup:
+	glt->crc = crc; // LordHavoc: used to verify textures are identical
+	glt->width = width;
+	glt->height = height;
+	glt->mipmap = mipmap;
+
+	GL_Bind(glt->texnum);
+	GL_Upload8 (data, width, height, mipmap, alpha);
+
+	return glt->texnum;
+}
+#else
 int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha)
 {
 	int			i;
@@ -1343,6 +1397,7 @@ int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolea
 
 	return texture_extension_number-1;
 }
+#endif
 
 /*
 ================
