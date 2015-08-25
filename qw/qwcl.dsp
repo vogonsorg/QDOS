@@ -1183,118 +1183,437 @@ InputName=surf8
 # Begin Source File
 
 SOURCE=.\d_edge.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\d_fill.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\d_init.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\d_modech.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\d_part.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\d_polyse.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\d_scan.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\d_sky.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\d_sprite.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\d_surf.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\d_vars.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\d_zpoint.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\draw.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\model.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\r_aclip.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\r_alias.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\r_bsp.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\r_draw.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\r_edge.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\r_efrag.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\r_light.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\r_main.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\r_misc.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\r_sky.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\r_sprite.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\r_surf.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\r_vars.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\screen.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\vid_win.c
+
+!IF  "$(CFG)" == "qwcl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # End Group
 # Begin Source File

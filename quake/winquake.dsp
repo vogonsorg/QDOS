@@ -437,23 +437,6 @@ SOURCE=.\glquake.h
 !ENDIF 
 
 # End Source File
-# Begin Source File
-
-SOURCE=.\glquake2.h
-
-!IF  "$(CFG)" == "winquake - Win32 Release"
-
-# PROP Exclude_From_Build 1
-
-!ELSEIF  "$(CFG)" == "winquake - Win32 Debug"
-
-# PROP Exclude_From_Build 1
-
-!ELSEIF  "$(CFG)" == "winquake - Win32 GL Release"
-
-!ENDIF 
-
-# End Source File
 # End Group
 # Begin Group "Software"
 
