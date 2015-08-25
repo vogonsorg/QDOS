@@ -207,6 +207,9 @@ void R_Init (void)
 	Cvar_RegisterVariable (&gl_reporttjunctions);
 	Cvar_RegisterVariable (&r_waterwarp); /* FS: TODO FIXME: dummy */
 
+	/* FS: New stuff */
+	Cvar_RegisterVariable (&gl_farclip);
+ 
 	R_InitBubble();
 	
 	R_InitParticles ();
