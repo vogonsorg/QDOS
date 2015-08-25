@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MAX_SERVERS 400 /* FS: There's barely 350 active servers existing, but OK. */
 typedef struct
 {
-	char ip[15];
+	char ip[16];
 	int port;
 	int ping;
 	char hostname[32];
