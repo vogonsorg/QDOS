@@ -860,7 +860,7 @@ int MipColor(int r, int g, int b)
 {
 	int i;
 	float dist;
-	int best;
+	int best = 0;
 	float bestdist;
 	int r1, g1, b1;
 	static int lr = -1, lg = -1, lb = -1;
@@ -937,12 +937,10 @@ SCR_RSShot_f
 */  
 void SCR_RSShot_f (void) 
 { 
-	int     i, x, y;
+	int     x, y;
 	unsigned char		*src, *dest;
 	char		pcxname[80]; 
-	char		checkname[MAX_OSPATH];
-	unsigned char		*newbuf, *srcbuf;
-	int srcrowbytes;
+	unsigned char		*newbuf;
 	int w, h;
 	int dx, dy, dex, dey, nx;
 	int r, b, g;
@@ -959,27 +957,6 @@ void SCR_RSShot_f (void)
 
 	Con_Printf("Remote screen shot requested.\n");
 
-#if 0
-// 
-// find a file name to save it to 
-// 
-	strcpy(pcxname,"mquake00.pcx");
-		
-	for (i=0 ; i<=99 ; i++) 
-	{ 
-		pcxname[6] = i/10 + '0'; 
-		pcxname[7] = i%10 + '0'; 
-		sprintf (checkname, "%s/%s", com_gamedir, pcxname);
-		if (Sys_FileTime(checkname) == -1)
-			break;	// file doesn't exist
-	} 
-	if (i==100) 
-	{
-		Con_Printf ("SCR_ScreenShot_f: Couldn't create a PCX"); 
-		return;
-	}
-#endif
- 
 // 
 // save the pcx file 
 // 

@@ -239,7 +239,7 @@ void R_TranslatePlayerSkin (int playernum)
 	byte	*original;
 	unsigned	pixels[512*256], *out;
 	unsigned	scaled_width, scaled_height;
-	int			inwidth, inheight;
+	int			inwidth;
 	int			tinwidth, tinheight;
 	byte		*inrow;
 	unsigned	frac, fracstep;
@@ -298,35 +298,15 @@ void R_TranslatePlayerSkin (int playernum)
 		if ((original = Skin_Cache(player->skin)) != NULL) {
 			//skin data width
 			inwidth = 320;
-			inheight = 200;
 		} else {
 			original = player_8bit_texels;
 			inwidth = 296;
-			inheight = 194;
 		}
 
 
 		// because this happens during gameplay, do it fast
 		// instead of sending it through gl_upload 8
 		GL_Bind(playertextures + playernum);
-
-	#if 0
-		s = 320*200;
-		byte	translated[320*200];
-
-		for (i=0 ; i<s ; i+=4)
-		{
-			translated[i] = translate[original[i]];
-			translated[i+1] = translate[original[i+1]];
-			translated[i+2] = translate[original[i+2]];
-			translated[i+3] = translate[original[i+3]];
-		}
-
-
-		// don't mipmap these, because it takes too long
-		GL_Upload8 (translated, paliashdr->skinwidth, paliashdr->skinheight, 
-			false, false, true);
-	#endif
 
 		scaled_width = gl_max_size.value < 512 ? gl_max_size.value : 512;
 		scaled_height = gl_max_size.value < 256 ? gl_max_size.value : 256;

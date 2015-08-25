@@ -436,16 +436,14 @@ R_DrawAliasModel
 */
 void R_DrawAliasModel (entity_t *e)
 {
-	int			i, j;
+	int			i;
 	int			lnum;
 	vec3_t		dist;
 	float		add;
 	model_t		*clmodel;
 	vec3_t		mins, maxs;
 	aliashdr_t	*paliashdr;
-	trivertx_t	*verts, *v;
-	int			index;
-	float		s, t, an;
+	float		an;
 	int			anim;
 
 	clmodel = currententity->model;
@@ -625,6 +623,9 @@ void R_DrawEntitiesOnList (void)
 		{
 		case mod_sprite:
 			R_DrawSpriteModel (currententity);
+			break;
+		case mod_brush:
+		case mod_alias:
 			break;
 		}
 	}

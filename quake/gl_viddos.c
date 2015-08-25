@@ -107,13 +107,10 @@ void	VID_SetPalette (unsigned char *palette)
 	unsigned r,g,b;
 	unsigned v;
 	int     r1,g1,b1;
-	int		j,k,l,m;
+	int		k;
 	unsigned short i;
 	unsigned	*table;
-	FILE *f;
-	char s[255];
 	int dist, bestdist;
-	static qboolean palflag = false;
 
 //
 // 8 8 8 encoding
@@ -234,12 +231,9 @@ GL_BeginRendering
 */
 void GL_BeginRendering (int *x, int *y, int *width, int *height)
 {
-	extern cvar_t gl_clear;
-
 	*x = *y = 0;
 	*width = scr_width;
 	*height = scr_height;
-
 }
 
 
