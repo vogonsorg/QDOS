@@ -156,6 +156,7 @@ void CURL_HTTP_Update (void)
 
 			}
 			curl_multi_remove_handle (multi_handle, easy_handle);
+			curl_easy_cleanup(easy_handle);
 
 			if(!strcmp(name, "qwservers.txt"))
 			{
