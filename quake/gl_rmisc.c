@@ -207,9 +207,6 @@ void R_Init (void)
 
 	Cvar_RegisterVariable (&gl_doubleeyes);
 
-	/* FS: New stuff */
-	Cvar_RegisterVariable (&gl_farclip);
-
 	R_InitParticles ();
 	R_InitParticleTexture ();
 
