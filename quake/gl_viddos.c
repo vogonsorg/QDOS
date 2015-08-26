@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "cfgfile.h"
 
 #include "vid_dos.h"
+#include <GL/dmesa.h>
 #include "GL/fxmesa.h"
 
 #define WARP_WIDTH              320
@@ -69,9 +70,6 @@ const char *gl_vendor;
 const char *gl_renderer;
 const char *gl_version;
 const char *gl_extensions;
-
-void (*qgl3DfxSetPaletteEXT) (GLuint *);
-void (*qglColorTableEXT) (int, int, int, int, int, const void *);
 
 static float vid_gamma = 1.0;
 
@@ -286,6 +284,41 @@ qboolean VID_Is8bit(void)
 	return is8bit;
 }
 
+void (*qglColorTableEXT) (int, int, int, int, int, const void *);
+void VID_Init8bitPalette() 
+{
+#if 0
+/* FS: Either glColorTableEXT is broken in MESA with DOS or this code is wrong.
+ *     Completely black textures for anything that is used with GL_Upload8_EXT.
+ */
+	// Check for 8bit Extensions and initialize them.
+	int i;
+
+	if (COM_CheckParm("-no8bit"))
+		return;
+
+	if (strstr(gl_extensions, "GL_EXT_shared_texture_palette") &&
+		(qglColorTableEXT = (void *)DMesaGetProcAddress("glColorTableEXT")) != NULL)
+	{
+		char thePalette[256*3];
+		char *oldPalette, *newPalette;
+
+		Con_SafePrintf("... Using GL_EXT_shared_texture_palette\n");
+		glEnable( GL_SHARED_TEXTURE_PALETTE_EXT );
+		oldPalette = (char *) d_8to24table; //d_8to24table3dfx;
+		newPalette = thePalette;
+		for (i=0;i<256;i++) {
+			*newPalette++ = *oldPalette++;
+			*newPalette++ = *oldPalette++;
+			*newPalette++ = *oldPalette++;
+			oldPalette++;
+		}
+		qglColorTableEXT(GL_SHARED_TEXTURE_PALETTE_EXT, GL_RGB, 256, GL_RGB, GL_UNSIGNED_BYTE, (void *) thePalette);
+		is8bit = true;
+	}
+#endif
+}
+
 static void Check_Gamma (unsigned char *pal)
 {
 	float	f, inf;
@@ -403,6 +436,9 @@ void VID_Init(unsigned char *palette)
 
 	Check_Gamma(palette);
 	VID_SetPalette(palette);
+
+	// Check for 3DFX Extensions and initialize them.
+	VID_Init8bitPalette();
 
 	Con_SafePrintf ("Video mode %dx%d initialized.\n", width, height);
 
