@@ -1216,8 +1216,7 @@ GL_LoadTexture
 /* FS: From DarkPlaces 1.05 for cache mismatch issues */
 int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha)
 {
-	qboolean noalpha;
-	int   i, p, s;
+	int   i, s;
 	unsigned short crc;
 	gltexture_t *glt;
 	extern	qboolean isDedicated;
