@@ -47,8 +47,6 @@ int num_shades=32;
 int	d_con_indirect = 0;
 
 cvar_t		vid_mode = {"vid_mode","5",false};
-cvar_t		vid_redrawfull = {"vid_redrawfull","0",false};
-cvar_t		vid_waitforrefresh = {"vid_waitforrefresh","0",true};
  
 cvar_t		vid_wait = {"vid_wait", "0", false};
 cvar_t		_vid_wait_override = {"_vid_wait_override", "0", false};
@@ -283,8 +281,7 @@ qboolean VID_Is8bit(void)
 {
 	return is8bit;
 }
-
-void (*qglColorTableEXT) (int, int, int, int, int, const void *);
+void (APIENTRY * qglColorTableEXT)( GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, const GLvoid *table );
 void VID_Init8bitPalette() 
 {
 #if 0
@@ -357,8 +354,6 @@ void VID_Init(unsigned char *palette)
 
 
 	Cvar_RegisterVariable (&vid_mode);
-	Cvar_RegisterVariable (&vid_redrawfull);
-	Cvar_RegisterVariable (&vid_waitforrefresh);
 	Cvar_RegisterVariable (&gl_ztrick);
 
 	Cvar_RegisterVariable (&vid_wait);
