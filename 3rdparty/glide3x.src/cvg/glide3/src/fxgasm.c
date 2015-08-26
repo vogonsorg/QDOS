@@ -71,7 +71,7 @@ main (int argc, char **argv)
 
     if (argc > 1) {
       if (strcmp("-inline", argv[1]) == 0) {
-        SstRegs dummyRegs = { 0x00UL };
+        SstRegs dummyRegs;
 
         printf("#ifndef __FX_INLINE_H__\n");
         printf("#define __FX_INLINE_H__\n");

@@ -172,7 +172,7 @@ proc _grTexDownload_MMX, 24
     femms                               ; we'll use MMX/3DNow!, make sure FPU register cleared
 %ENDIF
 %IFDEF GL_MMX
-;    emms                                ; we'll use MMX
+    emms                                ; we'll use MMX
 %ENDIF
 
     mov       edx, curS                 ; curS = maxS = scanline width in DWORDs

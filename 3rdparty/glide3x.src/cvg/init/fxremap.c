@@ -507,8 +507,7 @@ FxBool fits_in_hole(RangeStruct *begin,FxU32 end,RangeStruct *hole,RangeStruct *
 
    /* note could be <= */
    /* this is safer but more inefficient memory wise */
-   /* help those with many devices crammed. use <=. */
-   if ((address+conflict->range)<=end)
+   if ((address+conflict->range)<end)
    {
       hole->address=address;
       hole->range=end-address;
@@ -524,8 +523,7 @@ FxBool fits_under(RangeStruct *first,FxU32 minimum,RangeStruct *hole,RangeStruct
    address=minimum;
    address=SnapToDecentAddress(address,conflict);
 
-   /* help those with many devices crammed. use <=. */
-   if ((address+conflict->range) <= first->address)
+   if ((address+conflict->range) < first->address)
    {
       hole->address=address;
       hole->range=first->address - address;
