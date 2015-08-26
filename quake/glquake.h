@@ -243,7 +243,6 @@ extern	int		gl_alpha_format;
 
 extern	cvar_t	gl_max_size;
 extern	cvar_t	gl_playermip;
-extern	cvar_t	gl_farclip; /* FS: From FitzQuake */
 
 extern	int			mirrortexturenum;	// quake texturenum, not gltexturenum
 extern	qboolean	mirror;

@@ -936,14 +936,9 @@ void MakeSkyVec (float s, float t, int axis)
 	vec3_t		v, b;
 	int			j, k;
 
-/*
 	b[0] = s*2048;
 	b[1] = t*2048;
 	b[2] = 2048;
-*/
-	b[0] = s * gl_farclip.value / sqrt(3.0);
-	b[1] = t * gl_farclip.value / sqrt(3.0);
-	b[2] = gl_farclip.value / sqrt(3.0);
 
 	for (j=0 ; j<3 ; j++)
 	{
