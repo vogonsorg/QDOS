@@ -110,7 +110,7 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 scitech\lib\win32\vc\mgllt.lib dxsdk\sdk\lib\dxguid.lib opengl32.lib wsock32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib winmm.lib /nologo /subsystem:windows /profile /machine:I386 /out:".\Release/WQWDOS.EXE"
 # SUBTRACT BASE LINK32 /nodefaultlib
-# ADD LINK32 .\dxsdk\sdk\lib\dxguid.lib comctl32.lib winmm.lib wsock32.lib opengl32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /profile /machine:I386 /nodefaultlib:"libcmtd.lib" /out:".\release_gl/GLQW2.EXE"
+# ADD LINK32 .\dxsdk\sdk\lib\dxguid.lib comctl32.lib winmm.lib wsock32.lib opengl32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /profile /machine:I386 /nodefaultlib:"libcmtd.lib" /out:".\release gl/GLQW2.EXE"
 # SUBTRACT LINK32 /nodefaultlib
 
 !ENDIF 
