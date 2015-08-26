@@ -35,7 +35,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define WARP_WIDTH              320
 #define WARP_HEIGHT             200
 
-static fxMesaContext fc = NULL;
+//static fxMesaContext fc = NULL;
+static DMesaVisual dv;
+static DMesaContext dc;
+static DMesaBuffer db;
+
 #define stringify(m) { #m, m }
 
 unsigned short	d_8to16table[256];
@@ -86,10 +90,12 @@ void D_EndDirectRect (int x, int y, int width, int height)
 
 void VID_Shutdown(void)
 {
-	if (!fc)
-		return;
-
-	fxMesaDestroyContext(fc);
+	if (db)
+		DMesaDestroyBuffer(db);
+	if (dc)
+		DMesaDestroyContext(dc);
+	if (dv)
+		DMesaDestroyVisual(dv);
 }
 
 void VID_ShiftPalette(unsigned char *p)
@@ -149,6 +155,11 @@ void	VID_SetPalette (unsigned char *palette)
 		}
 		d_15to8table[i]=k;
 	}
+}
+
+void *qwglGetProcAddress(char *symbol)
+{
+	return DMesaGetProcAddress(symbol);
 }
 
 void CheckMultiTextureExtensions(void) 
@@ -232,11 +243,10 @@ void GL_BeginRendering (int *x, int *y, int *width, int *height)
 	*height = scr_height;
 }
 
-
 void GL_EndRendering (void)
 {
 	glFlush();
-	fxMesaSwapBuffers();
+	DMesaSwapBuffers(db);
 }
 
 
@@ -344,7 +354,6 @@ static void Check_Gamma (unsigned char *pal)
 void VID_Init(unsigned char *palette)
 {
 	int i;
-	GLint attribs[32];
 	char	gldir[MAX_OSPATH];
 	int width = 640, height = 480;
 	char *read_vars[] = {
@@ -365,15 +374,6 @@ void VID_Init(unsigned char *palette)
 	vid.fullbright = 256 - LittleLong (*((int *)vid.colormap + 2048));
 
 // interpret command-line params
-
-// set vid parameters
-	attribs[0] = FXMESA_DOUBLEBUFFER;
-	attribs[1] = FXMESA_ALPHA_SIZE;
-	attribs[2] = 1;
-	attribs[3] = FXMESA_DEPTH_SIZE;
-	attribs[4] = 1;
-	attribs[5] = FXMESA_NONE;
-
 	if ((i = COM_CheckParm("-width")) != 0)
 		width = atoi(com_argv[i+1]);
 	if ((i = COM_CheckParm("-height")) != 0)
@@ -397,16 +397,21 @@ void VID_Init(unsigned char *palette)
 	if (vid.conheight < 200)
 		vid.conheight = 200;
 
-//	fc = fxMesaCreateContext(0, findres(&width, &height), GR_REFRESH_75Hz, attribs);
-	fc = fxMesaCreateBestContext(0, (GLint)width, (GLint)height, attribs); /* FS: This will allow us to use SST_SCREENREFRESH to set the refresh rate */
-
-	if (!fc)
+	dv = DMesaCreateVisual((GLint)width, (GLint)height, 16, 0, true, true, 2, 16, 0, 0);
+	if (!dv)
+		Sys_Error("Unable to create 3DFX visual.\n");
+	
+	dc = DMesaCreateContext(dv, NULL);
+	if (!dc)
 		Sys_Error("Unable to create 3DFX context.\n");
 
 	scr_width = width;
 	scr_height = height;
 
-	fxMesaMakeCurrent(fc);
+	db = DMesaCreateBuffer(dv, 0,0,(GLint)width,(GLint)height);
+	if (!db)
+		Sys_Error("Unable to create 3DFX buffer.\n");
+	DMesaMakeCurrent(dc, db);
 
 	if (vid.conheight > height)
 		vid.conheight = height;

@@ -53,7 +53,6 @@ static unsigned char	keybuf[KEYBUF_SIZE];
 static int	keybuf_head = 0;
 static int	keybuf_tail = 0;
 
-
 static quakeparms_t	quakeparms;
 
 qboolean                isDedicated;
