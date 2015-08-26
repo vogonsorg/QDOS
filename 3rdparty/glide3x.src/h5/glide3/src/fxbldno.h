@@ -1,0 +1,2 @@
+#define BUILD_NUMBER		40404
+#define BUILD_NUMBER_STR	"40404"
