@@ -21,7 +21,7 @@
 #define MANVERSION              3
 #define MANREVISION             03
 
-#define BUILD_NUMBER            40404
+#define BUILD_NUMBER            40405
 
 #ifndef GLIDE3
 #define VERSIONSTR "2.44\0"

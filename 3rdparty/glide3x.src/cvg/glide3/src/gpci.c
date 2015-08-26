@@ -745,9 +745,6 @@ _GlideInitEnvironment(void)
     _GlideRoot.environment.swFifoLWM         = GLIDE_GETENV("FX_GLIDE_LWM", -1L);
 
     _GlideRoot.environment.swapInterval      = GLIDE_GETENV("FX_GLIDE_SWAPINTERVAL", -1L);
-    if ((envStr != NULL) && (_GlideRoot.environment.swapInterval < 0)) {
-      _GlideRoot.environment.swapInterval = 0;
-    }
 
     /* wait until there's 6 or fewer buffer swaps pending */
     /* the hardware counter is only 3 bits so we don't want it to overflow */
