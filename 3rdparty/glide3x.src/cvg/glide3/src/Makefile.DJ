@@ -41,7 +41,7 @@
 
 
 .PHONY: all glide3x clean realclean
-.INTERMEDIATE: fxgasm.exe
+.INTERMEDIATE: fxgasm.exe fxbldno.exe
 
 ###############################################################################
 #	general defines (user settable?)
@@ -112,7 +112,7 @@ ASFLAGS = -O6 -fcoff -D__DJGPP__ --prefix _
 ASFLAGS += $(CDEFS)
 
 # compiler
-CFLAGS = -Wall -W
+CFLAGS = -Wall -W -fno-strict-aliasing
 CFLAGS += -I. -I../../incsrc -I../../init
 CFLAGS += -I$(FX_GLIDE_SW)/fxmisc -I$(FX_GLIDE_SW)/newpci/pcilib -I$(FX_GLIDE_SW)/fxmemmap
 CFLAGS += -I$(FX_GLIDE_SW)/texus2/lib
@@ -286,7 +286,7 @@ xdraw3_3dnow.o: xdraw3.asm
 xtexdl_3dnow.o: xtexdl.asm
 	$(AS) -o $@ $(ASFLAGS) -DGL_AMD3D=1 $<
 
-$(GLIDE_OBJECTS): fxinline.h fxgasm.h
+$(GLIDE_OBJECTS): fxinline.h fxgasm.h fxbldno.h
 
 fxinline.h: fxgasm.exe
 	$< -inline > $@
@@ -295,6 +295,13 @@ fxgasm.h: fxgasm.exe
 	$< -hex > $@
 
 fxgasm.exe: fxgasm.c
+	$(CC) -o $@ $(CFLAGS) $<
+
+
+fxbldno.h: fxbldno.exe
+	$< > $@
+
+fxbldno.exe: fxbldno.c
 	$(CC) -o $@ $(CFLAGS) $<
 
 ###############################################################################
@@ -307,6 +314,7 @@ clean:
 	-$(call UNLINK,$(FX_GLIDE_SW)/newpci/pcilib/*.o)
 	-$(call UNLINK,fxinline.h)
 	-$(call UNLINK,fxgasm.h)
+	-$(call UNLINK,fxbldno.h)
 	-$(call UNLINK,$(FX_GLIDE_SW)/texus2/lib/*.o)
 
 realclean: clean
