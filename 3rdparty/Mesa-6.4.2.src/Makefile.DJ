@@ -59,18 +59,14 @@
 
 GLU ?= mesa
 
-CFLAGS = -Wall -W -pedantic
+CFLAGS = -Wall
 CFLAGS += -O2 -ffast-math
 
 export CFLAGS
 
-ifeq ($(wildcard $(addsuffix /rm.exe,$(subst ;, ,$(PATH)))),)
-UNLINK = del $(subst /,\,$(1))
-else
-UNLINK = $(RM) $(1)
-endif
+UNLINK = rm -f $(1)
 
-all: libgl libglu libglut
+all: libgl libglu
 
 libgl: lib
 	$(MAKE) -f Makefile.DJ -C src/mesa
@@ -84,9 +80,9 @@ lib:
 
 clean:
 	$(MAKE) -f Makefile.DJ clean -C src/mesa
-	$(MAKE) -f Makefile.DJ clean -C src/glu/mesa
-	$(MAKE) -f Makefile.DJ clean -C src/glu/sgi
-	$(MAKE) -f Makefile.DJ clean -C src/glut/dos
+	-$(MAKE) -f Makefile.DJ clean -C src/glu/mesa
+	-$(MAKE) -f Makefile.DJ clean -C src/glu/sgi
+	-$(MAKE) -f Makefile.DJ clean -C src/glut/dos
 
 realclean: clean
 	-$(call UNLINK,lib/*.a)
