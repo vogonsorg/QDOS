@@ -138,7 +138,7 @@ EXTERN GLNAME(_glapi_get_dispatch)
 
 		ALIGNTEXT16
 		GLOBL GLNAME(gl_dispatch_functions_start)
-//		HIDDEN(GLNAME(gl_dispatch_functions_start))
+		HIDDEN(GLNAME(gl_dispatch_functions_start))
 GLNAME(gl_dispatch_functions_start):
 
 	GL_STUB(NewList, _gloffset_NewList, NewList@8)
@@ -1137,7 +1137,7 @@ GLNAME(gl_dispatch_functions_start):
 	GL_STUB_ALIAS(BlendEquationSeparateATI, _gloffset_BlendEquationSeparateEXT, BlendEquationSeparateATI@8, BlendEquationSeparateEXT, BlendEquationSeparateEXT@8)
 
 		GLOBL	GLNAME(gl_dispatch_functions_end)
-//		HIDDEN(GLNAME(gl_dispatch_functions_end))
+		HIDDEN(GLNAME(gl_dispatch_functions_end))
 		ALIGNTEXT16
 GLNAME(gl_dispatch_functions_end):
 
