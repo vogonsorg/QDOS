@@ -163,6 +163,12 @@ DXE_EXPORT_TABLE (syms)
 	DXE_EXPORT (strtok)
 	DXE_EXPORT (strtoul)
 	DXE_EXPORT (vfprintf)
+
+	/* FS: Mesa 6.2.4 friends */
+	DXE_EXPORT (dlclose)
+	DXE_EXPORT (dlopen)
+	DXE_EXPORT (dlsym)
+	DXE_EXPORT (ldexp)
 DXE_EXPORT_END
 
 
