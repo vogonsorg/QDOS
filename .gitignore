@@ -27,3 +27,7 @@ relqwexe.bat
 relwqdexe.bat
 relqdexe.bat
 release.bat
+fxgasm.h
+fxbldno.h
+fxgasm.exe
+fsbldno.exe
