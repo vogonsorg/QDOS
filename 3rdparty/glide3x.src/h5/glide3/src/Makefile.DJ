@@ -67,6 +67,7 @@ TEXUS_EXEDIR = $(FX_GLIDE_SW)/bin
 ###############################################################################
 
 CC = gcc
+HOST_CC = gcc
 AS = nasm
 AR = ar
 
@@ -110,7 +111,7 @@ endif
 ARFLAGS = rus
 
 # assembler
-ASFLAGS = -O6 -fcoff -D__DJGPP__ --prefix _
+ASFLAGS = -O2 -fcoff -D__DJGPP__ --prefix _
 ASFLAGS += $(CDEFS)
 
 # compiler
@@ -147,6 +148,7 @@ endif
 
 # optflags
 CFLAGS += $(OPTFLAGS)
+HOST_CFLAGS=$(filter-out -mcpu=% -mtune=% -march=%,$(CFLAGS))
 
 ###############################################################################
 #	objects
@@ -297,26 +299,37 @@ xtexdl_sse2.o: xtexdl.asm
 
 $(GLIDE_OBJECTS): fxinline.h fxgasm.h fxbldno.h
 
+# cross-compile workaround:
+ifneq ($(COMSPEC),)
+RUN_FXGASM=fxgasm.exe
+RUN_FXBLDNO=fxbldno.exe
+RUN_GENDATE=gendate.exe
+else
+RUN_FXGASM=./fxgasm.exe
+RUN_FXBLDNO=./fxbldno.exe
+RUN_GENDATE=./gendate.exe
+endif
+
 fxinline.h: fxgasm.exe
-	$< -inline > $@
+	$(RUN_FXGASM) -inline > $@
 
 fxgasm.h: fxgasm.exe
-	$< -hex > $@
+	$(RUN_FXGASM) -hex > $@
 
 fxgasm.exe: fxgasm.c ../../incsrc/gendate.h
-	$(CC) -o $@ $(CFLAGS) $<
+	$(HOST_CC) -o $@ $(HOST_CFLAGS) $<
 
 ../../incsrc/gendate.h: gendate.exe
-	$< > $@
+	$(RUN_GENDATE) > $@
 
 fxbldno.h: fxbldno.exe
-	$< > $@
+	$(RUN_FXBLDNO) > $@
 
 gendate.exe: ../../incsrc/gendate.c
-	$(CC) -o $@ $(CFLAGS) $<
+	$(HOST_CC) -o $@ $(HOST_CFLAGS) $<
 
 fxbldno.exe: fxbldno.c
-	$(CC) -o $@ $(CFLAGS) $<
+	$(HOST_CC) -o $@ $(HOST_CFLAGS) $<
 
 ###############################################################################
 #	clean, realclean

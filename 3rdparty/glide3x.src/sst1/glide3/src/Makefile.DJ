@@ -54,6 +54,7 @@ TEXUS_EXEDIR = $(FX_GLIDE_SW)/bin
 ###############################################################################
 
 CC = gcc
+HOST_CC = gcc
 AS = nasm
 AR = ar
 
@@ -102,7 +103,7 @@ endif
 ARFLAGS = rus
 
 # assembler
-ASFLAGS = -O6 -fcoff -D__DJGPP__ --prefix _
+ASFLAGS = -O2 -fcoff -D__DJGPP__ --prefix _
 ASFLAGS += $(CDEFS)
 
 # compiler
@@ -122,6 +123,7 @@ endif
 
 # optflags
 CFLAGS += $(OPTFLAGS)
+HOST_CFLAGS=$(filter-out -mcpu=% -mtune=% -march=%,$(CFLAGS))
 
 ###############################################################################
 #	objects
@@ -283,14 +285,21 @@ endif
 
 $(GLIDE_OBJECTS): fxinline.h fxgasm.h
 
+# cross-compile workaround:
+ifneq ($(COMSPEC),)
+RUN_FXGASM=fxgasm.exe
+else
+RUN_FXGASM=./fxgasm.exe
+endif
+
 fxinline.h: fxgasm.exe
-	$< -inline > $@
+	$(RUN_FXGASM) -inline > $@
 
 fxgasm.h: fxgasm.exe
-	$< -hex > $@
+	$(RUN_FXGASM) -hex > $@
 
 fxgasm.exe: fxgasm.c
-	$(CC) -o $@ $(CFLAGS) $<
+	$(HOST_CC) -o $@ $(HOST_CFLAGS) $<
 
 ###############################################################################
 #	clean, realclean
