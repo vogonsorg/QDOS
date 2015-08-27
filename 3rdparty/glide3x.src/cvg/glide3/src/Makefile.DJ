@@ -293,6 +293,7 @@ fxgasm.exe: fxgasm.c
 
 clean:
 	-$(call UNLINK,*.o)
+	-$(call UNLINK,*.obj)
 	-$(call UNLINK,../../init/*.o)
 	-$(call UNLINK,$(FX_GLIDE_SW)/newpci/pcilib/*.o)
 	-$(call UNLINK,fxinline.h)
