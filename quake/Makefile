@@ -30,7 +30,7 @@ endif
 
 ifeq ($(GLQUAKE),1)
 CFLAGS+= -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE
-LIBS+= -L../3rdparty/lib -lgl -lglid3
+LIBS+= -L../3rdparty/lib -lgl
 EXE = qdosfx.exe
 endif
 
