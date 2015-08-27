@@ -35,7 +35,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define WARP_WIDTH              320
 #define WARP_HEIGHT             200
 
-//static fxMesaContext fc = NULL;
 static DMesaVisual dv;
 static DMesaContext dc;
 static DMesaBuffer db;
@@ -304,8 +303,8 @@ void (APIENTRY * qglColorTableEXT)( GLenum target, GLenum internalformat, GLsize
 void VID_Init8bitPalette() 
 {
 #if 0
-/* FS: Either glColorTableEXT is broken in MESA with DOS or this code is wrong.
- *     Completely black textures for anything that is used with GL_Upload8_EXT.
+/* FS: This now works in Mesa 5.1 but it looks rather silly from far distances.
+ *     So, bye.  Here for historical purposes.
  */
 	// Check for 8bit Extensions and initialize them.
 	int i;
@@ -405,6 +404,9 @@ void VID_Init(unsigned char *palette)
 		vid.conheight = Q_atoi(com_argv[i+1]);
 	if (vid.conheight < 200)
 		vid.conheight = 200;
+
+	/* don't let fxMesa cheat multitexturing */
+	putenv("FX_DONT_FAKE_MULTITEX=1");
 
 	dv = DMesaCreateVisual((GLint)width, (GLint)height, 16, 0, true, true, 2, 16, 0, 0);
 	if (!dv)
