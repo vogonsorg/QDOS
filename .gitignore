@@ -27,10 +27,11 @@ relqwexe.bat
 relwqdexe.bat
 relqdexe.bat
 release.bat
-# glid3 leftovers that are generated during compile
+# glid3 and mesa leftovers that are generated during compile
 fxgasm.h
 fxbldno.h
 fxgasm.exe
 fsbldno.exe
 fxinline.h
 gendate.h
+matypes.h
