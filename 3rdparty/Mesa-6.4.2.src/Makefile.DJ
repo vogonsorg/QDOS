@@ -66,23 +66,16 @@ export CFLAGS
 
 UNLINK = rm -f $(1)
 
-all: libgl libglu
+all: libgl
 
 libgl: lib
 	$(MAKE) -f Makefile.DJ -C src/mesa
-libglu: lib
-	$(MAKE) -f Makefile.DJ -C src/glu/$(GLU)
-libglut: lib
-	$(MAKE) -f Makefile.DJ -C src/glut/dos
 
 lib:
 	mkdir lib
 
 clean:
 	$(MAKE) -f Makefile.DJ clean -C src/mesa
-	-$(MAKE) -f Makefile.DJ clean -C src/glu/mesa
-	-$(MAKE) -f Makefile.DJ clean -C src/glu/sgi
-	-$(MAKE) -f Makefile.DJ clean -C src/glut/dos
 
 realclean: clean
 	-$(call UNLINK,lib/*.a)
