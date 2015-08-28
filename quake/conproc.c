@@ -304,10 +304,10 @@ BOOL SetConsoleCXCY(HANDLE hStdout, int cx, int cy)
 		return FALSE;
  
 // height
-    info.srWindow.Left = 0;         
-    info.srWindow.Right = info.dwSize.X - 1;                
-    info.srWindow.Top = 0;
-    info.srWindow.Bottom = cy - 1;          
+	info.srWindow.Left = 0;
+	info.srWindow.Right = info.dwSize.X - 1;
+	info.srWindow.Top = 0;
+	info.srWindow.Bottom = cy - 1;
  
 	if (cy < info.dwSize.Y)
 	{
@@ -318,9 +318,9 @@ BOOL SetConsoleCXCY(HANDLE hStdout, int cx, int cy)
  
 		if (!SetConsoleScreenBufferSize(hStdout, info.dwSize))
 			return FALSE;
-    }
-    else if (cy > info.dwSize.Y)
-    {
+	}
+	else if (cy > info.dwSize.Y)
+	{
 		info.dwSize.Y = cy;
  
 		if (!SetConsoleScreenBufferSize(hStdout, info.dwSize))
@@ -328,16 +328,16 @@ BOOL SetConsoleCXCY(HANDLE hStdout, int cx, int cy)
  
 		if (!SetConsoleWindowInfo(hStdout, TRUE, &info.srWindow))
 			return FALSE;
-    }
+	}
  
 	if (!GetConsoleScreenBufferInfo(hStdout, &info))
 		return FALSE;
  
 // width
-	info.srWindow.Left = 0;         
+	info.srWindow.Left = 0;
 	info.srWindow.Right = cx - 1;
 	info.srWindow.Top = 0;
-	info.srWindow.Bottom = info.dwSize.Y - 1;               
+	info.srWindow.Bottom = info.dwSize.Y - 1;
  
 	if (cx < info.dwSize.X)
 	{
@@ -345,7 +345,7 @@ BOOL SetConsoleCXCY(HANDLE hStdout, int cx, int cy)
 			return FALSE;
  
 		info.dwSize.X = cx;
-    
+
 		if (!SetConsoleScreenBufferSize(hStdout, info.dwSize))
 			return FALSE;
 	}
@@ -362,4 +362,3 @@ BOOL SetConsoleCXCY(HANDLE hStdout, int cx, int cy)
  
 	return TRUE;
 }
-     

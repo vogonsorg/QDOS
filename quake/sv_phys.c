@@ -413,7 +413,7 @@ trace_t SV_PushEntity (edict_t *ent, vec3_t push)
 {
    trace_t  trace;
    vec3_t   end;
-      
+
    VectorAdd (ent->v.origin, push, end);
 
    if (ent->v.movetype == MOVETYPE_FLYMISSILE)
@@ -523,7 +523,7 @@ void SV_PushMove (edict_t *pusher, float movetime)
    // remove the onground flag for non-players
       if (check->v.movetype != MOVETYPE_WALK)
          check->v.flags = (int)check->v.flags & ~FL_ONGROUND;
-      
+
       VectorCopy (check->v.origin, entorig);
       VectorCopy (check->v.origin, moved_from[num_moved]);
       moved_edict[num_moved] = check;

@@ -816,7 +816,7 @@ static byte get_cddev_arg (const char *arg)
 		if (arg[2] != '\0')
 		{
 			if (arg[2] != '\\' &&
-			    arg[2] != '/')
+				arg[2] != '/')
 				return 0xff;
 			if (arg[3] != '\0')
 				return 0xff;

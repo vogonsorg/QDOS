@@ -414,7 +414,7 @@ void SV_CheckForNewClients (void)
 {
 	struct qsocket_s *ret;
 	int i;
-      
+
 	//
 	// check for new connections
 	//
@@ -432,7 +432,7 @@ void SV_CheckForNewClients (void)
 				break;
 		if (i == svs.maxclients)
 			Sys_Error ("Host_CheckForNewClients: no free clients");
-      
+
 		svs.clients[i].netconnection = ret;
 		SV_ConnectClient (i);   
    
@@ -581,7 +581,7 @@ void SV_WriteEntitiesToClient (edict_t *clent, sizebuf_t *msg)
 
 		// send an update
 		bits = 0;
-      
+
 		for (i=0 ; i<3 ; i++)
 		{
 			miss = ent->v.origin[i] - ent->baseline.origin[i];
@@ -610,7 +610,7 @@ void SV_WriteEntitiesToClient (edict_t *clent, sizebuf_t *msg)
 
 		if (ent->baseline.frame != ent->v.frame)
 			bits |= U_FRAME;
-      
+
 		if (ent->baseline.effects != ent->v.effects)
 			bits |= U_EFFECTS;
 
@@ -661,7 +661,7 @@ void SV_WriteEntitiesToClient (edict_t *clent, sizebuf_t *msg)
 		// write the message
 		//
 		MSG_WriteByte (msg,bits | U_SIGNAL);
-      
+
 		if (bits & U_MOREBITS)
 			MSG_WriteByte (msg, bits>>8);
 		//johnfitz -- PROTOCOL_FITZQUAKE
@@ -686,7 +686,7 @@ void SV_WriteEntitiesToClient (edict_t *clent, sizebuf_t *msg)
 		if (bits & U_EFFECTS)
 			MSG_WriteByte (msg, ent->v.effects);
 		if (bits & U_ORIGIN1)
-			MSG_WriteCoord (msg, ent->v.origin[0]);      
+			MSG_WriteCoord (msg, ent->v.origin[0]);
 		if (bits & U_ANGLE1)
 			MSG_WriteAngle(msg, ent->v.angles[0]);
 		if (bits & U_ORIGIN2)
@@ -779,7 +779,7 @@ void SV_WriteClientdataToMessage (edict_t *ent, sizebuf_t *msg)
    
 	if (ent->v.view_ofs[2] != DEFAULT_VIEWHEIGHT)
 		bits |= SU_VIEWHEIGHT;
-      
+
 	if (ent->v.idealpitch)
 		bits |= SU_IDEALPITCH;
 
@@ -1079,7 +1079,7 @@ void SV_SendClientMessages (void)
 			host_client->message.overflowed = false;
 			continue;
 		}
-         
+
 		if (host_client->message.cursize || host_client->dropasap)
 		{
 			if (!NET_CanSendMessage (host_client->netconnection))
@@ -1148,7 +1148,7 @@ void SV_CreateBaseline (void)
 	edict_t *svent;
 	int entnum;  
 	int bits; //johnfitz -- PROTOCOL_FITZQUAKE
-      
+
 	for (entnum = 0; entnum < sv.num_edicts ; entnum++)
 	{
 		// get the current server version

@@ -250,7 +250,7 @@ dstring_strdup (const char *str)
 VISIBLE char *
 dstring_reservestr (dstring_t *dstr, unsigned len)
 {
-	int         pos = dstr->size;
+	int pos = dstr->size;
 	if (pos && !dstr->str[pos - 1])
 		pos--;
 	dstr->size = pos + len + 1;
@@ -335,10 +335,10 @@ dstring_clearstr (dstring_t *dstr)
 static int
 _dvsprintf (dstring_t *dstr, int offs, const char *fmt, va_list args)
 {
-	int         size;
+	int size;
 
 #ifdef VA_LIST_IS_ARRAY
-	va_list     tmp_args;
+	va_list tmp_args;
 	VA_COPY (tmp_args, args);
 #endif
 
@@ -374,8 +374,8 @@ dvsprintf (dstring_t *dstr, const char *fmt, va_list args)
 VISIBLE int
 dsprintf (dstring_t *dstr, const char *fmt, ...)
 {
-	va_list     args;
-	int         ret;
+	va_list args;
+	int ret;
 
 	va_start (args, fmt);
 	ret = _dvsprintf (dstr, 0, fmt, args);
@@ -387,7 +387,7 @@ dsprintf (dstring_t *dstr, const char *fmt, ...)
 VISIBLE int
 davsprintf (dstring_t *dstr, const char *fmt, va_list args)
 {
-	int         offs = 0;
+	int offs = 0;
 
 	if (dstr->size)
 		offs = dstr->size - 1;
@@ -397,9 +397,9 @@ davsprintf (dstring_t *dstr, const char *fmt, va_list args)
 VISIBLE int
 dasprintf (dstring_t *dstr, const char *fmt, ...)
 {
-	va_list     args;
-	int         ret;
-	int         offs = 0;
+	va_list args;
+	int ret;
+	int offs = 0;
 
 	if (dstr->size)
 		offs = dstr->size - 1;

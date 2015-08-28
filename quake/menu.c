@@ -3626,7 +3626,7 @@ void M_AdjustSliders_Extended (int dir)
 
 void M_Extended_Key(int k)
 {
-    switch (k)
+	switch (k)
 	{
 	case K_UPARROW:
 		S_LocalSound ("misc/menu1.wav");
@@ -3678,7 +3678,7 @@ void M_Extended_Key(int k)
 			else if (show_uptime.value <= 0)
 				Cvar_SetValue ("show_uptime", 1);
 			else if (show_uptime.value == 1)
-                        Cvar_SetValue ("show_uptime", 2);
+				Cvar_SetValue ("show_uptime", 2);
 			break;
 		case 5:
 			if (show_time.value >= 2)
@@ -3688,10 +3688,10 @@ void M_Extended_Key(int k)
 			else if (show_time.value == 1)
 				Cvar_SetValue ("show_time", 2);
 			break;
-        case 6:
+		case 6:
 			Cvar_SetValue ("show_fps", !show_fps.value);
 			break;
-        case 7:
+		case 7:
 			Cvar_SetValue ("in_freelook", !in_freelook.value);
 			break;
 		case 8:
@@ -3892,7 +3892,7 @@ void M_Gamespy_Key(int k)
 	if(breakPoint > 0)
 		vidscale = breakPoint;
 
-    switch (k)
+	switch (k)
 	{
 	case K_PGUP:
 	case K_KP_PGUP:

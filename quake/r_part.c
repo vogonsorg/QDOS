@@ -615,7 +615,7 @@ void R_DrawParticles (void)
 #ifdef GLQUAKE
 	vec3_t			up, right;
 	float			scale;
-    GL_Bind(particletexture);
+	GL_Bind(particletexture);
 	glEnable (GL_BLEND);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glBegin (GL_TRIANGLES);

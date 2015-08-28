@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-#define GL_COLOR_INDEX8_EXT     0x80E5
+#define GL_COLOR_INDEX8_EXT	0x80E5
 
 extern unsigned char d_15to8table[65536];
 
@@ -822,11 +822,11 @@ void GL_Set2D (void)
 	glViewport (glx, gly, glwidth, glheight);
 
 	glMatrixMode(GL_PROJECTION);
-    glLoadIdentity ();
+	glLoadIdentity ();
 	glOrtho  (0, vid.width, vid.height, 0, -99999, 99999);
 
 	glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity ();
+	glLoadIdentity ();
 
 	glDisable (GL_DEPTH_TEST);
 	glDisable (GL_CULL_FACE);
@@ -955,9 +955,9 @@ Mipping for 8 bit textures
 */
 void GL_MipMap8Bit (byte *in, int width, int height)
 {
-	int		i, j;
-	unsigned short     r,g,b;
-	byte	*out, *at1, *at2, *at3, *at4;
+	int	 i, j;
+	unsigned short r,g,b;
+	byte *out, *at1, *at2, *at3, *at4;
 
 //	width <<=2;
 	height >>= 1;
@@ -1074,7 +1074,7 @@ void GL_Upload8_EXT (byte *data, int width, int height,  qboolean mipmap, qboole
 {
 	int			i, s;
 	qboolean	noalpha;
-    static	unsigned char scaled[1024*512];	// [512*256];
+	static		unsigned char scaled[1024*512];	// [512*256];
 	int			scaled_width, scaled_height;
 
 	s = width*height;

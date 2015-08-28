@@ -440,7 +440,7 @@ channel_t *SND_PickChannel(int entnum, int entchannel)
 		channels[first_to_die].sfx = NULL;
 
 	return &channels[first_to_die];
-}       
+}
 
 /*
 =================
@@ -492,7 +492,7 @@ void SND_Spatialize(channel_t *ch)
 	ch->leftvol = (int) (ch->master_vol * scale);
 	if (ch->leftvol < 0)
 		ch->leftvol = 0;
-}           
+}
 
 
 // =======================================================================

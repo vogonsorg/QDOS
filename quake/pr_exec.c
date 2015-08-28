@@ -264,7 +264,7 @@ Aborts the currently executing function
 void PR_RunError (const char *error, ...)
 {
 	va_list	argptr;
-    static	dstring_t	*string;
+	static	dstring_t	*string;
 
 	if (!string)
 		string = dstring_new();

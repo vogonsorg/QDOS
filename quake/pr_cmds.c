@@ -551,13 +551,13 @@ void PF_ambientsound (void)
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
 	if (soundnum > 255)
-        {
-        	if (sv.protocol == PROTOCOL_NETQUAKE)
+	{
+		if (sv.protocol == PROTOCOL_NETQUAKE)
 			return; //don't send any info protocol can't support
 		else
 			large = true;
-        }
-        //johnfitz
+	}
+	//johnfitz
 
 // add an svc_spawnambient command to the level signon packet
 

@@ -387,19 +387,19 @@ Con_DebugLog
 */
 void Con_DebugLog(const char *file, const char *fmt, ...)
 {
-    va_list argptr; 
+	va_list argptr; 
 	static dstring_t *data;
-    int fd;
+	int fd;
 
 	if(!data)
 		data = dstring_new();
-    
-    va_start(argptr, fmt);
-    dvsprintf(data, fmt, argptr);
-    va_end(argptr);
-    fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
-    write(fd, data->str, strlen(data->str));
-    close(fd);
+
+	va_start(argptr, fmt);
+	dvsprintf(data, fmt, argptr);
+	va_end(argptr);
+	fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
+	write(fd, data->str, strlen(data->str));
+	close(fd);
 }
 
 
@@ -751,7 +751,7 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 		y -= 8;
 		rows--;
 	}
-     
+
 	for (i= con_current - rows + 1 ; i<=con_current ; i++, y+=8 )
 	{
 		j = i - con_backscroll;

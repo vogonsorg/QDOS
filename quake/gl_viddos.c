@@ -32,8 +32,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <GL/dmesa.h>
 #include "GL/fxmesa.h"
 
-#define WARP_WIDTH              320
-#define WARP_HEIGHT             200
+#define WARP_WIDTH	320
+#define WARP_HEIGHT	200
 
 static DMesaVisual dv;
 static DMesaContext dc;
@@ -116,7 +116,7 @@ void	VID_SetPalette (unsigned char *palette)
 	byte	*pal;
 	unsigned r,g,b;
 	unsigned v;
-	int     r1,g1,b1;
+	int		r1,g1,b1;
 	int		k;
 	unsigned short i;
 	unsigned	*table;
@@ -289,7 +289,7 @@ int findres(int *width, int *height)
 			*height = resolutions[i][1];
 			return resolutions[i][2];
 		}
-        
+
 	*width = 640;
 	*height = 480;
 	return GR_RESOLUTION_640x480;

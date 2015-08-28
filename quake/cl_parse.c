@@ -177,8 +177,8 @@ void CL_ParseStartSoundPacket(void)
 	int 	field_mask;
 	float 	attenuation;  
 	int		i;
-	           
-    field_mask = MSG_ReadByte(); 
+
+	field_mask = MSG_ReadByte(); 
 
 	if (field_mask & SND_VOLUME)
 		volume = MSG_ReadByte ();

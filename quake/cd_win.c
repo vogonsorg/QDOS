@@ -70,7 +70,7 @@ static int CDAudio_GetAudioDiskInfo(void)
 	cdValid = false;
 
 	mciStatusParms.dwItem = MCI_STATUS_READY;
-    dwReturn = mciSendCommand(wDeviceID, MCI_STATUS, MCI_STATUS_ITEM | MCI_WAIT, (DWORD) (LPVOID) &mciStatusParms);
+	dwReturn = mciSendCommand(wDeviceID, MCI_STATUS, MCI_STATUS_ITEM | MCI_WAIT, (DWORD) (LPVOID) &mciStatusParms);
 	if (dwReturn)
 	{
 		Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio: drive ready test - get status failed\n");
@@ -83,7 +83,7 @@ static int CDAudio_GetAudioDiskInfo(void)
 	}
 
 	mciStatusParms.dwItem = MCI_STATUS_NUMBER_OF_TRACKS;
-    dwReturn = mciSendCommand(wDeviceID, MCI_STATUS, MCI_STATUS_ITEM | MCI_WAIT, (DWORD) (LPVOID) &mciStatusParms);
+	dwReturn = mciSendCommand(wDeviceID, MCI_STATUS, MCI_STATUS_ITEM | MCI_WAIT, (DWORD) (LPVOID) &mciStatusParms);
 	if (dwReturn)
 	{
 		Con_DPrintf(DEVELOPER_MSG_CD, "CDAudio: get tracks - status failed\n");
@@ -105,7 +105,7 @@ static int CDAudio_GetAudioDiskInfo(void)
 void CDAudio_Play(byte track, qboolean looping)
 {
 	DWORD				dwReturn;
-    MCI_PLAY_PARMS		mciPlayParms;
+	MCI_PLAY_PARMS		mciPlayParms;
 	MCI_STATUS_PARMS	mciStatusParms;
 
 	if (!enabled)
@@ -129,7 +129,7 @@ void CDAudio_Play(byte track, qboolean looping)
 	// don't try to play a non-audio track
 	mciStatusParms.dwItem = MCI_CDA_STATUS_TYPE_TRACK;
 	mciStatusParms.dwTrack = track;
-    dwReturn = mciSendCommand(wDeviceID, MCI_STATUS, MCI_STATUS_ITEM | MCI_TRACK | MCI_WAIT, (DWORD) (LPVOID) &mciStatusParms);
+	dwReturn = mciSendCommand(wDeviceID, MCI_STATUS, MCI_STATUS_ITEM | MCI_TRACK | MCI_WAIT, (DWORD) (LPVOID) &mciStatusParms);
 	if (dwReturn)
 	{
 		Con_DPrintf(DEVELOPER_MSG_CD, "MCI_STATUS failed (%i)\n", dwReturn);
@@ -144,7 +144,7 @@ void CDAudio_Play(byte track, qboolean looping)
 	// get the length of the track to be played
 	mciStatusParms.dwItem = MCI_STATUS_LENGTH;
 	mciStatusParms.dwTrack = track;
-    dwReturn = mciSendCommand(wDeviceID, MCI_STATUS, MCI_STATUS_ITEM | MCI_TRACK | MCI_WAIT, (DWORD) (LPVOID) &mciStatusParms);
+	dwReturn = mciSendCommand(wDeviceID, MCI_STATUS, MCI_STATUS_ITEM | MCI_TRACK | MCI_WAIT, (DWORD) (LPVOID) &mciStatusParms);
 	if (dwReturn)
 	{
 		Con_DPrintf(DEVELOPER_MSG_CD, "MCI_STATUS failed (%i)\n", dwReturn);

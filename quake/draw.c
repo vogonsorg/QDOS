@@ -142,7 +142,7 @@ void Draw_Character (int x, int y, int num)
 	
 	if (y <= -8 || y > vid.height - 8 || x < 0 || x > vid.width - 8) /* FS and Taniwha: CAx Overflow */
 		return;			// totally off screen
-        
+
 	row = num>>4;
 	col = num&15;
 	source = draw_chars + (row<<10) + (col<<3);

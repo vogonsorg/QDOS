@@ -347,19 +347,19 @@ void R_DrawSkyChain (msurface_t *s)
 
 typedef struct
 {
-    char	manufacturer;
-    char	version;
-    char	encoding;
-    char	bits_per_pixel;
-    unsigned short	xmin,ymin,xmax,ymax;
-    unsigned short	hres,vres;
-    unsigned char	palette[48];
-    char	reserved;
-    char	color_planes;
-    unsigned short	bytes_per_line;
-    unsigned short	palette_type;
-    char	filler[58];
-    unsigned 	data;			// unbounded
+	char	manufacturer;
+	char	version;
+	char	encoding;
+	char	bits_per_pixel;
+	unsigned short	xmin,ymin,xmax,ymax;
+	unsigned short	hres,vres;
+	unsigned char	palette[48];
+	char	reserved;
+	char	color_planes;
+	unsigned short	bytes_per_line;
+	unsigned short	palette_type;
+	char	filler[58];
+	unsigned 	data;			// unbounded
 } pcx_t;
 
 byte	*pcx_rgb;
@@ -555,7 +555,7 @@ void LoadTGA (FILE *fin)
 			for(column=0; column<columns; ) {
 				packetHeader=getc(fin);
 				packetSize = 1 + (packetHeader & 0x7f);
-				if (packetHeader & 0x80) {        // run-length packet
+				if (packetHeader & 0x80) {		// run-length packet
 					switch (targa_header.pixel_size) {
 						case 24:
 								blue = getc(fin);
@@ -587,7 +587,7 @@ void LoadTGA (FILE *fin)
 						}
 					}
 				}
-				else {                            // non run-length packet
+				else {							// non run-length packet
 					for(j=0;j<packetSize;j++) {
 						switch (targa_header.pixel_size) {
 							case 24:

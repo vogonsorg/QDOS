@@ -570,7 +570,7 @@ void R_AliasSetupSkin (void)
 	if ((skinnum >= pmdl->numskins) || (skinnum < 0))
 	{
 		Con_DPrintf (DEVELOPER_MSG_VERBOSE, "R_AliasSetupSkin: no such skin # %d\n", skinnum);
-       	skinnum = 0;
+		skinnum = 0;
 	}
 
 	pskindesc = ((maliasskindesc_t *)

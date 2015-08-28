@@ -31,8 +31,8 @@ qpic_t		*sb_ibar;
 qpic_t		*sb_sbar;
 qpic_t		*sb_scorebar;
 
-qpic_t      *sb_weapons[7][8];   // 0 is active, 1 is owned, 2-5 are flashes
-qpic_t      *sb_ammo[4];
+qpic_t		*sb_weapons[7][8];   // 0 is active, 1 is owned, 2-5 are flashes
+qpic_t		*sb_ammo[4];
 qpic_t		*sb_sigil[4];
 qpic_t		*sb_armor[3];
 qpic_t		*sb_items[32];
@@ -48,18 +48,18 @@ qboolean	sb_showscores;
 
 int			sb_lines;			// scan lines to draw
 
-qpic_t      *rsb_invbar[2];
-qpic_t      *rsb_weapons[5];
-qpic_t      *rsb_items[2];
-qpic_t      *rsb_ammo[3];
-qpic_t      *rsb_teambord;		// PGM 01/19/97 - team color border
+qpic_t		*rsb_invbar[2];
+qpic_t		*rsb_weapons[5];
+qpic_t		*rsb_items[2];
+qpic_t		*rsb_ammo[3];
+qpic_t		*rsb_teambord;		// PGM 01/19/97 - team color border
 
 //MED 01/04/97 added two more weapons + 3 alternates for grenade launcher
-qpic_t      *hsb_weapons[7][5];   // 0 is active, 1 is owned, 2-5 are flashes
+qpic_t		*hsb_weapons[7][5];   // 0 is active, 1 is owned, 2-5 are flashes
 //MED 01/04/97 added array to simplify weapon parsing
-int         hipweapons[4] = {HIT_LASER_CANNON_BIT,HIT_MJOLNIR_BIT,4,HIT_PROXIMITY_GUN_BIT};
+int			hipweapons[4] = {HIT_LASER_CANNON_BIT,HIT_MJOLNIR_BIT,4,HIT_PROXIMITY_GUN_BIT};
 //MED 01/04/97 added hipnotic items array
-qpic_t      *hsb_items[2];
+qpic_t		*hsb_items[2];
 
 void Sbar_MiniDeathmatchOverlay (void);
 void Sbar_DeathmatchOverlay (void);

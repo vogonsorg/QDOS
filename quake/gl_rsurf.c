@@ -751,7 +751,7 @@ void R_RenderBrushPoly (msurface_t *fa)
 	texture_t	*t;
 	byte		*base;
 	int			maps;
-	glRect_t    *theRect;
+	glRect_t	*theRect;
 	int smax, tmax;
 
 	c_brush_polys++;
@@ -840,7 +840,7 @@ void R_RenderDynamicLightmaps (msurface_t *fa)
 {
 	byte		*base;
 	int			maps;
-	glRect_t    *theRect;
+	glRect_t	*theRect;
 	int smax, tmax;
 
 	c_brush_polys++;
@@ -920,7 +920,7 @@ void R_DrawWaterSurfaces (void)
 	//
 	// go back to the world matrix
 	//
-    glLoadMatrixf (r_world_matrix);
+	glLoadMatrixf (r_world_matrix);
 
 	glEnable (GL_BLEND);
 	glColor4f (1,1,1,r_wateralpha.value);
@@ -970,7 +970,7 @@ void R_DrawWaterSurfaces (void)
 	// go back to the world matrix
 	//
 
-    glLoadMatrixf (r_world_matrix);
+	glLoadMatrixf (r_world_matrix);
 
 	if (r_wateralpha.value < 1.0) {
 		glEnable (GL_BLEND);
@@ -1146,7 +1146,7 @@ void R_DrawBrushModel (entity_t *e)
 		}
 	}
 
-    glPushMatrix ();
+	glPushMatrix ();
 e->angles[0] = -e->angles[0];	// stupid quake bug
 	R_RotateForEntity (e);
 e->angles[0] = -e->angles[0];	// stupid quake bug
