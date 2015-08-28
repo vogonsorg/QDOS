@@ -768,10 +768,24 @@ void _Host_Frame (float time)
 		CL_ReadFromServer ();
 	}
 
+	if (cls.spamTime && (cls.spamTime < realtime)) /* FS: From R1Q2 */
+	{
+		char versionStr[256];
+
+#ifdef GLQUAKE
+			Com_sprintf(versionStr, sizeof(versionStr), "say Quake DOS 3DFX Voodoo with WATTCP v%4.2f.\n", VERSION);
+#else
+			Com_sprintf(versionStr, sizeof(versionStr), "say Quake DOS with WATTCP v%4.2f.\n", VERSION);
+#endif
+		Cbuf_AddText(versionStr);
+		cls.lastSpamTime = realtime;
+		cls.spamTime = 0.0f;
+	}
+
 // update video
 	if (host_speeds.value)
 		time1 = Sys_FloatTime ();
-      
+
 	SCR_UpdateScreen ();
 
 	if (host_speeds.value)

@@ -1618,6 +1618,20 @@ void Host_Frame (float time)
 	else
 		CL_SendCmd ();
 
+	if (cls.spamTime && (cls.spamTime < realtime)) /* FS: From R1Q2 */
+	{
+		char versionStr[256];
+
+#ifdef GLQUAKE
+			Com_sprintf(versionStr, sizeof(versionStr), "say QuakeWorld DOS 3DFX Voodoo with WATTCP v%4.2f.  Built %s at %s.\n", VERSION, __DATE__, __TIME__);
+#else
+			Com_sprintf(versionStr, sizeof(versionStr), "say QuakeWorld DOS with WATTCP v%4.2f.  Built %s at %s.\n", VERSION, __DATE__, __TIME__);
+#endif
+		Cbuf_AddText(versionStr);
+		cls.lastSpamTime = realtime;
+		cls.spamTime = 0.0f;
+	}
+
 	// Set up prediction for other players
 	CL_SetUpPlayerPrediction(false);
 

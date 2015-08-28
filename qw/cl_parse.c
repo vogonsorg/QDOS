@@ -1515,7 +1515,6 @@ void CL_ParseServerMessage (void)
 {
 	int		cmd;
 	char	*s;
-	char	*fversion; /* FS: f_version reply */
 	int		i, j;
 
 	received_framecount = host_framecount;
@@ -1581,22 +1580,22 @@ void CL_ParseServerMessage (void)
 				S_LocalSound ("misc/talk.wav");
 				con_ormask = 128;
 			}
-			fversion = MSG_ReadString();
-			if (!strncmp(fversion, "Downloading: ", 13)) /* FS: MVDSV XE hack */
+			s = MSG_ReadString();
+			if (!strncmp(s, "Downloading: ", 13)) /* FS: MVDSV XE hack */
 			{
-				Con_DPrintf(DEVELOPER_MSG_NET, "%s", fversion);
+				Con_DPrintf(DEVELOPER_MSG_NET, "%s", s);
 				con_ormask = 0;
 				break;
 			}
-			Con_Printf("%s", fversion); /* FS: f_version reply */
-			fversion = strchr(fversion, ':');
-			if (fversion && !strcmp(fversion, ": f_version\n"))
+
+			//r1: change !p_version to !version since p is for proxies
+			if ((strstr (s, "f_version") || strstr (s, "q_version")) &&
+				(cls.lastSpamTime == 0.0f || realtime > cls.lastSpamTime + 300.0f)) /* FS: 5 minutes */
 			{
-				dstring_t *fversionStr = dstring_new();
-				dsprintf(fversionStr, "say QuakeWorld DOS with WATTCP v%4.2f.  Built %s at %s.\n", VERSION, __DATE__, __TIME__);
-				Cbuf_AddText(fversionStr->str);
-				dstring_delete(fversionStr);
+				cls.spamTime = realtime + 1.5f; /* FS: 1.5 second delay */
 			}
+
+			Con_Printf ("%s", s); /* FS: f_version and q_version reply */
 			con_ormask = 0;
 			break;
 			

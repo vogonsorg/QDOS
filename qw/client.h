@@ -252,6 +252,9 @@ typedef struct
 	int			challenge;
 
 	float		latency;		// rolling average
+
+	double		spamTime; /* FS: From R1Q2 */
+	double		lastSpamTime; /* FS: From R1Q2 */
 } client_static_t;
 
 extern client_static_t	cls;

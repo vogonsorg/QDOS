@@ -962,7 +962,7 @@ void CL_ParseServerMessage (void)
 {
 	int			cmd;
 	int			i;
-	char		*fversion, *str; /* FS: f_version and q_version reply */
+	char		*str;
 	int			total, j;
 	int			lastcmd = 0; //johnfitz
 //
@@ -1035,17 +1035,17 @@ void CL_ParseServerMessage (void)
 				Host_EndGame ("Server disconnected\n");
 
 			case svc_print:
-				fversion = MSG_ReadString();
-				Con_Printf ("%s", fversion); /* FS: f_version and q_version reply */
+				str = MSG_ReadString();
 
-				fversion = strchr(fversion, ':');
-				if (fversion && (!strcmp(fversion, ": f_version\n") || !strcmp(fversion, ": q_version\n")) )
+				//r1: change !p_version to !version since p is for proxies
+				if ((strstr (str, "f_version") || strstr (str, "q_version")) &&
+					(cls.lastSpamTime == 0.0f || realtime > cls.lastSpamTime + 300.0f)) /* FS: 5 minutes */
 				{
-					char fversionStr[1400];
-
-					Com_sprintf(fversionStr, sizeof(fversionStr), "say Quake DOS with WATTCP v%4.2f.\n", VERSION);
-					Cbuf_AddText (fversionStr);
+					cls.spamTime = realtime + 1.5f; /* FS: 1.5 second delay */
 				}
+
+				Con_Printf ("%s", str); /* FS: f_version and q_version reply */
+
 				break;
 			
 			case svc_centerprint:
