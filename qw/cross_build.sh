@@ -2,4 +2,10 @@
 
 . ../cross_defs.dj
 
-exec make CC=$TARGET-gcc STRIP=$TARGET-strip -f Makefile $*
+if test "$1" = "strip"; then
+	echo strip qw.exe
+	$TARGET-strip qw.exe
+	exit 0
+fi
+
+exec make CC=$TARGET-gcc STRIP=$TARGET-strip $*
