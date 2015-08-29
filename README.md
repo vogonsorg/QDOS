@@ -3,7 +3,7 @@ Original Concept and WATTCP import coding by NeoZeed
 Coding by [HCI]Mara'akate
 
 Additional code from sezero, taniwha, spoike, LordHavoc, 
-   QuakeForge, Fitzquake, Quakespasm, Darkplaces and more.
+   QuakeForge, Fitzquake, QuakeSpasm, Darkplaces and more.
 ---------------------------------------------------------
 
 Table of Contents
@@ -49,14 +49,27 @@ QDOS has many features, I can't remember each one that me or others have added
 * Press jump in NOCLIP/Water to move up.
 * F_VERSION reply.  Thanks to QuakeForge crew.
 * Proper timer.  Huge thanks to mysterious DJGPP guru.
-* Various bug fixes that have been recommended by QuakeForge, LordHavoc
-   and other engine authors.
+* Various bug fixes that have been recommended by QuakeForge, LordHavoc,
+   Sezero, and other engine authors.
 * Chat buffer --  Press Up/Down or Left/Right arrows to scroll through
    previously sent chat messages.  Thanks to Taniwha for more efficient
    code.
 * Gun model is drawn if FOV > 90.
-* Gamespy listings via multiplayer menu and /SLIST2 command (currently QWDOS only).
+* Gamespy Server Browser accessible from Multiplayer Menu and with slist2
+  command.  Adapted from Q2DOS.
+* BSP2 and 2PSB support. Code (with some slight readaptations) from QuakeSpasm.
+  Additonal help from sezero.  These maps may need things like:
+  r_maxedges and r_maxsurfs set to very high values.  Try setting both
+  to 25000 and restarting the map if you see disappearing objects as you
+  look around.
+* WAV and Ogg Vorbis streaming music support.  Put tracks in 
+  id1/music/trackXX format.
 * Some FitzQuake extensions in QWDOS, like extended limits and chunked downloads.
+* HTTP downloading via CURL in QWDOS for QuakeForge servers.
+* -cddir for specifiy a cd drive path for pak files.  Also for keeping
+  WAV/OGG music in a separate drive.
+* 3DFX Voodoo rendering with fxMesa 6.4.2!  Check voodoo directory for 
+  your glide3x.dxe.
 
 New CVARs and CMDs:
 
@@ -89,7 +102,7 @@ New CVARs and CMDs:
 ---------------------------------------------------------
 
 Because QDOS has supports for extended limits and other new features, the
-system requirements are higher compared to original Quake.
+system requirements are slightly higher compared to original Quake.
 
 If you're going to simply play on QUAKE.SHMACK.NET or stock single player
 the requirements are the same as original Quake.
@@ -143,9 +156,7 @@ To summarize:
 5. - Known Bugs and Limitations
 ---------------------------------------------------------
 
-* Limited Win9x support.  It will most likely bomb when closing
-   among other random things.  I will not accept symify crash dumps
-   that are from a Win9x environment.
+* Limited Win9x support.  3DFX Voodoo builds will not work in Windows.
 * Some of the health and ammo boxes in Warp Spasm clip improperly.
   From what I have read, it appears to be related to a QC issue with
   rotating these at odd angles.
@@ -166,5 +177,6 @@ http://dk.toastednet.org/QDOS and using UNIRV and FASTVID to greatly
 increase the video speed in Quake under pure DOS.  DOSLFN will also
 help avoid file renaming conflicts with long file names.
 
+Special thanks to: neozeed, sezero, Taniwha, LordHavoc, and Spoike.
 
 Questions?  Comments?  Email me emoaddict15@gmail.com

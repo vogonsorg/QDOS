@@ -6,6 +6,10 @@ Additional code from sezero, taniwha, spoike, LordHavoc,
    QuakeForge, Fitzquake, Quakespasm, Darkplaces and more.
 ---------------------------------------------------------
 
+* -cddir for specifiy a cd drive path for pak files.  Also for keeping
+  WAV/OGG music in a separate drive.
+* 3DFX Voodoo rendering with fxMesa 6.4.2!  Check voodoo directory for 
+  your glide3x.dxe.
 * QuakeForge HTTP downloading extension support.
 * Scaleable maximum bmodel edges with r_maxbmodeledges.
 * V-Sync control via extended menu options.

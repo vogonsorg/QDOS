@@ -2223,6 +2223,12 @@ void COM_InitFilesystem () //johnfitz -- modified based on topaz's tutorial
 	}                
 	//johnfitz
 
+	i = COM_CheckParm ("-cddir"); /* FS: One of my computers has 3 small drives and I keep the WAVs on a separate drive... */
+	if(i && i < com_argc-1)
+	{
+		COM_AddGameDirectory ( va("%s", com_argv[i+1]));
+	}
+
 	i = COM_CheckParm ("-game");
 	if (i && i < com_argc-1)
 	{

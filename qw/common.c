@@ -2086,6 +2086,8 @@ void COM_AddGameDirectory (char *dir)
 
 	if ((p = strrchr(dir, '/')) != NULL)
 		strcpy(gamedirfile, ++p);
+	else if ((p = strrchr(dir, '\\')) != NULL) /* FS: For -cddir */
+		strcpy(gamedirfile, ++p);
 	else
 		strcpy(gamedirfile, p);
 	strcpy (com_gamedir, dir);
@@ -2216,6 +2218,12 @@ void COM_InitFilesystem (void)
 //
 	COM_AddGameDirectory (va("%s/id1", com_basedir) );
 	COM_AddGameDirectory (va("%s/qw", com_basedir) );
+
+	i = COM_CheckParm ("-cddir"); /* FS: One of my computers has 3 small drives and I keep the WAVs on a separate drive... */
+	if(i && i < com_argc-1)
+	{
+		COM_AddGameDirectory ( va("%s", com_argv[i+1]));
+	}
 
 	// any set gamedirs will be freed up to here
 	com_base_searchpaths = com_searchpaths;
