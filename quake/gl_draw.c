@@ -59,7 +59,7 @@ int		texels;
 
 typedef struct
 {
-	unsigned short	crc;
+	unsigned short crc;
 	int		texnum;
 	char	identifier[64];
 	int		width, height;
@@ -69,7 +69,6 @@ typedef struct
 #define	MAX_GLTEXTURES	1024
 gltexture_t	gltextures[MAX_GLTEXTURES];
 int			numgltextures;
-
 
 void GL_Bind (int texnum)
 {
@@ -81,7 +80,7 @@ void GL_Bind (int texnum)
 #ifdef _WIN32
 	bindTexFunc (GL_TEXTURE_2D, texnum);
 #else
-	glBindTexture(GL_TEXTURE_2D, texnum);
+	glBindTexture (GL_TEXTURE_2D, texnum);
 #endif
 }
 
@@ -145,7 +144,7 @@ int Scrap_AllocBlock (int w, int h, int *x, int *y)
 	}
 
 	Sys_Error ("Scrap_AllocBlock: full");
-	return -1; /* FS: Compiler warning */
+	return 0;
 }
 
 int	scrap_uploads;
@@ -300,18 +299,20 @@ void Draw_CharToConback (int num, byte *dest)
 
 typedef struct
 {
-	char *name;
-	int	minimize, maximize;
+	int	magfilter;
+	int	minfilter;
+	const char  *name;
 } glmode_t;
-
-glmode_t modes[] = {
-	{"GL_NEAREST", GL_NEAREST, GL_NEAREST},
-	{"GL_LINEAR", GL_LINEAR, GL_LINEAR},
-	{"GL_NEAREST_MIPMAP_NEAREST", GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST},
-	{"GL_LINEAR_MIPMAP_NEAREST", GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR},
-	{"GL_NEAREST_MIPMAP_LINEAR", GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST},
-	{"GL_LINEAR_MIPMAP_LINEAR", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR}
+static glmode_t glmodes[] = {
+	{GL_NEAREST, GL_NEAREST,		"GL_NEAREST"},
+	{GL_NEAREST, GL_NEAREST_MIPMAP_NEAREST,	"GL_NEAREST_MIPMAP_NEAREST"},
+	{GL_NEAREST, GL_NEAREST_MIPMAP_LINEAR,	"GL_NEAREST_MIPMAP_LINEAR"},
+	{GL_LINEAR,  GL_LINEAR,			"GL_LINEAR"},
+	{GL_LINEAR,  GL_LINEAR_MIPMAP_NEAREST,	"GL_LINEAR_MIPMAP_NEAREST"},
+	{GL_LINEAR,  GL_LINEAR_MIPMAP_LINEAR,	"GL_LINEAR_MIPMAP_LINEAR"},
 };
+#define NUM_GLMODES (int)(sizeof(glmodes)/sizeof(glmodes[0]))
+static int glmode_idx = NUM_GLMODES - 1; /* trilinear */
 
 /*
 ===============
@@ -320,44 +321,69 @@ Draw_TextureMode_f
 */
 void Draw_TextureMode_f (void)
 {
-	int		i;
 	gltexture_t	*glt;
+	char *arg;
+	int i;
 
-	if (Cmd_Argc() == 1)
+	switch (Cmd_Argc())
 	{
-		for (i=0 ; i< 6 ; i++)
-			if (gl_filter_min == modes[i].minimize)
+	case 1:
+		Con_Printf ("\"gl_texturemode\" is \"%s\"\n", glmodes[glmode_idx].name);
+		break;
+	case 2:
+		arg = Cmd_Argv(1);
+		if (arg[0] == 'G' || arg[0] == 'g')
+		{
+			for (i=0; i<NUM_GLMODES; i++)
 			{
-				Con_Printf ("%s\n", modes[i].name);
+				if (!stricmp (glmodes[i].name, arg))
+				{
+					if (glmode_idx != i)
+					{
+						glmode_idx = i;
+						goto stuff;
+					}
+					return;
+				}
+			}
+			Con_Printf ("\"%s\" is not a valid texturemode\n", arg);
+			return;
+		}
+		else if (arg[0] >= '0' && arg[0] <= '9')
+		{
+			i = atoi(arg);
+			if (i < 1 || i > NUM_GLMODES)
+			{
+				Con_Printf ("\"%s\" is not a valid texturemode\n", arg);
 				return;
 			}
-		Con_Printf ("current filter is unknown???\n");
-		return;
-	}
-
-	for (i=0 ; i< 6 ; i++)
-	{
-		if (!Q_strcasecmp (modes[i].name, Cmd_Argv(1) ) )
-			break;
-	}
-	if (i == 6)
-	{
-		Con_Printf ("bad filter name\n");
-		return;
-	}
-
-	gl_filter_min = modes[i].minimize;
-	gl_filter_max = modes[i].maximize;
-
-	// change all the existing mipmap texture objects
-	for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
-	{
-		if (glt->mipmap)
-		{
-			GL_Bind (glt->texnum);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+			glmode_idx = i-1;
 		}
+		else
+			Con_Printf ("\"%s\" is not a valid texturemode\n", arg);
+
+stuff:
+		gl_filter_min = glmodes[glmode_idx].minfilter;
+		gl_filter_max = glmodes[glmode_idx].magfilter;
+	// change all the existing mipmap texture objects
+		for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
+		{
+			if (glt->mipmap)
+			{
+				GL_Bind (glt->texnum);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+			}
+		}
+
+		Sbar_Changed (); //sbar graphics need to be redrawn with new filter mode
+
+		//FIXME: warpimages need to be redrawn, too.
+
+		break;
+	default:
+		Con_SafePrintf ("usage: gl_texturemode <mode>\n");
+		break;
 	}
 }
 
@@ -374,9 +400,8 @@ void Draw_Init (void)
 	int		x, y;
 	char	ver[40];
 	glpic_t	*gl;
-	int		start;
-	byte	*ncdata;
-
+	int start;
+	byte    *ncdata;
 
 	Cvar_RegisterVariable (&gl_nobind);
 	Cvar_RegisterVariable (&gl_max_size);
@@ -423,31 +448,31 @@ void Draw_Init (void)
 	conback->width = vid.conwidth;
 	conback->height = vid.conheight;
 
- 	// scale console to vid size
- 	dest = ncdata = Hunk_AllocName(vid.conwidth * vid.conheight, "conback");
- 
- 	for (y=0 ; y<vid.conheight ; y++, dest += vid.conwidth)
- 	{
- 		src = cb->data + cb->width * (y*cb->height/vid.conheight);
- 		if (vid.conwidth == cb->width)
- 			memcpy (dest, src, vid.conwidth);
- 		else
- 		{
- 			f = 0;
- 			fstep = cb->width*0x10000/vid.conwidth;
- 			for (x=0 ; x<vid.conwidth ; x+=4)
- 			{
- 				dest[x] = src[f>>16];
- 				f += fstep;
- 				dest[x+1] = src[f>>16];
- 				f += fstep;
- 				dest[x+2] = src[f>>16];
- 				f += fstep;
- 				dest[x+3] = src[f>>16];
- 				f += fstep;
- 			}
- 		}
- 	}
+	// scale console to vid size
+	dest = ncdata = Hunk_AllocName(vid.conwidth * vid.conheight, "conback");
+
+	for (y=0 ; y<vid.conheight ; y++, dest += vid.conwidth)
+	{
+		src = cb->data + cb->width * (y*cb->height/vid.conheight);
+		if (vid.conwidth == cb->width)
+			memcpy (dest, src, vid.conwidth);
+		else
+		{
+			f = 0;
+			fstep = cb->width*0x10000/vid.conwidth;
+			for (x=0 ; x<vid.conwidth ; x+=4)
+			{
+				dest[x] = src[f>>16];
+				f += fstep;
+				dest[x+1] = src[f>>16];
+				f += fstep;
+				dest[x+2] = src[f>>16];
+				f += fstep;
+				dest[x+3] = src[f>>16];
+				f += fstep;
+			}
+		}
+	}
 #else
 	conback->width = cb->width;
 	conback->height = cb->height;
@@ -467,7 +492,7 @@ void Draw_Init (void)
 	conback->height = vid.height;
 
 	// free loaded console
-	Hunk_FreeToLowMark(start);
+	Hunk_FreeToLowMark (start);
 
 	// save a texture slot for translated picture
 	translate_texture = texture_extension_number++;

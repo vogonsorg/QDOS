@@ -97,7 +97,7 @@ cvar_t	gl_playermip = {"gl_playermip","0"};
 cvar_t	gl_nocolors = {"gl_nocolors","0"};
 cvar_t	gl_keeptjunctions = {"gl_keeptjunctions","1", true};
 cvar_t	gl_reporttjunctions = {"gl_reporttjunctions","0"};
-cvar_t	gl_doubleeyes = {"gl_doubleeys", "1"};
+cvar_t	gl_doubleeyes = {"gl_doubleeys", "1", true, false, "Double size of model eyes, since they are really hard to see in GL."};
 
 cvar_t  r_waterwarp = {"r_waterwarp","1", true}; /* FS: Shut up compiler until I fix this stuff */
 

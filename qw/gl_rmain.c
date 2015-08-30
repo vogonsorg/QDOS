@@ -125,7 +125,6 @@ void R_RotateForEntity (entity_t *e)
 
     glRotatef (e->angles[1],  0, 0, 1);
     glRotatef (-e->angles[0],  0, 1, 0);
-	//ZOID: fixed z angle
     glRotatef (e->angles[2],  1, 0, 0);
 }
 
@@ -713,9 +712,7 @@ void R_PolyBlend (void)
 	if (!v_blend[3])
 		return;
 
-//Con_Printf("R_PolyBlend(): %4.2f %4.2f %4.2f %4.2f\n",v_blend[0], v_blend[1],	v_blend[2],	v_blend[3]);
-
- 	GL_DisableMultitexture();
+	GL_DisableMultitexture();
 
 	glDisable (GL_ALPHA_TEST);
 	glEnable (GL_BLEND);
@@ -775,7 +772,6 @@ void R_SetFrustum (void)
 	}
 	else
 	{
-
 		// rotate VPN right by FOV_X/2 degrees
 		RotatePointAroundVector( frustum[0].normal, vup, vpn, -(90-r_refdef.fov_x / 2 ) );
 		// rotate VPN left by FOV_X/2 degrees
@@ -891,9 +887,6 @@ void R_SetupGL (void)
 	glViewport (glx + x, gly + y2, w, h);
     screenaspect = (float)r_refdef.vrect.width/r_refdef.vrect.height;
 //	yfov = 2*atan((float)r_refdef.vrect.height/r_refdef.vrect.width)*180/M_PI;
-//	yfov = (2.0 * tan (scr_fov.value/360*M_PI)) / screenaspect;
-//	yfov = 2*atan((float)r_refdef.vrect.height/r_refdef.vrect.width)*(scr_fov.value*2)/M_PI;
-//    MYgluPerspective (yfov,  screenaspect,  4,  4096);
     MYgluPerspective (r_refdef.fov_y,  screenaspect,  4,  4096);
 
 	if (mirror)
@@ -1061,7 +1054,6 @@ void R_Mirror (void)
 
 	R_RenderScene ();
 	R_DrawWaterSurfaces ();
-
 
 	gldepthmin = 0;
 	gldepthmax = 0.5;

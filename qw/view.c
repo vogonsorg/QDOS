@@ -62,7 +62,7 @@ cvar_t  cl_crossy = {"cl_crossy", "0", true};
 #ifdef GLQUAKE
 cvar_t	gl_cshiftpercent = {"gl_cshiftpercent", "100", false};
 #endif
-cvar_t  v_contentblend = {"v_contentblend", "1", true};
+cvar_t	v_contentblend = {"v_contentblend", "1", true, false, "Disable palette blends."}; /* FS: Fucking hate palette blends */
 
 float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
 

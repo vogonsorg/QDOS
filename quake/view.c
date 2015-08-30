@@ -64,21 +64,21 @@ cvar_t	cl_crossy = {"cl_crossy", "0", false};
 
 cvar_t	gl_cshiftpercent = {"gl_cshiftpercent", "100", false};
 
-cvar_t	v_contentblend = {"v_contentblend", "1", true}; /* FS: Fucking hate palette blends */
+cvar_t	v_contentblend = {"v_contentblend", "1", true, false, "Disable palette blends."}; /* FS: Fucking hate palette blends */
 
 /* FS: For mod compatibility */
 #ifndef GLQUAKE
-cvar_t r_wateralpha = {"r_wateralpha", "0", false};
+cvar_t r_wateralpha = {"r_wateralpha", "1", false, false, "Unused CVAR for mod compatibility."};
 #endif
-cvar_t fog = {"fog", "0", false};
-cvar_t r_oldsky = {"r_oldsky", "0", false};
-cvar_t gl_fogenable = {"gl_fogenable", "0", false};
-cvar_t gl_fogdensity = {"gl_fogdensity", "0", false};
-cvar_t gl_fogred = {"gl_fogred", "0", false};
-cvar_t gl_foggreen = {"gl_foggreen", "0", false};
-cvar_t gl_fogblue = {"gl_fogblue", "0", false};
-cvar_t r_waterripple = {"r_waterripple", "0", false};
-cvar_t r_skyfog = {"r_skyfog", "0", false};
+cvar_t fog = {"fog", "0", false, false, "Unused CVAR for mod compatibility."};
+cvar_t r_oldsky = {"r_oldsky", "0", false, false, "Unused CVAR for mod compatibility."};
+cvar_t gl_fogenable = {"gl_fogenable", "0", false, false, "Unused CVAR for mod compatibility."};
+cvar_t gl_fogdensity = {"gl_fogdensity", "0", false, false, "Unused CVAR for mod compatibility."};
+cvar_t gl_fogred = {"gl_fogred", "0", false, false, "Unused CVAR for mod compatibility."};
+cvar_t gl_foggreen = {"gl_foggreen", "0", false, false, "Unused CVAR for mod compatibility."};
+cvar_t gl_fogblue = {"gl_fogblue", "0", false, false, "Unused CVAR for mod compatibility."};
+cvar_t r_waterripple = {"r_waterripple", "0", false, false, "Unused CVAR for mod compatibility."};
+cvar_t r_skyfog = {"r_skyfog", "0", false, false, "Unused CVAR for mod compatibility."};
 
 float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
 

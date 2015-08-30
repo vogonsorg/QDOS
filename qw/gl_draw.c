@@ -306,18 +306,20 @@ void Draw_CharToConback (int num, byte *dest)
 
 typedef struct
 {
-	char *name;
-	int	minimize, maximize;
+	int	magfilter;
+	int	minfilter;
+	const char  *name;
 } glmode_t;
-
-glmode_t modes[] = {
-	{"GL_NEAREST", GL_NEAREST, GL_NEAREST},
-	{"GL_LINEAR", GL_LINEAR, GL_LINEAR},
-	{"GL_NEAREST_MIPMAP_NEAREST", GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST},
-	{"GL_LINEAR_MIPMAP_NEAREST", GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR},
-	{"GL_NEAREST_MIPMAP_LINEAR", GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST},
-	{"GL_LINEAR_MIPMAP_LINEAR", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR}
+static glmode_t glmodes[] = {
+	{GL_NEAREST, GL_NEAREST,		"GL_NEAREST"},
+	{GL_NEAREST, GL_NEAREST_MIPMAP_NEAREST,	"GL_NEAREST_MIPMAP_NEAREST"},
+	{GL_NEAREST, GL_NEAREST_MIPMAP_LINEAR,	"GL_NEAREST_MIPMAP_LINEAR"},
+	{GL_LINEAR,  GL_LINEAR,			"GL_LINEAR"},
+	{GL_LINEAR,  GL_LINEAR_MIPMAP_NEAREST,	"GL_LINEAR_MIPMAP_NEAREST"},
+	{GL_LINEAR,  GL_LINEAR_MIPMAP_LINEAR,	"GL_LINEAR_MIPMAP_LINEAR"},
 };
+#define NUM_GLMODES (int)(sizeof(glmodes)/sizeof(glmodes[0]))
+static int glmode_idx = NUM_GLMODES - 1; /* trilinear */
 
 /*
 ===============
@@ -326,44 +328,69 @@ Draw_TextureMode_f
 */
 void Draw_TextureMode_f (void)
 {
-	int		i;
 	gltexture_t	*glt;
+	char *arg;
+	int i;
 
-	if (Cmd_Argc() == 1)
+	switch (Cmd_Argc())
 	{
-		for (i=0 ; i< 6 ; i++)
-			if (gl_filter_min == modes[i].minimize)
+	case 1:
+		Con_Printf ("\"gl_texturemode\" is \"%s\"\n", glmodes[glmode_idx].name);
+		break;
+	case 2:
+		arg = Cmd_Argv(1);
+		if (arg[0] == 'G' || arg[0] == 'g')
+		{
+			for (i=0; i<NUM_GLMODES; i++)
 			{
-				Con_Printf ("%s\n", modes[i].name);
+				if (!stricmp (glmodes[i].name, arg))
+				{
+					if (glmode_idx != i)
+					{
+						glmode_idx = i;
+						goto stuff;
+					}
+					return;
+				}
+			}
+			Con_Printf ("\"%s\" is not a valid texturemode\n", arg);
+			return;
+		}
+		else if (arg[0] >= '0' && arg[0] <= '9')
+		{
+			i = atoi(arg);
+			if (i < 1 || i > NUM_GLMODES)
+			{
+				Con_Printf ("\"%s\" is not a valid texturemode\n", arg);
 				return;
 			}
-		Con_Printf ("current filter is unknown???\n");
-		return;
-	}
-
-	for (i=0 ; i< 6 ; i++)
-	{
-		if (!Q_strcasecmp (modes[i].name, Cmd_Argv(1) ) )
-			break;
-	}
-	if (i == 6)
-	{
-		Con_Printf ("bad filter name\n");
-		return;
-	}
-
-	gl_filter_min = modes[i].minimize;
-	gl_filter_max = modes[i].maximize;
-
-	// change all the existing mipmap texture objects
-	for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
-	{
-		if (glt->mipmap)
-		{
-			GL_Bind (glt->texnum);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+			glmode_idx = i-1;
 		}
+		else
+			Con_Printf ("\"%s\" is not a valid texturemode\n", arg);
+
+stuff:
+		gl_filter_min = glmodes[glmode_idx].minfilter;
+		gl_filter_max = glmodes[glmode_idx].magfilter;
+	// change all the existing mipmap texture objects
+		for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
+		{
+			if (glt->mipmap)
+			{
+				GL_Bind (glt->texnum);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+			}
+		}
+
+		Sbar_Changed (); //sbar graphics need to be redrawn with new filter mode
+
+		//FIXME: warpimages need to be redrawn, too.
+
+		break;
+	default:
+		Con_SafePrintf ("usage: gl_texturemode <mode>\n");
+		break;
 	}
 }
 
@@ -454,7 +481,7 @@ void Draw_Init (void)
 	conback->height = cb->height;
 	ncdata = cb->data;
 #endif
-	
+
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -921,11 +948,11 @@ void GL_Set2D (void)
 	glViewport (glx, gly, glwidth, glheight);
 
 	glMatrixMode(GL_PROJECTION);
-    glLoadIdentity ();
+	glLoadIdentity ();
 	glOrtho  (0, vid.width, vid.height, 0, -99999, 99999);
 
 	glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity ();
+	glLoadIdentity ();
 
 	glDisable (GL_DEPTH_TEST);
 	glDisable (GL_CULL_FACE);
@@ -1170,7 +1197,7 @@ void GL_Upload8_EXT (byte *data, int width, int height,  qboolean mipmap, qboole
 {
 	int			i, s;
 	qboolean	noalpha;
-    static	unsigned char scaled[1024*512];	// [512*256];
+	static		unsigned char scaled[1024*512];	// [512*256];
 	int			scaled_width, scaled_height;
 
 	s = width*height;
