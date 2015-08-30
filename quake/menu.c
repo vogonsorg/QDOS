@@ -1668,27 +1668,21 @@ void M_Keys_Key (int k)
 
 void M_Menu_Video_f (void)
 {
-#if (!defined(_WIN32) && !defined(GLQUAKE)) || (defined(_WIN32)) /* FS: TODO FIXME */
 	key_dest = key_menu;
 	m_state = m_video;
 	m_entersound = true;
-#endif
 }
 
 
 void M_Video_Draw (void)
 {
-#if (!defined(_WIN32) && !defined(GLQUAKE)) || (defined(_WIN32)) /* FS: TODO FIXME */
 	(*vid_menudrawfn) ();
-#endif
 }
 
 
 void M_Video_Key (int key)
 {
-#if (!defined(_WIN32) && !defined(GLQUAKE)) || (defined(_WIN32)) /* FS: TODO FIXME */
 	(*vid_menukeyfn) (key);
-#endif
 }
 
 //=============================================================================

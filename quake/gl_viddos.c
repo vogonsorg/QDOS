@@ -78,6 +78,11 @@ qboolean is8bit = false;
 qboolean isPermedia = false;
 qboolean gl_mtexable = false;
 
+static char currentVideoModeDesc[256];
+
+void VID_MenuDraw (void);
+void VID_MenuKey (int key);
+
 /*-----------------------------------------------------------------------*/
 void D_BeginDirectRect (int x, int y, byte *pbitmap, int width, int height)
 {
@@ -459,7 +464,138 @@ void VID_Init(unsigned char *palette)
 	// Check for 3DFX Extensions and initialize them.
 	VID_Init8bitPalette();
 
-	Con_SafePrintf ("Video mode %dx%dx%d initialized.\n", width, height, bpp);
+	vid_menudrawfn = VID_MenuDraw;
+	vid_menukeyfn = VID_MenuKey;
+
+	Com_sprintf(currentVideoModeDesc, sizeof(currentVideoModeDesc), "%dx%dx%d", width, height, bpp);
+	Con_SafePrintf ("Video mode %s initialized.\n", currentVideoModeDesc);
 
 	vid.recalc_refdef = 1;				// force a surface cache flush
+}
+
+
+
+//========================================================
+// Video menu stuff
+//========================================================
+
+/* FS: TODO: Grab the GR_RESOLUTION list from earlier to show common resolutions */
+extern void M_Menu_Options_f (void);
+extern void M_Print (int cx, int cy, char *str);
+extern void M_PrintWhite (int cx, int cy, char *str);
+extern void M_DrawCharacter (int cx, int line, int num);
+extern void M_DrawTransPic (int x, int y, qpic_t *pic);
+extern void M_DrawPic (int x, int y, qpic_t *pic);
+
+#if 0
+static int	vid_line, vid_wmodes;
+
+typedef struct
+{
+	int		modenum;
+	char	*desc;
+	int		iscur;
+} modedesc_t;
+#endif
+
+#define MAX_COLUMN_SIZE		9
+#define MODE_AREA_HEIGHT	(MAX_COLUMN_SIZE + 2)
+#define MAX_MODEDESCS		(MAX_COLUMN_SIZE*3)
+
+#if 0
+static modedesc_t	modedescs[MAX_MODEDESCS];
+#endif
+
+/*
+================
+VID_MenuDraw
+================
+*/
+void VID_MenuDraw (void)
+{
+	qpic_t		*p;
+#if 0
+	char		*ptr;
+	int			lnummodes, i, j, k, column, row, dup, dupmode;
+	char		temp[100];
+	vmode_t		*pv;
+#endif
+
+	p = Draw_CachePic ("gfx/vidmodes.lmp");
+	M_DrawPic ( (320-p->width)/2, 4, p);
+
+#if 0
+	vid_wmodes = 0;
+	lnummodes = VID_NumModes ();
+	
+	for (i=1 ; (i<lnummodes) && (vid_wmodes < MAX_MODEDESCS) ; i++)
+	{
+		ptr = VID_GetModeDescription (i);
+		pv = VID_GetModePtr (i);
+
+		k = vid_wmodes;
+
+		modedescs[k].modenum = i;
+		modedescs[k].desc = ptr;
+		modedescs[k].iscur = 0;
+
+		if (i == vid_modenum)
+			modedescs[k].iscur = 1;
+
+		vid_wmodes++;
+
+	}
+
+	if (vid_wmodes > 0)
+	{
+		M_Print (2*8, 36+0*8, "Fullscreen Modes (WIDTHxHEIGHTxBPP)");
+
+		column = 8;
+		row = 36+2*8;
+
+		for (i=0 ; i<vid_wmodes ; i++)
+		{
+			if (modedescs[i].iscur)
+				M_PrintWhite (column, row, modedescs[i].desc);
+			else
+				M_Print (column, row, modedescs[i].desc);
+
+			column += 13*8;
+
+			if ((i % VID_ROW_SIZE) == (VID_ROW_SIZE - 1))
+			{
+				column = 8;
+				row += 8;
+			}
+		}
+	}
+#else
+	M_PrintWhite (8, 36+2*8, currentVideoModeDesc);
+	M_Print (3*8, 36 + MODE_AREA_HEIGHT * 8 + 8*2,
+			 "Video modes must be set from the");
+	M_Print (3*8, 36 + MODE_AREA_HEIGHT * 8 + 8*3,
+			 "command line with -width <width>");
+	M_Print (3*8, 36 + MODE_AREA_HEIGHT * 8 + 8*4,
+			 "and -bpp <bits-per-pixel>");
+#endif
+}
+
+
+/*
+================
+VID_MenuKey
+================
+*/
+void VID_MenuKey (int key)
+{
+	switch (key)
+	{
+	case K_ESCAPE:
+		S_LocalSound ("misc/menu1.wav");
+		M_Menu_Options_f ();
+		break;
+
+	default:
+		break;
+	}
 }
