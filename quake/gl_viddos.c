@@ -79,6 +79,7 @@ qboolean isPermedia = false;
 qboolean gl_mtexable = false;
 
 static char currentVideoModeDesc[256];
+static int bpp = 16;
 
 void VID_MenuDraw (void);
 void VID_MenuKey (int key);
@@ -90,6 +91,25 @@ void D_BeginDirectRect (int x, int y, byte *pbitmap, int width, int height)
 
 void D_EndDirectRect (int x, int y, int width, int height)
 {
+}
+
+void VID_CreateDMesaContext(int width, int height, int bpp)
+{
+	dv = DMesaCreateVisual((GLint)width, (GLint)height, bpp, 0, true, true, 2, 16, 0, 0);
+	if (!dv)
+		Sys_Error("Unable to create 3DFX visual.\n");
+
+	dc = DMesaCreateContext(dv, NULL);
+	if (!dc)
+		Sys_Error("Unable to create 3DFX context.\n");
+
+	scr_width = width;
+	scr_height = height;
+
+	db = DMesaCreateBuffer(dv, 0,0,(GLint)width,(GLint)height);
+	if (!db)
+		Sys_Error("Unable to create 3DFX buffer.\n");
+	DMesaMakeCurrent(dc, db);
 }
 
 void VID_Shutdown(void)
@@ -178,28 +198,54 @@ void *qwglGetProcAddress(char *symbol)
 void CheckMultiTextureExtensions(void) 
 {
 #if 0 /* FS: TODO Use ARB multitexture */
-	void *prjobj;
-
-	if (strstr(gl_extensions, "GL_SGIS_multitexture ") && !COM_CheckParm("-nomtex")) {
-		Con_Printf("Found GL_SGIS_multitexture...\n");
-
-		if ((prjobj = dlopen(NULL, RTLD_LAZY)) == NULL) {
-			Con_Printf("Unable to open symbol list for main program.\n");
-			return;
+	if (COM_CheckParm("-nomtex"))
+		Con_Warning ("Mutitexture disabled at command line\n");
+	else
+	{
+		if (strstr(gl_extensions, "GL_ARB_multitexture "))
+		{
+			qglMTexCoord2fSGIS = (void *) qwglGetProcAddress("glMTexCoord2fSGIS");
+			qglSelectTextureSGIS = (void *) qwglGetProcAddress("glSelectTextureSGIS");
+			if (qglMTexCoord2fSGIS && qglSelectTextureSGIS)
+			{
+				Con_Printf("Multitexture extensions found.\n");
+				gl_mtexable = true;
+			}
+			else
+				Con_Warning ("multitexture not supported (wglGetProcAddress failed)\n");
 		}
-
-		qglMTexCoord2fSGIS = (void *) dlsym(prjobj, "glMTexCoord2fSGIS");
-		qglSelectTextureSGIS = (void *) dlsym(prjobj, "glSelectTextureSGIS");
-
-		if (qglMTexCoord2fSGIS && qglSelectTextureSGIS) {
-			Con_Printf("Multitexture extensions found.\n");
-			gl_mtexable = true;
-		} else
-			Con_Printf("Symbol not found, disabled.\n");
-
-		dlclose(prjobj);
 	}
 #endif
+}
+
+/*
+===============
+GL_SetupState -- johnfitz
+
+does all the stuff from GL_Init that needs to be done every time a new GL render context is created
+GL_Init will still do the stuff that only needs to be done once
+===============
+*/
+void GL_SetupState (void)
+{
+	glClearColor (0.15,0.15,0.15,0); //johnfitz -- originally 1,0,0,0
+	glCullFace(GL_FRONT);
+	glEnable(GL_TEXTURE_2D);
+
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.666);
+
+	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+	glShadeModel (GL_FLAT);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 }
 
 /*
@@ -223,24 +269,7 @@ void GL_Init (void)
 
 	CheckMultiTextureExtensions ();
 
-	glClearColor (1,0,0,0);
-	glCullFace(GL_FRONT);
-	glEnable(GL_TEXTURE_2D);
-
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.666);
-
-	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-	glShadeModel (GL_FLAT);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	GL_SetupState(); // johnfitz
 }
 
 /*
@@ -263,22 +292,14 @@ void GL_EndRendering (void)
 }
 
 
-#define NUM_RESOLUTIONS 16
+#define NUM_RESOLUTIONS 8
 
 static int resolutions[NUM_RESOLUTIONS][3]={ 
-	{320,200,  GR_RESOLUTION_320x200},
 	{320,240,  GR_RESOLUTION_320x240},
-	{400,256,  GR_RESOLUTION_400x256},
 	{400,300,  GR_RESOLUTION_400x300},
 	{512,384,  GR_RESOLUTION_512x384},
-	{640,200,  GR_RESOLUTION_640x200},
-	{640,350,  GR_RESOLUTION_640x350},
-	{640,400,  GR_RESOLUTION_640x400},
 	{640,480,  GR_RESOLUTION_640x480},
 	{800,600,  GR_RESOLUTION_800x600},
-	{960,720,  GR_RESOLUTION_960x720},
-	{856,480,  GR_RESOLUTION_856x480},
-	{512,256,  GR_RESOLUTION_512x256},
 	{1024,768, GR_RESOLUTION_1024x768},
 	{1280,1024,GR_RESOLUTION_1280x1024},
 	{1600,1200,GR_RESOLUTION_1600x1200}
@@ -367,7 +388,6 @@ static void Check_Gamma (unsigned char *pal)
 void VID_Init(unsigned char *palette)
 {
 	int i;
-	static int bpp = 16;
 	char	gldir[MAX_OSPATH];
 	int width = 640, height = 480;
 	char *read_vars[] = {
@@ -421,21 +441,7 @@ void VID_Init(unsigned char *palette)
 	/* don't let fxMesa cheat multitexturing */
 	putenv("FX_DONT_FAKE_MULTITEX=1");
 
-	dv = DMesaCreateVisual((GLint)width, (GLint)height, bpp, 0, true, true, 2, 16, 0, 0);
-	if (!dv)
-		Sys_Error("Unable to create 3DFX visual.\n");
-	
-	dc = DMesaCreateContext(dv, NULL);
-	if (!dc)
-		Sys_Error("Unable to create 3DFX context.\n");
-
-	scr_width = width;
-	scr_height = height;
-
-	db = DMesaCreateBuffer(dv, 0,0,(GLint)width,(GLint)height);
-	if (!db)
-		Sys_Error("Unable to create 3DFX buffer.\n");
-	DMesaMakeCurrent(dc, db);
+	VID_CreateDMesaContext(width, height, bpp);
 
 	if (vid.conheight > height)
 		vid.conheight = height;
