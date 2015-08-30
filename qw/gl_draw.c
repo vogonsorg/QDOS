@@ -416,8 +416,15 @@ void Draw_Init (void)
 
 	// 3dfx can only handle 256 wide textures
 	if (!Q_strncasecmp ((char *)gl_renderer, "3dfx",4) ||
-		!Q_strncasecmp ((char *)gl_renderer, "Mesa",4))
-		Cvar_Set ("gl_max_size", "256");
+		strstr((char *)gl_renderer, "Glide"))
+	{
+		/* FS: VSA-100 can handle 2048x2048 */
+		if((!strstr ((char *)gl_renderer, "Voodoo4")) &&
+			(!strstr ((char *)gl_renderer, "Voodoo5")))
+		{
+			Cvar_Set ("gl_max_size", "256");
+		}
+	}
 
 	Cmd_AddCommand ("gl_texturemode", &Draw_TextureMode_f);
 

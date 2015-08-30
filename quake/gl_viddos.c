@@ -362,6 +362,7 @@ static void Check_Gamma (unsigned char *pal)
 void VID_Init(unsigned char *palette)
 {
 	int i;
+	static int bpp = 16;
 	char	gldir[MAX_OSPATH];
 	int width = 640, height = 480;
 	char *read_vars[] = {
@@ -392,6 +393,13 @@ void VID_Init(unsigned char *palette)
 	else
 		vid.conwidth = 640;
 
+	if ((i = COM_CheckParm("-bpp")) != 0) /* FS: Force BPP */
+	{
+		int x = Q_atoi(com_argv[i+1]);
+		if ((x == 15) || (x == 32))
+			bpp = x;
+	}
+
 	vid.conwidth &= 0xfff8; // make it a multiple of eight
 
 	if (vid.conwidth < 320)
@@ -408,7 +416,7 @@ void VID_Init(unsigned char *palette)
 	/* don't let fxMesa cheat multitexturing */
 	putenv("FX_DONT_FAKE_MULTITEX=1");
 
-	dv = DMesaCreateVisual((GLint)width, (GLint)height, 16, 0, true, true, 2, 16, 0, 0);
+	dv = DMesaCreateVisual((GLint)width, (GLint)height, bpp, 0, true, true, 2, 16, 0, 0);
 	if (!dv)
 		Sys_Error("Unable to create 3DFX visual.\n");
 	
@@ -451,7 +459,7 @@ void VID_Init(unsigned char *palette)
 	// Check for 3DFX Extensions and initialize them.
 	VID_Init8bitPalette();
 
-	Con_SafePrintf ("Video mode %dx%d initialized.\n", width, height);
+	Con_SafePrintf ("Video mode %dx%dx%d initialized.\n", width, height, bpp);
 
 	vid.recalc_refdef = 1;				// force a surface cache flush
 }
