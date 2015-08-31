@@ -32,6 +32,9 @@ ifeq ($(GLQUAKE),1)
 CFLAGS+= -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE
 LIBS+= -L../3rdparty/lib -lgl
 EXE = qdosfx.exe
+SYSOBJ_DXE=$(O)/dxe.o
+else
+SYSOBJ_DXE=$(O)/no_dxe.o
 endif
 
 ifeq ($(USE_SNDPCI),1)
@@ -88,14 +91,18 @@ DOSTCP += $(O)/dos_inet.o $(O)/inetaddr.o
 endif
 SYSOBJ_NET := $(DOSTCP)
 
-# not too sophisticated dependency
-OBJS= 	$(DOSTCP)       \
-	$(O)/Goa/CEngine/darray.o \
+# FIXME: make the gspy shit optional
+GAMESPY = $(O)/Goa/CEngine/darray.o \
 	$(O)/Goa/CEngine/gserver.o \
 	$(O)/Goa/CEngine/gserverlist.o \
 	$(O)/Goa/CEngine/hashtable.o \
 	$(O)/Goa/SDK/goautil.o \
-	$(O)/Goa/nonport.o \
+	$(O)/Goa/nonport.o
+
+# not too sophisticated dependency
+OBJS=	$(SYSOBJ_DXE)    \
+	$(SYSOBJ_NET)    \
+	$(GAMESPY)       \
 	$(O)/cd_audio.o \
 	$(O)/cfgfile.o   \
 	$(O)/chase.o    \
@@ -111,7 +118,6 @@ OBJS= 	$(DOSTCP)       \
 	$(O)/cvar.o     \
 	$(O)/dos_v2.o   \
 	$(O)/dstring.o   \
-	$(O)/dxe.o \
 	$(O)/host.o     \
 	$(O)/host_cmd.o \
 	$(O)/in_dos.o   \

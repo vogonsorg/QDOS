@@ -29,6 +29,9 @@ ifeq ($(GLQUAKE),1)
 CFLAGS+= -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE
 LIBS+= -L../3rdparty/lib -lgl
 EXE = qwdosfx.exe
+SYSOBJ_DXE=$(O)/dxe.o
+else
+SYSOBJ_DXE=$(O)/no_dxe.o
 endif
 
 ifeq ($(USE_SNDPCI),1)
@@ -58,13 +61,17 @@ LIBS  += -lm
 # subdirectory for objects
 O=dos
 
-# not too sophisticated dependency
-CLIENT = $(O)/Goa/CEngine/darray.o \
+# FIXME: make the gspy shit optional
+GAMESPY = $(O)/Goa/CEngine/darray.o \
 	$(O)/Goa/CEngine/gserver.o \
 	$(O)/Goa/CEngine/gserverlist.o \
 	$(O)/Goa/CEngine/gutil.o \
 	$(O)/Goa/CEngine/hashtable.o \
-	$(O)/Goa/nonport.o \
+	$(O)/Goa/nonport.o
+
+# not too sophisticated dependency
+CLIENT = $(SYSOBJ_DXE)   \
+	$(GAMESPY)       \
 	$(O)/cd_audio.o  \
 	$(O)/cfgfile.o   \
 	$(O)/cl_cam.o   \
@@ -83,7 +90,6 @@ CLIENT = $(O)/Goa/CEngine/darray.o \
 	$(O)/cvar.o     \
 	$(O)/dos_v2.o   \
 	$(O)/dstring.o   \
-	$(O)/dxe.o \
 	$(O)/in_dos.o   \
 	$(O)/keys.o     \
 	$(O)/math.o \
