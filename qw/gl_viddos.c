@@ -78,8 +78,13 @@ qboolean is8bit = false;
 qboolean isPermedia = false;
 qboolean gl_mtexable = false;
 
+/* FS: TODO: make a real video table */
 static char currentVideoModeDesc[256];
+
+/* FS: Fine control over the DMesa Context parameters.  Mostly for debugging and experimentation, but maybe someone has a reason to play with it. */
 static int bpp = 16;
+static int alphaBufferSize = 2;
+static int depthBufferSize = 16;
 
 void VID_MenuDraw (void);
 void VID_MenuKey (int key);
@@ -93,9 +98,10 @@ void D_EndDirectRect (int x, int y, int width, int height)
 {
 }
 
+/* FS: Moved here */
 void VID_CreateDMesaContext(int width, int height, int bpp)
 {
-	dv = DMesaCreateVisual((GLint)width, (GLint)height, bpp, 0, true, true, 2, 16, 0, 0);
+	dv = DMesaCreateVisual((GLint)width, (GLint)height, bpp, 0, true, true, alphaBufferSize, depthBufferSize, 0, 0);
 	if (!dv)
 		Sys_Error("Unable to create 3DFX visual.\n");
 
@@ -265,8 +271,6 @@ void GL_Init (void)
 	gl_extensions = (const char *)glGetString (GL_EXTENSIONS);
 	Con_Printf ("GL_EXTENSIONS: %s\n", gl_extensions);
 
-//	Con_Printf ("%s %s\n", gl_renderer, gl_version);
-
 	CheckMultiTextureExtensions ();
 
 	GL_SetupState(); // johnfitz
@@ -424,6 +428,24 @@ void VID_Init(unsigned char *palette)
 		if ((x == 15) || (x == 32))
 			bpp = x;
 	}
+	if ((i = COM_CheckParm("-alphasize")) != 0) /* FS: Force alpha buffer size */
+	{
+		int x = Q_atoi(com_argv[i+1]);
+		if(x)
+		{
+			Con_SafePrintf("\x02Warning: Alpha buffer size %i.  Default %i.\n", x, alphaBufferSize);
+			alphaBufferSize = x;
+		}
+	}
+	if ((i = COM_CheckParm("-depthsize")) != 0) /* FS: Force depth buffer size */
+	{
+		int x = Q_atoi(com_argv[i+1]);
+		if(x)
+		{
+			Con_SafePrintf("\x02Warning: Depth buffer size %i.  Default %i.\n", x, depthBufferSize);
+			depthBufferSize = x;
+		}
+	}
 
 	vid.conwidth &= 0xfff8; // make it a multiple of eight
 
@@ -441,7 +463,7 @@ void VID_Init(unsigned char *palette)
 	/* don't let fxMesa cheat multitexturing */
 	putenv("FX_DONT_FAKE_MULTITEX=1");
 
-	VID_CreateDMesaContext(width, height, bpp);
+	VID_CreateDMesaContext(width, height, bpp); /* FS: Setup DMesa contexts */
 
 	if (vid.conheight > height)
 		vid.conheight = height;
