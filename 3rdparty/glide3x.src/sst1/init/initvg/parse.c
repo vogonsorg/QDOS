@@ -345,22 +345,9 @@ static int sst1InitFgets(char *string, FILE *stream)
     return(validChars);
 }
 
-static int voodoo_isspace (int argument) /* FS: Roll your own function so DXE doesn't depend on ctype.h */
+static __inline int sst1_isspace (int c)
 {
-	switch(argument)
-	{
-	case ' ':
-	case '\n':
-	case '\t':
-	case '\v':
-	case '\f':
-	case '\r':
-		return argument;
-	default:
-		break;
-	}
-
-	return 0;
+	return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v');
 }
 
 static int sst1InitFgetc(FILE *stream)
@@ -397,7 +384,7 @@ static int sst1InitFgetc(FILE *stream)
                 } else
                     continue;
             } else {
-                if(voodoo_isspace(charRead))
+                if(sst1_isspace(charRead))
                     continue;
                 validChars++;
                 column++;
