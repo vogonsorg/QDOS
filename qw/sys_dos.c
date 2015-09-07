@@ -42,6 +42,7 @@ unsigned int _stklen = 1048576; /* need a 1MB stack */
 
 #include "quakedef.h"
 #include "dosisms.h"
+#include "sys_dxe.h"
 
 #define MINIMUM_WIN_MEMORY                      0xf00000
 #define MINIMUM_WIN_MEMORY_LEVELPAK     (MINIMUM_WIN_MEMORY + 0x100000)
@@ -101,7 +102,6 @@ static qboolean	skipwincheck, skiplfncheck, win95;
 void MaskExceptions (void);
 void Sys_PushFPCW_SetHigh (void);
 void Sys_PopFPCW (void);
-extern void Sys_InitDXE3 (void);
 
 #define LEAVE_FOR_CACHE (512*1024)		//FIXME: tune
 #define LOCKED_FOR_MALLOC (128*1024)	//FIXME: tune

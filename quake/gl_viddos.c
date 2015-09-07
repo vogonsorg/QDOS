@@ -23,14 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <stdarg.h>
 #include <stdio.h>
 
-#include <dlfcn.h>
-
 #include "quakedef.h"
 #include "cfgfile.h"
+#include "sys_dxe.h"
 
-#include "vid_dos.h"
 #include <GL/dmesa.h>
-#include "GL/fxmesa.h"
 
 #define WARP_WIDTH	320
 #define WARP_HEIGHT	200
@@ -293,36 +290,6 @@ void GL_EndRendering (void)
 {
 	glFlush();
 	DMesaSwapBuffers(db);
-}
-
-
-#define NUM_RESOLUTIONS 8
-
-static int resolutions[NUM_RESOLUTIONS][3]={ 
-	{320,240,  GR_RESOLUTION_320x240},
-	{400,300,  GR_RESOLUTION_400x300},
-	{512,384,  GR_RESOLUTION_512x384},
-	{640,480,  GR_RESOLUTION_640x480},
-	{800,600,  GR_RESOLUTION_800x600},
-	{1024,768, GR_RESOLUTION_1024x768},
-	{1280,1024,GR_RESOLUTION_1280x1024},
-	{1600,1200,GR_RESOLUTION_1600x1200}
-};
-
-int findres(int *width, int *height)
-{
-	int i;
-
-	for(i=0;i<NUM_RESOLUTIONS;i++)
-		if((*width<=resolutions[i][0]) && (*height<=resolutions[i][1])) {
-			*width = resolutions[i][0];
-			*height = resolutions[i][1];
-			return resolutions[i][2];
-		}
-
-	*width = 640;
-	*height = 480;
-	return GR_RESOLUTION_640x480;
 }
 
 qboolean VID_Is8bit(void)
