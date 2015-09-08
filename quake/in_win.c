@@ -32,7 +32,7 @@ HRESULT (WINAPI *pDirectInputCreate)(HINSTANCE hinst, DWORD dwVersion,
 	LPDIRECTINPUT * lplpDirectInput, LPUNKNOWN punkOuter);
 
 // mouse variables
-cvar_t	m_filter = {"m_filter","0"};
+cvar_t	*m_filter;
 
 int			mouse_buttons;
 int			mouse_oldbuttonstate;
@@ -81,25 +81,25 @@ PDWORD	pdwRawValue[JOY_MAX_AXES];
 // each time.  this avoids any problems with getting back to a default usage
 // or when changing from one controller to another.  this way at least something
 // works.
-cvar_t	in_joystick = {"joystick","0", true};
-cvar_t	joy_name = {"joyname", "joystick"};
-cvar_t	joy_advanced = {"joyadvanced", "0"};
-cvar_t	joy_advaxisx = {"joyadvaxisx", "0"};
-cvar_t	joy_advaxisy = {"joyadvaxisy", "0"};
-cvar_t	joy_advaxisz = {"joyadvaxisz", "0"};
-cvar_t	joy_advaxisr = {"joyadvaxisr", "0"};
-cvar_t	joy_advaxisu = {"joyadvaxisu", "0"};
-cvar_t	joy_advaxisv = {"joyadvaxisv", "0"};
-cvar_t	joy_forwardthreshold = {"joyforwardthreshold", "0.15"};
-cvar_t	joy_sidethreshold = {"joysidethreshold", "0.15"};
-cvar_t	joy_pitchthreshold = {"joypitchthreshold", "0.15"};
-cvar_t	joy_yawthreshold = {"joyyawthreshold", "0.15"};
-cvar_t	joy_forwardsensitivity = {"joyforwardsensitivity", "-1.0"};
-cvar_t	joy_sidesensitivity = {"joysidesensitivity", "-1.0"};
-cvar_t	joy_pitchsensitivity = {"joypitchsensitivity", "1.0"};
-cvar_t	joy_yawsensitivity = {"joyyawsensitivity", "-1.0"};
-cvar_t	joy_wwhack1 = {"joywwhack1", "0.0"};
-cvar_t	joy_wwhack2 = {"joywwhack2", "0.0"};
+cvar_t	*in_joystick;
+cvar_t	*joy_name;
+cvar_t	*joy_advanced;
+cvar_t	*joy_advaxisx;
+cvar_t	*joy_advaxisy;
+cvar_t	*joy_advaxisz;
+cvar_t	*joy_advaxisr;
+cvar_t	*joy_advaxisu;
+cvar_t	*joy_advaxisv;
+cvar_t	*joy_forwardthreshold;
+cvar_t	*joy_sidethreshold;
+cvar_t	*joy_pitchthreshold;
+cvar_t	*joy_yawthreshold;
+cvar_t	*joy_forwardsensitivity;
+cvar_t	*joy_sidesensitivity;
+cvar_t	*joy_pitchsensitivity;
+cvar_t	*joy_yawsensitivity;
+cvar_t	*joy_wwhack1;
+cvar_t	*joy_wwhack2;
 
 qboolean	joy_avail, joy_advancedinit, joy_haspov;
 DWORD		joy_oldbuttonstate, joy_oldpovstate;
@@ -483,28 +483,28 @@ IN_Init
 void IN_Init (void)
 {
 	// mouse variables
-	Cvar_RegisterVariable (&m_filter);
+	m_filter = Cvar_Get("m_filter","0");
 
 	// joystick variables
-	Cvar_RegisterVariable (&in_joystick);
-	Cvar_RegisterVariable (&joy_name);
-	Cvar_RegisterVariable (&joy_advanced);
-	Cvar_RegisterVariable (&joy_advaxisx);
-	Cvar_RegisterVariable (&joy_advaxisy);
-	Cvar_RegisterVariable (&joy_advaxisz);
-	Cvar_RegisterVariable (&joy_advaxisr);
-	Cvar_RegisterVariable (&joy_advaxisu);
-	Cvar_RegisterVariable (&joy_advaxisv);
-	Cvar_RegisterVariable (&joy_forwardthreshold);
-	Cvar_RegisterVariable (&joy_sidethreshold);
-	Cvar_RegisterVariable (&joy_pitchthreshold);
-	Cvar_RegisterVariable (&joy_yawthreshold);
-	Cvar_RegisterVariable (&joy_forwardsensitivity);
-	Cvar_RegisterVariable (&joy_sidesensitivity);
-	Cvar_RegisterVariable (&joy_pitchsensitivity);
-	Cvar_RegisterVariable (&joy_yawsensitivity);
-	Cvar_RegisterVariable (&joy_wwhack1);
-	Cvar_RegisterVariable (&joy_wwhack2);
+	in_joystick = Cvar_Get("joystick","0", CVAR_ARCHIVE);
+	joy_name = Cvar_Get("joyname", "joystick");
+	joy_advanced = Cvar_Get("joyadvanced", "0");
+	joy_advaxisx = Cvar_Get("joyadvaxisx", "0");
+	joy_advaxisy = Cvar_Get("joyadvaxisy", "0");
+	joy_advaxisz = Cvar_Get("joyadvaxisz", "0");
+	joy_advaxisr = Cvar_Get("joyadvaxisr", "0");
+	joy_advaxisu = Cvar_Get("joyadvaxisu", "0");
+	joy_advaxisv = Cvar_Get("joyadvaxisv", "0");
+	joy_forwardthreshold = Cvar_Get("joyforwardthreshold", "0.15");
+	joy_sidethreshold = Cvar_Get("joysidethreshold", "0.15");
+	joy_pitchthreshold = Cvar_Get("joypitchthreshold", "0.15");
+	joy_yawthreshold = Cvar_Get("joyyawthreshold", "0.15");
+	joy_forwardsensitivity = Cvar_Get("joyforwardsensitivity", "-1.0");
+	joy_sidesensitivity = Cvar_Get("joysidesensitivity", "-1.0");
+	joy_pitchsensitivity = Cvar_Get("joypitchsensitivity", "1.0");
+	joy_yawsensitivity = Cvar_Get("joyyawsensitivity", "-1.0");
+	joy_wwhack1 = Cvar_Get("joywwhack1", "0.0");
+	joy_wwhack2 = Cvar_Get("joywwhack2", "0.0");
 
 	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
 	Cmd_AddCommand ("joyadvancedupdate", Joy_AdvancedUpdate_f);

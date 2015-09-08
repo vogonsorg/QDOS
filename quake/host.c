@@ -57,35 +57,35 @@ jmp_buf  host_abortserver;
 byte	  *host_basepal;
 byte	  *host_colormap;
 
-cvar_t	host_framerate = {"host_framerate","0"};  // set for slow motion
-cvar_t	host_speeds = {"host_speeds","0"};		  // set for running times
-cvar_t	cl_maxfps = {"cl_maxfps", "72.0", true, false, "Maximum frames pers second to render."}; /* FS: Technically it was host_maxfps, but cl_maxfps is standard in other Quake games */ //johnfitz
-cvar_t	host_timescale = {"host_timescale", "0"}; //johnfitz
-cvar_t	max_edicts = {"max_edicts", "2048", false, false, "Maximum number of edicts allowed."}; //johnfitz
+cvar_t	*host_framerate; // set for slow motion
+cvar_t	*host_speeds; // set for running times
+cvar_t	*cl_maxfps; /* FS: Technically it was host_maxfps, but cl_maxfps is standard in other Quake games */ //johnfitz
+cvar_t	*host_timescale; //johnfitz
+cvar_t	*max_edicts; //johnfitz
 
-cvar_t	sys_ticrate = {"sys_ticrate","0.05"};
-cvar_t	serverprofile = {"serverprofile","0"};
+cvar_t	*sys_ticrate;
+cvar_t	*serverprofile;
 
-cvar_t	fraglimit = {"fraglimit","0",false,true, "Fraglimit in a deathmatch game."};
-cvar_t	timelimit = {"timelimit","0",false,true, "Timelimit in a deathmatch game."};
-cvar_t	teamplay = {"teamplay","0",false,true, "Enable team deathmatch."};
+cvar_t	*fraglimit;
+cvar_t	*timelimit;
+cvar_t	*teamplay;
 
-cvar_t	samelevel = {"samelevel","0", false, false, "Repeats the same level if an endlevel is triggered."};
-cvar_t	noexit = {"noexit","0", false, true, "Do not allow exiting in a game."};
+cvar_t	*samelevel;
+cvar_t	*noexit;
 
-cvar_t	developer = {"developer","0", false, false, "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Server msgs - 256\n  * Progs msgs - 512\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Save/Restore msgs - 32768\n  * Extremely verbose msgs - 65536\n"};
+cvar_t	*developer;
 
-cvar_t	skill = {"skill","1", false, false, "Sets the skill.  Valid values are 0 through 3."};					  // 0 - 3
-cvar_t	deathmatch = {"deathmatch","0", false, false, "Enable a deathmatch game.  Coop must be set to 0."};		 // 0, 1, or 2
-cvar_t	coop = {"coop","0", false, false, "Enable a coop game.  Deathmatch must be set to 0."};		 // 0 or 1
+cvar_t	*skill; // 0 - 3
+cvar_t	*deathmatch; // 0, 1, or 2
+cvar_t	*coop; // 0 or 1
 
-cvar_t	pausable = {"pausable","1"};
+cvar_t	*pausable = {"pausable","1"};
 
-cvar_t	temp1 = {"temp1","0"};
+cvar_t	*temp1 = {"temp1","0"};
 
 /* FS: New stuff */
-cvar_t	con_show_description = {"con_show_description", "1", true, false, "Show descriptions for CVARs."};
-cvar_t	con_show_dev_flags = {"con_show_dev_flags", "1", true, false, "Show developer flag options."};
+cvar_t	*con_show_description;
+cvar_t	*con_show_dev_flags;
 
 /*
 ================
@@ -242,32 +242,44 @@ void Host_InitLocal (void)
 {
 	Host_InitCommands ();
 
-	Cvar_RegisterVariable (&host_framerate);
-	Cvar_RegisterVariable (&host_speeds);
-	Cvar_RegisterVariable (&cl_maxfps); /* FS: Technically it was host_maxfps, but cl_maxfps is standard in other Quake games */ //johnfitz
-	Cvar_RegisterVariable (&host_timescale); //johnfitz
-	Cvar_RegisterVariable (&sys_ticrate);
-	Cvar_RegisterVariable (&serverprofile);
+	host_framerate = Cvar_Get("host_framerate","0"); // set for slow motion
+	host_speeds = Cvar_Get("host_speeds","0"); // set for running times
+	cl_maxfps = Cvar_Get("cl_maxfps", "72.0", CVAR_ARCHIVE); /* FS: Technically it was host_maxfps, but cl_maxfps is standard in other Quake games */ //johnfitz
+	cl_maxfps->description = "Maximum frames pers second to render.";
+	host_timescale = Cvar_Get("host_timescale", "0"); //johnfitz
+	sys_ticrate = Cvar_Get("sys_ticrate","0.05");
+	serverprofile = Cvar_Get("serverprofile","0");
 
-	Cvar_RegisterVariable (&max_edicts); //johnfitz
+	max_edicts = Cvar_Get("max_edicts", "2048"); //johnfitz
+	max_edicts->description = "Maximum number of edicts allowed.";
+	fraglimit = Cvar_Get("fraglimit","0", CVAR_SERVERINFO);
+	fraglimit->description = "Fraglimit in a deathmatch game.";
+	timelimit = Cvar_Get("timelimit","0", CVAR_SERVERINFO);
+	timelimit->description = "Timelimit in a deathmatch game.";
+	teamplay = Cvar_Get("teamplay","0", CVAR_SERVERINFO);
+	teamplay->description = "Enable team deathmatch.";
+	samelevel = Cvar_Get("samelevel","0");
+	samelevel->description = "Repeats the same level if an endlevel is triggered.";
+	noexit = Cvar_Get("noexit","0", CVAR_SERVERINFO);
+	noexit->description = "Do not allow exiting in a game.";
+	skill = Cvar_Get("skill","1"); // 0 - 3
+	skill->description = "Sets the skill.  Valid values are 0 through 3.";
+	developer = Cvar_Get("developer","0");
+	developer->description = "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Server msgs - 256\n  * Progs msgs - 512\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Save/Restore msgs - 32768\n  * Extremely verbose msgs - 65536\n"};
+	deathmatch = Cvar_Get("deathmatch","0"); // 0, 1, or 2
+	deathmatch->description = "Enable a deathmatch game.  Coop must be set to 0.";
+	coop = Cvar_Get("coop","0"); // 0 or 1
+	coop->description = "Enable a coop game.  Deathmatch must be set to 0.";
 
-	Cvar_RegisterVariable (&fraglimit);
-	Cvar_RegisterVariable (&timelimit);
-	Cvar_RegisterVariable (&teamplay);
-	Cvar_RegisterVariable (&samelevel);
-	Cvar_RegisterVariable (&noexit);
-	Cvar_RegisterVariable (&skill);
-	Cvar_RegisterVariable (&developer);
-	Cvar_RegisterVariable (&deathmatch);
-	Cvar_RegisterVariable (&coop);
+	pausable = Cvar_Get("pausable","1");
 
-	Cvar_RegisterVariable (&pausable);
+	temp1 = Cvar_Get("temp1","0");
 
-	Cvar_RegisterVariable (&temp1);
-
-	/* FS: New stuff */
-	Cvar_RegisterVariable(&con_show_description);
-	Cvar_RegisterVariable(&con_show_dev_flags);
+/* FS: New stuff */
+	con_show_description = Cvar_Get("con_show_description", "1", CVAR_ARCHIVE);
+	con_show_description->description = "Show descriptions for CVARs.";
+	con_show_dev_flags = Cvar_Get("con_show_dev_flags", "1", CVAR_ARCHIVE);
+	con_show_dev_flags->description = "Show developer flag options.";
 
 	Host_FindMaxClients ();
 
