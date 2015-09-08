@@ -1258,7 +1258,7 @@ void COM_CheckRegistered (void)
 			Sys_Error ("Corrupted data file.");
 
 	Cvar_Set ("cmdline", com_cmdline+1); //johnfitz -- eliminate leading space
-	Cvar_Set ("registered", "1");
+	Cvar_ForceSet("registered", "1");
 	static_registered = 1;
 	Con_Printf ("Playing registered version.\n");
 }
@@ -1421,7 +1421,7 @@ void COM_Init (char *basedir)
 		nehx19->description = "Special internal CVAR for Nehara mod.";
 	}
 
-	registered = Cvar_Get("registered","0", 0);
+	registered = Cvar_Get("registered","0", CVAR_NOSET);
 	registered->description = "Special internal CVAR for setting Registered game.";
 	cmdline = Cvar_Get("cmdline","", 0);
 	cmdline->description = "Adds command line parameters as script statements\nCommands lead with a +, and continue until a - or another +\nquake +prog jctest.qp +cmd amlev1\nquake -nosound +cmd amlev1";

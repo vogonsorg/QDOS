@@ -24,6 +24,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 cvar_t	*cvar_vars;
 void Cvar_ParseDeveloperFlags (void); /* FS: Special stuff for showing all the dev flags */
 
+/*
+============
+Cvar_InfoValidate
+============
+*/
+static qboolean Cvar_InfoValidate (char *s)
+{
+	if (strstr (s, "\\"))
+		return false;
+	if (strstr (s, "\""))
+		return false;
+	if (strstr (s, ";"))
+		return false;
+	return true;
+}
+
 /* FS: Cvar_List_f from Quakespasm */
 void Cvar_List_f (void)
 {
@@ -150,6 +166,15 @@ cvar_t *Cvar_Get (char *var_name, char *var_value, int flags)
 {
 	cvar_t	*var;
 
+	if (flags & CVAR_SERVERINFO)
+	{
+		if (!Cvar_InfoValidate (var_name))
+		{
+			Con_Printf("invalid info cvar name\n");
+			return NULL;
+		}
+	}
+
 	var = Cvar_FindVar (var_name);
 	if (var)
 	{
@@ -164,6 +189,15 @@ cvar_t *Cvar_Get (char *var_name, char *var_value, int flags)
 
 	if (!var_value)
 		return NULL;
+
+	if (flags & CVAR_SERVERINFO)
+	{
+		if (!Cvar_InfoValidate (var_value))
+		{
+			Con_Printf("invalid info cvar value\n");
+			return NULL;
+		}
+	}
 
 	var = Z_Malloc (sizeof(*var));
 	var->name = CopyString (var_name);
@@ -197,6 +231,15 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 	if (!var)
 	{	// create it
 		return Cvar_Get (var_name, value, 0);
+	}
+
+	if (var->flags & CVAR_SERVERINFO)
+	{
+		if (!Cvar_InfoValidate (value))
+		{
+			Con_Printf("invalid info cvar value\n");
+			return var;
+		}
 	}
 
 	if (!force)
@@ -357,9 +400,18 @@ qboolean	Cvar_Command (void)
 // perform a variable print or set
 	if (Cmd_Argc() == 1)
 	{
-		Con_Printf ("\"%s\" is \"%s\".  Default: \"%s\".\n", v->name, v->string, v->defaultString);
-		if (con_show_description->value && v->description != NULL && v->description[0] != 0)
+		if ( (v->flags & CVAR_LATCH) && v->latched_string)
+			Con_Printf ("\"%s\" is \"%s\", Default: \"%s\", Latched to: \"%s\"\n", v->name, v->string, v->defaultString, v->latched_string);
+		else
+			Con_Printf ("\"%s\" is \"%s\",  Default: \"%s\".\n", v->name, v->string, v->defaultString);
+
+		/* FS: cvar descriptions */
+		/* FS: Always show it for con_show_description so we know what it does */
+		if (v->description) {
+		    if (con_show_description->intValue || v == con_show_description)
 			Con_Printf("Description: %s\n", v->description);
+		}
+
 		return true;
 	}
 
@@ -414,10 +466,16 @@ with the archive flag set to true.
 void Cvar_WriteVariables (FILE *f)
 {
 	cvar_t	*var;
+	char	buffer[1024];
 	
 	for (var = cvar_vars ; var ; var = var->next)
+	{
 		if (var->flags & CVAR_ARCHIVE)
-			fprintf (f, "set %s \"%s\"\n", var->name, var->string);
+		{
+			Com_sprintf (buffer, sizeof(buffer), "set %s \"%s\"\n", var->name, var->string);
+			fprintf (f, "%s", buffer);
+		}
+	}
 }
 
 void Cvar_Init (void) /* FS: from fitzquake */
