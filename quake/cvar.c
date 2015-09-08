@@ -266,7 +266,7 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 
 			if (sv.active)
 			{
-				Con_Printf ("%s will be changed for next game.\n", var_name);
+				Con_Printf ("%s will be changed for next map.\n", var_name);
 				var->latched_string = CopyString(value);
 			}
 			else
@@ -292,16 +292,17 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 
 	var->modified = true; /* FS: Added */
 
-	if (var->flags & CVAR_SERVERINFO)
-	{
-		if (sv.active)
-			SV_BroadcastPrintf ("\"%s\" changed to \"%s\"\n", var->name, var->string);
-	}
 	Z_Free (var->string);	// free the old value string
 
 	var->string = CopyString(value);
 	var->value = atof (var->string);
 	var->intValue = atoi(var->string); /* FS: So we don't need to cast shit all the time */
+
+	if (var->flags & CVAR_SERVERINFO)
+	{
+		if (sv.active)
+			SV_BroadcastPrintf ("\"%s\" changed to \"%s\"\n", var->name, var->string);
+	}
 
 	return var;
 }
@@ -371,6 +372,29 @@ void Cvar_SetValue (char *var_name, float value)
 
 	Cvar_Set (var_name, val->str);
 	dstring_delete (val);
+}
+
+/*
+============
+Cvar_GetLatchedVars
+
+Any variables with latched values will now be updated
+============
+*/
+void Cvar_GetLatchedVars (void)
+{
+	cvar_t	*var;
+
+	for (var = cvar_vars ; var ; var = var->next)
+	{
+		if (!var->latched_string)
+			continue;
+		Z_Free (var->string);
+		var->string = var->latched_string;
+		var->latched_string = NULL;
+		var->value = atof(var->string);
+		var->intValue = atoi(var->string); /* FS: So we don't need to cast shit all the time */
+	}
 }
 
 /*
@@ -463,11 +487,13 @@ Writes lines containing "set variable value" for all variables
 with the archive flag set to true.
 ============
 */
-void Cvar_WriteVariables (FILE *f)
+void Cvar_WriteVariables (const char *path)
 {
 	cvar_t	*var;
 	char	buffer[1024];
+	FILE	*f;
 	
+	f = fopen (path, "a");
 	for (var = cvar_vars ; var ; var = var->next)
 	{
 		if (var->flags & CVAR_ARCHIVE)
@@ -476,6 +502,7 @@ void Cvar_WriteVariables (FILE *f)
 			fprintf (f, "%s", buffer);
 		}
 	}
+	fclose (f);
 }
 
 void Cvar_Init (void) /* FS: from fitzquake */

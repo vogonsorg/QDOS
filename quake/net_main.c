@@ -182,7 +182,7 @@ static void NET_Listen_f (void)
 	}
 }
 
-
+/* FS: FIXME: This could go away now too with CVAR_LATCH */
 static void MaxPlayers_f (void)
 {
 	int 	n;

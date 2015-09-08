@@ -747,7 +747,7 @@ void M_Load_Key (int k)
 		SCR_BeginLoadingPlaque ();
 
 	// issue the load command
-		Cbuf_AddText (va ("load s%i\n", load_cursor) );
+		Cbuf_AddText (va ("deathmatch 0; coop 0;load s%i\n", load_cursor) );
 		return;
 
 	case K_UPARROW:

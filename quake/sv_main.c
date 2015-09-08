@@ -1334,6 +1334,8 @@ void SV_SpawnServer (char *server)
 		SV_SendReconnect ();
 	}
 
+	Cvar_GetLatchedVars ();
+
 	//
 	// make cvars consistant
 	//
