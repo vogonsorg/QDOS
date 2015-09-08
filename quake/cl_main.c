@@ -28,26 +28,26 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // references them even when on a unix system.
 
 // these two are not intended to be set directly
-cvar_t	cl_name = {"_cl_name", "player", true, false, "Internal CVAR for setting player name.  Use cvar \"name\" to set."};
-cvar_t	cl_color = {"_cl_color", "0", true, false, "Internal CVAR for setting player colour.  Use cvar \"color\" to set."};
+cvar_t	*cl_name = {"_cl_name", "player", true, false, "Internal CVAR for setting player name.  Use cvar \"name\" to set."};
+cvar_t	*cl_color = {"_cl_color", "0", true, false, "Internal CVAR for setting player colour.  Use cvar \"color\" to set."};
 
-cvar_t	cl_shownet = {"cl_shownet","0"}; // can be 0, 1, or 2
-cvar_t	cl_nolerp = {"cl_nolerp","0", false, false, "Disable animation lerping."};
+cvar_t	*cl_shownet; // can be 0, 1, or 2
+cvar_t	*cl_nolerp;
 
-cvar_t	lookspring = {"lookspring","0", true};
-cvar_t	lookstrafe = {"lookstrafe","0", true};
-cvar_t	sensitivity = {"sensitivity","3", true};
+cvar_t	*lookspring;
+cvar_t	*lookstrafe;
+cvar_t	*sensitivity;
 
-cvar_t	m_pitch = {"m_pitch","0.022", true};
-cvar_t	m_yaw = {"m_yaw","0.022", true};
-cvar_t	m_forward = {"m_forward","1", true};
-cvar_t	m_side = {"m_side","0.8", true};
+cvar_t	*m_pitch;
+cvar_t	*m_yaw;
+cvar_t	*m_forward;
+cvar_t	*m_side;
 
 /* FS: New stuff */
-cvar_t	console_old_complete = {"console_old_complete", "0", true, false, "Use the legacy style console tab completion."}; /* FS: Added */
-cvar_t	cl_ogg_music = {"cl_ogg_music", "1", true, false, "Play OGG tracks in the format of id1/music/trackXX.ogg if they exist."}; /* FS: Added */
-cvar_t	cl_wav_music = {"cl_wav_music", "1", true, false, "Play WAV tracks in the format of id1/music/trackXX.wav if they exist."}; /* FS: Added */
-cvar_t	cl_autorepeat_allkeys = {"cl_autorepeat_allkeys", "0", true, false, "Allow to autorepeat any key, not just Backspace, Pause, PgUp, and PgDn keys."}; /* FS: So I can autorepeat whatever I want, hoss. */
+cvar_t	*console_old_complete;
+cvar_t	*cl_ogg_music
+cvar_t	*cl_wav_music;
+cvar_t	*cl_autorepeat_allkeys;
 
 client_static_t	cls;
 client_state_t cl;
@@ -70,12 +70,12 @@ qboolean bFlashlight;
 void CL_Flashlight_f (void);
 
 /* FS: Gamespy CVARs */
-cvar_t	cl_master_server_ip = {"cl_master_server_ip", CL_MASTER_ADDR, true, false, "GameSpy Master Server IP."};
-cvar_t	cl_master_server_port = {"cl_master_server_port", CL_MASTER_PORT, true, false, "GameSpy Master Server Port."};
-cvar_t	cl_master_server_queries = {"cl_master_server_queries", "10", true, false, "Number of sockets to allocate for GameSpy."};
-cvar_t	cl_master_server_timeout = {"cl_master_server_timeout", "3000", true, false, "Timeout (in milliseconds) to give up on pinging a server."};
-cvar_t	cl_master_server_retries = {"cl_master_server_retries", "20", true, false, "Number of retries to attempt for receiving the server list.  Formula is 50ms + 10ms for each retry."};
-cvar_t	snd_gamespy_sounds = {"snd_gamespy_sounds", "0", true, false, "Play the complete.wav and abort.wav from GameSpy3D if it exists in sounds/gamespy."};
+cvar_t	*cl_master_server_ip;
+cvar_t	*cl_master_server_port;
+cvar_t	*cl_master_server_queries;
+cvar_t	*cl_master_server_timeout;
+cvar_t	*cl_master_server_retries;
+cvar_t	*snd_gamespy_sounds;
 
 /* FS: Gamespy prototypes */
 static	GServerList	serverlist = NULL;
@@ -115,7 +115,7 @@ void CL_ClearState (void)
 	memset (cl_beams, 0, sizeof(cl_beams));
 
 	//johnfitz -- cl_entities is now dynamically allocated
-	cl_max_edicts = CLAMP (MIN_EDICTS,(int)max_edicts.value,MAX_EDICTS);
+	cl_max_edicts = CLAMP (MIN_EDICTS,(int)max_edicts->value,MAX_EDICTS);
 	cl_entities = Hunk_AllocName (cl_max_edicts*sizeof(entity_t), "cl_entities");
 	//johnfitz
 
@@ -230,10 +230,10 @@ void CL_SignonReply (void)
 		
 	case 2:	  
 		MSG_WriteByte (&cls.message, clc_stringcmd);
-		MSG_WriteString (&cls.message, va("name \"%s\"\n", cl_name.string));
+		MSG_WriteString (&cls.message, va("name \"%s\"\n", cl_name->string));
 	
 		MSG_WriteByte (&cls.message, clc_stringcmd);
-		MSG_WriteString (&cls.message, va("color %i %i\n", ((int)cl_color.value)>>4, ((int)cl_color.value)&15));
+		MSG_WriteString (&cls.message, va("color %i %i\n", ((int)cl_color->value)>>4, ((int)cl_color->value)&15));
 	
 		MSG_WriteByte (&cls.message, clc_stringcmd);
 		Com_sprintf (str, sizeof(str), "spawn %s", cls.spawnparms);
@@ -271,7 +271,7 @@ void CL_NextDemo (void)
 		cls.demonum = 0;
 		if (!cls.demos[cls.demonum][0])
 		{
-			if (!cl_demos.value || nostartupdemos) /* FS: Disable startup demos */
+			if (!cl_demos->value || nostartupdemos) /* FS: Disable startup demos */
 				Con_DPrintf(DEVELOPER_MSG_STANDARD, "Startup demos disabled.");
 			else
 				Con_Printf ("No demos listed with startdemos\n");
@@ -401,7 +401,7 @@ float CL_LerpPoint (void)
 
 	f = cl.mtime[0] - cl.mtime[1];
 	
-	if (!f || cl_nolerp.value || cls.timedemo || sv.active)
+	if (!f || cl_nolerp->value || cls.timedemo || sv.active)
 	{
 		cl.time = cl.mtime[0];
 		return 1;
@@ -595,7 +595,7 @@ void CL_RelinkEntities (void)
 
 		ent->forcelink = false;
 
-		if (i == cl.viewentity && !chase_active.value)
+		if (i == cl.viewentity && !chase_active->value)
 			continue;
 
 		if (cl_numvisedicts < MAX_VISEDICTS)
@@ -634,7 +634,7 @@ int CL_ReadFromServer (void)
 		CL_ParseServerMessage ();
 	} while (ret && cls.state == ca_connected);
 	
-	if (cl_shownet.value)
+	if (cl_shownet->value)
 		Con_Printf ("\n");
 
 	CL_RelinkEntities ();
@@ -747,43 +747,58 @@ void CL_Init (void)
 //
 // register our commands
 //
-	Cvar_RegisterVariable (&cl_name);
+	cl_name = Cvar_Get("_cl_name", "player", CVAR_ARCHIVE);
+	cl_name->description = "Internal CVAR for setting player name.  Use cvar \"name\" to set.";
 
-	Cvar_RegisterVariable (&cl_color);
-	Cvar_RegisterVariable (&cl_upspeed);
-	Cvar_RegisterVariable (&cl_forwardspeed);
-	Cvar_RegisterVariable (&cl_backspeed);
-	Cvar_RegisterVariable (&cl_sidespeed);
-	Cvar_RegisterVariable (&cl_movespeedkey);
-	Cvar_RegisterVariable (&cl_yawspeed);
-	Cvar_RegisterVariable (&cl_pitchspeed);
-	Cvar_RegisterVariable (&cl_anglespeedkey);
-	Cvar_RegisterVariable (&cl_shownet);
-	Cvar_RegisterVariable (&cl_nolerp);
-	Cvar_RegisterVariable (&lookspring);
-	Cvar_RegisterVariable (&lookstrafe);
-	Cvar_RegisterVariable (&sensitivity);
+	cl_color = Cvar_Get("_cl_color", "0", CVAR_ARCHIVE);
+	cl_color->description = "Internal CVAR for setting player colour.  Use cvar \"color\" to set.";
 
-	Cvar_RegisterVariable (&m_pitch);
-	Cvar_RegisterVariable (&m_yaw);
-	Cvar_RegisterVariable (&m_forward);
-	Cvar_RegisterVariable (&m_side);
+	cl_upspeed = Cvar_Get("cl_upspeed","200"};
+	cl_forwardspeed = Cvar_Get("cl_forwardspeed","400", CVAR_ARCHIVE);
+	cl_backspeed = Cvar_Get("cl_backspeed","400", CVAR_ARCHIVE);
+	cl_sidespeed = Cvar_Get("cl_sidespeed","350");
+	cl_movespeedkey = Cvar_Get("cl_movespeedkey","2.0");
+	cl_yawspeed = Cvar_Get("cl_yawspeed","140");
+	cl_pitchspeed = Cvar_Get("cl_pitchspeed","150");
+	cl_anglespeedkey = Cvar_Get("cl_anglespeedkey","1.5");
+	cl_fullpitch = Cvar_Get("cl_fullpitch", "0"); /* FS: ProQuake Shit */
+
+	cl_shownet = Cvar_Get("cl_shownet", "0"); // can be 0, 1, or 2
+	cl_nolerp = Cvar_Get("cl_nolerp", "0"); 
+	cl_nolerp->description = "Disable animation lerping.";
+	lookspring = Cvar_Get("lookspring", "0", CVAR_ARCHIVE);
+	lookstrafe = Cvar_Get("lookstrafe", "0", CVAR_ARCHIVE);
+	sensitivity = Cvar_Get("sensitivity", "3", CVAR_ARCHIVE);
+
+	m_pitch = Cvar_Get("m_pitch", "0.022", CVAR_ARCHIVE);
+	m_yaw = Cvar_Get("m_yaw", "0.022", CVAR_ARCHIVE);
+	m_forward = Cvar_Get("m_forward", "1", CVAR_ARCHIVE);
+	m_side = Cvar_Get("m_side", "0.8", CVAR_ARCHIVE);
 
 	/* FS: GameSpy CVARs */
-	Cvar_RegisterVariable (&cl_master_server_ip);
-	Cvar_RegisterVariable (&cl_master_server_port);
-	Cvar_RegisterVariable (&cl_master_server_queries);
-	Cvar_RegisterVariable (&cl_master_server_timeout);
-	Cvar_RegisterVariable (&cl_master_server_retries);
-	Cvar_RegisterVariable (&snd_gamespy_sounds);
-
+	cl_master_server_ip = Cvar_Get("cl_master_server_ip", CL_MASTER_ADDR, CVAR_ARCHIVE);
+	cl_master_server_ip->description = "GameSpy Master Server IP.";
+	cl_master_server_port = Cvar_Get("cl_master_server_port", CL_MASTER_PORT, CVAR_ARCHIVE); 
+	cl_master_server_port->description = "GameSpy Master Server Port.";
+	cl_master_server_queries = Cvar_Get("cl_master_server_queries", "10", CVAR_ARCHIVE);
+	cl_master_server_queries->description = "Number of sockets to allocate for GameSpy.";
+	cl_master_server_timeout = Cvar_Get("cl_master_server_timeout", "3000", CVAR_ARCHIVE);
+	cl_master_server_timeout->description = "Timeout (in milliseconds) to give up on pinging a server.");
+	cl_master_server_retries = Cvar_Get("cl_master_server_retries", "20", CVAR_ARCHIVE);
+	cl_master_server_retries->description = "Number of retries to attempt for receiving the server list.  Formula is 50ms + 10ms for each retry.";
+	snd_gamespy_sounds = Cvar_Get("snd_gamespy_sounds", "0", CVAR_ARCHIVE);
+	snd_gamespy_sounds->description = "Play the complete.wav and abort.wav from GameSpy3D if it exists in sounds/gamespy.";
 
 	/* FS: New stuff */
-	Cvar_RegisterVariable (&cl_warncmd); /* FS: From QW */
-	Cvar_RegisterVariable (&cl_ogg_music);
-	Cvar_RegisterVariable (&cl_wav_music);
-	Cvar_RegisterVariable (&cl_autorepeat_allkeys);
-	Cvar_RegisterVariable (&console_old_complete);
+	console_old_complete = Cvar_Get("console_old_complete", "0", CVAR_ARCHIVE);
+	console_old_complete->description = "Use the legacy style console tab completion."};
+	cl_ogg_music = Cvar_Get("cl_ogg_music", "1", CVAR_ARCHIVE);
+	cl_ogg_music->description = "Play OGG tracks in the format of id1/music/trackXX.ogg if they exist."};
+	cl_wav_music = Cvar_Get("cl_wav_music", "1", CVAR_ARCHIVE);
+	cl_wav_music->description = "Play WAV tracks in the format of id1/music/trackXX.wav if they exist."};
+	cl_autorepeat_allkeys = Cvar_Get("cl_autorepeat_allkeys", "0", CVAR_ARCHIVE);
+	cl_autorepeat_allkeys->description = "Allow to autorepeat any key, not just Backspace, Pause, PgUp, and PgDn keys.";
+
 
 	Cmd_AddCommand ("entities", CL_PrintEntities_f);
 	Cmd_AddCommand ("disconnect", CL_Disconnect_f);
@@ -1050,7 +1065,7 @@ void CL_PingNetServers_f (void)
 	cls.gamespystarttime = (int)Sys_FloatTime();
 	cls.gamespytotalservers = 0;
 
-	allocatedSockets = bound(5, cl_master_server_queries.intValue, 100);
+	allocatedSockets = bound(5, cl_master_server_queries->intValue, 100);
 
 	SCR_UpdateScreen(); /* FS: Force an update so the percentage bar shows some progress */
 

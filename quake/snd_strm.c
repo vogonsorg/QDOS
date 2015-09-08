@@ -191,7 +191,7 @@ void S_StreamBackgroundTrack (void)
 	float	scale;
 	byte	data[MAX_RAW_SAMPLES];
 
-	if (!s_bgTrack.file || !s_musicvolume.value || !cl_ogg_music.intValue)
+	if (!s_bgTrack.file || !s_musicvolume->value || !cl_ogg_music->intValue)
 		return;
 
 	if (s_rawend < paintedtime)
@@ -241,7 +241,7 @@ void S_StreamBackgroundTrack (void)
 				}
 				else
 				{	// check if it's time to switch to the ambient track
-					if ( (ogg_loopcount.intValue > 0) && (++ogg_loopcounter >= (int)ogg_loopcount.value))
+					if ( (ogg_loopcount->intValue > 0) && (++ogg_loopcounter >= (int)ogg_loopcount->value))
 					{	// Close the loop track
 						S_CloseBackgroundTrack(&s_bgTrack);
 
@@ -298,7 +298,7 @@ void S_StartOGGBackgroundTrack (const char *introTrack, const char *loopTrack)
 	// Start it up
 	Q_strlcpy(s_bgTrack.introName, introTrack, sizeof(s_bgTrack.introName));
 	Q_strlcpy(s_bgTrack.loopName, loopTrack, sizeof(s_bgTrack.loopName));
-	Q_strlcpy(s_bgTrack.ambientName, va("music/%s.ogg", ogg_ambient_track.string), sizeof(s_bgTrack.ambientName));
+	Q_strlcpy(s_bgTrack.ambientName, va("music/%s.ogg", ogg_ambient_track->string), sizeof(s_bgTrack.ambientName));
 
 	// set a loop counter so that this track will change to the ambient track later
 	ogg_loopcounter = 0;

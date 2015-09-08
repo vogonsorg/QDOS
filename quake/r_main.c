@@ -266,7 +266,7 @@ void R_NewMap (void)
 	r_viewleaf = NULL;
 	R_ClearParticles ();
 
-	r_cnumsurfs = r_maxsurfs.value;
+	r_cnumsurfs = r_maxsurfs->value;
 
 	if (r_cnumsurfs <= MINSURFACES)
 		r_cnumsurfs = MINSURFACES;
@@ -290,7 +290,7 @@ void R_NewMap (void)
 	r_maxedgesseen = 0;
 	r_maxsurfsseen = 0;
 
-	r_numallocatededges = r_maxedges.value;
+	r_numallocatededges = r_maxedges->value;
 
 	if (r_numallocatededges < MINEDGES)
 		r_numallocatededges = MINEDGES;
@@ -308,8 +308,8 @@ void R_NewMap (void)
 	bedgesMark = Hunk_LowMark ();
 	Hunk_AllocName(0, "-Dynamic-");
 
-	if(r_maxbmodeledges.intValue > MIN_BMODEL_EDGES) /* FS: Dynamic allocation of bmodel edges */
-		bedges = Hunk_AllocName (r_maxbmodeledges.intValue * sizeof(bedge_t), "bedges");
+	if(r_maxbmodeledges->intValue > MIN_BMODEL_EDGES) /* FS: Dynamic allocation of bmodel edges */
+		bedges = Hunk_AllocName (r_maxbmodeledges->intValue * sizeof(bedge_t), "bedges");
 	else
 		bedges = Hunk_AllocName (MIN_BMODEL_EDGES * sizeof(bedge_t), "bedges");
 
@@ -328,7 +328,7 @@ void R_SetVrect (vrect_t *pvrectin, vrect_t *pvrect, int lineadj)
 	int		h;
 	float	size;
 
-	size = scr_viewsize.value > 100 ? 100 : scr_viewsize.value;
+	size = scr_viewsize->value > 100 ? 100 : scr_viewsize->value;
 	if (cl.intermission)
 	{
 		size = 100;
@@ -354,7 +354,7 @@ void R_SetVrect (vrect_t *pvrectin, vrect_t *pvrect, int lineadj)
 	pvrect->y = (h - pvrect->height)/2;
 
 	{
-		if (lcd_x.value)
+		if (lcd_x->value)
 		{
 			pvrect->y >>= 1;
 			pvrect->height >>= 1;
@@ -466,8 +466,8 @@ void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect)
 	res_scale = sqrt ((double)(r_refdef.vrect.width * r_refdef.vrect.height) /
 				  (320.0 * 152.0)) *
 			(2.0 / r_refdef.horizontalFieldOfView);
-	r_aliastransition = r_aliastransbase.value * res_scale;
-	r_resfudge = r_aliastransadj.value * res_scale;
+	r_aliastransition = r_aliastransbase->value * res_scale;
+	r_resfudge = r_aliastransadj->value * res_scale;
 
 	r_fov_greater_than_90 = false;
 
@@ -544,7 +544,7 @@ void R_DrawEntitiesOnList (void)
 	vec3_t		dist;
 	float		add;
 
-	if (!r_drawentities.value)
+	if (!r_drawentities->value)
 		return;
 
 	for (i=0 ; i<cl_numvisedicts ; i++)
@@ -623,7 +623,7 @@ void R_DrawViewModel (void)
 	float		add;
 	dlight_t	*dl;
 	
-	if (!r_drawviewmodel.value || r_fov_greater_than_90)
+	if (!r_drawviewmodel->value || r_fov_greater_than_90)
 		return;
 
 	if (cl.items & IT_INVISIBILITY)
@@ -754,7 +754,7 @@ void R_DrawBEntitiesOnList (void)
 	model_t		*clmodel;
 	float		minmaxs[6];
 
-	if (!r_drawentities.value)
+	if (!r_drawentities->value)
 		return;
 
 	VectorCopy (modelorg, oldorigin);
@@ -909,7 +909,7 @@ void R_EdgeDrawing (void)
 
 	R_BeginEdgeFrame ();
 
-	if (r_dspeeds.value)
+	if (r_dspeeds->value)
 	{
 		rw_time1 = Sys_FloatTime ();
 	}
@@ -923,7 +923,7 @@ void R_EdgeDrawing (void)
 // z writes, so have the driver turn z compares on now
 	D_TurnZOn ();
 
-	if (r_dspeeds.value)
+	if (r_dspeeds->value)
 	{
 		rw_time2 = Sys_FloatTime ();
 		db_time1 = rw_time2;
@@ -931,13 +931,13 @@ void R_EdgeDrawing (void)
 
 	R_DrawBEntitiesOnList ();
 
-	if (r_dspeeds.value)
+	if (r_dspeeds->value)
 	{
 		db_time2 = Sys_FloatTime ();
 		se_time1 = db_time2;
 	}
 
-	if (!r_dspeeds.value)
+	if (!r_dspeeds->value)
 	{
 		VID_UnlockBuffer ();
 		S_ExtraUpdate ();	// don't let sound get messed up if going slow
@@ -962,7 +962,7 @@ void R_RenderView_ (void)
 
 	r_warpbuffer = warpbuffer;
 
-	if (r_timegraph.value || r_speeds.value || r_dspeeds.value)
+	if (r_timegraph->value || r_speeds->value || r_dspeeds->value)
 		r_time1 = Sys_FloatTime ();
 
 	if (r_maxbmodeledges.modified) /* FS: Update this before edges get drawn again */
@@ -992,7 +992,7 @@ void R_RenderView_ (void)
 	if (!cl_entities[0].model || !cl.worldmodel)
 		Sys_Error ("R_RenderView: NULL worldmodel");
 		
-	if (!r_dspeeds.value)
+	if (!r_dspeeds->value)
 	{
 		VID_UnlockBuffer ();
 		S_ExtraUpdate ();	// don't let sound get messed up if going slow
@@ -1001,14 +1001,14 @@ void R_RenderView_ (void)
 	
 	R_EdgeDrawing ();
 
-	if (!r_dspeeds.value)
+	if (!r_dspeeds->value)
 	{
 		VID_UnlockBuffer ();
 		S_ExtraUpdate ();	// don't let sound get messed up if going slow
 		VID_LockBuffer ();
 	}
 	
-	if (r_dspeeds.value)
+	if (r_dspeeds->value)
 	{
 		se_time2 = Sys_FloatTime ();
 		de_time1 = se_time2;
@@ -1016,7 +1016,7 @@ void R_RenderView_ (void)
 
 	R_DrawEntitiesOnList ();
 
-	if (r_dspeeds.value)
+	if (r_dspeeds->value)
 	{
 		de_time2 = Sys_FloatTime ();
 		dv_time1 = de_time2;
@@ -1024,7 +1024,7 @@ void R_RenderView_ (void)
 
 	R_DrawViewModel ();
 
-	if (r_dspeeds.value)
+	if (r_dspeeds->value)
 	{
 		dv_time2 = Sys_FloatTime ();
 		dp_time1 = Sys_FloatTime ();
@@ -1032,7 +1032,7 @@ void R_RenderView_ (void)
 
 	R_DrawParticles ();
 
-	if (r_dspeeds.value)
+	if (r_dspeeds->value)
 		dp_time2 = Sys_FloatTime ();
 
 	if (r_dowarp)
@@ -1040,25 +1040,25 @@ void R_RenderView_ (void)
 
 	V_SetContentsColor (r_viewleaf->contents);
 
-	if (r_timegraph.value)
+	if (r_timegraph->value)
 		R_TimeGraph ();
 
-	if (r_zgraph.value)
+	if (r_zgraph->value)
 		R_ZGraph ();
 
-	if (r_aliasstats.value)
+	if (r_aliasstats->value)
 		R_PrintAliasStats ();
 		
-	if (r_speeds.value)
+	if (r_speeds->value)
 		R_PrintTimes ();
 
-	if (r_dspeeds.value)
+	if (r_dspeeds->value)
 		R_PrintDSpeeds ();
 
-	if (r_reportsurfout.value && r_outofsurfaces)
+	if (r_reportsurfout->value && r_outofsurfaces)
 		Con_Printf ("Short %d surfaces\n", r_outofsurfaces);
 
-	if (r_reportedgeout.value && r_outofedges)
+	if (r_reportedgeout->value && r_outofedges)
 		Con_Printf ("Short roughly %d edges\n", r_outofedges * 2 / 3);
 
 // back to high floating-point precision
@@ -1120,7 +1120,7 @@ void R_Restart_f (void)
 	r_viewleaf = NULL;
 	R_ClearParticles ();
 
-	r_cnumsurfs = r_maxsurfs.value;
+	r_cnumsurfs = r_maxsurfs->value;
 
 	if (r_cnumsurfs <= MINSURFACES)
 		r_cnumsurfs = MINSURFACES;
@@ -1144,7 +1144,7 @@ void R_Restart_f (void)
 	r_maxedgesseen = 0;
 	r_maxsurfsseen = 0;
 
-	r_numallocatededges = r_maxedges.value;
+	r_numallocatededges = r_maxedges->value;
 
 	if (r_numallocatededges < MINEDGES)
 		r_numallocatededges = MINEDGES;
@@ -1168,8 +1168,8 @@ void R_Restart_f (void)
 	bedgesMark = Hunk_LowMark ();
 	Hunk_AllocName(0, "-Dynamic-");
 
-	if(r_maxbmodeledges.intValue > MIN_BMODEL_EDGES) /* FS: Dynamic allocation of bmodel edges */
-		bedges = Hunk_AllocName (r_maxbmodeledges.intValue * sizeof(bedge_t), "bedges");
+	if(r_maxbmodeledges->intValue > MIN_BMODEL_EDGES) /* FS: Dynamic allocation of bmodel edges */
+		bedges = Hunk_AllocName (r_maxbmodeledges->intValue * sizeof(bedge_t), "bedges");
 	else
 		bedges = Hunk_AllocName (MIN_BMODEL_EDGES * sizeof(bedge_t), "bedges");
 

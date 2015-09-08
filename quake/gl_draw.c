@@ -72,7 +72,7 @@ int			numgltextures;
 
 void GL_Bind (int texnum)
 {
-	if (gl_nobind.value)
+	if (gl_nobind->value)
 		texnum = char_texture;
 	if (currenttexture == texnum)
 		return;
@@ -1028,13 +1028,13 @@ static	unsigned	scaled[1024*512];	// [512*256];
 	for (scaled_height = 1 ; scaled_height < height ; scaled_height<<=1)
 		;
 
-	scaled_width >>= (int)gl_picmip.value;
-	scaled_height >>= (int)gl_picmip.value;
+	scaled_width >>= (int)gl_picmip->value;
+	scaled_height >>= (int)gl_picmip->value;
 
-	if (scaled_width > gl_max_size.value)
-		scaled_width = gl_max_size.value;
-	if (scaled_height > gl_max_size.value)
-		scaled_height = gl_max_size.value;
+	if (scaled_width > gl_max_size->value)
+		scaled_width = gl_max_size->value;
+	if (scaled_height > gl_max_size->value)
+		scaled_height = gl_max_size->value;
 
 	if (scaled_width * scaled_height > sizeof(scaled)/4)
 		Sys_Error ("GL_LoadTexture: too big");
@@ -1129,13 +1129,13 @@ void GL_Upload8_EXT (byte *data, int width, int height,  qboolean mipmap, qboole
 	for (scaled_height = 1 ; scaled_height < height ; scaled_height<<=1)
 		;
 
-	scaled_width >>= (int)gl_picmip.value;
-	scaled_height >>= (int)gl_picmip.value;
+	scaled_width >>= (int)gl_picmip->value;
+	scaled_height >>= (int)gl_picmip->value;
 
-	if (scaled_width > gl_max_size.value)
-		scaled_width = gl_max_size.value;
-	if (scaled_height > gl_max_size.value)
-		scaled_height = gl_max_size.value;
+	if (scaled_width > gl_max_size->value)
+		scaled_width = gl_max_size->value;
+	if (scaled_height > gl_max_size->value)
+		scaled_height = gl_max_size->value;
 
 	if (scaled_width * scaled_height > sizeof(scaled))
 		Sys_Error ("GL_LoadTexture: too big");

@@ -213,7 +213,7 @@ void Key_Console (int key)
 
 	if (key == K_TAB)
 	{	// command completion
-		if(!console_old_complete.value)
+		if(!console_old_complete->value)
 		{
 			cmd = Sort_Possible_Cmds(key_lines[edit_line]+1);
 		}
@@ -534,7 +534,7 @@ void Key_Unbindall_f (void)
 {
 	int		i;
 
-	if (cl_unbindall_protection.value) /* FS */
+	if (cl_unbindall_protection->value) /* FS */
 	{
 		Con_Warning("Unbindall protection enabled.  It is recommended to do exec default.cfg instead!\nUse cl_unbindall_protection 0 to continue.\n");
 		return;
@@ -736,7 +736,7 @@ void Key_Event (int key, qboolean down)
 	{
 		key_repeats[key]++;
 
-		if (!cl_autorepeat_allkeys.intValue) /* FS: Added */
+		if (!cl_autorepeat_allkeys->intValue) /* FS: Added */
 		{
 			if (key != K_BACKSPACE 
 				&& key != K_PAUSE 

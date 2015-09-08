@@ -100,12 +100,12 @@ int goa_init(int queryport, char *gamename, char *ip, void *userdata)
 	Con_Printf("Initializing GameSpy\n");
 
 	/* FS: Now CVARs */
-	if (sv_master_server_ip.string[0] == '\0')
+	if (sv_master_server_ip->string[0] == '\0')
 	{
 		Con_Printf("Error: sv_master_server_ip is blank!  Setting to default: %s\n", SV_MASTER_ADDR);
 		Cvar_Set("sv_master_server_ip", CL_MASTER_ADDR);
 	}
-	if (sv_master_server_port.intValue <= 0)
+	if (sv_master_server_port->intValue <= 0)
 	{
 		Con_Printf("Error: sv_master_server_port is invalid!  Setting to default: %s\n", SV_MASTER_PORT);
 		Cvar_Set("sv_master_server_port", CL_MASTER_PORT);
@@ -136,7 +136,7 @@ int goa_init(int queryport, char *gamename, char *ip, void *userdata)
 		return E_GOA_BINDERROR;
 	}
 
-	get_sockaddrin(sv_master_server_ip.string,sv_master_server_port.intValue,&saddr,NULL);
+	get_sockaddrin(sv_master_server_ip->string,sv_master_server_port->intValue,&saddr,NULL);
 
 	lasterror = connect (hbsock, (struct sockaddr *) &saddr, sizeof(saddr));
 	
@@ -549,7 +549,7 @@ void send_heartbeat(int statechanged)
     if (isDedicated)
 		return;		// only dedicated servers send heartbeats
   
-	if (!public_server.value)
+	if (!public_server->value)
 		return;		// a private dedicated game
 
 	Con_DPrintf(DEVELOPER_MSG_SERVER, "Sending a heartbeat to the GameSpy Master Server.\n");

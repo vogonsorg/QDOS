@@ -87,7 +87,7 @@ int MPATH_Init (void)
 		myAddr = *(int *)local->h_addr_list[0];
 
 		// if the quake hostname isn't set, set it to the machine name
-		if (Q_strcmp(hostname.string, "UNNAMED") == 0)
+		if (Q_strcmp(hostname->string, "UNNAMED") == 0)
 		{
 			// see if it's a text IP address (well, close enough)
 			for (p = buff; *p; p++)

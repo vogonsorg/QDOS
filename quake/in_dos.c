@@ -116,7 +116,7 @@ qboolean IN_ReadJoystick (void);
 
 void Toggle_AuxLook_f (void)
 {
-	if (aux_look.value)
+	if (aux_look->value)
 		Cvar_Set ("auxlook","0");
 	else
 		Cvar_Set ("auxlook","1");
@@ -229,7 +229,7 @@ void IN_Commands (void)
 	{
 		joy_buttonstate = ((dos_inportb(0x201) >> 4)&15)^15;
 	// perform button actions
-		for (i=0 ; i<joy_numbuttons.value ; i++)
+		for (i=0 ; i<joy_numbuttons->value ; i++)
 		{
 			if ( (joy_buttonstate & (1<<i)) &&
 			!(joy_oldbuttonstate & (1<<i)) )
@@ -287,7 +287,7 @@ void IN_MouseMove (usercmd_t *cmd)
 
 	IN_ReadMouseMove (&mx, &my);
 
-	if (m_filter.value)
+	if (m_filter->value)
 	{
 		mouse_x = (mx + old_mouse_x) * 0.5;
 		mouse_y = (my + old_mouse_y) * 0.5;
@@ -300,28 +300,28 @@ void IN_MouseMove (usercmd_t *cmd)
 	old_mouse_x = mx;
 	old_mouse_y = my;
 
-	mouse_x *= sensitivity.value;
-	mouse_y *= sensitivity.value;
+	mouse_x *= sensitivity->value;
+	mouse_y *= sensitivity->value;
 
 // add mouse X/Y movement to cmd
-	if ( (in_strafe.state & 1) || (lookstrafe.value && ((in_mlook.state & 1) || in_freelook.value ))) /* FS: mlook */
-		cmd->sidemove += m_side.value * mouse_x;
+	if ( (in_strafe.state & 1) || (lookstrafe->value && ((in_mlook.state & 1) || in_freelook->value ))) /* FS: mlook */
+		cmd->sidemove += m_side->value * mouse_x;
 	else
-		cl.viewangles[YAW] -= m_yaw.value * mouse_x;
+		cl.viewangles[YAW] -= m_yaw->value * mouse_x;
 	
-	if (in_mlook.state & 1 || in_freelook.value) /* FS: mlook */
+	if (in_mlook.state & 1 || in_freelook->value) /* FS: mlook */
 		V_StopPitchDrift ();
 		
-	if ( ((in_mlook.state & 1) && !(in_strafe.state & 1)) || (in_freelook.value && !(in_strafe.state & 1))) /* FS: mlook */
+	if ( ((in_mlook.state & 1) && !(in_strafe.state & 1)) || (in_freelook->value && !(in_strafe.state & 1))) /* FS: mlook */
 	{
-		cl.viewangles[PITCH] += m_pitch.value * mouse_y;
+		cl.viewangles[PITCH] += m_pitch->value * mouse_y;
 /*
 		if (cl.viewangles[PITCH] > 80)
 			cl.viewangles[PITCH] = 80;
 		if (cl.viewangles[PITCH] < -70)
 			cl.viewangles[PITCH] = -70;
 */
-		if (pq_fullpitch.value || cl_fullpitch.value) /* FS: ProQuake server shit */
+		if (pq_fullpitch->value || cl_fullpitch->value) /* FS: ProQuake server shit */
 		{
 			if (cl.viewangles[PITCH] > 90)
 			{
@@ -347,9 +347,9 @@ void IN_MouseMove (usercmd_t *cmd)
 	else
 	{
 		if ((in_strafe.state & 1) && noclip_anglehack)
-			cmd->upmove -= m_forward.value * mouse_y;
+			cmd->upmove -= m_forward->value * mouse_y;
 		else
-			cmd->forwardmove -= m_forward.value * mouse_y;
+			cmd->forwardmove -= m_forward->value * mouse_y;
 	}
 }
 
@@ -362,7 +362,7 @@ void IN_JoyMove (usercmd_t *cmd)
 {
 	float	speed, aspeed;
 
-	if (!joy_avail || !in_joystick.value) 
+	if (!joy_avail || !in_joystick->value) 
 		return; 
  
 	IN_ReadJoystick (); 
@@ -371,7 +371,7 @@ void IN_JoyMove (usercmd_t *cmd)
 					// reading time (win 95)
 
 	if (in_speed.state & 1)
-		speed = cl_movespeedkey.value;
+		speed = cl_movespeedkey->value;
 	else
 		speed = 1;
 	aspeed = speed*host_frametime;
@@ -379,35 +379,35 @@ void IN_JoyMove (usercmd_t *cmd)
 	if (in_strafe.state & 1)
 	{
 		if (joystickx < joyxl)
-			cmd->sidemove -= speed*cl_sidespeed.value; 
+			cmd->sidemove -= speed*cl_sidespeed->value; 
 		else if (joystickx > joyxh) 
-			cmd->sidemove += speed*cl_sidespeed.value; 
+			cmd->sidemove += speed*cl_sidespeed->value; 
 	}
 	else
 	{
 		if (joystickx < joyxl)
-			cl.viewangles[YAW] += aspeed*cl_yawspeed.value;
+			cl.viewangles[YAW] += aspeed*cl_yawspeed->value;
 		else if (joystickx > joyxh) 
-			cl.viewangles[YAW] -= aspeed*cl_yawspeed.value;
+			cl.viewangles[YAW] -= aspeed*cl_yawspeed->value;
 		cl.viewangles[YAW] = anglemod(cl.viewangles[YAW]);
 	}
 
-        if (in_mlook.state & 1 || in_freelook.value) /* FS: mlook */
+        if (in_mlook.state & 1 || in_freelook->value) /* FS: mlook */
 	{
-		if (m_pitch.value < 0)
+		if (m_pitch->value < 0)
 			speed *= -1;
 		
 		if (joysticky < joyyl) 
-			cl.viewangles[PITCH] += aspeed*cl_pitchspeed.value;
+			cl.viewangles[PITCH] += aspeed*cl_pitchspeed->value;
 		else if (joysticky > joyyh) 
-			cl.viewangles[PITCH] -= aspeed*cl_pitchspeed.value;
+			cl.viewangles[PITCH] -= aspeed*cl_pitchspeed->value;
 	}
 	else
 	{
 		if (joysticky < joyyl) 
-			cmd->forwardmove += speed*cl_forwardspeed.value; 
+			cmd->forwardmove += speed*cl_forwardspeed->value; 
 		else if (joysticky > joyyh) 
-			cmd->forwardmove -= speed*cl_backspeed.value;  
+			cmd->forwardmove -= speed*cl_backspeed->value;  
 	}
 }
 
@@ -633,7 +633,7 @@ void IN_ExternalMove (usercmd_t *cmd)
 	if (cl.viewangles[PITCH] < -70)
 		cl.viewangles[PITCH] = -70;
 
-	freelook = (extern_control->flags & AUX_FLAG_FREELOOK || aux_look.value || in_mlook.state & 1 || in_freelook.value); /* FS: mlook */
+	freelook = (extern_control->flags & AUX_FLAG_FREELOOK || aux_look->value || in_mlook.state & 1 || in_freelook->value); /* FS: mlook */
 
 	if (freelook)
 		V_StopPitchDrift ();

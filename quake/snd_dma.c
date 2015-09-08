@@ -227,13 +227,13 @@ void S_Init (void)
 	// check for command line overrides -- sezero
 	CFG_ReadCvarOverrides (read_vars, num_readvars);
 
-	if (volume.value < 0)
+	if (volume->value < 0)
 		Cvar_Set("volume", "0");
-	else if (volume.value > 1.0)
+	else if (volume->value > 1.0)
 		Cvar_Set("volume", "1");
-	if (bgmvolume.value < 0)
+	if (bgmvolume->value < 0)
 		Cvar_Set("bgmvolume", "0");
-	else if (bgmvolume.value > 1.0)
+	else if (bgmvolume->value > 1.0)
 		Cvar_Set("bgmvolume", "1");
 
 	snd_initialized = true;
@@ -381,13 +381,13 @@ sfx_t *S_PrecacheSound (char *name)
 {
 	sfx_t	*sfx;
 
-	if (!sound_started || nosound.value)
+	if (!sound_started || nosound->value)
 		return NULL;
 
 	sfx = S_FindName (name);
 
 // cache it in
-	if (precache.value)
+	if (precache->value)
 		S_LoadSound (sfx);
 
 	return sfx;
@@ -513,7 +513,7 @@ void S_StartSound(int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float f
 	if (!sfx)
 		return;
 
-	if (nosound.value)
+	if (nosound->value)
 		return;
 
 	vol = fvol*255;
@@ -740,7 +740,7 @@ void S_UpdateAmbientSounds (void)
 		return;
 
 	l = Mod_PointInLeaf (listener_origin, cl.worldmodel);
-	if (!l || !ambient_level.value)
+	if (!l || !ambient_level->value)
 	{
 		for (ambient_channel = 0 ; ambient_channel< NUM_AMBIENTS ; ambient_channel++)
 			channels[ambient_channel].sfx = NULL;
@@ -752,20 +752,20 @@ void S_UpdateAmbientSounds (void)
 		chan = &channels[ambient_channel];      
 		chan->sfx = ambient_sfx[ambient_channel];
 	
-		vol = ambient_level.value * l->ambient_sound_level[ambient_channel];
+		vol = ambient_level->value * l->ambient_sound_level[ambient_channel];
 		if (vol < 8)
 			vol = 0;
 
 	// don't adjust volume too fast
 		if (chan->master_vol < vol)
 		{
-			chan->master_vol += host_frametime * ambient_fade.value;
+			chan->master_vol += host_frametime * ambient_fade->value;
 			if (chan->master_vol > vol)
 				chan->master_vol = vol;
 		}
 		else if (chan->master_vol > vol)
 		{
-			chan->master_vol -= host_frametime * ambient_fade.value;
+			chan->master_vol -= host_frametime * ambient_fade->value;
 			if (chan->master_vol < vol)
 				chan->master_vol = vol;
 		}
@@ -865,7 +865,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 //
 // debugging output
 //
-	if (snd_show.value)
+	if (snd_show->value)
 	{
 		total = 0;
 		ch = channels;
@@ -924,7 +924,7 @@ void S_ExtraUpdate (void)
 	IN_Accumulate ();
 #endif
 
-	if (snd_noextraupdate.value)
+	if (snd_noextraupdate->value)
 		return;         // don't pollute timings
 	S_Update_();
 }
@@ -948,7 +948,7 @@ void S_Update_(void)
 	}
 
 // mix ahead of current position
-	endtime = soundtime + _snd_mixahead.value * shm->speed;
+	endtime = soundtime + _snd_mixahead->value * shm->speed;
 
 // mix to an even submission block size
 	endtime = (endtime + shm->submission_chunk-1) & ~(shm->submission_chunk-1);
@@ -1088,7 +1088,7 @@ void S_LocalSound (char *sound)
 {
 	sfx_t	*sfx;
 
-	if (nosound.value)
+	if (nosound->value)
 		return;
 	if (!sound_started)
 		return;
@@ -1104,7 +1104,7 @@ void S_LocalSound (char *sound)
 
 void S_GamespySound (char *sound) /* FS: Added */
 {
-	if (snd_gamespy_sounds.intValue)
+	if (snd_gamespy_sounds->intValue)
 		S_LocalSound(sound);
 }
 
@@ -1148,8 +1148,8 @@ void S_RawSamples (int samples, int rate, int width, int channels, byte *data, q
 
 	scale = (float) rate / shm->speed;
 	if (music)
-		intVolume = (int) (s_musicvolume.value * 256);
-	else	intVolume = (int) (volume.value * 256);
+		intVolume = (int) (s_musicvolume->value * 256);
+	else	intVolume = (int) (volume->value * 256);
 
 	if (channels == 2 && width == 2)
 	{

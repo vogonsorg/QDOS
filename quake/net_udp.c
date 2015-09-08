@@ -103,7 +103,7 @@ int UDP_Init (void)
 		myAddr = htonl(INADDR_LOOPBACK);
 
 	// if the quake hostname isn't set, set it to the machine name
-	if (Q_strcmp(hostname.string, "UNNAMED") == 0)
+	if (Q_strcmp(hostname->string, "UNNAMED") == 0)
 	{
 		buff[15] = 0;
 		Cvar_Set ("hostname", buff);

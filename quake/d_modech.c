@@ -100,9 +100,9 @@ void D_ViewChanged (void)
 
 void D_SetParticleSize (void) /* FS: Because particles like blood and bullet dust/spray/dunno the term look funny in high res */
 {
-	if (sw_particle_size_override.intValue && sw_particle_size_min.intValue)
+	if (sw_particle_size_override->intValue && sw_particle_size_min->intValue)
 	{
-		d_pix_min = sw_particle_size_min.intValue;
+		d_pix_min = sw_particle_size_min->intValue;
 	}
 	else
 	{
@@ -125,9 +125,9 @@ void D_SetParticleSize (void) /* FS: Because particles like blood and bullet dus
 		d_pix_min = 1;
 	}
 
-	if (sw_particle_size_override.intValue && sw_particle_size_max.intValue)
+	if (sw_particle_size_override->intValue && sw_particle_size_max->intValue)
 	{
-		d_pix_max = sw_particle_size_max.intValue;
+		d_pix_max = sw_particle_size_max->intValue;
 	}
 	else
 	{
@@ -139,9 +139,9 @@ void D_SetParticleSize (void) /* FS: Because particles like blood and bullet dus
 		d_pix_max = 1;
 	}
 
-	if (sw_particle_size_override.intValue && sw_particle_size.intValue)
+	if (sw_particle_size_override->intValue && sw_particle_size->intValue)
 	{
-		d_pix_shift = sw_particle_size.intValue - (int)((float)r_refdef.vrect.width / 320.0 + 0.5);
+		d_pix_shift = sw_particle_size->intValue - (int)((float)r_refdef.vrect.width / 320.0 + 0.5);
 	}
 	else
 	{

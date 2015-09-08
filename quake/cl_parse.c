@@ -951,7 +951,7 @@ void CL_ParseStaticSound (int version) //johnfitz -- added argument
 }
 
 
-#define SHOWNET(x) if(cl_shownet.value==2)Con_Printf ("%3i:%s\n", msg_readcount-1, x);
+#define SHOWNET(x) if(cl_shownet->value==2)Con_Printf ("%3i:%s\n", msg_readcount-1, x);
 
 /*
 =====================
@@ -968,9 +968,9 @@ void CL_ParseServerMessage (void)
 //
 // if recording demos, copy the message out
 //
-	if (cl_shownet.value == 1)
+	if (cl_shownet->value == 1)
 		Con_Printf ("%i ",net_message.cursize);
-	else if (cl_shownet.value == 2)
+	else if (cl_shownet->value == 2)
 		Con_Printf ("------------------\n");
 	
 	cl.onground = false;	// unless the server says otherwise	
@@ -1121,7 +1121,7 @@ void CL_ParseServerMessage (void)
 				i = MSG_ReadByte ();
 				if (i >= cl.maxclients)
 					Host_Error ("CL_ParseServerMessage: svc_updatename > MAX_SCOREBOARD");
-				strcpy (cl.scores[i].name, MSG_ReadString ());
+				strcpy (cl.scores[i]->name, MSG_ReadString ());
 				break;
 			
 			case svc_updatefrags:
@@ -1357,7 +1357,7 @@ void CL_PlayBackgroundTrack (int track)
 #endif
 
 	/* play whatever is found */
-	if ((have_extmusic&BGMUSIC_WAV) && (cl_wav_music.intValue || !(have_extmusic&BGMUSIC_OGG))) {
+	if ((have_extmusic&BGMUSIC_WAV) && (cl_wav_music->intValue || !(have_extmusic&BGMUSIC_OGG))) {
 		CDAudio_Stop();
 		strcpy (p, "wav");
 		S_StartWAVBackgroundTrack(name, name);

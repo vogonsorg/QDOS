@@ -917,7 +917,7 @@ static qsocket_t *_Serial_CheckNewConnections (SerialLine *p)
 
 		SZ_Clear(&net_message);
 		MSG_WriteByte(&net_message, CCREP_SERVER_INFO);
-		MSG_WriteString(&net_message, hostname.string);
+		MSG_WriteString(&net_message, hostname->string);
 		MSG_WriteString(&net_message, sv.name);
 		MSG_WriteByte(&net_message, net_activeconnections);
 		MSG_WriteByte(&net_message, svs.maxclients);

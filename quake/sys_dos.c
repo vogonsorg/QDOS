@@ -513,7 +513,7 @@ void Sys_Quit (void)
 	
 
 // load the sell screen before shuting everything down
-	if (registered.value)
+	if (registered->value)
 		d = COM_LoadHunkFile ("end2.bin"); 
 	else
 		d = COM_LoadHunkFile ("end1.bin"); 
@@ -808,7 +808,7 @@ int main (int c, char **v)
 		newtime = Sys_FloatTime ();
 		time = newtime - oldtime;
 
-		if (cls.state == ca_dedicated && (time<sys_ticrate.value))
+		if (cls.state == ca_dedicated && (time<sys_ticrate->value))
 			continue;
 
 		Host_Frame (time);

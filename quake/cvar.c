@@ -172,10 +172,10 @@ void Cvar_Set (char *var_name, char *value)
 			SV_BroadcastPrintf ("\"%s\" changed to \"%s\"\n", var->name, var->string);
 	}
 // 1999-09-06 deathmatch/coop not at the same time fix by Maddes  start
-	if ( (var->value != 0) && (!Q_strcmp (var->name, deathmatch.name)) )
+	if ( (var->value != 0) && (!Q_strcmp (var->name, deathmatch->name)) )
 		Cvar_Set ("coop", "0");
 
-	if ( (var->value != 0) && (!Q_strcmp (var->name, coop.name)) )
+	if ( (var->value != 0) && (!Q_strcmp (var->name, coop->name)) )
 		Cvar_Set ("deathmatch", "0");
 // 1999-09-06 deathmatch/coop not at the same time fix by Maddes  end
 }
@@ -256,7 +256,7 @@ qboolean	Cvar_Command (void)
 	if (!v)
 		return false;
 
-	if (!Q_strcmp(v->name, "developer") && con_show_dev_flags.intValue) /* FS: Special case for showing enabled flags */
+	if (!Q_strcmp(v->name, "developer") && con_show_dev_flags->intValue) /* FS: Special case for showing enabled flags */
 	{
 		if(Q_strlen(Cmd_Argv(1)) > 0)
 			Cvar_Set(developer.name, Cmd_Argv(1));
@@ -268,7 +268,7 @@ qboolean	Cvar_Command (void)
 	if (Cmd_Argc() == 1)
 	{
 		Con_Printf ("\"%s\" is \"%s\".  Default: \"%s\".\n", v->name, v->string, v->defaultString);
-		if (con_show_description.value && v->description != NULL && v->description[0] != 0)
+		if (con_show_description->value && v->description != NULL && v->description[0] != 0)
 			Con_Printf("Description: %s\n", v->description);
 		return true;
 	}
@@ -314,14 +314,14 @@ void Cvar_Set_Description (const char *var_name, const char *description) /* FS:
 
 void Cvar_ParseDeveloperFlags (void) /* FS: Special stuff for showing all the dev flags */
 {
-	Con_Printf("\"%s\" is \"%s\", Default: \"%s\"\n", developer.name, developer.string, developer.defaultString);
-	if(developer.intValue > 0)
+	Con_Printf("\"%s\" is \"%s\", Default: \"%s\"\n", developer->name, developer->string, developer->defaultString);
+	if(developer->intValue > 0)
 	{
 		unsigned long devFlags = 0;
-		if(developer.intValue == 1)
+		if(developer->intValue == 1)
 			devFlags = 65534;
 		else
-			devFlags = (unsigned long)developer.value;
+			devFlags = (unsigned long)developer->value;
 		Con_Printf("Toggled flags:\n");
 		if(devFlags & DEVELOPER_MSG_STANDARD)
 			Con_Printf(" * Standard messages - 2\n");
@@ -358,7 +358,7 @@ void Cvar_ParseDeveloperFlags (void) /* FS: Special stuff for showing all the de
 	}
 	else
 	{
-		if (developer.description && con_show_description.intValue)
+		if (developer.description && con_show_description->intValue)
 			Con_Printf("Description: %s\n", developer.description);
 	}
 }

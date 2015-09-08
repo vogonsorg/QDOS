@@ -148,7 +148,7 @@ void Host_Game_f (void)
 	if (Cmd_Argc() > 1)
 	{
 
-		if (!registered.value) //disable command for shareware quake
+		if (!registered->value) //disable command for shareware quake
 		{
 			Con_Printf("You must have the registered version to use modified games\n");
 			return;
@@ -1249,7 +1249,7 @@ void Host_Name_f (void)
 
 	if (Cmd_Argc () == 1)
 	{
-		Con_Printf ("\"name\" is \"%s\"\n", cl_name.string);
+		Con_Printf ("\"name\" is \"%s\"\n", cl_name->string);
 		return;
 	}
 	if (Cmd_Argc () == 2)
@@ -1260,7 +1260,7 @@ void Host_Name_f (void)
 
 	if (cmd_source == src_command)
 	{
-		if (Q_strcmp(cl_name.string, newName) == 0)
+		if (Q_strcmp(cl_name->string, newName) == 0)
 			return;
 		Cvar_Set ("_cl_name", newName);
 		if (cls.state == ca_connected)
@@ -1328,7 +1328,7 @@ void Host_Say(qboolean teamonly)
 	if (!fromServer)
 		sprintf (text, "%c%s: ", 1, save->name);
 	else
-		sprintf (text, "%c<%s> ", 1, hostname.string);
+		sprintf (text, "%c<%s> ", 1, hostname->string);
 
 	j = sizeof(text) - 2 - Q_strlen(text);  // -2 for /n and null terminator
 	if (Q_strlen(p) > j)
@@ -1341,7 +1341,7 @@ void Host_Say(qboolean teamonly)
 	{
 		if (!client || !client->active || !client->spawned)
 			continue;
-		if (teamplay.value && teamonly && client->edict->v.team != save->edict->v.team)
+		if (teamplay->value && teamonly && client->edict->v.team != save->edict->v.team)
 			continue;
 		host_client = client;
 		SV_ClientPrintf("%s", text);
@@ -1428,7 +1428,7 @@ void Host_Color_f(void)
 	
 	if (Cmd_Argc() == 1)
 	{
-		Con_Printf ("\"color\" is \"%i %i\"\n", ((int)cl_color.value) >> 4, ((int)cl_color.value) & 0x0f);
+		Con_Printf ("\"color\" is \"%i %i\"\n", ((int)cl_color->value) >> 4, ((int)cl_color->value) & 0x0f);
 		Con_Printf ("color <0-13> [0-13]\n");
 		return;
 	}
@@ -1505,7 +1505,7 @@ void Host_Pause_f (void)
 		Cmd_ForwardToServer ();
 		return;
 	}
-	if (!pausable.value)
+	if (!pausable->value)
 		SV_ClientPrintf ("Pause not allowed.\n");
 	else
 	{
@@ -1752,7 +1752,7 @@ void Host_Kick_f (void)
 			if (cls.state == ca_dedicated)
 				who = "Console";
 			else
-				who = cl_name.string;
+				who = cl_name->string;
 		else
 			who = save->name;
 
@@ -2168,7 +2168,7 @@ void Host_Startdemos_f (void)
 {
 	int		i, c;
 
-	if (COM_CheckParm("-nodemo") || !cl_demos.intValue) /* FS: Disable startup demos */
+	if (COM_CheckParm("-nodemo") || !cl_demos->intValue) /* FS: Disable startup demos */
 	{
 		Con_Printf("Startup demos disabled.\n");
 		c = 0;
@@ -2215,7 +2215,7 @@ Return to looping demos
 */
 void Host_Demos_f (void)
 {
-	if (COM_CheckParm("-nodemo") || !cl_demos.intValue) /* FS: Skip startup demos */
+	if (COM_CheckParm("-nodemo") || !cl_demos->intValue) /* FS: Skip startup demos */
 	{
 		nostartupdemos = false;
 		cls.demonum = -1;

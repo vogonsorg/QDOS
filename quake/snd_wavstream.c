@@ -235,7 +235,7 @@ void S_StreamWAVBackgroundTrack(void)
 	float	scale;
 	byte	musicWavData[MAX_RAW_SAMPLES];
 
-	if (!s_bgTrack.file || !s_musicvolume.value || !cl_wav_music.intValue)
+	if (!s_bgTrack.file || !s_musicvolume->value || !cl_wav_music->intValue)
 		return;
 
 	if (s_rawend < paintedtime)
@@ -274,7 +274,7 @@ void S_StreamWAVBackgroundTrack(void)
 				}
 				else
 				{	// check if it's time to switch to the ambient track
-					if ( ++wav_loopcounter >= wav_loopcount.intValue
+					if ( ++wav_loopcounter >= wav_loopcount->intValue
 /*						&& (!cl.configstrings[CS_MAXCLIENTS][0] || !strcmp(cl.configstrings[CS_MAXCLIENTS], "1"))*/ ) /* FS: No Configstrings in Q1 */
 					{	// Close the loop track
 						S_CloseWAVBackgroundTrack();
@@ -327,7 +327,7 @@ void S_StartWAVBackgroundTrack (const char *introTrack, const char *loopTrack)
 	// Start it up
 	Q_strlcpy(s_bgTrack.introName, introTrack, sizeof(s_bgTrack.introName));
 	Q_strlcpy(s_bgTrack.loopName, loopTrack, sizeof(s_bgTrack.loopName));
-	Q_strlcpy(s_bgTrack.ambientName, va("music/%s.wav", wav_ambient_track.string), sizeof(s_bgTrack.ambientName));
+	Q_strlcpy(s_bgTrack.ambientName, va("music/%s.wav", wav_ambient_track->string), sizeof(s_bgTrack.ambientName));
 
 	// set a loop counter so that this track will change to the ambient track later
 	wav_loopcounter = 0;

@@ -337,7 +337,7 @@ static void Check_Gamma (unsigned char *pal)
 	unsigned char	palette[768];
 	int		i;
 
-	vid_gamma = v_gamma.value;
+	vid_gamma = v_gamma->value;
 
 	if ((i = COM_CheckParm("-gamma")) > 0)
 		vid_gamma = Q_atof(com_argv[i+1]);

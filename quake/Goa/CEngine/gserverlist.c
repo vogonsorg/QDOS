@@ -193,12 +193,12 @@ static GError CreateServerListSocket(GServerList serverlist)
 	struct   sockaddr_in saddr;
 	struct hostent *hent;
 
-	if (cl_master_server_ip.string[0] == '\0')
+	if (cl_master_server_ip->string[0] == '\0')
 	{
 		Con_Printf("Error: cl_master_server_ip is blank!  Setting to default: %s\n", CL_MASTER_ADDR);
 		Cvar_Set("cl_master_server_ip", CL_MASTER_ADDR);
 	}
-	if (cl_master_server_port.intValue <= 0)
+	if (cl_master_server_port->intValue <= 0)
 	{
 		Con_Printf("Error: cl_master_server_port is invalid!  Setting to default: %s\n", CL_MASTER_PORT);
 		Cvar_Set("cl_master_server_port", CL_MASTER_PORT);
@@ -209,8 +209,8 @@ static GError CreateServerListSocket(GServerList serverlist)
 		return GE_NOSOCKET;
 
 	saddr.sin_family = AF_INET;
-	saddr.sin_port = htons((unsigned short)cl_master_server_port.intValue);
-	hent = gethostbyname(cl_master_server_ip.string);
+	saddr.sin_port = htons((unsigned short)cl_master_server_port->intValue);
+	hent = gethostbyname(cl_master_server_ip->string);
 
 	if (!hent)
 	{
@@ -234,7 +234,7 @@ static GError CreateServerListSocket(GServerList serverlist)
 		return GE_NOSOCKET;
 	}
 
-	totalRetry = bound(1,cl_master_server_retries.intValue,100);
+	totalRetry = bound(1,cl_master_server_retries->intValue,100);
 
 	//else we are connected
 	return 0;
@@ -558,7 +558,7 @@ static GError ServerListQueryLoop(GServerList serverlist)
 	char indata[GS_MSGLEN];
 	struct sockaddr_in saddr;
 	int saddrlen = sizeof(saddr);
-	int server_timeout = bound(100, cl_master_server_timeout.intValue, 9000); /* FS: Now a CVAR */
+	int server_timeout = bound(100, cl_master_server_timeout->intValue, 9000); /* FS: Now a CVAR */
 	int scount = 0;
 	static qboolean firsttime = true;
 	GServer server;

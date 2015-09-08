@@ -125,10 +125,9 @@ void SV_Init (void)
 	Cvar_RegisterVariable (&sv_nostep);
 
 	/* FS: New stuff */
-	Cvar_RegisterVariable (&pq_fullpitch);
-    Cvar_RegisterVariable (&cl_fullpitch);
 	Cvar_RegisterVariable (&sv_loadentfiles);
 	Cvar_RegisterVariable (&sv_altnoclip); //johnfitz
+	pq_fullpitch = Cvar_Get("pq_fullpitch", "0"); /* FS: ProQuake Shit */
 
 	/* FS: Gamespy Stuff */
 	Cvar_RegisterVariable (&sv_master_server_ip);
@@ -311,7 +310,7 @@ void SV_SendServerinfo (client_t *client)
 	MSG_WriteLong (&client->message, sv.protocol); //johnfitz -- sv.protocol instead of PROTOCOL_VERSION
 	MSG_WriteByte (&client->message, svs.maxclients);
 
-	if (!coop.value && deathmatch.value)
+	if (!coop->value && deathmatch->value)
 		MSG_WriteByte (&client->message, GAME_DEATHMATCH);
 	else
 		MSG_WriteByte (&client->message, GAME_COOP);
@@ -1313,7 +1312,7 @@ void SV_SpawnServer (char *server)
 	char	*entitystring = NULL; /* FS: Ent file loading */
 
 	// let's not have any servers with no name
-	if (hostname.string[0] == 0)
+	if (hostname->string[0] == 0)
 		Cvar_Set ("hostname", "QDOS UNNAMED");
 
 	scr_centertime_off = 0;
@@ -1332,10 +1331,10 @@ void SV_SpawnServer (char *server)
 	//
 	// make cvars consistant
 	//
-	if (coop.value)
+	if (coop->value)
 		Cvar_SetValue ("deathmatch", 0);
 
-	current_skill = (int)(skill.value + 0.5);
+	current_skill = (int)(skill->value + 0.5);
  
 	if (current_skill < 0)
 		current_skill = 0;
@@ -1358,7 +1357,7 @@ void SV_SpawnServer (char *server)
 	PR_LoadProgs ();
 
 	// allocate server memory
-	sv.max_edicts = CLAMP (MIN_EDICTS,(int)max_edicts.value,MAX_EDICTS); //johnfitz -- max_edicts cvar
+	sv.max_edicts = CLAMP (MIN_EDICTS,(int)max_edicts->value,MAX_EDICTS); //johnfitz -- max_edicts cvar
 	sv.edicts = Hunk_AllocName (sv.max_edicts*pr_edict_size, "edicts");
 
 	sv.datagram.maxsize = sizeof(sv.datagram_buf);
@@ -1427,10 +1426,10 @@ void SV_SpawnServer (char *server)
 	ent->v.solid = SOLID_BSP;
 	ent->v.movetype = MOVETYPE_PUSH;
 
-	if (coop.value)
-		pr_global_struct->coop = coop.value;
+	if (coop->value)
+		pr_global_struct->coop = coop->value;
 	else
-		pr_global_struct->deathmatch = deathmatch.value;
+		pr_global_struct->deathmatch = deathmatch->value;
 
 	pr_global_struct->mapname = sv.name - pr_strings;
 
@@ -1439,7 +1438,7 @@ void SV_SpawnServer (char *server)
 
 
 	/* FS: Load external ent files, from MVDSV */
-	if(sv_loadentfiles.intValue)
+	if(sv_loadentfiles->intValue)
 	{
 		char filename[MAX_QPATH];
 

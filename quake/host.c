@@ -98,13 +98,13 @@ void Max_Edicts_f (void)
 
 	//TODO: clamp it here?
 
-	if (max_edicts.value == oldval)
+	if (max_edicts->value == oldval)
 		return;
 
 	if (cls.state == ca_connected || sv.active)
 		Con_Printf ("changes will not take effect until the next level load.\n");
 
-	oldval = max_edicts.value;
+	oldval = max_edicts->value;
 }
 
 /*
@@ -574,7 +574,7 @@ qboolean Host_FilterTime (float time)
 	realtime += time;
 
 	//johnfitz -- max fps cvar
-	maxfps = CLAMP (10.0, cl_maxfps.value, 1000.0); /* FS: Technically it was host_maxfps, but cl_maxfps is standard in other Quake games */
+	maxfps = CLAMP (10.0, cl_maxfps->value, 1000.0); /* FS: Technically it was host_maxfps, but cl_maxfps is standard in other Quake games */
 	if (!cls.timedemo && realtime - oldrealtime < 1.0/maxfps)
 		return false; // framerate is too high
 	//johnfitz
@@ -583,11 +583,11 @@ qboolean Host_FilterTime (float time)
 	oldrealtime = realtime;
 
 	//johnfitz -- host_timescale is more intuitive than host_framerate
-	if (host_timescale.value > 0)
-		host_frametime *= host_timescale.value;
+	if (host_timescale->value > 0)
+		host_frametime *= host_timescale->value;
 	//johnfitz
-	else if (host_framerate.value > 0)
-		host_frametime = host_framerate.value;
+	else if (host_framerate->value > 0)
+		host_frametime = host_framerate->value;
 	else // don't allow really long or short frames
 		host_frametime = CLAMP (0.001, host_frametime, 0.1); //johnfitz -- use CLAMP
 
@@ -783,12 +783,12 @@ void _Host_Frame (float time)
 	}
 
 // update video
-	if (host_speeds.value)
+	if (host_speeds->value)
 		time1 = Sys_FloatTime ();
 
 	SCR_UpdateScreen ();
 
-	if (host_speeds.value)
+	if (host_speeds->value)
 		time2 = Sys_FloatTime ();
 
 // update audio
@@ -802,7 +802,7 @@ void _Host_Frame (float time)
 
 	CDAudio_Update();
 
-	if (host_speeds.value)
+	if (host_speeds->value)
 	{
 		pass1 = (time1 - time3)*1000;
 		time3 = Sys_FloatTime ();
@@ -823,7 +823,7 @@ void Host_Frame (float time)
 	static int	  timecount;
 	int		i, c, m;
 
-	if (!serverprofile.value)
+	if (!serverprofile->value)
 	{
 		_Host_Frame (time);
 		return;

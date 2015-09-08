@@ -426,7 +426,7 @@ void Con_Printf (const char *fmt, ...)
 	va_end (argptr);
 
 	/* FS: Timestamp code */
-	if(timestamp.intValue > 0)
+	if(timestamp->intValue > 0)
 	{
 		struct tm *local;
 		time_t utc;
@@ -436,11 +436,11 @@ void Con_Printf (const char *fmt, ...)
 		utc = time (NULL);
 		local = localtime (&utc);
 #ifdef _MSC_VER
-		if (timestamp.intValue == 1)
+		if (timestamp->intValue == 1)
 			timefmt = "[%m/%d/%y @ %H:%M:%S %p] ";
 		else	timefmt = "[%m/%d/%y @ %I:%M:%S %p] ";
 #else
-		if (timestamp.intValue == 1)
+		if (timestamp->intValue == 1)
 			timefmt = "[%m/%d/%y @ %k:%M:%S %p] ";
 		else	timefmt = "[%m/%d/%y @ %l:%M:%S %p] ";
 #endif
@@ -516,15 +516,15 @@ void Con_DPrintf (unsigned long developerFlags, const char *fmt, ...)
 	static dstring_t *msg;
 	unsigned long devValue = 0; /* FS: Developer flags */
 
-	if (!developer.value)
+	if (!developer->value)
 		return;			// don't confuse non-developers with techie stuff...
 
 	if (!msg)
 		msg = dstring_new();
 
-	devValue = (unsigned long)developer.value;
+	devValue = (unsigned long)developer->value;
 	
-	if (developer.value == 1)
+	if (developer->value == 1)
 		devValue = 65534;
 
 	if (!(devValue & developerFlags))
@@ -593,12 +593,12 @@ void Con_LogCenterPrint (char *str)
 	if (!strcmp(str, con_lastcenterstring))
 		return; //ignore duplicates
 
-	if (cl.gametype == GAME_DEATHMATCH && con_logcenterprint.value != 2)
+	if (cl.gametype == GAME_DEATHMATCH && con_logcenterprint->value != 2)
 		return; //don't log in deathmatch
 
 	strcpy(con_lastcenterstring, str);
 
-	if (con_logcenterprint.value)
+	if (con_logcenterprint->value)
 	{
 		Con_Printf (Con_Quakebar(40));
 		Con_CenterPrintf (40, "%s\n", str);
@@ -679,7 +679,7 @@ void Con_DrawNotify (void)
 		if (time == 0)
 			continue;
 		time = realtime - time;
-		if (time > con_notifytime.value)
+		if (time > con_notifytime->value)
 			continue;
 		text = con_text + (i % con_totallines)*con_linewidth;
 		

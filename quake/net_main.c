@@ -223,7 +223,7 @@ static void MaxPlayers_f (void)
 	}
 	else
 	{
-		if (coop.value)
+		if (coop->value)
 			Cvar_Set ("deathmatch", "0");
 		else
 			Cvar_Set ("deathmatch", "1");
@@ -526,7 +526,7 @@ int	NET_GetMessage (qsocket_t *sock)
 	// see if this connection has timed out
 	if (ret == 0 && !IS_LOOP_DRIVER(sock->driver))
 	{
-		if (net_time - sock->lastMessageTime > net_messagetimeout.value)
+		if (net_time - sock->lastMessageTime > net_messagetimeout->value)
 		{
 			Con_Printf("connection has timed out\n");
 			NET_Close(sock);
@@ -844,12 +844,12 @@ void NET_Poll(void)
 	{
 		if (serialAvailable)
 		{
-			if (config_com_modem.value == 1.0)
+			if (config_com_modem->value == 1.0)
 				useModem = true;
 			else
 				useModem = false;
-			SetComPortConfig (0, (int)config_com_port.value, (int)config_com_irq.value, (int)config_com_baud.value, useModem);
-			SetModemConfig (0, config_modem_dialtype.string, config_modem_clear.string, config_modem_init.string, config_modem_hangup.string);
+			SetComPortConfig (0, (int)config_com_port->value, (int)config_com_irq->value, (int)config_com_baud->value, useModem);
+			SetModemConfig (0, config_modem_dialtype->string, config_modem_clear->string, config_modem_init->string, config_modem_hangup->string);
 		}
 		configRestored = true;
 	}

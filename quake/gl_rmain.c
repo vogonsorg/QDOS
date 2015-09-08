@@ -527,7 +527,7 @@ void R_DrawAliasModel (entity_t *e)
     glPushMatrix ();
 	R_RotateForEntity (e);
 
-	if (!strcmp (clmodel->name, "progs/eyes.mdl") && gl_doubleeyes.value) {
+	if (!strcmp (clmodel->name, "progs/eyes.mdl") && gl_doubleeyes->value) {
 		glTranslatef (paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2] - (22 + 8));
 // double size of eyes, since they are really hard to see in gl
 		glScalef (paliashdr->scale[0]*2, paliashdr->scale[1]*2, paliashdr->scale[2]*2);
@@ -541,18 +541,18 @@ void R_DrawAliasModel (entity_t *e)
 
 	// we can't dynamically colormap textures, so they are cached
 	// seperately for the players.  Heads are just uncolored.
-	if (currententity->colormap != vid.colormap && !gl_nocolors.value)
+	if (currententity->colormap != vid.colormap && !gl_nocolors->value)
 	{
 		i = currententity - cl_entities;
 		if (i >= 1 && i<=cl.maxclients /* && !strcmp (currententity->model->name, "progs/player.mdl") */)
 		    GL_Bind(playertextures - 1 + i);
 	}
 
-	if (gl_smoothmodels.value)
+	if (gl_smoothmodels->value)
 		glShadeModel (GL_SMOOTH);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-	if (gl_affinemodels.value)
+	if (gl_affinemodels->value)
 		glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 
 	R_SetupAliasFrame (currententity->frame, paliashdr);
@@ -560,12 +560,12 @@ void R_DrawAliasModel (entity_t *e)
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
 	glShadeModel (GL_FLAT);
-	if (gl_affinemodels.value)
+	if (gl_affinemodels->value)
 		glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 	glPopMatrix ();
 
-	if (r_shadows.value)
+	if (r_shadows->value)
 	{
 		glPushMatrix ();
 		R_RotateForEntity (e);
@@ -592,7 +592,7 @@ void R_DrawEntitiesOnList (void)
 {
 	int		i;
 
-	if (!r_drawentities.value)
+	if (!r_drawentities->value)
 		return;
 
 	// draw sprites seperately, because of alpha blending
@@ -646,16 +646,16 @@ void R_DrawViewModel (void)
 	dlight_t	*dl;
 	int			ambientlight, shadelight;
 
-	if (!r_drawviewmodel.value)
+	if (!r_drawviewmodel->value)
 		return;
 
-	if (chase_active.value)
+	if (chase_active->value)
 		return;
 
 	if (envmap)
 		return;
 
-	if (!r_drawentities.value)
+	if (!r_drawentities->value)
 		return;
 
 	if (cl.items & IT_INVISIBILITY)
@@ -709,7 +709,7 @@ R_PolyBlend
 */
 void R_PolyBlend (void)
 {
-	if (!gl_polyblend.value)
+	if (!gl_polyblend->value)
 		return;
 	if (!v_blend[3])
 		return;
@@ -915,7 +915,7 @@ void R_SetupGL (void)
 	//
 	// set drawing parms
 	//
-	if (gl_cull.value)
+	if (gl_cull->value)
 		glEnable(GL_CULL_FACE);
 	else
 		glDisable(GL_CULL_FACE);
@@ -968,9 +968,9 @@ R_Clear
 */
 void R_Clear (void)
 {
-	if (r_mirroralpha.value != 1.0)
+	if (r_mirroralpha->value != 1.0)
 	{
-		if (gl_clear.value)
+		if (gl_clear->value)
 			glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		else
 			glClear (GL_DEPTH_BUFFER_BIT);
@@ -978,11 +978,11 @@ void R_Clear (void)
 		gldepthmax = 0.5;
 		glDepthFunc (GL_LEQUAL);
 	}
-	else if (gl_ztrick.value)
+	else if (gl_ztrick->value)
 	{
 		static int trickframe;
 
-		if (gl_clear.value)
+		if (gl_clear->value)
 			glClear (GL_COLOR_BUFFER_BIT);
 
 		trickframe++;
@@ -1001,7 +1001,7 @@ void R_Clear (void)
 	}
 	else
 	{
-		if (gl_clear.value)
+		if (gl_clear->value)
 			glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		else
 			glClear (GL_DEPTH_BUFFER_BIT);
@@ -1071,7 +1071,7 @@ void R_Mirror (void)
 
 	glLoadMatrixf (r_base_world_matrix);
 
-	glColor4f (1,1,1,r_mirroralpha.value);
+	glColor4f (1,1,1,r_mirroralpha->value);
 	s = cl.worldmodel->textures[mirrortexturenum]->texturechain;
 	for ( ; s ; s=s->texturechain)
 		R_RenderBrushPoly (s);
@@ -1091,13 +1091,13 @@ void R_RenderView (void)
 {
 	double	time1 = 0, time2;
 
-	if (r_norefresh.value)
+	if (r_norefresh->value)
 		return;
 
 	if (!r_worldentity.model || !cl.worldmodel)
 		Sys_Error ("R_RenderView: NULL worldmodel");
 
-	if (r_speeds.value)
+	if (r_speeds->value)
 	{
 		glFinish ();
 		time1 = Sys_FloatTime ();
@@ -1107,7 +1107,7 @@ void R_RenderView (void)
 
 	mirror = false;
 
-	if (gl_finish.value)
+	if (gl_finish->value)
 		glFinish ();
 
 	R_Clear ();
@@ -1122,7 +1122,7 @@ void R_RenderView (void)
 
 	R_PolyBlend ();
 
-	if (r_speeds.value)
+	if (r_speeds->value)
 	{
 //		glFinish ();
 		time2 = Sys_FloatTime ();

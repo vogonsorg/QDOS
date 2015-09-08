@@ -42,8 +42,8 @@ int *trashspot;
 
 qboolean	cmd_wait;
 
-cvar_t  cl_warncmd = {"cl_warncmd", "0", false, false, "Warn about unknown commands."}; /* FS: from QW */
-char *Sort_Possible_Cmds (char *partial);
+cvar_t	*cl_warncmd; /* FS: from QW */
+char	*Sort_Possible_Cmds (char *partial);
 qboolean	Sort_Possible_Strtolower (char *partial, char *complete); /* FS: Added */
 
 //=============================================================================
@@ -229,9 +229,9 @@ void Cmd_StuffCmds_f (void)
 
 	plus = true;
 	j = 0;
-	for (i=0; cmdline.string[i]; i++)
+	for (i=0; cmdline->string[i]; i++)
 	{
-		if (cmdline.string[i] == '+')
+		if (cmdline->string[i] == '+')
 		{
 			plus = true;
 			if (j > 0)
@@ -240,11 +240,11 @@ void Cmd_StuffCmds_f (void)
 				cmds[j++] = ' ';
 			}
 		}
-		else if (cmdline.string[i] == '-' &&
-			(i==0 || cmdline.string[i-1] == ' ')) //johnfitz -- allow hypenated map names with +map
+		else if (cmdline->string[i] == '-' &&
+			(i==0 || cmdline->string[i-1] == ' ')) //johnfitz -- allow hypenated map names with +map
 				plus = false;
 		else if (plus)
-			cmds[j++] = cmdline.string[i];
+			cmds[j++] = cmdline->string[i];
 	}
 	cmds[j] = 0;
 
@@ -521,6 +521,10 @@ Cmd_Init
 */
 void Cmd_Init (void)
 {
+	/* FS: New stuff */
+	cl_warncmd = Cvar_Get("cl_warncmd", "0");
+	cl_warncmd->description = "Warn about unknown commands.";
+
 	Cmd_AddCommand ("cmdlist", Cmd_List_f); //johnfitz
 	Cmd_AddCommand ("unalias", Cmd_Unalias_f); //johnfitz
 	Cmd_AddCommand ("unaliasall", Cmd_Unaliasall_f); //johnfitz
@@ -750,7 +754,7 @@ void	Cmd_ExecuteString (char *text, cmd_source_t src)
 	}
 	
 // check cvars
-	if (!Cvar_Command () && (cl_warncmd.value || developer.value)) /* FS: from QW */
+	if (!Cvar_Command () && (cl_warncmd->value || developer->value)) /* FS: from QW */
 	{
 		if(!strncmp(Cmd_Argv(0), "init", 4))
 			Con_DPrintf(DEVELOPER_MSG_VERBOSE, "Unknown Command init hack for some servers\n");

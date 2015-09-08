@@ -529,7 +529,7 @@ void CDAudio_Play (byte track, qboolean looping)
 		return;
 	}
 
-	volume = (int)(bgmvolume.value * 255.0);
+	volume = (int)(bgmvolume->value * 255.0);
 	if (volume < 0)
 	{
 		Cvar_SetValue ("bgmvolume", 0.0);
@@ -770,7 +770,7 @@ void CDAudio_Update (void)
 		}
 	}
 
-	newVolume = (int)(bgmvolume.value * 255.0);
+	newVolume = (int)(bgmvolume->value * 255.0);
 	if (newVolume != cdvolume)
 	{
 		if (newVolume < 0)
