@@ -179,7 +179,6 @@ Interactive line editing and console scrollback
 void Key_Console (int key)
 {
 	char	*cmd;
-	extern	cvar_t	console_old_complete;
 	
 	if (key == K_ENTER)
 	{

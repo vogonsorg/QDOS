@@ -104,7 +104,7 @@ int			m_return_state;
 qboolean	m_return_onerror;
 char		m_return_reason [32];
 
-extern cvar_t scr_fov; /* FS */
+extern cvar_t *scr_fov; /* FS */
 
 #define StartingGame	(m_multiplayer_cursor == 1)
 #define JoiningGame		(m_multiplayer_cursor == 0)
@@ -3468,8 +3468,7 @@ void M_ConfigureNetSubsystem(void)
 
 int extended_cursor;
 
-extern cvar_t r_waterwarp;
-extern cvar_t scr_fov;
+extern cvar_t *r_waterwarp;
 
 int M_Extended_Get_Vsync(void);
 void M_Extended_Set_Vsync(int dir);
