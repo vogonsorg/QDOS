@@ -218,13 +218,13 @@ void R_Init (void)
 	r_ambient->description = "Adjusts the intensity of ambient lights.  Similar to gl_modulate.";
 	r_reportsurfout = Cvar_Get("r_reportsurfout", "0", 0);
 	r_reportsurfout->description = "Report running out of surfaces.";
-	r_maxsurfs = Cvar_Get("r_maxsurfs", "0", 0);
+	r_maxsurfs = Cvar_Get("r_maxsurfs", "0", CVAR_LATCH);
 	r_maxsurfs->description = "Maximum number of surfaces to draw.  This value may need to be raised if you see disappearing textures.";
 	r_numsurfs = Cvar_Get("r_numsurfs", "0", 0);
 	r_numsurfs->description = "Report number of surfaces in use.";
 	r_reportedgeout = Cvar_Get("r_reportedgeout", "0", 0);
 	r_reportedgeout->description = "Report running out of edges.";
-	r_maxedges = Cvar_Get("r_maxedges", "0", 0);
+	r_maxedges = Cvar_Get("r_maxedges", "0", CVAR_LATCH);
 	r_maxedges->description = "Maximum number of edges to draw.  This value may need to be raised if you see disappearing geometry.";
 	r_numedges = Cvar_Get("r_numedges", "0", 0);
 	r_numedges->description = "Report number of edges in use.";
