@@ -159,8 +159,8 @@ void D_SetParticleSize (void) /* FS: Because particles like blood and bullet dus
 		}
 	}
 
-	sw_particle_size.modified = false;
-	sw_particle_size_override.modified = false;
-	sw_particle_size_max.modified = false;
-	sw_particle_size_min.modified = false;
+	sw_particle_size->modified = false;
+	sw_particle_size_override->modified = false;
+	sw_particle_size_max->modified = false;
+	sw_particle_size_min->modified = false;
 }

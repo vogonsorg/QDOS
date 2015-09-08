@@ -1096,12 +1096,12 @@ void PR_Init (void)
 	Cmd_AddCommand ("edictcount", ED_Count);
 	Cmd_AddCommand ("profile", PR_Profile_f);
 
-	nomonsters = Cvar_Get("nomonsters", "0");
-	gamecfg = Cvar_Get("gamecfg", "0");
-	scratch1 = Cvar_Get("scratch1", "0");
-	scratch2 = Cvar_Get("scratch2", "0");
-	scratch3 = Cvar_Get("scratch3", "0");
-	scratch4 = Cvar_Get("scratch4", "0");
+	nomonsters = Cvar_Get("nomonsters", "0", 0);
+	gamecfg = Cvar_Get("gamecfg", "0", 0);
+	scratch1 = Cvar_Get("scratch1", "0", 0);
+	scratch2 = Cvar_Get("scratch2", "0", 0);
+	scratch3 = Cvar_Get("scratch3", "0", 0);
+	scratch4 = Cvar_Get("scratch4", "0", 0);
 	savedgamecfg = Cvar_Get("savedgamecfg", "0", CVAR_ARCHIVE);
 	saved1 = Cvar_Get("saved1", "0", CVAR_ARCHIVE);
 	saved2 = Cvar_Get("saved2", "0", CVAR_ARCHIVE);

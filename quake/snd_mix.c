@@ -357,7 +357,7 @@ void SND_InitScaletable (void)
 	int		i, j;
 	int		scale;
 
-	volume.modified = false;
+	volume->modified = false;
 	for (i = 0; i < 32; i++)
 	{
 		scale = i * 8 * 256 * volume->value;

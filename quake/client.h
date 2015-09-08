@@ -262,6 +262,7 @@ extern cvar_t	*cl_name;
 extern cvar_t	*cl_color;
 
 extern cvar_t	*cl_unbindall_protection; /* FS: unbindall protection */
+extern cvar_t	*console_old_complete; /* FS: Added */
 extern cvar_t	*in_freelook; /* FS: mlook */
 extern cvar_t	*cl_warncmd; /* FS: From QW */
 

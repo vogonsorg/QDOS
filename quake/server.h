@@ -175,6 +175,18 @@ extern cvar_t	*coop;
 extern cvar_t	*fraglimit;
 extern cvar_t	*timelimit;
 
+extern cvar_t	*sv_aim;
+extern cvar_t	*sv_maxvelocity;
+extern cvar_t	*sv_gravity;
+extern cvar_t	*sv_nostep;
+extern cvar_t	*sv_idealpitchscale;
+extern cvar_t	*sv_friction;
+extern cvar_t	*sv_edgefriction;
+extern cvar_t	*sv_stopspeed;
+extern cvar_t	*sv_accelerate;
+extern cvar_t	*sv_maxspeed;
+extern cvar_t	*sv_altnoclip; // johnfitz
+
 extern cvar_t	*cl_fullpitch; /* FS: ProQuake shit */
 extern cvar_t	*pq_fullpitch; /* FS: ProQuake shit */
 

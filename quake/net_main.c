@@ -756,8 +756,8 @@ void NET_Init (void)
 	// allocate space for network message buffer
 	SZ_Alloc (&net_message, NET_MAXMESSAGE);
 
-	net_messagetimeout = Cvar_Get("net_messagetimeout","300");
-	hostname = Cvar_Get("hostname", "UNNAMED");
+	net_messagetimeout = Cvar_Get("net_messagetimeout","300", 0);
+	hostname = Cvar_Get("hostname", "UNNAMED", 0);
 	config_com_port = Cvar_Get("_config_com_port", "0x3f8", CVAR_ARCHIVE);
 	config_com_irq = Cvar_Get("_config_com_irq", "4", CVAR_ARCHIVE);
 	config_com_baud = Cvar_Get("_config_com_baud", "57600", CVAR_ARCHIVE);

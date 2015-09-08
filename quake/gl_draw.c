@@ -403,9 +403,9 @@ void Draw_Init (void)
 	int start;
 	byte    *ncdata;
 
-	gl_nobind = Cvar_Get("gl_nobind", "0");
-	gl_max_size = Cvar_Get("gl_max_size", "1024");
-	gl_picmip = Cvar_Get("gl_picmip", "0");
+	gl_nobind = Cvar_Get("gl_nobind", "0", 0);
+	gl_max_size = Cvar_Get("gl_max_size", "1024", 0);
+	gl_picmip = Cvar_Get("gl_picmip", "0", 0);
 
 	// 3dfx can only handle 256 wide textures
 	if (!Q_strncasecmp ((char *)gl_renderer, "3dfx",4) ||

@@ -33,7 +33,7 @@ float		oldscreensize, oldfov;
 
 cvar_t		*scr_viewsize;
 cvar_t		*scr_fov;
-cvar_t		*scr_conspeed;/
+cvar_t		*scr_conspeed;
 cvar_t		*scr_centertime;
 cvar_t		*scr_showram;
 cvar_t		*scr_showturtle;
@@ -326,13 +326,13 @@ SCR_Init
 void SCR_Init (void)
 {
 	scr_viewsize = Cvar_Get("viewsize","100", CVAR_ARCHIVE);
-	scr_fov = Cvar_Get("fov","90");	// 10 - 170
-	scr_conspeed = Cvar_Get("scr_conspeed","1000"); /* FS: Was 300 */
-	scr_centertime = Cvar_Get("scr_centertime","2");
-	scr_showram = Cvar_Get("showram","1");
-	scr_showturtle = Cvar_Get("showturtle","0");
-	scr_showpause = Cvar_Get("showpause","1");
-	scr_printspeed = Cvar_Get("scr_printspeed","8");
+	scr_fov = Cvar_Get("fov","90", 0);	// 10 - 170
+	scr_conspeed = Cvar_Get("scr_conspeed","1000", 0); /* FS: Was 300 */
+	scr_centertime = Cvar_Get("scr_centertime","2", 0);
+	scr_showram = Cvar_Get("showram","1", 0);
+	scr_showturtle = Cvar_Get("showturtle","0", 0);
+	scr_showpause = Cvar_Get("showpause","1", 0);
+	scr_printspeed = Cvar_Get("scr_printspeed","8", 0);
 
 	/* FS: New stuff */
 	show_fps = Cvar_Get("show_fps","0", CVAR_ARCHIVE); /* FS: show_fps from Qrack */

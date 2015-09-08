@@ -2060,10 +2060,10 @@ void	VID_Init (unsigned char *palette)
 	int		basenummodes;
 	byte	*ptmp;
 
-	vid_mode = Cvar_Get("vid_mode","0");// Note that 0 is MODE_WINDOWED
+	vid_mode = Cvar_Get("vid_mode","0", 0);// Note that 0 is MODE_WINDOWED
 	_vid_default_mode = Cvar_Get("_vid_default_mode","0", CVAR_ARCHIVE);// Note that 0 is MODE_WINDOWED
 	_vid_default_mode_win = Cvar_Get("_vid_default_mode_win","3", CVAR_ARCHIVE);// Note that 3 is MODE_FULLSCREEN_DEFAULT
-	vid_wait = Cvar_Get("vid_wait","0");
+	vid_wait = Cvar_Get("vid_wait","0", 0);
 	vid_nopageflip = Cvar_Get("vid_nopageflip","0", CVAR_ARCHIVE);
 	_vid_wait_override = Cvar_Get("_vid_wait_override", "0", CVAR_ARCHIVE);
 	vid_config_x = Cvar_Get("vid_config_x","800", CVAR_ARCHIVE);

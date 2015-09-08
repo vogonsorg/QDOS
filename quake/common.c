@@ -1401,9 +1401,9 @@ void COM_Init (char *basedir)
 		nehx19->description = "Special internal CVAR for Nehara mod.";
 	}
 
-	registered = Cvar_Get("registered","0");
+	registered = Cvar_Get("registered","0", 0);
 	registered->description = "Special internal CVAR for setting Registered game.";
-	cmdline = Cvar_Get("cmdline","");
+	cmdline = Cvar_Get("cmdline","", 0);
 	cmdline->description = "Adds command line parameters as script statements\nCommands lead with a +, and continue until a - or another +\nquake +prog jctest.qp +cmd amlev1\nquake -nosound +cmd amlev1";
 
 	Cmd_AddCommand ("path", COM_Path_f);

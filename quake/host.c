@@ -79,9 +79,9 @@ cvar_t	*skill; // 0 - 3
 cvar_t	*deathmatch; // 0, 1, or 2
 cvar_t	*coop; // 0 or 1
 
-cvar_t	*pausable = {"pausable","1"};
+cvar_t	*pausable;
 
-cvar_t	*temp1 = {"temp1","0"};
+cvar_t	*temp1;
 
 /* FS: New stuff */
 cvar_t	*con_show_description;
@@ -242,15 +242,15 @@ void Host_InitLocal (void)
 {
 	Host_InitCommands ();
 
-	host_framerate = Cvar_Get("host_framerate","0"); // set for slow motion
-	host_speeds = Cvar_Get("host_speeds","0"); // set for running times
+	host_framerate = Cvar_Get("host_framerate","0", 0); // set for slow motion
+	host_speeds = Cvar_Get("host_speeds","0", 0); // set for running times
 	cl_maxfps = Cvar_Get("cl_maxfps", "72.0", CVAR_ARCHIVE); /* FS: Technically it was host_maxfps, but cl_maxfps is standard in other Quake games */ //johnfitz
 	cl_maxfps->description = "Maximum frames pers second to render.";
-	host_timescale = Cvar_Get("host_timescale", "0"); //johnfitz
-	sys_ticrate = Cvar_Get("sys_ticrate","0.05");
-	serverprofile = Cvar_Get("serverprofile","0");
+	host_timescale = Cvar_Get("host_timescale", "0", 0); //johnfitz
+	sys_ticrate = Cvar_Get("sys_ticrate","0.05", 0);
+	serverprofile = Cvar_Get("serverprofile","0", 0);
 
-	max_edicts = Cvar_Get("max_edicts", "2048"); //johnfitz
+	max_edicts = Cvar_Get("max_edicts", "2048", 0); //johnfitz
 	max_edicts->description = "Maximum number of edicts allowed.";
 	fraglimit = Cvar_Get("fraglimit","0", CVAR_SERVERINFO);
 	fraglimit->description = "Fraglimit in a deathmatch game.";
@@ -258,22 +258,22 @@ void Host_InitLocal (void)
 	timelimit->description = "Timelimit in a deathmatch game.";
 	teamplay = Cvar_Get("teamplay","0", CVAR_SERVERINFO);
 	teamplay->description = "Enable team deathmatch.";
-	samelevel = Cvar_Get("samelevel","0");
+	samelevel = Cvar_Get("samelevel","0", 0);
 	samelevel->description = "Repeats the same level if an endlevel is triggered.";
 	noexit = Cvar_Get("noexit","0", CVAR_SERVERINFO);
 	noexit->description = "Do not allow exiting in a game.";
-	skill = Cvar_Get("skill","1"); // 0 - 3
+	skill = Cvar_Get("skill","1", 0); // 0 - 3
 	skill->description = "Sets the skill.  Valid values are 0 through 3.";
-	developer = Cvar_Get("developer","0");
-	developer->description = "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Server msgs - 256\n  * Progs msgs - 512\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Save/Restore msgs - 32768\n  * Extremely verbose msgs - 65536\n"};
-	deathmatch = Cvar_Get("deathmatch","0"); // 0, 1, or 2
+	developer = Cvar_Get("developer","0", 0);
+	developer->description = "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Server msgs - 256\n  * Progs msgs - 512\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Save/Restore msgs - 32768\n  * Extremely verbose msgs - 65536\n";
+	deathmatch = Cvar_Get("deathmatch","0", 0); // 0, 1, or 2
 	deathmatch->description = "Enable a deathmatch game.  Coop must be set to 0.";
-	coop = Cvar_Get("coop","0"); // 0 or 1
+	coop = Cvar_Get("coop","0", 0); // 0 or 1
 	coop->description = "Enable a coop game.  Deathmatch must be set to 0.";
 
-	pausable = Cvar_Get("pausable","1");
+	pausable = Cvar_Get("pausable","1", 0);
 
-	temp1 = Cvar_Get("temp1","0");
+	temp1 = Cvar_Get("temp1","0", 0);
 
 /* FS: New stuff */
 	con_show_description = Cvar_Get("con_show_description", "1", CVAR_ARCHIVE);
@@ -890,13 +890,13 @@ void Host_Init (quakeparms_t *parms)
 	com_argv = parms->argv;
 
 	Memory_Init (parms->membase, parms->memsize);
+	Cvar_Init();
 	Cbuf_Init ();
 	Cmd_Init ();
 	V_Init ();
 	Chase_Init ();
 	COM_Init (parms->basedir);
-	Cvar_Init();
-	CFG_OpenConfig("config.cfg"); /* FS: Parse CFG early -- sezero */
+//	CFG_OpenConfig("config.cfg"); /* FS: Parse CFG early -- sezero */
 	Host_InitLocal ();
 	W_LoadWadFile ("gfx.wad");
 	Key_Init ();

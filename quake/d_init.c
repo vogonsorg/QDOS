@@ -56,9 +56,9 @@ void D_Init (void)
 
 	r_skydirect = 1;
 
-	d_subdiv16 = Cvar_Get("d_subdiv16", "1");
-	d_mipcap = Cvar_Get("d_mipcap", "0");
-	d_mipscale = Cvar_Get("d_mipscale", "1");
+	d_subdiv16 = Cvar_Get("d_subdiv16", "1", 0);
+	d_mipcap = Cvar_Get("d_mipcap", "0", 0);
+	d_mipscale = Cvar_Get("d_mipscale", "1", 0);
 
 /* FS: Particle size control */
 	sw_particle_size_override = Cvar_Get("sw_particle_size_override", "0", CVAR_ARCHIVE);
@@ -151,7 +151,7 @@ void D_SetupFrame (void)
 		screenwidth = vid.rowbytes;
 
 	/* FS: If we change the particle size stuff, updated it immediately */
-	if(sw_particle_size_override.modified || sw_particle_size.modified || sw_particle_size_min.modified || sw_particle_size_max.modified)
+	if(sw_particle_size_override->modified || sw_particle_size->modified || sw_particle_size_min->modified || sw_particle_size_max->modified)
 	{
 		D_SetParticleSize();
 	}

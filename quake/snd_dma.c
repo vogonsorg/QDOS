@@ -204,15 +204,15 @@ void S_Init (void)
 #endif
 	Cmd_AddCommand("wav_restart", S_WAV_Restart); /* FS: Added */
 
-	nosound = Cvar_Get("nosound", "0"};
+	nosound = Cvar_Get("nosound", "0", 0);
 	volume = Cvar_Get("volume", "0.7", CVAR_ARCHIVE);
-	precache = Cvar_Get("precache", "1"};
-	loadas8bit = Cvar_Get("loadas8bit", "0"};
+	precache = Cvar_Get("precache", "1", 0);
+	loadas8bit = Cvar_Get("loadas8bit", "0", 0);
 	bgmvolume = Cvar_Get("bgmvolume", "1", CVAR_ARCHIVE);
-	ambient_level = Cvar_Get("ambient_level", "0.3"};
-	ambient_fade = Cvar_Get("ambient_fade", "100"};
-	snd_noextraupdate = {"snd_noextraupdate", "0"};
-	snd_show = Cvar_Get("snd_show", "0"};
+	ambient_level = Cvar_Get("ambient_level", "0.3", 0);
+	ambient_fade = Cvar_Get("ambient_fade", "100", 0);
+	snd_noextraupdate = Cvar_Get("snd_noextraupdate", "0", 0);
+	snd_show = Cvar_Get("snd_show", "0", 0);
 	_snd_mixahead = Cvar_Get("_snd_mixahead", "0.2", CVAR_ARCHIVE);
 	
 	/* FS: New stuff */
@@ -798,7 +798,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 	if (!sound_started || (snd_blocked > 0))
 		return;
 
-	if (volume.modified)
+	if (volume->modified)
 		SND_InitScaletable();
 
 	VectorCopy(origin, listener_origin);

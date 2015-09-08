@@ -704,7 +704,7 @@ void Key_Init (void)
 	Cmd_AddCommand ("unbindall",Key_Unbindall_f);
 
 	 /* FS: Unbindall protection */
-	cl_unbindall_protection = Cvar_Get("cl_unbindall_protection", "1");
+	cl_unbindall_protection = Cvar_Get("cl_unbindall_protection", "1", 0);
 	cl_unbindall_protection->description = "Protection from bad configs with unbindall.  Will warn on execute.";
 }
 

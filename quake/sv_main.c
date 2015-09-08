@@ -116,28 +116,28 @@ void SV_Init (void)
 	int		i;
 
 	sv_friction = Cvar_Get("sv_friction","4", CVAR_SERVERINFO);
-	sv_stopspeed = Cvar_Get("sv_stopspeed","100");
+	sv_stopspeed = Cvar_Get("sv_stopspeed","100", 0);
 	sv_gravity = Cvar_Get("sv_gravity","800", CVAR_SERVERINFO);
-	sv_maxvelocity = Cvar_Get("sv_maxvelocity","2000");
-	sv_nostep = Cvar_Get("sv_nostep","0");
-	sv_edgefriction = Cvar_Get("edgefriction", "2");
-	sv_idealpitchscale = Cvar_Get("sv_idealpitchscale","0.8");
+	sv_maxvelocity = Cvar_Get("sv_maxvelocity","2000", 0);
+	sv_nostep = Cvar_Get("sv_nostep","0", 0);
+	sv_edgefriction = Cvar_Get("edgefriction", "2", 0);
+	sv_idealpitchscale = Cvar_Get("sv_idealpitchscale","0.8", 0);
 	sv_maxspeed = Cvar_Get("sv_maxspeed", "320", CVAR_SERVERINFO);
-	sv_accelerate = Cvar_Get("sv_accelerate", "10");
-	sv_aim = Cvar_Get("sv_aim", "0.93");
+	sv_accelerate = Cvar_Get("sv_accelerate", "10", 0);
+	sv_aim = Cvar_Get("sv_aim", "0.93", 0);
 
 	/* FS: New stuff */
 	sv_loadentfiles = Cvar_Get("sv_loadentfiles","1", CVAR_ARCHIVE); /* FS: Load external ent files */
 	sv_loadentfiles->description = "Attempt to load external *.ent files if they exist.";
 	sv_altnoclip = Cvar_Get("sv_altnoclip","1", CVAR_ARCHIVE); //johnfitz
-	pq_fullpitch = Cvar_Get("pq_fullpitch", "0"); /* FS: ProQuake Shit */
+	pq_fullpitch = Cvar_Get("pq_fullpitch", "0", 0); /* FS: ProQuake Shit */
 
 	/* FS: Gamespy Stuff */
 	sv_master_server_ip = Cvar_Get("sv_master_server_ip", SV_MASTER_ADDR, CVAR_ARCHIVE);
 	sv_master_server_ip->description = "GameSpy Master Server IP for dedicated servers.";
 	sv_master_server_port = Cvar_Get("sv_master_server_port", SV_MASTER_PORT, CVAR_ARCHIVE);
 	sv_master_server_port->description = "GameSpy Master Server Port for dedicated servers."; 
-	public_server = Cvar_Get("public", "0");
+	public_server = Cvar_Get("public", "0", 0);
 	public_server->description = "Report server to a master server.";
 
 	Cmd_AddCommand ("sv_dumpentities", &SV_DumpEntities_f); /* FS: Added */

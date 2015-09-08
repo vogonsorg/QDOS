@@ -1126,64 +1126,64 @@ void V_Init (void)
 	Cmd_AddCommand ("bf", V_BonusFlash_f);
 	Cmd_AddCommand ("centerview", V_StartPitchDrift);
 
-	lcd_x = Cvar_Get("lcd_x","0");
-	lcd_yaw = Cvar_Get("lcd_yaw","0");
+	lcd_x = Cvar_Get("lcd_x","0", 0);
+	lcd_yaw = Cvar_Get("lcd_yaw","0", 0);
 
-	v_centermove = Cvar_Get("v_centermove", "0.15");
-	v_centerspeed = Cvar_Get("v_centerspeed","500");
+	v_centermove = Cvar_Get("v_centermove", "0.15", 0);
+	v_centerspeed = Cvar_Get("v_centerspeed","500", 0);
 
-	v_iyaw_cycle = Cvar_Get("v_iyaw_cycle", "2");
-	v_iroll_cycle = Cvar_Get("v_iroll_cycle", "0.5");
-	v_ipitch_cycle = Cvar_Get("v_ipitch_cycle", "1");
-	v_iyaw_level = Cvar_Get("v_iyaw_level", "0.3");
-	v_iroll_level = Cvar_Get("v_iroll_level", "0.1");
-	v_ipitch_level = Cvar_Get("v_ipitch_level", "0.3");
+	v_iyaw_cycle = Cvar_Get("v_iyaw_cycle", "2", 0);
+	v_iroll_cycle = Cvar_Get("v_iroll_cycle", "0.5", 0);
+	v_ipitch_cycle = Cvar_Get("v_ipitch_cycle", "1", 0);
+	v_iyaw_level = Cvar_Get("v_iyaw_level", "0.3", 0);
+	v_iroll_level = Cvar_Get("v_iroll_level", "0.1", 0);
+	v_ipitch_level = Cvar_Get("v_ipitch_level", "0.3", 0);
 
 	v_contentblend = Cvar_Get("v_contentblend", "1", CVAR_ARCHIVE);
 	v_contentblend->description = "Disable palette blends."; /* FS: Fucking hate palette blends */
 
 	/* FS: For Mod Compatibility */
 #ifndef GLQUAKE
-	r_wateralpha = Cvar_Get("r_wateralpha", "1");
+	r_wateralpha = Cvar_Get("r_wateralpha", "1", 0);
 	r_wateralpha->description = "Unused CVAR for mod compatibility.";
 #endif
-	fog = Cvar_Get("fog", "0");
+	fog = Cvar_Get("fog", "0", 0);
 	fog->description = "Unused CVAR for mod compatibility.";
-	r_oldsky = Cvar_Get("r_oldsky", "0");
+	r_oldsky = Cvar_Get("r_oldsky", "0", 0);
 	r_oldsky->description = "Unused CVAR for mod compatibility.";
-	gl_fogenable = Cvar_Get("gl_fogenable", "0");
+	gl_fogenable = Cvar_Get("gl_fogenable", "0", 0);
 	gl_fogenable->description = "Unused CVAR for mod compatibility.";
-	gl_fogdensity = Cvar_Get("gl_fogdensity", "0");
+	gl_fogdensity = Cvar_Get("gl_fogdensity", "0", 0);
 	gl_fogdensity->description = "Unused CVAR for mod compatibility.";
-	gl_fogred = Cvar_Get ("gl_fogred", "0");
+	gl_fogred = Cvar_Get ("gl_fogred", "0", 0);
 	gl_fogred->description = "Unused CVAR for mod compatibility.";
-	gl_foggreen = Cvar_Get ("gl_foggreen", "0");
+	gl_foggreen = Cvar_Get ("gl_foggreen", "0", 0);
 	gl_foggreen->description = "Unused CVAR for mod compatibility.";
-	gl_fogblue = Cvar_Get ("gl_fogbluge", "0");
+	gl_fogblue = Cvar_Get ("gl_fogbluge", "0", 0);
 	gl_fogblue->description = "Unused CVAR for mod compatibility.";
-	r_waterripple = Cvar_Get ("r_waterripple", "0");
+	r_waterripple = Cvar_Get ("r_waterripple", "0", 0);
 	r_waterripple->description = "Unused CVAR for mod compatibility.";
-	r_skyfog = Cvar_Get ("r_skyfog", "0");
+	r_skyfog = Cvar_Get ("r_skyfog", "0", 0);
 	r_skyfog->description = "Unused CVAR for mod compatibility.";
 
-	v_idlescale = Cvar_Get("v_idlescale", "0");
+	v_idlescale = Cvar_Get("v_idlescale", "0", 0);
 	crosshair = Cvar_Get("crosshair", "0", CVAR_ARCHIVE);
-	cl_crossx = Cvar_Get("cl_crossx", "0");
-	cl_crossy = Cvar_Get("cl_crossy", "0");
-	gl_cshiftpercent = Cvar_Get("gl_cshiftpercent", "100");
+	cl_crossx = Cvar_Get("cl_crossx", "0", 0);
+	cl_crossy = Cvar_Get("cl_crossy", "0", 0);
+	gl_cshiftpercent = Cvar_Get("gl_cshiftpercent", "100", 0);
 
-	scr_ofsx = Cvar_Get("scr_ofsx","0");
-	scr_ofsy = Cvar_Get("scr_ofsy","0");
-	scr_ofsz = Cvar_Get("scr_ofsz","0");
-	cl_rollspeed = Cvar_Get("cl_rollspeed", "200");
-	cl_rollangle = Cvar_Get("cl_rollangle", "2.0");
-	cl_bob = Cvar_Get("cl_bob","0.02");
-	cl_bobcycle = Cvar_Get("cl_bobcycle","0.6");
-	cl_bobup = Cvar_Get("cl_bobup","0.5");
+	scr_ofsx = Cvar_Get("scr_ofsx","0", 0);
+	scr_ofsy = Cvar_Get("scr_ofsy","0", 0);
+	scr_ofsz = Cvar_Get("scr_ofsz","0", 0);
+	cl_rollspeed = Cvar_Get("cl_rollspeed", "200", 0);
+	cl_rollangle = Cvar_Get("cl_rollangle", "2.0", 0);
+	cl_bob = Cvar_Get("cl_bob","0.02", 0);
+	cl_bobcycle = Cvar_Get("cl_bobcycle","0.6", 0);
+	cl_bobup = Cvar_Get("cl_bobup","0.5", 0);
 
-	v_kicktime = Cvar_Get("v_kicktime", "0.5");
-	v_kickroll = Cvar_Get("v_kickroll", "0.6");
-	v_kickpitch = Cvar_Get("v_kickpitch", "0.6");
+	v_kicktime = Cvar_Get("v_kicktime", "0.5", 0);
+	v_kickroll = Cvar_Get("v_kickroll", "0.6", 0);
+	v_kickpitch = Cvar_Get("v_kickpitch", "0.6", 0);
 	
 	BuildGammaTable (1.0);	// no gamma yet
 	v_gamma = Cvar_Get("gamma", "1", CVAR_ARCHIVE);

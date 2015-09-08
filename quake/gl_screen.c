@@ -375,13 +375,13 @@ SCR_Init
 void SCR_Init (void)
 {
 	scr_viewsize = Cvar_Get("viewsize","100", CVAR_ARCHIVE);
-	scr_fov = Cvar_Get("fov","90");	// 10 - 170
-	scr_conspeed = Cvar_Get("scr_conspeed","300");
-	scr_centertime = Cvar_Get("scr_centertime","2");
-	scr_showram = Cvar_Get("showram","1");
-	scr_showturtle = Cvar_Get("showturtle","0");
-	scr_showpause = Cvar_Get("showpause","1");
-	scr_printspeed = Cvar_Get("scr_printspeed","8");
+	scr_fov = Cvar_Get("fov","90", 0);	// 10 - 170
+	scr_conspeed = Cvar_Get("scr_conspeed","300", 0);
+	scr_centertime = Cvar_Get("scr_centertime","2", 0);
+	scr_showram = Cvar_Get("showram","1", 0);
+	scr_showturtle = Cvar_Get("showturtle","0", 0);
+	scr_showpause = Cvar_Get("showpause","1", 0);
+	scr_printspeed = Cvar_Get("scr_printspeed","8", 0);
 	gl_triplebuffer = Cvar_Get("gl_triplebuffer", "1", CVAR_ARCHIVE);
 
 	/* FS: New stuff */

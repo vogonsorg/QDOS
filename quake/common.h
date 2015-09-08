@@ -209,7 +209,7 @@ void COM_FreeFileList (char **list, int n);
 qboolean COM_ItemInList (char *check, int num, char **list);
 char **COM_ListFiles (char *findname, int *numfiles, unsigned musthave, unsigned canthave);
 
-extern	struct cvar_s	registered;
+extern	struct cvar_s	*registered;
 
 extern	qboolean	standard_quake, rogue, hipnotic;
 extern	qboolean	warpspasm, nehahra, extended_mod; /* FS: For Nehara */

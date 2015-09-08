@@ -45,7 +45,7 @@ cvar_t	*m_side;
 
 /* FS: New stuff */
 cvar_t	*console_old_complete;
-cvar_t	*cl_ogg_music
+cvar_t	*cl_ogg_music;
 cvar_t	*cl_wav_music;
 cvar_t	*cl_autorepeat_allkeys;
 
@@ -751,18 +751,18 @@ void CL_Init (void)
 	cl_color = Cvar_Get("_cl_color", "0", CVAR_ARCHIVE);
 	cl_color->description = "Internal CVAR for setting player colour.  Use cvar \"color\" to set.";
 
-	cl_upspeed = Cvar_Get("cl_upspeed","200"};
+	cl_upspeed = Cvar_Get("cl_upspeed","200", 0);
 	cl_forwardspeed = Cvar_Get("cl_forwardspeed","400", CVAR_ARCHIVE);
 	cl_backspeed = Cvar_Get("cl_backspeed","400", CVAR_ARCHIVE);
-	cl_sidespeed = Cvar_Get("cl_sidespeed","350");
-	cl_movespeedkey = Cvar_Get("cl_movespeedkey","2.0");
-	cl_yawspeed = Cvar_Get("cl_yawspeed","140");
-	cl_pitchspeed = Cvar_Get("cl_pitchspeed","150");
-	cl_anglespeedkey = Cvar_Get("cl_anglespeedkey","1.5");
-	cl_fullpitch = Cvar_Get("cl_fullpitch", "0"); /* FS: ProQuake Shit */
+	cl_sidespeed = Cvar_Get("cl_sidespeed","350", 0);
+	cl_movespeedkey = Cvar_Get("cl_movespeedkey","2.0", 0);
+	cl_yawspeed = Cvar_Get("cl_yawspeed","140", 0);
+	cl_pitchspeed = Cvar_Get("cl_pitchspeed","150", 0);
+	cl_anglespeedkey = Cvar_Get("cl_anglespeedkey","1.5", 0);
+	cl_fullpitch = Cvar_Get("cl_fullpitch", "0", 0); /* FS: ProQuake Shit */
 
-	cl_shownet = Cvar_Get("cl_shownet", "0"); // can be 0, 1, or 2
-	cl_nolerp = Cvar_Get("cl_nolerp", "0"); 
+	cl_shownet = Cvar_Get("cl_shownet", "0", 0); // can be 0, 1, or 2
+	cl_nolerp = Cvar_Get("cl_nolerp", "0", 0); 
 	cl_nolerp->description = "Disable animation lerping.";
 	lookspring = Cvar_Get("lookspring", "0", CVAR_ARCHIVE);
 	lookstrafe = Cvar_Get("lookstrafe", "0", CVAR_ARCHIVE);
@@ -781,7 +781,7 @@ void CL_Init (void)
 	cl_master_server_queries = Cvar_Get("cl_master_server_queries", "10", CVAR_ARCHIVE);
 	cl_master_server_queries->description = "Number of sockets to allocate for GameSpy.";
 	cl_master_server_timeout = Cvar_Get("cl_master_server_timeout", "3000", CVAR_ARCHIVE);
-	cl_master_server_timeout->description = "Timeout (in milliseconds) to give up on pinging a server.");
+	cl_master_server_timeout->description = "Timeout (in milliseconds) to give up on pinging a server.";
 	cl_master_server_retries = Cvar_Get("cl_master_server_retries", "20", CVAR_ARCHIVE);
 	cl_master_server_retries->description = "Number of retries to attempt for receiving the server list.  Formula is 50ms + 10ms for each retry.";
 	snd_gamespy_sounds = Cvar_Get("snd_gamespy_sounds", "0", CVAR_ARCHIVE);
@@ -789,11 +789,11 @@ void CL_Init (void)
 
 	/* FS: New stuff */
 	console_old_complete = Cvar_Get("console_old_complete", "0", CVAR_ARCHIVE);
-	console_old_complete->description = "Use the legacy style console tab completion."};
+	console_old_complete->description = "Use the legacy style console tab completion.";
 	cl_ogg_music = Cvar_Get("cl_ogg_music", "1", CVAR_ARCHIVE);
-	cl_ogg_music->description = "Play OGG tracks in the format of id1/music/trackXX.ogg if they exist."};
+	cl_ogg_music->description = "Play OGG tracks in the format of id1/music/trackXX.ogg if they exist.";
 	cl_wav_music = Cvar_Get("cl_wav_music", "1", CVAR_ARCHIVE);
-	cl_wav_music->description = "Play WAV tracks in the format of id1/music/trackXX.wav if they exist."};
+	cl_wav_music->description = "Play WAV tracks in the format of id1/music/trackXX.wav if they exist.";
 	cl_autorepeat_allkeys = Cvar_Get("cl_autorepeat_allkeys", "0", CVAR_ARCHIVE);
 	cl_autorepeat_allkeys->description = "Allow to autorepeat any key, not just Backspace, Pause, PgUp, and PgDn keys.";
 

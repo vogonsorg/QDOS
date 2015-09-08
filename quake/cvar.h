@@ -75,12 +75,14 @@ typedef struct cvar_s
 {
 	char		*name;
 	char		*string;
-	int			flags
+	char		*latched_string; /* FS: Added */
+	int			flags;
 	qboolean	modified; /* FS: Added */
 	float		value;
 	int			intValue; /* FS: Added */
+	char		*defaultString; /* FS: Added */
 	const char	*description; /* FS: Added */
-	const char	*defaultString; /* FS: Added */
+	int			defaultFlags; /* FS: Added */
 	struct cvar_s *next;
 } cvar_t;
 

@@ -35,6 +35,9 @@ The game starts with a Cbuf_AddText ("exec quake.rc\n"); Cbuf_Execute ();
 */
 
 
+#ifndef __CMD_H
+#define __CMD_H
+
 void Cbuf_Init (void);
 // allocates an initial text buffer that will grow as needed
 
@@ -119,3 +122,6 @@ void	Cmd_Print (char *text);
 // used by command functions to send output to either the graphics console or
 // passed as a print message to the client
 
+char *CopyString (char *in);
+
+#endif // __CMD_H

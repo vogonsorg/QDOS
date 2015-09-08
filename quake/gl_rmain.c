@@ -103,6 +103,8 @@ cvar_t	*gl_reporttjunctions;
 
 cvar_t	*gl_doubleeyes;
 
+cvar_t	*r_waterwarp;
+
 /*
 =================
 R_CullBox

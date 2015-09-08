@@ -1575,14 +1575,14 @@ void	VID_Init (unsigned char *palette)
 	vid_mode = Cvar_Get("vid_mode","0", CVAR_ARCHIVE);
 	_vid_default_mode = Cvar_Get("_vid_default_mode","0", CVAR_ARCHIVE); // Note that 0 is MODE_WINDOWED
 	_vid_default_mode_win = Cvar_Get("_vid_default_mode_win","3", CVAR_ARCHIVE); // Note that 3 is MODE_FULLSCREEN_DEFAULT
-	vid_wait = Cvar_Get("vid_wait","0");
+	vid_wait = Cvar_Get("vid_wait","0", 0);
 	vid_nopageflip = Cvar_Get("vid_nopageflip","0", CVAR_ARCHIVE);
 	_vid_wait_override = Cvar_Get("_vid_wait_override", "0", CVAR_ARCHIVE);
 	vid_config_x = Cvar_Get("vid_config_x","800", CVAR_ARCHIVE);
 	vid_config_y = Cvar_Get("vid_config_y","600", CVAR_ARCHIVE);
 	vid_stretch_by_2 = Cvar_Get("vid_stretch_by_2","1", CVAR_ARCHIVE);
 	_windowed_mouse = Cvar_Get("_windowed_mouse","1", CVAR_ARCHIVE);
-	gl_ztrick = Cvar_Get("gl_ztrick", "1");
+	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
 
 	Cmd_AddCommand ("vid_nummodes", VID_NumModes_f);
 	Cmd_AddCommand ("vid_describecurrentmode", VID_DescribeCurrentMode_f);

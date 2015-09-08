@@ -483,28 +483,28 @@ IN_Init
 void IN_Init (void)
 {
 	// mouse variables
-	m_filter = Cvar_Get("m_filter","0");
+	m_filter = Cvar_Get("m_filter","0", 0);
 
 	// joystick variables
 	in_joystick = Cvar_Get("joystick","0", CVAR_ARCHIVE);
-	joy_name = Cvar_Get("joyname", "joystick");
-	joy_advanced = Cvar_Get("joyadvanced", "0");
-	joy_advaxisx = Cvar_Get("joyadvaxisx", "0");
-	joy_advaxisy = Cvar_Get("joyadvaxisy", "0");
-	joy_advaxisz = Cvar_Get("joyadvaxisz", "0");
-	joy_advaxisr = Cvar_Get("joyadvaxisr", "0");
-	joy_advaxisu = Cvar_Get("joyadvaxisu", "0");
-	joy_advaxisv = Cvar_Get("joyadvaxisv", "0");
-	joy_forwardthreshold = Cvar_Get("joyforwardthreshold", "0.15");
-	joy_sidethreshold = Cvar_Get("joysidethreshold", "0.15");
-	joy_pitchthreshold = Cvar_Get("joypitchthreshold", "0.15");
-	joy_yawthreshold = Cvar_Get("joyyawthreshold", "0.15");
-	joy_forwardsensitivity = Cvar_Get("joyforwardsensitivity", "-1.0");
-	joy_sidesensitivity = Cvar_Get("joysidesensitivity", "-1.0");
-	joy_pitchsensitivity = Cvar_Get("joypitchsensitivity", "1.0");
-	joy_yawsensitivity = Cvar_Get("joyyawsensitivity", "-1.0");
-	joy_wwhack1 = Cvar_Get("joywwhack1", "0.0");
-	joy_wwhack2 = Cvar_Get("joywwhack2", "0.0");
+	joy_name = Cvar_Get("joyname", "joystick", 0);
+	joy_advanced = Cvar_Get("joyadvanced", "0", 0);
+	joy_advaxisx = Cvar_Get("joyadvaxisx", "0", 0);
+	joy_advaxisy = Cvar_Get("joyadvaxisy", "0", 0);
+	joy_advaxisz = Cvar_Get("joyadvaxisz", "0", 0);
+	joy_advaxisr = Cvar_Get("joyadvaxisr", "0", 0);
+	joy_advaxisu = Cvar_Get("joyadvaxisu", "0", 0);
+	joy_advaxisv = Cvar_Get("joyadvaxisv", "0", 0);
+	joy_forwardthreshold = Cvar_Get("joyforwardthreshold", "0.15", 0);
+	joy_sidethreshold = Cvar_Get("joysidethreshold", "0.15", 0);
+	joy_pitchthreshold = Cvar_Get("joypitchthreshold", "0.15", 0);
+	joy_yawthreshold = Cvar_Get("joyyawthreshold", "0.15", 0);
+	joy_forwardsensitivity = Cvar_Get("joyforwardsensitivity", "-1.0", 0);
+	joy_sidesensitivity = Cvar_Get("joysidesensitivity", "-1.0", 0);
+	joy_pitchsensitivity = Cvar_Get("joypitchsensitivity", "1.0", 0);
+	joy_yawsensitivity = Cvar_Get("joyyawsensitivity", "-1.0", 0);
+	joy_wwhack1 = Cvar_Get("joywwhack1", "0.0", 0);
+	joy_wwhack2 = Cvar_Get("joywwhack2", "0.0", 0);
 
 	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
 	Cmd_AddCommand ("joyadvancedupdate", Joy_AdvancedUpdate_f);

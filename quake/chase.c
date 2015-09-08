@@ -35,10 +35,10 @@ vec3_t	chase_dest_angles;
 
 void Chase_Init (void)
 {
-	chase_back = Cvar_Get("chase_back", "100");
-	chase_up = Cvar_Get("chase_up", "16");
-	chase_right = Cvar_Get("chase_right", "0");
-	chase_active = Cvar_Get("chase_active", "0");
+	chase_back = Cvar_Get("chase_back", "100", 0);
+	chase_up = Cvar_Get("chase_up", "16", 0);
+	chase_right = Cvar_Get("chase_right", "0", 0);
+	chase_active = Cvar_Get("chase_active", "0", 0);
 }
 
 void Chase_Reset (void)
