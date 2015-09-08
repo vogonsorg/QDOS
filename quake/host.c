@@ -37,6 +37,7 @@ Memory is cleared / released when a server or client begins, not when they end.
 quakeparms_t host_parms;
 
 qboolean host_initialized;	 // true if into command execution
+qboolean quakerc_init; /* FS: Intercept config.cfg from quake.rc */
 
 double		host_frametime;
 double		host_time;
@@ -314,7 +315,7 @@ void Host_WriteConfiguration (char *cfgName)
 	if (host_initialized & !isDedicated)
 	{
 		if(!(cfgName) || (cfgName[0] == 0)) /* FS: Sanity check */
-			Com_sprintf (path, sizeof(path),"%s/config.cfg", com_gamedir);
+			Com_sprintf (path, sizeof(path),"%s/qdos.cfg", com_gamedir);
 		else
 			Com_sprintf (path, sizeof(path),"%s/%s.cfg", com_gamedir, cfgName);
 		f = fopen (path, "w");
@@ -907,7 +908,7 @@ void Host_Init (quakeparms_t *parms)
 	Host_InitLocal ();
 
 	/* FS: Read config now */
-	Cbuf_AddText("exec config.cfg\n");
+	Cbuf_AddText("exec qdos.cfg\n");
 	Cbuf_AddEarlyCommands (true);
 	Cbuf_Execute();
 
@@ -960,8 +961,11 @@ void Host_Init (quakeparms_t *parms)
 		}
 	}
 
-	Cbuf_InsertText ("exec quake.rc\n"); /* FS: FIXME.  Intercept config.cfg from here so it doesn't load twice */
+	quakerc_init = true;
+	Cbuf_InsertText ("exec quake.rc\n"); /* FS: Yes, qdos.cfg is now executed twice.  Default.cfg runs unbindall to purge, then config.cfg is loaded next */
 	Cbuf_AddText ("cl_warncmd 1\n"); /* FS: From QW */
+	Cbuf_Execute();
+	quakerc_init = false;
 
 	Hunk_AllocName (0, "-HOST_HUNKLEVEL-");
 	host_hunklevel = Hunk_LowMark ();
@@ -994,7 +998,7 @@ void Host_Shutdown(void)
 // keep Con_Printf from trying to update the screen
 	scr_disabled_for_loading = true;
 
-	Host_WriteConfiguration ("config");
+	Host_WriteConfiguration ("qdos");
 
 	CDAudio_Shutdown ();
 	NET_Shutdown ();

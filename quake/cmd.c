@@ -260,6 +260,7 @@ Cmd_Exec_f
 void Cmd_Exec_f (void)
 {
 	char	*f;
+	char	*s;
 	int		mark;
 
 	if (Cmd_Argc () != 2)
@@ -268,21 +269,27 @@ void Cmd_Exec_f (void)
 		return;
 	}
 
+	s = Cmd_Argv(1);
 	mark = Hunk_LowMark ();
 
-	if(!strncmp(Cmd_Argv(1),"default.cfg",11)) /* FS: unbindall protection hack */
+	if(!strncmp(s,"default.cfg",11)) /* FS: unbindall protection hack */
 	{
 		Con_DPrintf (DEVELOPER_MSG_VERBOSE, "default.cfg unbindall protection hack\n");
 		Cvar_SetValue("cl_unbindall_protection", 0); /* FS: disable the warning if it's default.cfg */
 	}
 
-	f = (char *)COM_LoadHunkFile (Cmd_Argv(1));
+	if(quakerc_init)
+		if(!strncmp(s, "config.cfg", 10)) /* FS: Intercept config.cfg from quake.rc */
+			s = "qdos.cfg";
+
+	f = (char *)COM_LoadHunkFile (s);
 	if (!f)
 	{
-		Con_Printf ("couldn't exec %s\n",Cmd_Argv(1));
+		Con_Printf ("couldn't exec %s\n",s);
 		return;
 	}
-	Con_Printf ("execing %s\n",Cmd_Argv(1));
+
+	Con_Printf ("execing %s\n",s);
 	
 	Cbuf_InsertText (f);
 	Hunk_FreeToLowMark (mark);

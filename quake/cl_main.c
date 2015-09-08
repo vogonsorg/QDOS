@@ -719,7 +719,7 @@ void CL_WriteConfig_f (void)
 	if ((Cmd_Argc() == 1) || (Cmd_Argc() == 2))
 	{
 		if(Cmd_Argc() == 1)
-			Com_sprintf(cfgName, sizeof(cfgName), "config");
+			Com_sprintf(cfgName, sizeof(cfgName), "qdos");
 		else
 			Q_strlcpy (cfgName, Cmd_Argv(1), sizeof(cfgName));
 

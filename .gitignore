@@ -12,6 +12,7 @@
 *.clwbin/
 # ignore all the windows binaries - they shouldn't be committed! 
 Debug/
+debug_gl/
 Release/
 release_gl/
 out.txt

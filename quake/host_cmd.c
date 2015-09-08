@@ -175,7 +175,7 @@ void Host_Game_f (void)
 		Host_ShutdownServer(true);
 
 		//Write config file
-		Host_WriteConfiguration ("config");
+		Host_WriteConfiguration ("qdos");
 
 		//Kill the extra game if it is loaded
 		if (NumGames(com_searchpaths) > 1 + com_nummissionpacks)
