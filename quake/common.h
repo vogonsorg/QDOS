@@ -18,12 +18,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// comndef.h  -- general definitions
+// common.h  -- general definitions
 
 #ifndef __COMMON_H
 #define __COMMON_H
-
-#include "dg_misc.h" /* FS: Caedes special safe string stuff */
 
 #if !defined BYTE_DEFINED
 typedef unsigned char 		byte;
