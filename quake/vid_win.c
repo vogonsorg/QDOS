@@ -63,24 +63,21 @@ viddef_t	vid;				// global video state
 #define NO_MODE					(MODE_WINDOWED - 1)
 #define MODE_FULLSCREEN_DEFAULT	(MODE_WINDOWED + 3)
 
-// Note that 0 is MODE_WINDOWED
-cvar_t		vid_mode = {"vid_mode","0", false};
-// Note that 0 is MODE_WINDOWED
-cvar_t		_vid_default_mode = {"_vid_default_mode","0", true};
-// Note that 3 is MODE_FULLSCREEN_DEFAULT
-cvar_t		_vid_default_mode_win = {"_vid_default_mode_win","3", true};
-cvar_t		vid_wait = {"vid_wait","0"};
-cvar_t		vid_nopageflip = {"vid_nopageflip","0", true};
-cvar_t		_vid_wait_override = {"_vid_wait_override", "0", true};
-cvar_t		vid_config_x = {"vid_config_x","800", true};
-cvar_t		vid_config_y = {"vid_config_y","600", true};
-cvar_t		vid_stretch_by_2 = {"vid_stretch_by_2","1", true};
-cvar_t		_windowed_mouse = {"_windowed_mouse","0", true};
-cvar_t		vid_fullscreen_mode = {"vid_fullscreen_mode","3", true};
-cvar_t		vid_windowed_mode = {"vid_windowed_mode","0", true};
-cvar_t		block_switch = {"block_switch","0", true};
-cvar_t		vid_window_x = {"vid_window_x", "0", true};
-cvar_t		vid_window_y = {"vid_window_y", "0", true};
+cvar_t		*vid_mode;
+cvar_t		*_vid_default_mode;
+cvar_t		*_vid_default_mode_win;
+cvar_t		*vid_wait;
+cvar_t		*vid_nopageflip;
+cvar_t		*_vid_wait_override;
+cvar_t		*vid_config_x;
+cvar_t		*vid_config_y;
+cvar_t		*vid_stretch_by_2;
+cvar_t		*_windowed_mouse;
+cvar_t		*vid_fullscreen_mode;
+cvar_t		*vid_windowed_mode;
+cvar_t		*block_switch;
+cvar_t		*vid_window_x;
+cvar_t		*vid_window_y;
 
 typedef struct {
 	int		width;
@@ -2063,21 +2060,21 @@ void	VID_Init (unsigned char *palette)
 	int		basenummodes;
 	byte	*ptmp;
 
-	Cvar_RegisterVariable (&vid_mode);
-	Cvar_RegisterVariable (&vid_wait);
-	Cvar_RegisterVariable (&vid_nopageflip);
-	Cvar_RegisterVariable (&_vid_wait_override);
-	Cvar_RegisterVariable (&_vid_default_mode);
-	Cvar_RegisterVariable (&_vid_default_mode_win);
-	Cvar_RegisterVariable (&vid_config_x);
-	Cvar_RegisterVariable (&vid_config_y);
-	Cvar_RegisterVariable (&vid_stretch_by_2);
-	Cvar_RegisterVariable (&_windowed_mouse);
-	Cvar_RegisterVariable (&vid_fullscreen_mode);
-	Cvar_RegisterVariable (&vid_windowed_mode);
-	Cvar_RegisterVariable (&block_switch);
-	Cvar_RegisterVariable (&vid_window_x);
-	Cvar_RegisterVariable (&vid_window_y);
+	vid_mode = Cvar_Get("vid_mode","0");// Note that 0 is MODE_WINDOWED
+	_vid_default_mode = Cvar_Get("_vid_default_mode","0", CVAR_ARCHIVE);// Note that 0 is MODE_WINDOWED
+	_vid_default_mode_win = Cvar_Get("_vid_default_mode_win","3", CVAR_ARCHIVE);// Note that 3 is MODE_FULLSCREEN_DEFAULT
+	vid_wait = Cvar_Get("vid_wait","0");
+	vid_nopageflip = Cvar_Get("vid_nopageflip","0", CVAR_ARCHIVE);
+	_vid_wait_override = Cvar_Get("_vid_wait_override", "0", CVAR_ARCHIVE);
+	vid_config_x = Cvar_Get("vid_config_x","800", CVAR_ARCHIVE);
+	vid_config_y = Cvar_Get("vid_config_y","600", CVAR_ARCHIVE);
+	vid_stretch_by_2 = Cvar_Get("vid_stretch_by_2","1", CVAR_ARCHIVE);
+	_windowed_mouse = Cvar_Get("_windowed_mouse","0", CVAR_ARCHIVE);
+	vid_fullscreen_mode = Cvar_Get("vid_fullscreen_mode","3", CVAR_ARCHIVE);
+	vid_windowed_mode = Cvar_Get("vid_windowed_mode","0", CVAR_ARCHIVE);
+	block_switch = Cvar_Get("block_switch","0", CVAR_ARCHIVE);
+	vid_window_x = Cvar_Get("vid_window_x", "0", CVAR_ARCHIVE);
+	vid_window_y = Cvar_Get("vid_window_y", "0", CVAR_ARCHIVE);
 
 	Cmd_AddCommand ("vid_testmode", VID_TestMode_f);
 	Cmd_AddCommand ("vid_nummodes", VID_NumModes_f);

@@ -103,7 +103,7 @@ HDC		maindc;
 
 glvert_t glv;
 
-cvar_t	gl_ztrick = {"gl_ztrick","1"};
+cvar_t		*gl_ztrick;
 
 HWND WINAPI InitializeWindow (HINSTANCE hInstance, int nCmdShow);
 
@@ -140,18 +140,16 @@ qboolean gl_mtexable = false;
 
 //====================================
 
-cvar_t		vid_mode = {"vid_mode","0", false};
-// Note that 0 is MODE_WINDOWED
-cvar_t		_vid_default_mode = {"_vid_default_mode","0", true};
-// Note that 3 is MODE_FULLSCREEN_DEFAULT
-cvar_t		_vid_default_mode_win = {"_vid_default_mode_win","3", true};
-cvar_t		vid_wait = {"vid_wait","0"};
-cvar_t		vid_nopageflip = {"vid_nopageflip","0", true};
-cvar_t		_vid_wait_override = {"_vid_wait_override", "0", true};
-cvar_t		vid_config_x = {"vid_config_x","800", true};
-cvar_t		vid_config_y = {"vid_config_y","600", true};
-cvar_t		vid_stretch_by_2 = {"vid_stretch_by_2","1", true};
-cvar_t		_windowed_mouse = {"_windowed_mouse","1", true};
+cvar_t		*vid_mode;
+cvar_t		*_vid_default_mode;
+cvar_t		*_vid_default_mode_win;
+cvar_t		*vid_wait;
+cvar_t		*vid_nopageflip;
+cvar_t		*_vid_wait_override;
+cvar_t		*vid_config_x;
+cvar_t		*vid_config_y;
+cvar_t		*vid_stretch_by_2;
+cvar_t		*_windowed_mouse;
 
 int			window_center_x, window_center_y, window_x, window_y, window_width, window_height;
 RECT		window_rect;
@@ -1574,17 +1572,17 @@ void	VID_Init (unsigned char *palette)
 
 	memset(&devmode, 0, sizeof(devmode));
 
-	Cvar_RegisterVariable (&vid_mode);
-	Cvar_RegisterVariable (&vid_wait);
-	Cvar_RegisterVariable (&vid_nopageflip);
-	Cvar_RegisterVariable (&_vid_wait_override);
-	Cvar_RegisterVariable (&_vid_default_mode);
-	Cvar_RegisterVariable (&_vid_default_mode_win);
-	Cvar_RegisterVariable (&vid_config_x);
-	Cvar_RegisterVariable (&vid_config_y);
-	Cvar_RegisterVariable (&vid_stretch_by_2);
-	Cvar_RegisterVariable (&_windowed_mouse);
-	Cvar_RegisterVariable (&gl_ztrick);
+	vid_mode = Cvar_Get("vid_mode","0", CVAR_ARCHIVE);
+	_vid_default_mode = Cvar_Get("_vid_default_mode","0", CVAR_ARCHIVE); // Note that 0 is MODE_WINDOWED
+	_vid_default_mode_win = Cvar_Get("_vid_default_mode_win","3", CVAR_ARCHIVE); // Note that 3 is MODE_FULLSCREEN_DEFAULT
+	vid_wait = Cvar_Get("vid_wait","0");
+	vid_nopageflip = Cvar_Get("vid_nopageflip","0", CVAR_ARCHIVE);
+	_vid_wait_override = Cvar_Get("_vid_wait_override", "0", CVAR_ARCHIVE);
+	vid_config_x = Cvar_Get("vid_config_x","800", CVAR_ARCHIVE);
+	vid_config_y = Cvar_Get("vid_config_y","600", CVAR_ARCHIVE);
+	vid_stretch_by_2 = Cvar_Get("vid_stretch_by_2","1", CVAR_ARCHIVE);
+	_windowed_mouse = Cvar_Get("_windowed_mouse","1", CVAR_ARCHIVE);
+	gl_ztrick = Cvar_Get("gl_ztrick", "1");
 
 	Cmd_AddCommand ("vid_nummodes", VID_NumModes_f);
 	Cmd_AddCommand ("vid_describecurrentmode", VID_DescribeCurrentMode_f);
