@@ -32,11 +32,11 @@ static bgm_status_t	trk_status;		// Status indicator
 
 #define MAX_WAVLIST 512
 static char		**wav_filelist;		// List of WAV files
-static int			wav_numfiles;		// Number of WAV files
-static int			wav_loopcounter;
+static int		wav_numfiles;		// Number of WAV files
+static int		wav_loopcounter;
 
-static cvar_t	wav_loopcount = {"wav_loopcount", "5", true};
-static cvar_t	wav_ambient_track = {"wav_ambient_track", "track11", true};
+static cvar_t	*wav_loopcount;
+static cvar_t	*wav_ambient_track;
 
 static void S_WAV_LoadFileList (void);
 static void S_WAV_ParseCmd (void);
@@ -364,8 +364,8 @@ void S_WAV_Init (void)
 		return;
 
 	// Cvars
-	Cvar_RegisterVariable (&wav_ambient_track); // Knightmare: added
-	Cvar_RegisterVariable (&wav_loopcount); // Knightmare: added
+	wav_loopcount = Cvar_Get("wav_loopcount", "5", CVAR_ARCHIVE);
+	wav_ambient_track = Cvar_Get("wav_ambient_track", "track11", CVAR_ARCHIVE);
 
 	// Console commands
 	Cmd_AddCommand("wav", S_WAV_ParseCmd);

@@ -61,22 +61,26 @@ interface from being ambiguous.
  *     that check the variable.
  */
 
-/* FS: NOTE!!!! If you add anything here... add it after the qboolean modified!  You will goof up setting cvar_t's in the code! */
-
 #ifndef __CVAR_H
 #define __CVAR_H
 
+#define	CVAR_ARCHIVE	1	// set to cause it to be saved to vars.rc
+//#define	CVAR_USERINFO	2	// added to userinfo  when changed /* FS: QW not Q1 */
+#define	CVAR_SERVERINFO	4	// added to serverinfo when changed
+#define	CVAR_NOSET		8	// don't allow change from console at all,
+							// but can be set from the command line
+#define	CVAR_LATCH		16	// save changes until server restart
+
 typedef struct cvar_s
 {
-	char	*name;
-	char	*string;
-	qboolean archive;		// set to true to cause it to be saved to vars.rc
-	qboolean server;		// notifies players when changed
-	const char *description; /* FS: Added */
-	float	value;
-	int		intValue; /* FS: Added */
-	const char *defaultString; /* FS: Added */
-	qboolean modified; /* FS: Added */
+	char		*name;
+	char		*string;
+	int			flags
+	qboolean	modified; /* FS: Added */
+	float		value;
+	int			intValue; /* FS: Added */
+	const char	*description; /* FS: Added */
+	const char	*defaultString; /* FS: Added */
 	struct cvar_s *next;
 } cvar_t;
 

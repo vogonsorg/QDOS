@@ -45,7 +45,8 @@ qboolean	menubound[256];	// if true, can't be rebound while in menu
 int		keyshift[256];		// key to map to if shift held down in console
 int		key_repeats[256];	// if > 1, it is autorepeating
 qboolean	keydown[256];
-cvar_t cl_unbindall_protection = {"cl_unbindall_protection", "1", false, false, "Protection from bad configs with unbindall.  Will warn on execute."}; /* FS: Unbindall protection */
+
+cvar_t	*cl_unbindall_protection; /* FS: Added */
 
 extern char *Sort_Possible_Cmds (char *partial); /* FS: Added */
 
@@ -703,7 +704,9 @@ void Key_Init (void)
 	Cmd_AddCommand ("unbind",Key_Unbind_f);
 	Cmd_AddCommand ("unbindall",Key_Unbindall_f);
 
-	Cvar_RegisterVariable(&cl_unbindall_protection); /* FS: unbindall protection */
+	 /* FS: Unbindall protection */
+	cl_unbindall_protection = Cvar_Get("cl_unbindall_protection", "1");
+	cl_unbindall_protection->description = "Protection from bad configs with unbindall.  Will warn on execute.";
 }
 
 /*

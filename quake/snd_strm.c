@@ -48,11 +48,11 @@ static bgm_status_t	trk_status;		// Status indicator
 
 #define MAX_OGGLIST 512
 static char		**ogg_filelist;		// List of Ogg Vorbis files
-static int			ogg_numfiles;		// Number of Ogg Vorbis files
-static int			ogg_loopcounter;
+static int		ogg_numfiles;		// Number of Ogg Vorbis files
+static int		ogg_loopcounter;
 
-static cvar_t	ogg_loopcount = {"ogg_loopcount", "5", true};
-static cvar_t	ogg_ambient_track = {"ogg_ambient_track", "11", true};
+static cvar_t	*ogg_loopcount;
+static cvar_t	*ogg_ambient_track;
 
 static void S_OGG_LoadFileList (void);
 static void S_OGG_ParseCmd (void);
@@ -349,8 +349,8 @@ void S_OGG_Init (void)
 		return;
 
 	// Cvars
-	Cvar_RegisterVariable(&ogg_loopcount);
-	Cvar_RegisterVariable(&ogg_ambient_track);
+	ogg_loopcount = Cvar_Get("ogg_loopcount", "5", CVAR_ARCHIVE);
+	ogg_ambient_track = Cvar_Get("ogg_ambient_track", "11", CVAR_ARCHIVE);
 
 	// Console commands
 	Cmd_AddCommand("ogg", S_OGG_ParseCmd);

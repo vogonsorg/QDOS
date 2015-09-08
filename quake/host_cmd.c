@@ -26,8 +26,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define _stricmp stricmp
 #endif
 
-extern cvar_t	pausable;
-cvar_t cl_demos = {"cl_demos","1",true, false, "Set to 0 to disable startup demos."}; /* FS: Disable startup demos */
+cvar_t	*cl_demos; /*FS :Disable startup demos */
+extern cvar_t	*pausable;
+
 qboolean nostartupdemos = false; /* FS: Disable startup demos */
 extern int com_nummissionpacks; //johnfitz
 
@@ -2302,5 +2303,8 @@ void Host_InitCommands (void)
 	Cmd_AddCommand ("viewprev", Host_Viewprev_f);
 
 	Cmd_AddCommand ("mcache", Mod_Print);
-	Cvar_RegisterVariable (&cl_demos); /* FS: Disable Startdemos */
+
+	 /* FS: Disable startup demos */
+	cl_demos = Cvar_Get("cl_demos", "1", CVAR_ARCHIVE);
+	cl_demos->description = "Set to 0 to disable startup demos.";
 }

@@ -46,10 +46,9 @@ int num_shades=32;
 
 int	d_con_indirect = 0;
 
-cvar_t		vid_mode = {"vid_mode","5",false};
- 
-cvar_t		vid_wait = {"vid_wait", "0", false};
-cvar_t		_vid_wait_override = {"_vid_wait_override", "0", false};
+cvar_t	*vid_mode;
+cvar_t	*vid_wait;
+cvar_t	*_vid_wait_override;
 
 char	*framebuffer_ptr;
 
@@ -62,7 +61,7 @@ int		texture_extension_number = 1;
 
 float		gldepthmin, gldepthmax;
 
-cvar_t	gl_ztrick = {"gl_ztrick","1"};
+cvar_t	*gl_ztrick;
 
 const char *gl_vendor;
 const char *gl_renderer;
@@ -361,17 +360,12 @@ void VID_Init(unsigned char *palette)
 	int i;
 	char	gldir[MAX_OSPATH];
 	int width = 640, height = 480;
-	char *read_vars[] = {
-		"gamma",
-	};
-#define num_readvars	(int)(sizeof(read_vars) / sizeof(read_vars[0]))
 
+	vid_mode = Cvar_Get("vid_mode","5");
+	vid_wait = Cvar_Get("vid_wait", "0");;
+	_vid_wait_override = Cvar_Get("_vid_wait_override", "0");
 
-	Cvar_RegisterVariable (&vid_mode);
-	Cvar_RegisterVariable (&gl_ztrick);
-
-	Cvar_RegisterVariable (&vid_wait);
-	Cvar_RegisterVariable (&_vid_wait_override);
+	gl_ztrick = Cvar_Get("gl_ztrick", "1");
 
 	vid.maxwarpwidth = WARP_WIDTH;
 	vid.maxwarpheight = WARP_HEIGHT;

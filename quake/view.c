@@ -69,6 +69,8 @@ cvar_t	*v_contentblend; /* FS: Fucking hate palette blends */
 cvar_t	*v_centermove;
 cvar_t	*v_centerspeed;
 
+cvar_t	*v_gamma;
+
 /* FS: For mod compatibility */
 #ifndef GLQUAKE
 cvar_t	*r_wateralpha;
@@ -268,8 +270,6 @@ cshift_t	cshift_empty = { {130,80,50}, 0 };
 cshift_t	cshift_water = { {130,80,50}, 128 };
 cshift_t	cshift_slime = { {0,25,5}, 150 };
 cshift_t	cshift_lava = { {255,80,0}, 150 };
-
-cvar_t		v_gamma = {"gamma", "1", true};
 
 byte		gammatable[256];	// palette is sent through this
 
@@ -1186,5 +1186,5 @@ void V_Init (void)
 	v_kickpitch = Cvar_Get("v_kickpitch", "0.6");
 	
 	BuildGammaTable (1.0);	// no gamma yet
-	Cvar_RegisterVariable (&v_gamma);
+	v_gamma = Cvar_Get("gamma", "1", CVAR_ARCHIVE);
 }

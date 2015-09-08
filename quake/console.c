@@ -40,9 +40,9 @@ int			con_current;		// where next message will be printed
 int			con_x;				// offset in current line for next print
 char		*con_text=0;
 
-cvar_t		con_notifytime = {"con_notifytime","3", false, false , "Time (in seconds) a console notification message is displayed."};		//seconds
-cvar_t		con_logcenterprint = {"con_logcenterprint", "1", false, false, "Log centerprints to console."}; //johnfitz
-cvar_t		timestamp = {"timestamp", "0", false, false, "Enables timestamps.  1 for military format.  2 for AM/PM format."}; /* FS: Timestamp */
+cvar_t		*con_notifytime;		//seconds
+cvar_t		*con_logcenterprint; //johnfitz
+cvar_t		*timestamp /* FS: Timestamp */
 
 char		con_lastcenterstring[1024]; //johnfitz
 
@@ -269,9 +269,12 @@ void Con_Init (void)
 //
 // register our commands
 //
-	Cvar_RegisterVariable (&con_notifytime);
-	Cvar_RegisterVariable (&con_logcenterprint); //johnfitz
-	Cvar_RegisterVariable (&timestamp);
+	con_notifytime = Cvar_Get("con_notifytime","3"); // seconds
+	con_notifytime->description = "Time (in seconds) a console notification message is displayed.";
+	con_logcenterprint = Cvar_Get("con_logcenterprint", "1");  //johnfitz
+	con_logcenterprint->description = "Log centerprints to console.";
+	timestamp = Cvar_Get("timestamp", "0"); /* FS: Timestamp */
+	timestamp->description = "Enables timestamps.  1 for military format.  2 for AM/PM format.";
 
 	Cmd_AddCommand ("toggleconsole", Con_ToggleConsole_f);
 	Cmd_AddCommand ("messagemode", Con_MessageMode_f);

@@ -27,9 +27,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern unsigned char d_15to8table[65536];
 
-cvar_t		gl_nobind = {"gl_nobind", "0"};
-cvar_t		gl_max_size = {"gl_max_size", "1024"};
-cvar_t		gl_picmip = {"gl_picmip", "0"};
+cvar_t		*gl_nobind;
+cvar_t		*gl_max_size;
+cvar_t		*gl_picmip;
 
 byte		*draw_chars;				// 8*8 graphic characters
 qpic_t		*draw_disc;
@@ -403,9 +403,9 @@ void Draw_Init (void)
 	int start;
 	byte    *ncdata;
 
-	Cvar_RegisterVariable (&gl_nobind);
-	Cvar_RegisterVariable (&gl_max_size);
-	Cvar_RegisterVariable (&gl_picmip);
+	gl_nobind = Cvar_Get("gl_nobind", "0");
+	gl_max_size = Cvar_Get("gl_max_size", "1024");
+	gl_picmip = Cvar_Get("gl_picmip", "0");
 
 	// 3dfx can only handle 256 wide textures
 	if (!Q_strncasecmp ((char *)gl_renderer, "3dfx",4) ||
