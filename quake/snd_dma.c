@@ -79,19 +79,20 @@ int		sound_started = 0;
 
 int		havegus; /* FS: Is GUS our sound card? */
 
-cvar_t bgmvolume = {"bgmvolume", "1", true};
-cvar_t volume = {"volume", "0.7", true};
+cvar_t	*nosound;
+cvar_t	*volume;
+cvar_t	*precache;
+cvar_t	*loadas8bit;
+cvar_t	*bgmvolume;
+cvar_t	*ambient_level;
+cvar_t	*ambient_fade;
+cvar_t	*snd_noextraupdate;
+cvar_t	*snd_show;
+cvar_t	*_snd_mixahead;
 
-cvar_t nosound = {"nosound", "0"};
-cvar_t precache = {"precache", "1"};
-cvar_t loadas8bit = {"loadas8bit", "0"};
-cvar_t ambient_level = {"ambient_level", "0.3"};
-cvar_t ambient_fade = {"ambient_fade", "100"};
-cvar_t snd_noextraupdate = {"snd_noextraupdate", "0"};
-cvar_t snd_show = {"snd_show", "0"};
-cvar_t _snd_mixahead = {"_snd_mixahead", "0.2", true};
-cvar_t s_khz = {"s_khz","", true, false, "Sound sampling rate."}; /* FS: Added */
-cvar_t s_musicvolume = {"s_musicvolume", "1.0", true, false, "Music volume for wav and ogg streaming."}; /* FS: Added */
+/* FS: New stuff */
+cvar_t	*s_khz;
+cvar_t	*s_musicvolume;
 
 // ====================================================================
 // User-setable variables
@@ -203,18 +204,23 @@ void S_Init (void)
 #endif
 	Cmd_AddCommand("wav_restart", S_WAV_Restart); /* FS: Added */
 
-	Cvar_RegisterVariable(&nosound);
-	Cvar_RegisterVariable(&volume);
-	Cvar_RegisterVariable(&precache);
-	Cvar_RegisterVariable(&loadas8bit);
-	Cvar_RegisterVariable(&bgmvolume);
-	Cvar_RegisterVariable(&ambient_level);
-	Cvar_RegisterVariable(&ambient_fade);
-	Cvar_RegisterVariable(&snd_noextraupdate);
-	Cvar_RegisterVariable(&snd_show);
-	Cvar_RegisterVariable(&_snd_mixahead);
-	Cvar_RegisterVariable(&s_khz); /* FS: Added */
-	Cvar_RegisterVariable(&s_musicvolume); /* Knightmare: added */
+	nosound = Cvar_Get("nosound", "0"};
+	volume = Cvar_Get("volume", "0.7", CVAR_ARCHIVE);
+	precache = Cvar_Get("precache", "1"};
+	loadas8bit = Cvar_Get("loadas8bit", "0"};
+	bgmvolume = Cvar_Get("bgmvolume", "1", CVAR_ARCHIVE);
+	ambient_level = Cvar_Get("ambient_level", "0.3"};
+	ambient_fade = Cvar_Get("ambient_fade", "100"};
+	snd_noextraupdate = {"snd_noextraupdate", "0"};
+	snd_show = Cvar_Get("snd_show", "0"};
+	_snd_mixahead = Cvar_Get("_snd_mixahead", "0.2", CVAR_ARCHIVE);
+	
+	/* FS: New stuff */
+	s_khz = Cvar_Get("s_khz","", CVAR_ARCHIVE);
+	s_khz->description = "Sound sampling rate.";
+	s_musicvolume = Cvar_Get("s_musicvolume", "1.0", CVAR_ARCHIVE);
+	s_musicvolume->description = "Music volume for wav and ogg streaming.";
+
 
 	if (host_parms.memsize < 0x800000)
 	{

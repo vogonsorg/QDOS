@@ -80,21 +80,23 @@ float		scr_con_current;
 float		scr_conlines;		// lines of console to display
 
 float		oldscreensize, oldfov;
-cvar_t		scr_viewsize = {"viewsize","100", true};
-cvar_t		scr_fov = {"fov","90"};	// 10 - 170
-cvar_t		scr_conspeed = {"scr_conspeed","300"};
-cvar_t		scr_centertime = {"scr_centertime","2"};
-cvar_t		scr_showram = {"showram","1"};
-cvar_t		scr_showturtle = {"showturtle","0"};
-cvar_t		scr_showpause = {"showpause","1"};
-cvar_t		scr_printspeed = {"scr_printspeed","8"};
-cvar_t		gl_triplebuffer = {"gl_triplebuffer", "1", true };
 
-extern	cvar_t	crosshair;
+cvar_t		*scr_viewsize;
+cvar_t		*scr_fov;
+cvar_t		*scr_conspeed;
+cvar_t		*scr_centertime;
+cvar_t		*scr_showram;
+cvar_t		*scr_showturtle;
+cvar_t		*scr_showpause;
+cvar_t		*scr_printspeed;
+cvar_t		*gl_triplebuffer;
 
-cvar_t		show_fps = {"show_fps","0", true, false, "Show framerate measured in Frames Per Second."}; /* FS: show_fps from Qrack */
-cvar_t		show_time = {"show_time","0", true, false, "Show current time in the HUD.  1 for military.  2 for AM/PM."}; /* FS: Added */
-cvar_t		show_uptime = {"show_uptime","0", true, false, "Show uptime."}; /* FS: Added */
+/* FS: New stuff */
+cvar_t		*show_fps; /* FS: show_fps from Qrack */
+cvar_t		*show_time;
+cvar_t		*show_uptime;
+
+extern	cvar_t	*crosshair;
 
 qboolean	scr_initialized;		// ready to draw
 
@@ -372,21 +374,23 @@ SCR_Init
 */
 void SCR_Init (void)
 {
+	scr_viewsize = Cvar_Get("viewsize","100", CVAR_ARCHIVE);
+	scr_fov = Cvar_Get("fov","90");	// 10 - 170
+	scr_conspeed = Cvar_Get("scr_conspeed","300");
+	scr_centertime = Cvar_Get("scr_centertime","2");
+	scr_showram = Cvar_Get("showram","1");
+	scr_showturtle = Cvar_Get("showturtle","0");
+	scr_showpause = Cvar_Get("showpause","1");
+	scr_printspeed = Cvar_Get("scr_printspeed","8");
+	gl_triplebuffer = Cvar_Get("gl_triplebuffer", "1", CVAR_ARCHIVE);
 
-	Cvar_RegisterVariable (&scr_fov);
-	Cvar_RegisterVariable (&scr_viewsize);
-	Cvar_RegisterVariable (&scr_conspeed);
-	Cvar_RegisterVariable (&scr_showram);
-	Cvar_RegisterVariable (&scr_showturtle);
-	Cvar_RegisterVariable (&scr_showpause);
-	Cvar_RegisterVariable (&scr_centertime);
-	Cvar_RegisterVariable (&scr_printspeed);
 	/* FS: New stuff */
-	Cvar_RegisterVariable (&show_fps); /* FS: From Qrack */
-	Cvar_RegisterVariable (&show_time);
-	Cvar_RegisterVariable (&show_uptime);
-
-	Cvar_RegisterVariable (&gl_triplebuffer);
+	show_fps = Cvar_Get("show_fps","0", CVAR_ARCHIVE); /* FS: show_fps from Qrack */
+	show_fps->description = "Show framerate measured in Frames Per Second.";
+	show_time = Cvar_Get("show_time","0", CVAR_ARCHIVE); 
+	show_time->description = "Show current time in the HUD.  1 for military.  2 for AM/PM.";
+	show_uptime = Cvar_Get("show_uptime","0", CVAR_ARCHIVE);
+	show_uptime->description = "Show uptime.";
 
 //
 // register our commands
