@@ -40,9 +40,8 @@ static qboolean locked = false;
 static int oldbuttons;
 
 // track high fragger
-cvar_t cl_hightrack = {"cl_hightrack", "0" };
-
-cvar_t cl_chasecam = {"cl_chasecam", "0"};
+cvar_t *cl_hightrack;
+cvar_t *cl_chasecam;
 
 qboolean cam_forceview;
 vec3_t cam_viewangles;
@@ -452,8 +451,8 @@ void Cam_Reset(void)
 
 void CL_InitCam(void)
 {
-	Cvar_RegisterVariable (&cl_hightrack);
-	Cvar_RegisterVariable (&cl_chasecam);
+	cl_hightrack = Cvar_Get("cl_hightrack", "0", 0);
+	cl_chasecam = Cvar_Get("cl_chasecam", "0", 0);
 }
 
 

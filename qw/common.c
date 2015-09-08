@@ -1300,7 +1300,8 @@ void COM_Init (void)
 		LittleFloat = FloatSwap;
 	}
 
-	Cvar_RegisterVariable (&registered);
+	registered = Cvar_Get("registered","0", CVAR_NOSET);
+	registered->description = "Special internal CVAR for setting Registered game.";
 
 	Cmd_AddCommand ("path", COM_Path_f);
 	Cmd_AddCommand ("dir", COM_Dir_f); /* FS: From Quake 2 */

@@ -20,6 +20,7 @@ CFG=qwcl - Win32 Release
 !MESSAGE "qwcl - Win32 Release" (based on "Win32 (x86) Application")
 !MESSAGE "qwcl - Win32 Debug" (based on "Win32 (x86) Application")
 !MESSAGE "qwcl - Win32 GL QW" (based on "Win32 (x86) Application")
+!MESSAGE "qwcl - Win32 GL QW Debug" (based on "Win32 (x86) Application")
 !MESSAGE 
 
 # Begin Project
@@ -111,6 +112,35 @@ LINK32=link.exe
 # ADD BASE LINK32 scitech\lib\win32\vc\mgllt.lib dxsdk\sdk\lib\dxguid.lib opengl32.lib wsock32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib winmm.lib /nologo /subsystem:windows /profile /machine:I386 /out:".\Release/WQWDOS.EXE"
 # SUBTRACT BASE LINK32 /nodefaultlib
 # ADD LINK32 .\dxsdk\sdk\lib\dxguid.lib comctl32.lib winmm.lib wsock32.lib opengl32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /profile /machine:I386 /nodefaultlib:"libcmtd.lib" /out:".\release_gl/GLQW2.EXE"
+# SUBTRACT LINK32 /debug /nodefaultlib
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "qwcl___Win32_GL_QW_Debug"
+# PROP BASE Intermediate_Dir "qwcl___Win32_GL_QW_Debug"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir ".\debug_dl"
+# PROP Intermediate_Dir ".\debug_dl"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /G5 /MT /GX /O2 /I "dxsdk\sdk\inc" /I "scitech\include" /I "winquake" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /D "GLQUAKE" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /MTd /W3 /Gm /GX /ZI /Od /I "dxsdk\sdk\inc" /I "scitech\include" /I "winquake" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /D "GLQUAKE" /FR /YX /FD /c
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+# ADD BASE RSC /l 0x409 /d "NDEBUG"
+# ADD RSC /l 0x409 /fo".\debug_gl/winquake.res" /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo /o".\debug_gl/qwcl.bsc"
+LINK32=link.exe
+# ADD BASE LINK32 .\dxsdk\sdk\lib\dxguid.lib comctl32.lib winmm.lib wsock32.lib opengl32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /profile /machine:I386 /nodefaultlib:"libcmtd.lib" /out:".\release_gl/GLQW2.EXE"
+# SUBTRACT BASE LINK32 /nodefaultlib
+# ADD LINK32 .\dxsdk\sdk\lib\dxguid.lib comctl32.lib winmm.lib wsock32.lib opengl32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /profile /map:".\debug_gl/GLQW2.map" /debug /machine:I386 /nodefaultlib:"libcmtd.lib" /out:".\debug_gl/GLQW2.EXE"
 # SUBTRACT LINK32 /nodefaultlib
 
 !ENDIF 
@@ -120,6 +150,7 @@ LINK32=link.exe
 # Name "qwcl - Win32 Release"
 # Name "qwcl - Win32 Debug"
 # Name "qwcl - Win32 GL QW"
+# Name "qwcl - Win32 GL QW Debug"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90"
@@ -199,6 +230,11 @@ SOURCE=.\dos_v2.c
 # PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -215,6 +251,11 @@ SOURCE=.\in_dos.c
 # PROP Exclude_From_Build 1
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
 
 # PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
@@ -239,6 +280,11 @@ SOURCE=.\net_udp.c
 # PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -255,6 +301,11 @@ SOURCE=.\sys_dos.c
 # PROP Exclude_From_Build 1
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
 
 # PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
@@ -279,6 +330,11 @@ SOURCE=.\vid_dos.c
 # PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -299,6 +355,11 @@ SOURCE=.\vid_ext.c
 # PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -315,6 +376,11 @@ SOURCE=.\vregset.c
 # PROP Exclude_From_Build 1
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
 
 # PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
@@ -340,6 +406,8 @@ SOURCE=.\gl_draw.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
 !ENDIF 
 
 # End Source File
@@ -356,6 +424,8 @@ SOURCE=.\gl_mesh.c
 # PROP Exclude_From_Build 1
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
 
 !ENDIF 
 
@@ -374,6 +444,8 @@ SOURCE=.\gl_model.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
 !ENDIF 
 
 # End Source File
@@ -390,6 +462,8 @@ SOURCE=.\gl_model.h
 # PROP Exclude_From_Build 1
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
 
 !ENDIF 
 
@@ -408,6 +482,8 @@ SOURCE=.\gl_ngraph.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
 !ENDIF 
 
 # End Source File
@@ -424,6 +500,8 @@ SOURCE=.\gl_refrag.c
 # PROP Exclude_From_Build 1
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
 
 !ENDIF 
 
@@ -442,6 +520,8 @@ SOURCE=.\gl_rlight.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
 !ENDIF 
 
 # End Source File
@@ -458,6 +538,8 @@ SOURCE=.\gl_rmain.c
 # PROP Exclude_From_Build 1
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
 
 !ENDIF 
 
@@ -476,6 +558,8 @@ SOURCE=.\gl_rmisc.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
 !ENDIF 
 
 # End Source File
@@ -492,6 +576,8 @@ SOURCE=.\gl_rsurf.c
 # PROP Exclude_From_Build 1
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
 
 !ENDIF 
 
@@ -510,6 +596,8 @@ SOURCE=.\gl_screen.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
 !ENDIF 
 
 # End Source File
@@ -526,6 +614,8 @@ SOURCE=.\gl_test.c
 # PROP Exclude_From_Build 1
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
 
 !ENDIF 
 
@@ -544,6 +634,8 @@ SOURCE=.\gl_vidnt.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
 !ENDIF 
 
 # End Source File
@@ -560,6 +652,8 @@ SOURCE=.\gl_warp.c
 # PROP Exclude_From_Build 1
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
 
 !ENDIF 
 
@@ -578,6 +672,8 @@ SOURCE=.\gl_warp_sin.h
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
 !ENDIF 
 
 # End Source File
@@ -594,6 +690,8 @@ SOURCE=.\glquake.h
 # PROP Exclude_From_Build 1
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
 
 !ENDIF 
 
@@ -643,6 +741,11 @@ InputName=d_draw
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -682,6 +785,11 @@ InputName=d_draw16
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -725,6 +833,11 @@ InputName=d_parta
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -764,6 +877,11 @@ InputName=d_polysa
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -807,6 +925,11 @@ InputName=d_scana
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -846,6 +969,11 @@ InputName=d_spr8
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -889,6 +1017,11 @@ InputName=d_varsa
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -928,6 +1061,11 @@ InputName=r_aclipa
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -971,6 +1109,11 @@ InputName=r_aliasa
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1010,6 +1153,11 @@ InputName=r_drawa
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -1053,6 +1201,11 @@ InputName=r_edgea
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1092,6 +1245,11 @@ InputName=r_varsa
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -1135,6 +1293,11 @@ InputName=surf16
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1176,6 +1339,11 @@ InputName=surf8
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1190,6 +1358,11 @@ SOURCE=.\d_edge.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -1207,6 +1380,11 @@ SOURCE=.\d_fill.c
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1220,6 +1398,11 @@ SOURCE=.\d_init.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -1237,6 +1420,11 @@ SOURCE=.\d_modech.c
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1250,6 +1438,11 @@ SOURCE=.\d_part.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -1267,6 +1460,11 @@ SOURCE=.\d_polyse.c
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1280,6 +1478,11 @@ SOURCE=.\d_scan.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -1297,6 +1500,11 @@ SOURCE=.\d_sky.c
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1310,6 +1518,11 @@ SOURCE=.\d_sprite.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -1327,6 +1540,11 @@ SOURCE=.\d_surf.c
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1340,6 +1558,11 @@ SOURCE=.\d_vars.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -1357,6 +1580,11 @@ SOURCE=.\d_zpoint.c
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1370,6 +1598,11 @@ SOURCE=.\draw.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -1387,6 +1620,11 @@ SOURCE=.\model.c
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1400,6 +1638,11 @@ SOURCE=.\r_aclip.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -1417,6 +1660,11 @@ SOURCE=.\r_alias.c
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1430,6 +1678,11 @@ SOURCE=.\r_bsp.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -1447,6 +1700,11 @@ SOURCE=.\r_draw.c
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1460,6 +1718,11 @@ SOURCE=.\r_edge.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -1477,6 +1740,11 @@ SOURCE=.\r_efrag.c
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1490,6 +1758,11 @@ SOURCE=.\r_light.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -1507,6 +1780,11 @@ SOURCE=.\r_main.c
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1520,6 +1798,11 @@ SOURCE=.\r_misc.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -1537,6 +1820,11 @@ SOURCE=.\r_sky.c
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1550,6 +1838,11 @@ SOURCE=.\r_sprite.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -1567,6 +1860,11 @@ SOURCE=.\r_surf.c
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1580,6 +1878,11 @@ SOURCE=.\r_vars.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -1597,6 +1900,11 @@ SOURCE=.\screen.c
 
 # PROP Exclude_From_Build 1
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
@@ -1610,6 +1918,11 @@ SOURCE=.\vid_win.c
 
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
 
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# PROP BASE Exclude_From_Build 1
 # PROP Exclude_From_Build 1
 
 !ENDIF 
@@ -1741,6 +2054,21 @@ InputName=math
 	
 # End Custom Build
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# Begin Custom Build
+OutDir=.\debug_dl
+InputPath=.\math.s
+InputName=math
+
+"$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	cl /EP > $(OUTDIR)\$(InputName).spp $(InputPath) 
+	gas2masm.exe < $(OUTDIR)\$(InputName).spp          >$(OUTDIR)\$(InputName).asm 
+	ml /c /Cp /coff /Fo$(OUTDIR)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                                           $(OUTDIR)\$(InputName).asm 
+	del $(OUTDIR)\$(InputName).spp 
+	
+# End Custom Build
+
 !ENDIF 
 
 # End Source File
@@ -1849,6 +2177,21 @@ InputName=snd_mixa
 	
 # End Custom Build
 
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# Begin Custom Build
+OutDir=.\debug_dl
+InputPath=.\snd_mixa.s
+InputName=snd_mixa
+
+"$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	cl /EP > $(OUTDIR)\$(InputName).spp $(InputPath) 
+	gas2masm.exe < $(OUTDIR)\$(InputName).spp          >$(OUTDIR)\$(InputName).asm 
+	ml /c /Cp /coff /Fo$(OUTDIR)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                                           $(OUTDIR)\$(InputName).asm 
+	del $(OUTDIR)\$(InputName).spp 
+	
+# End Custom Build
+
 !ENDIF 
 
 # End Source File
@@ -1910,6 +2253,21 @@ InputName=sys_wina
 
 # Begin Custom Build
 OutDir=.\release_gl
+InputPath=.\sys_wina.s
+InputName=sys_wina
+
+"$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	cl /EP > $(OUTDIR)\$(InputName).spp $(InputPath) 
+	gas2masm.exe < $(OUTDIR)\$(InputName).spp          >$(OUTDIR)\$(InputName).asm 
+	ml /c /Cp /coff /Fo$(OUTDIR)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                                           $(OUTDIR)\$(InputName).asm 
+	del $(OUTDIR)\$(InputName).spp 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
+
+# Begin Custom Build
+OutDir=.\debug_dl
 InputPath=.\sys_wina.s
 InputName=sys_wina
 

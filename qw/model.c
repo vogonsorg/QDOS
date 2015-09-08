@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 model_t *loadmodel;
 char    loadname[32];   // for hunk tags
-cvar_t  cl_allownewmap = {"cl_allownewmap", "0", false}; /* FS: gross hack for new maps */
+cvar_t  *cl_allownewmap; /* FS: gross hack for new maps */
 
 void Mod_LoadSpriteModel (model_t *mod, void *buffer);
 void Mod_LoadBrushModel (model_t *mod, void *buffer);
@@ -48,7 +48,7 @@ Mod_Init
 void Mod_Init (void)
 {
 	memset (mod_novis, 0xff, sizeof(mod_novis));
-	Cvar_RegisterVariable(&cl_allownewmap); /* FS: gross hack for new maps */
+	cl_allownewmap = Cvar_Get("cl_allownewmap", "0", 0); /* FS: gross hack for new maps */
 }
 
 /*

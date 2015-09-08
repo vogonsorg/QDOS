@@ -18,6 +18,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
+#ifndef __CONSOLE_H
+#define __CONSOLE_H
+
 //
 // console
 //
@@ -90,4 +93,6 @@ void Con_NotifyBox (char *text);        // during startup for sound / cd warning
 
 char *Con_Quakebar (int len); /* FS: From fitzquake */
 void Con_LogCenterPrint (char *str);  /* FS: from fitzquake */
+
+#endif // __CONSOLE_H
 

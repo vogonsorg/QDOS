@@ -25,8 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 
 
-cvar_t	cl_nodelta = {"cl_nodelta","0"};
-cvar_t  in_freelook = {"in_freelook","1",true}; /* FS: mlook */
+cvar_t	*cl_nodelta;
+cvar_t  *in_freelook; /* FS: mlook */
 /*
 ===============================================================================
 
@@ -219,19 +219,6 @@ float CL_KeyState (kbutton_t *key)
 
 
 //==========================================================================
-
-cvar_t	cl_upspeed = {"cl_upspeed","200"};
-cvar_t	cl_forwardspeed = {"cl_forwardspeed","200", true};
-cvar_t	cl_backspeed = {"cl_backspeed","200", true};
-cvar_t	cl_sidespeed = {"cl_sidespeed","350"};
-
-cvar_t	cl_movespeedkey = {"cl_movespeedkey","2.0"};
-
-cvar_t	cl_yawspeed = {"cl_yawspeed","140"};
-cvar_t	cl_pitchspeed = {"cl_pitchspeed","150"};
-
-cvar_t	cl_anglespeedkey = {"cl_anglespeedkey","1.5"};
-
 
 /*
 ================
@@ -580,8 +567,9 @@ void CL_InitInput (void)
 	Cmd_AddCommand ("+mlook", IN_MLookDown);
 	Cmd_AddCommand ("-mlook", IN_MLookUp);
 
-	Cvar_RegisterVariable (&cl_nodelta);
-	Cvar_RegisterVariable (&in_freelook); /* FS: Mlook */
+	cl_nodelta = Cvar_Get("cl_nodelta","0", 0);
+	in_freelook = Cvar_Get("in_freelook","1.0", CVAR_ARCHIVE); /* FS: mlook */
+	in_freelook->description = "Enables Mouselook.";
 }
 
 /*

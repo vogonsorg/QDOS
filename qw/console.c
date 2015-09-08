@@ -33,9 +33,9 @@ int			con_totallines;		// total lines in console scrollback
 float		con_cursorspeed = 4;
 
 
-cvar_t		con_notifytime = {"con_notifytime","3"};		//seconds
-cvar_t		con_logcenterprint = {"con_logcenterprint", "1"}; //johnfitz
-cvar_t		timestamp = {"timestamp", "0"}; /* FS: Timestamp logs */
+cvar_t		*con_notifytime;
+cvar_t		*con_logcenterprint; //johnfitz
+cvar_t		*timestamp; /* FS: Timestamp logs */
 
 char		con_lastcenterstring[1024]; //johnfitz
 
@@ -304,9 +304,11 @@ void Con_Init (void)
 //
 // register our commands
 //
-	Cvar_RegisterVariable (&con_notifytime);
-	Cvar_RegisterVariable (&con_logcenterprint); // johnfitz
-	Cvar_RegisterVariable (&timestamp); /* FS: Timestamp logs */
+	con_notifytime = Cvar_Get("con_notifytime","3", 0);		//seconds
+	con_notifytime->description = "Time (in seconds) a console notification message is displayed.";
+	con_logcenterprint = Cvar_Get("con_logcenterprint", "1", 0);  //johnfitz
+	con_logcenterprint->description = "Log centerprints to console.";
+	timestamp = Cvar_Get("timestamp", "0", 0); /* FS: Timestamp logs */
 
 	Cmd_AddCommand ("toggleconsole", Con_ToggleConsole_f);
 	Cmd_AddCommand ("togglechat", Con_ToggleChat_f);
@@ -435,7 +437,7 @@ void Con_Printf (const char *fmt, ...)
 	va_end (argptr);
 
 	/* FS: Timestamp code */
-	if(timestamp->intValue > 0)
+	if(timestamp && (timestamp->intValue > 0)) /* FS: A Con_Printf might sneak in before this is init'd */
 	{
 		struct tm *local;
 		time_t utc;
@@ -445,7 +447,7 @@ void Con_Printf (const char *fmt, ...)
 		utc = time (NULL);
 		local = localtime (&utc);
 #ifdef _MSC_VER
-		if (timestamp->value == 1)
+		if (timestamp->intValue == 1)
 			timefmt = "[%m/%d/%y @ %H:%M:%S %p] ";
 		else	timefmt = "[%m/%d/%y @ %I:%M:%S %p] ";
 #else

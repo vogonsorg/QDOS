@@ -113,32 +113,30 @@ float	se_time1, se_time2, de_time1, de_time2, dv_time1, dv_time2;
 
 void R_MarkLeaves (void);
 
-cvar_t	r_draworder = {"r_draworder","0"};
-cvar_t	r_speeds = {"r_speeds","0"};
-cvar_t	r_timegraph = {"r_timegraph","0"};
-cvar_t  r_netgraph = {"r_netgraph","0"};
-cvar_t  r_zgraph = {"r_zgraph","0"};
-cvar_t  r_graphheight = {"r_graphheight","15"};
-cvar_t	r_clearcolor = {"r_clearcolor","2", false, false, "The (by default) grey background filler seen when there is a hole in the map."};
-cvar_t  r_waterwarp = {"r_waterwarp","1", true}; /* FS: Save it */
-cvar_t	r_fullbright = {"r_fullbright","0", false, false, "Fullbright lighting."};
-cvar_t	r_drawentities = {"r_drawentities","1"};
-cvar_t	r_drawviewmodel = {"r_drawviewmodel","1"};
-cvar_t	r_aliasstats = {"r_polymodelstats","0"};
-cvar_t	r_dspeeds = {"r_dspeeds","0"};
-cvar_t	r_drawflat = {"r_drawflat", "0", false, false, "Draw flat single colour textures instead of the textures themselves."};
-cvar_t	r_ambient = {"r_ambient", "0", false, false, "Adjusts the intensity of ambient lights.  Similar to gl_modulate."};
-cvar_t	r_reportsurfout = {"r_reportsurfout", "0", false, false, "Report running out of surfaces."};
-cvar_t	r_maxsurfs = {"r_maxsurfs", "0", false, false, "Maximum number of surfaces to draw.  This value may need to be raised if you see disappearing textures."};
-cvar_t	r_numsurfs = {"r_numsurfs", "0", false, false, "Report number of surfaces in use."};
-cvar_t	r_reportedgeout = {"r_reportedgeout", "0", false, false, "Report running out of edges."};
-cvar_t	r_maxedges = {"r_maxedges", "0", false, false, "Maximum number of edges to draw.  This value may need to be raised if you see disappearing geometry."};
-cvar_t	r_numedges = {"r_numedges", "0", false, false, "Report number of edges in use."};
-cvar_t	r_aliastransbase = {"r_aliastransbase", "200"};
-cvar_t	r_aliastransadj = {"r_aliastransadj", "100"};
-cvar_t	r_maxbmodeledges = {"r_maxbmodeledges", "0", false, false, "Maximum number of bmodel edges to draw."}; /* FS: For big boy mods */
-
-extern cvar_t	scr_fov;
+cvar_t	*r_draworder;
+cvar_t	*r_speeds;
+cvar_t	*r_timegraph;
+cvar_t  *r_netgraph;
+cvar_t	*r_zgraph;
+cvar_t	*r_graphheight;
+cvar_t	*r_clearcolor;
+cvar_t	*r_waterwarp;
+cvar_t	*r_fullbright;
+cvar_t	*r_drawentities;
+cvar_t	*r_drawviewmodel;
+cvar_t	*r_aliasstats;
+cvar_t	*r_dspeeds;
+cvar_t	*r_drawflat;
+cvar_t	*r_ambient;
+cvar_t	*r_reportsurfout;
+cvar_t	*r_maxsurfs;
+cvar_t	*r_numsurfs;
+cvar_t	*r_reportedgeout;
+cvar_t	*r_maxedges;
+cvar_t	*r_numedges;
+cvar_t	*r_aliastransbase;
+cvar_t	*r_aliastransadj;
+cvar_t	*r_maxbmodeledges; /* FS: For big boy mods */
 
 void CreatePassages (void);
 void SetVisibilityByPassages (void);
@@ -200,30 +198,41 @@ void R_Init (void)
 	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);
 	Cmd_AddCommand ("pointfile", R_ReadPointFile_f);
 
-	Cvar_RegisterVariable (&r_draworder);
-	Cvar_RegisterVariable (&r_speeds);
-	Cvar_RegisterVariable (&r_timegraph);
-	Cvar_RegisterVariable (&r_netgraph);
-	Cvar_RegisterVariable (&r_zgraph);
-	Cvar_RegisterVariable (&r_graphheight);
-	Cvar_RegisterVariable (&r_drawflat);
-	Cvar_RegisterVariable (&r_ambient);
-	Cvar_RegisterVariable (&r_clearcolor);
-	Cvar_RegisterVariable (&r_waterwarp);
-	Cvar_RegisterVariable (&r_fullbright);
-	Cvar_RegisterVariable (&r_drawentities);
-	Cvar_RegisterVariable (&r_drawviewmodel);
-	Cvar_RegisterVariable (&r_aliasstats);
-	Cvar_RegisterVariable (&r_dspeeds);
-	Cvar_RegisterVariable (&r_reportsurfout);
-	Cvar_RegisterVariable (&r_maxsurfs);
-	Cvar_RegisterVariable (&r_numsurfs);
-	Cvar_RegisterVariable (&r_reportedgeout);
-	Cvar_RegisterVariable (&r_maxedges);
-	Cvar_RegisterVariable (&r_numedges);
-	Cvar_RegisterVariable (&r_aliastransbase);
-	Cvar_RegisterVariable (&r_aliastransadj);
-	Cvar_RegisterVariable (&r_maxbmodeledges);
+	r_draworder = Cvar_Get("r_draworder","0", 0);
+	r_speeds = Cvar_Get("r_speeds","0", 0);
+	r_timegraph = Cvar_Get("r_timegraph","0", 0);
+	r_netgraph = Cvar_Get("r_netgraph", "0", 0);
+	r_zgraph = Cvar_Get("r_zgraph","0", 0);
+	r_graphheight = Cvar_Get("r_graphheight","10", 0);
+	r_clearcolor = Cvar_Get("r_clearcolor","2", 0);
+	r_clearcolor->description = "The (by default) grey background filler seen when there is a hole in the map.";
+	r_waterwarp = Cvar_Get("r_waterwarp","1", CVAR_ARCHIVE); /* FS: Save it */
+	r_fullbright = Cvar_Get("r_fullbright","0", 0);
+	r_fullbright->description = "Fullbright lighting.";
+	r_drawentities = Cvar_Get("r_drawentities","1", 0);
+	r_drawviewmodel = Cvar_Get("r_drawviewmodel","1", 0);
+	r_aliasstats = Cvar_Get("r_polymodelstats","0", 0);
+	r_dspeeds = Cvar_Get("r_dspeeds","0", 0);
+	r_drawflat = Cvar_Get("r_drawflat", "0", 0);
+	r_drawflat->description = "Draw flat single colour textures instead of the textures themselves.";
+	r_ambient = Cvar_Get("r_ambient", "0", 0);
+	r_ambient->description = "Adjusts the intensity of ambient lights.  Similar to gl_modulate.";
+	r_reportsurfout = Cvar_Get("r_reportsurfout", "0", 0);
+	r_reportsurfout->description = "Report running out of surfaces.";
+	r_maxsurfs = Cvar_Get("r_maxsurfs", "0", CVAR_LATCH);
+	r_maxsurfs->description = "Maximum number of surfaces to draw.  This value may need to be raised if you see disappearing textures.";
+	r_numsurfs = Cvar_Get("r_numsurfs", "0", 0);
+	r_numsurfs->description = "Report number of surfaces in use.";
+	r_reportedgeout = Cvar_Get("r_reportedgeout", "0", 0);
+	r_reportedgeout->description = "Report running out of edges.";
+	r_maxedges = Cvar_Get("r_maxedges", "0", CVAR_LATCH);
+	r_maxedges->description = "Maximum number of edges to draw.  This value may need to be raised if you see disappearing geometry.";
+	r_numedges = Cvar_Get("r_numedges", "0", 0);
+	r_numedges->description = "Report number of edges in use.";
+	r_aliastransbase = Cvar_Get("r_aliastransbase", "200", 0);
+	r_aliastransadj = Cvar_Get("r_aliastransadj", "100", 0);
+	r_maxbmodeledges = Cvar_Get("r_maxbmodeledges", "0", 0); /* FS: For big boy mods */
+	r_maxbmodeledges->description = "Maximum number of bmodel edges to draw.";
 
 	Cvar_SetValue ("r_maxedges", (float)NUMSTACKEDGES);
 	Cvar_SetValue ("r_maxsurfs", (float)NUMSTACKSURFACES);
@@ -979,9 +988,9 @@ void R_RenderView_ (void)
 	if (r_timegraph->value || r_speeds->value || r_dspeeds->value)
 		r_time1 = Sys_DoubleTime ();
 
-	if (r_maxbmodeledges.modified) /* FS: Update this before edges get drawn again */
+	if (r_maxbmodeledges->modified) /* FS: Update this before edges get drawn again */
 	{
-		r_maxbmodeledges.modified = false;
+		r_maxbmodeledges->modified = false;
 
 		if(map_initialized) /* FS: First time will be because .modified is true on Cvar_Set so don't do this twice */
 			R_Restart_f();

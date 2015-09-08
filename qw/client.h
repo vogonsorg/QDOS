@@ -354,17 +354,17 @@ typedef struct
 //
 // cvars
 //
-extern  cvar_t  *cl_unbindall_protection; /* FS: unbindall protection */
-extern  cvar_t	*in_freelook; /* FS: mlook */
-extern  cvar_t	*cl_warncmd;
+extern	cvar_t	*cl_unbindall_protection; /* FS: unbindall protection */
+extern	cvar_t	*in_freelook; /* FS: mlook */
+extern	cvar_t	*cl_warncmd;
 extern	cvar_t	*cl_upspeed;
 extern	cvar_t	*cl_forwardspeed;
 extern	cvar_t	*cl_backspeed;
 extern	cvar_t	*cl_sidespeed;
 
 extern	cvar_t	*cl_movespeedkey;
-extern  cvar_t  *net_broadcast_chat; /* FS: EZQ Chat */
-extern  cvar_t  *chat; /* FS: EZQ Chat */
+extern	cvar_t	*net_broadcast_chat; /* FS: EZQ Chat */
+extern	cvar_t	*chat; /* FS: EZQ Chat */
 
 extern	cvar_t	*cl_yawspeed;
 extern	cvar_t	*cl_pitchspeed;
@@ -385,7 +385,7 @@ extern	cvar_t	*m_yaw;
 extern	cvar_t	*m_forward;
 extern	cvar_t	*m_side;
 
-extern cvar_t	*_windowed_mouse;
+extern	cvar_t	*_windowed_mouse;
 
 extern	cvar_t	*name;
 extern	cvar_t	*show_fps;

@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-cvar_t	r_waterwarp = {"r_waterwarp", "0", false}; /* FS: TODO FIXME dummy */
-
 extern void R_InitBubble();
 
 /*
@@ -175,37 +173,38 @@ void R_Init (void)
 	Cmd_AddCommand ("envmap", R_Envmap_f);	
 	Cmd_AddCommand ("pointfile", R_ReadPointFile_f);	
 
-	Cvar_RegisterVariable (&r_norefresh);
-	Cvar_RegisterVariable (&r_lightmap);
-	Cvar_RegisterVariable (&r_fullbright);
-	Cvar_RegisterVariable (&r_drawentities);
-	Cvar_RegisterVariable (&r_drawviewmodel);
-	Cvar_RegisterVariable (&r_shadows);
-	Cvar_RegisterVariable (&r_mirroralpha);
-	Cvar_RegisterVariable (&r_wateralpha);
-	Cvar_RegisterVariable (&r_dynamic);
-	Cvar_RegisterVariable (&r_novis);
-	Cvar_RegisterVariable (&r_speeds);
-	Cvar_RegisterVariable (&r_netgraph);
+	r_norefresh = Cvar_Get("r_norefresh", "0", 0);
+	r_lightmap = Cvar_Get("r_lightmap", "0", 0);
+	r_fullbright = Cvar_Get("r_fullbright", "0", 0);
+	r_drawentities = Cvar_Get("r_drawentities", "1", 0);
+	r_drawviewmodel = Cvar_Get("r_drawviewmodel", "1", 0);
+	r_shadows = Cvar_Get("r_shadows", "0", 0);
+	r_mirroralpha = Cvar_Get("r_mirroralpha", "1", 0);
+	r_wateralpha = Cvar_Get("r_wateralpha", "1", 0);
+	r_dynamic = Cvar_Get("r_dynamic", "1", 0);
+	r_novis = Cvar_Get("r_novis", "0", 0);
+	r_speeds = Cvar_Get("r_speeds", "0", 0);
+	r_netgraph = Cvar_Get("r_netgraph", "0", 0);
 
-	Cvar_RegisterVariable (&gl_clear);
-	Cvar_RegisterVariable (&gl_texsort);
+	gl_clear = Cvar_Get("gl_clear", "0", 0);
+	gl_texsort = Cvar_Get("gl_texsort", "1", 0);
  
  	if (gl_mtexable)
 		Cvar_SetValue ("gl_texsort", 0.0);
 
-	Cvar_RegisterVariable (&gl_cull);
-	Cvar_RegisterVariable (&gl_smoothmodels);
-	Cvar_RegisterVariable (&gl_affinemodels);
-	Cvar_RegisterVariable (&gl_polyblend);
-	Cvar_RegisterVariable (&gl_flashblend);
-	Cvar_RegisterVariable (&gl_playermip);
-	Cvar_RegisterVariable (&gl_nocolors);
-	Cvar_RegisterVariable (&gl_finish);
+	gl_cull = Cvar_Get("gl_cull", "1", 0);
+	gl_smoothmodels = Cvar_Get("gl_smoothmodels", "1", 0);
+	gl_affinemodels = Cvar_Get("gl_affinemodels", "0", 0);
+	gl_polyblend = Cvar_Get("gl_polyblend","1", CVAR_ARCHIVE);
+	gl_flashblend = Cvar_Get("gl_flashblend","1", CVAR_ARCHIVE);
+	gl_playermip = Cvar_Get("gl_playermip", "0", 0);
+	gl_nocolors = Cvar_Get("gl_nocolors", "0", 0);
+	gl_finish = Cvar_Get("gl_finish", "0", 0);
 
-	Cvar_RegisterVariable (&gl_keeptjunctions);
-	Cvar_RegisterVariable (&gl_reporttjunctions);
-	Cvar_RegisterVariable (&r_waterwarp); /* FS: TODO FIXME: dummy */
+	gl_keeptjunctions = Cvar_Get("gl_keeptjunctions","1", CVAR_ARCHIVE);
+	gl_reporttjunctions = Cvar_Get("gl_reporttjunctions", "0", 0);
+
+	r_waterwarp = Cvar_Get("r_waterwarp", "1", CVAR_ARCHIVE); /* FS: TODO FIXME dummy */
 
 	R_InitBubble();
 	

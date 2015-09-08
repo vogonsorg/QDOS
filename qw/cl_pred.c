@@ -20,8 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "winquake.h"
 
-cvar_t	cl_nopred = {"cl_nopred","0"};
-cvar_t	cl_pushlatency = {"pushlatency","-999"};
+cvar_t	*cl_nopred;
+cvar_t	*cl_pushlatency;
 
 extern	frame_t		*view_frame;
 
@@ -219,7 +219,7 @@ CL_InitPrediction
 */
 void CL_InitPrediction (void)
 {
-	Cvar_RegisterVariable (&cl_pushlatency);
-	Cvar_RegisterVariable (&cl_nopred);
-}
+	cl_nopred = Cvar_Get("cl_nopred","0", 0);
+	cl_pushlatency = Cvar_Get("pushlatency","-999", 0);
 
+}

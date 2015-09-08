@@ -31,38 +31,45 @@ when crossing a water boudnary.
 
 */
 
-cvar_t  net_showchat = {"net_showchat", "1", true}; /* FS: Added */
-cvar_t  net_showchatgfx = {"net_showchatgfx", "1", true}; /* FS: Added */
-cvar_t	cl_rollspeed = {"cl_rollspeed", "200"};
-cvar_t	cl_rollangle = {"cl_rollangle", "2.0"};
+cvar_t	*cl_rollspeed;
+cvar_t	*cl_rollangle;
 
-cvar_t	cl_bob = {"cl_bob","0.02", false};
-cvar_t	cl_bobcycle = {"cl_bobcycle","0.6", false};
-cvar_t	cl_bobup = {"cl_bobup","0.5", false};
+cvar_t	*cl_bob;
+cvar_t	*cl_bobcycle;
+cvar_t	*cl_bobup;
 
-cvar_t	v_kicktime = {"v_kicktime", "0.5", false};
-cvar_t	v_kickroll = {"v_kickroll", "0.6", false};
-cvar_t	v_kickpitch = {"v_kickpitch", "0.6", false};
+cvar_t	*v_centermove;
+cvar_t	*v_centerspeed;
 
-cvar_t	v_iyaw_cycle = {"v_iyaw_cycle", "2", false};
-cvar_t	v_iroll_cycle = {"v_iroll_cycle", "0.5", false};
-cvar_t	v_ipitch_cycle = {"v_ipitch_cycle", "1", false};
-cvar_t	v_iyaw_level = {"v_iyaw_level", "0.3", false};
-cvar_t	v_iroll_level = {"v_iroll_level", "0.1", false};
-cvar_t	v_ipitch_level = {"v_ipitch_level", "0.3", false};
+cvar_t	*v_kicktime;
+cvar_t	*v_kickroll;
+cvar_t	*v_kickpitch;
 
-cvar_t	v_idlescale = {"v_idlescale", "0", false};
+cvar_t	*v_iyaw_cycle;
+cvar_t	*v_iroll_cycle;
+cvar_t	*v_ipitch_cycle;
+cvar_t	*v_iyaw_level;
+cvar_t	*v_iroll_level;
+cvar_t	*v_ipitch_level;
 
-cvar_t	crosshair = {"crosshair", "0", true};
-cvar_t	crosshaircolor = {"crosshaircolor", "79", true};
+cvar_t	*v_idlescale;
 
-cvar_t  cl_crossx = {"cl_crossx", "0", true};
-cvar_t  cl_crossy = {"cl_crossy", "0", true};
+cvar_t	*crosshair;
+cvar_t	*crosshaircolor;
+
+cvar_t  *cl_crossx;
+cvar_t  *cl_crossy;
 
 #ifdef GLQUAKE
-cvar_t	gl_cshiftpercent = {"gl_cshiftpercent", "100", false};
+cvar_t	*gl_cshiftpercent;
 #endif
-cvar_t	v_contentblend = {"v_contentblend", "1", true, false, "Disable palette blends."}; /* FS: Fucking hate palette blends */
+
+/* FS: New Stuff */
+cvar_t  *net_showchat; /* FS: EZQ Chat */
+cvar_t  *net_showchatgfx; /* FS: EZQ Chat */
+cvar_t	*v_contentblend; /* FS: Fucking hate palette blends */
+
+cvar_t	*v_gamma;
 
 float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
 
@@ -142,10 +149,6 @@ float V_CalcBob (void)
 
 
 //=============================================================================
-
-
-cvar_t	v_centermove = {"v_centermove", "0.15", false};
-cvar_t	v_centerspeed = {"v_centerspeed","500"};
 
 
 void V_StartPitchDrift (void)
@@ -260,8 +263,6 @@ cshift_t	cshift_empty = { {130,80,50}, 0 };
 cshift_t        cshift_water = { {130,80,50}, 128 };
 cshift_t        cshift_slime = { {0,25,5}, 150 };
 cshift_t        cshift_lava = { {255,80,0}, 150 };
-
-cvar_t		v_gamma = {"gamma", "1", true};
 
 byte		gammatable[256];	// palette is sent through this
 
@@ -1075,41 +1076,40 @@ void V_Init (void)
 	Cmd_AddCommand ("centerview", V_StartPitchDrift);
 	Cmd_AddCommand ("r_blend", R_Blend_f); /* FS: Added */
 
-	Cvar_RegisterVariable (&v_centermove);
-	Cvar_RegisterVariable (&v_centerspeed);
+	v_centermove = Cvar_Get("v_centermove", "0.15", 0);
+	v_centerspeed = Cvar_Get("v_centerspeed","500", 0);
 
-	Cvar_RegisterVariable (&v_iyaw_cycle);
-	Cvar_RegisterVariable (&v_iroll_cycle);
-	Cvar_RegisterVariable (&v_ipitch_cycle);
-	Cvar_RegisterVariable (&v_iyaw_level);
-	Cvar_RegisterVariable (&v_iroll_level);
-	Cvar_RegisterVariable (&v_ipitch_level);
+	v_iyaw_cycle = Cvar_Get("v_iyaw_cycle", "2", 0);
+	v_iroll_cycle = Cvar_Get("v_iroll_cycle", "0.5", 0);
+	v_ipitch_cycle = Cvar_Get("v_ipitch_cycle", "1", 0);
+	v_iyaw_level = Cvar_Get("v_iyaw_level", "0.3", 0);
+	v_iroll_level = Cvar_Get("v_iroll_level", "0.1", 0);
+	v_ipitch_level = Cvar_Get("v_ipitch_level", "0.3", 0);
 
-	Cvar_RegisterVariable (&v_idlescale);
-	Cvar_RegisterVariable (&crosshaircolor);
-	Cvar_RegisterVariable (&crosshair);
-	Cvar_RegisterVariable (&cl_crossx);
-	Cvar_RegisterVariable (&cl_crossy);
+	v_idlescale = Cvar_Get("v_idlescale", "0", 0);
+	crosshaircolor = Cvar_Get("crosshaircolor", "79", CVAR_ARCHIVE);
+	crosshair = Cvar_Get("crosshair", "0", CVAR_ARCHIVE);
+	cl_crossx = Cvar_Get("cl_crossx", "0", CVAR_ARCHIVE);
+	cl_crossy = Cvar_Get("cl_crossy", "0", CVAR_ARCHIVE);
 #ifdef GLQUAKE
-	Cvar_RegisterVariable (&gl_cshiftpercent);
+	gl_cshiftpercent = Cvar_Get("gl_cshiftpercent", "100", 0);
 #endif
 
-	Cvar_RegisterVariable (&cl_rollspeed);
-	Cvar_RegisterVariable (&cl_rollangle);
-	Cvar_RegisterVariable (&cl_bob);
-	Cvar_RegisterVariable (&cl_bobcycle);
-	Cvar_RegisterVariable (&cl_bobup);
+	cl_rollspeed = Cvar_Get("cl_rollspeed", "200", 0);
+	cl_rollangle = Cvar_Get("cl_rollangle", "2.0", 0);
+	cl_bob = Cvar_Get("cl_bob","0.02", 0);
+	cl_bobcycle = Cvar_Get("cl_bobcycle","0.6", 0);
+	cl_bobup = Cvar_Get("cl_bobup","0.5", 0);
 
-	Cvar_RegisterVariable (&v_kicktime);
-	Cvar_RegisterVariable (&v_kickroll);
-	Cvar_RegisterVariable (&v_kickpitch);	
+	v_kicktime = Cvar_Get("v_kicktime", "0.5", 0);
+	v_kickroll = Cvar_Get("v_kickroll", "0.6", 0);
+	v_kickpitch = Cvar_Get("v_kickpitch", "0.6", 0);	
 
-	Cvar_RegisterVariable (&net_showchatgfx); /* FS: EZQ Chat */
-	Cvar_RegisterVariable (&net_showchat); /* FS: EZQ Chat */
-	Cvar_RegisterVariable (&v_contentblend); /* FS: EZQ Chat */
+	net_showchat = Cvar_Get("net_showchat", "1", CVAR_ARCHIVE); /* FS: EZQ Chat */
+	net_showchatgfx = Cvar_Get("net_showchatgfx", "1", CVAR_ARCHIVE); /* FS: EZQ Chat */
+	v_contentblend = Cvar_Get("v_contentblend", "1",  CVAR_ARCHIVE);
+	v_contentblend->description = "Disable palette blends."; /* FS: Fucking hate palette blends */
 
 	BuildGammaTable (1.0);	// no gamma yet
-	Cvar_RegisterVariable (&v_gamma);
+	v_gamma = Cvar_Get("gamma", "1", CVAR_ARCHIVE);
 }
-
-

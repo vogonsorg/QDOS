@@ -30,8 +30,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	#include <netinet/in.h>
 #endif
 
-#include "cfgfile.h" /* FS: Parse CFG early -- sezero */
-
 #include "Goa/CEngine/goaceng.h" /* FS: For Gamespy */
 
 // we need to declare some mouse variables here, because the menu system
@@ -44,6 +42,15 @@ cvar_t	rcon_password = {"rcon_password", "", false};
 cvar_t	rcon_address = {"rcon_address", ""};
 
 cvar_t	cl_timeout = {"cl_timeout", "60"};
+
+cvar_t	*cl_upspeed;
+cvar_t	*cl_forwardspeed;
+cvar_t	*cl_backspeed;
+cvar_t	*cl_sidespeed;
+cvar_t	*cl_movespeedkey;
+cvar_t	*cl_yawspeed;
+cvar_t	*cl_pitchspeed;
+cvar_t	*cl_anglespeedkey;
 
 cvar_t	cl_shownet = {"cl_shownet","0"}; // can be 0, 1, or 2
 
@@ -94,8 +101,8 @@ cvar_t  cl_pext_other = {"cl_pext_other", "1"};		// will break demos!
 cvar_t	cl_pext_256packetentities = {"cl_pext_256packetentities", "1"};
 #endif
 #ifdef FTE_PEXT_CHUNKEDDOWNLOADS
-cvar_t  cl_pext_chunkeddownloads  = {"cl_pext_chunkeddownloads", "1"};
-cvar_t  cl_chunksperframe  = {"cl_chunksperframe", "5"};
+cvar_t	*cl_pext_chunkeddownloads;
+cvar_t	*cl_chunksperframe;
 #endif
 #ifdef FTE_PEXT_FLOATCOORDS
 cvar_t  cl_pext_floatcoords  = {"cl_pext_floatcoords", "1"};
@@ -1270,14 +1277,14 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&developer);
 
 	Cvar_RegisterVariable (&cl_warncmd);
-	Cvar_RegisterVariable (&cl_upspeed);
-	Cvar_RegisterVariable (&cl_forwardspeed);
-	Cvar_RegisterVariable (&cl_backspeed);
-	Cvar_RegisterVariable (&cl_sidespeed);
-	Cvar_RegisterVariable (&cl_movespeedkey);
-	Cvar_RegisterVariable (&cl_yawspeed);
-	Cvar_RegisterVariable (&cl_pitchspeed);
-	Cvar_RegisterVariable (&cl_anglespeedkey);
+	cl_upspeed = Cvar_Get("cl_upspeed","200", 0);
+	cl_forwardspeed = Cvar_Get("cl_forwardspeed","200", CVAR_ARCHIVE);
+	cl_backspeed = Cvar_Get("cl_backspeed","200", CVAR_ARCHIVE);
+	cl_sidespeed = Cvar_Get("cl_sidespeed","350", 0);
+	cl_movespeedkey = Cvar_Get("cl_movespeedkey","2.0", 0);
+	cl_yawspeed = Cvar_Get("cl_yawspeed","140", 0);
+	cl_pitchspeed = Cvar_Get("cl_pitchspeed","150", 0);
+	cl_anglespeedkey = Cvar_Get("cl_anglespeedkey","1.5", 0);
 	Cvar_RegisterVariable (&cl_shownet);
 	Cvar_RegisterVariable (&cl_sbar);
 	Cvar_RegisterVariable (&cl_hudswap);
@@ -1327,8 +1334,8 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&cl_pext_256packetentities);
 #endif
 #ifdef FTE_PEXT_CHUNKEDDOWNLOADS
-	Cvar_RegisterVariable (&cl_pext_chunkeddownloads);
-	Cvar_RegisterVariable (&cl_chunksperframe);
+	cl_pext_chunkeddownloads  = Cvar_Get("cl_pext_chunkeddownloads", "1". 0);
+	cl_chunksperframe  = Cvar_Get("cl_chunksperframe", "5", 0);
 #endif
 #ifdef FTE_PEXT_FLOATCOORDS
 	Cvar_RegisterVariable (&cl_pext_floatcoords);
@@ -1341,9 +1348,6 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&cl_ogg_music);
 	Cvar_RegisterVariable (&cl_wav_music);
 	Cvar_RegisterVariable (&cl_autorepeat_allkeys);
-
-	Cmd_AddCommand ("writeconfig", CL_WriteConfig_f);
-	Cmd_AddCommand ("r_restart", R_Restart_f); /* FS: Unfinished */
 
 	/* FS: GameSpy CVARs */
 	Cvar_RegisterVariable (&cl_master_server_ip);
@@ -1402,6 +1406,10 @@ void CL_Init (void)
 #ifdef _WINDOWS
 	Cmd_AddCommand ("windows", CL_Windows_f);
 #endif
+
+	/* FS: New Stuff */
+	Cmd_AddCommand ("writeconfig", CL_WriteConfig_f);
+	Cmd_AddCommand ("r_restart", R_Restart_f); /* FS: Unfinished */
 
 	/* FS: Gamespy stuff */
 	Cmd_AddCommand ("slist2", CL_PingNetServers_f);
@@ -1735,7 +1743,7 @@ void Host_Init (quakeparms_t *parms)
 	COM_Init ();
 	Cvar_Init (); /* FS: from fitzquake */
 
-	CFG_OpenConfig("config.cfg"); /* FS: Parse CFG early -- sezero */
+//	CFG_OpenConfig("config.cfg"); /* FS: Parse CFG early -- sezero */
 
 	cls.servername = dstring_newstr ();
 	cls.downloadtempname = dstring_newstr ();

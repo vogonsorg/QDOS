@@ -6,6 +6,9 @@ Additional code from sezero, taniwha, spoike, LordHavoc,
    QuakeForge, Fitzquake, Quakespasm, Darkplaces and more.
 ---------------------------------------------------------
 
+* Use Quake 2's CVAR system.  This allows early config files reads and
+  the use of +set <cvar> at startup.
+* Gamma control for 3DFX cards from sezero's uHexen2 port.
 * -cddir for specifiy a cd drive path for pak files.  Also for keeping
   WAV/OGG music in a separate drive.
 * 3DFX Voodoo rendering with fxMesa 6.4.2!  Check voodoo directory for 

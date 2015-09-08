@@ -226,7 +226,7 @@ void R_RecursiveClipBPoly (bedge_t *pedges, mnode_t *pnode, msurface_t *psurf)
 		// split into two edges, one on each side, and remember entering
 		// and exiting points
 		// FIXME: share the clip edge by having a winding direction flag?
-			if (numbedges >= (r_maxbmodeledges.intValue - 1)) /* FS: Was MAX_BMODEL_EDGES */
+			if (numbedges >= (r_maxbmodeledges->intValue - 1)) /* FS: Was MAX_BMODEL_EDGES */
 			{
 				Con_Printf ("Out of edges for bmodel\n");
 				return;

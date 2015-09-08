@@ -24,15 +24,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define NUM_MIPS	4
 
-cvar_t	d_subdiv16 = {"d_subdiv16", "1"};
-cvar_t	d_mipcap = {"d_mipcap", "0"};
-cvar_t	d_mipscale = {"d_mipscale", "1"};
+cvar_t	*d_subdiv16;
+cvar_t	*d_mipcap;
+cvar_t	*d_mipscale;
 
 /* FS: Particle size control */
-cvar_t	sw_particle_size_override = {"sw_particle_size_override", "0", true, false, "Enable this to override particle size scaling with sw_particle_size, sw_particle_size_min, and sw_particle_size_max."};
-cvar_t	sw_particle_size_min = {"sw_particle_size_min", "1", true, false, "Minimum particle size.  Standard formula is resolution width divided by 320.  Use sw_particle_size_override to enable."};
-cvar_t	sw_particle_size_max = {"sw_particle_size_max", "8.5", true, false, "Maximum particle size.  Standard formula is resolution width divided by 80 plus 0.5.  Use sw_particle_size_override to enable."};
-cvar_t	sw_particle_size = {"sw_particle_size", "8", true, false, "How many bits to shift for particle sizes.  Higher numbers are smaller particles.  Use sw_particle_size_override to enable."};
+cvar_t	*sw_particle_size_override;;
+cvar_t	*sw_particle_size_min;
+cvar_t	*sw_particle_size_max;
+cvar_t	*sw_particle_size;
 
 surfcache_t		*d_initial_rover;
 qboolean		d_roverwrapped;
@@ -56,15 +56,19 @@ void D_Init (void)
 
 	r_skydirect = 1;
 
-	Cvar_RegisterVariable (&d_subdiv16);
-	Cvar_RegisterVariable (&d_mipcap);
-	Cvar_RegisterVariable (&d_mipscale);
+	d_subdiv16 = Cvar_Get("d_subdiv16", "1", 0);
+	d_mipcap = Cvar_Get("d_mipcap", "0", 0);
+	d_mipscale = Cvar_Get("d_mipscale", "1", 0);
 
 	/* FS: Particle size control */
-	Cvar_RegisterVariable (&sw_particle_size_override);
-	Cvar_RegisterVariable (&sw_particle_size_min);
-	Cvar_RegisterVariable (&sw_particle_size_max);
-	Cvar_RegisterVariable (&sw_particle_size);
+	sw_particle_size_override = Cvar_Get("sw_particle_size_override", "0", CVAR_ARCHIVE);
+	sw_particle_size_override->description = "Enable this to override particle size scaling with sw_particle_size, sw_particle_size_min, and sw_particle_size_max.";
+	sw_particle_size_min = Cvar_Get("sw_particle_size_min", "1", CVAR_ARCHIVE);
+	sw_particle_size_min->description = "Minimum particle size.  Standard formula is resolution width divided by 320.  Use sw_particle_size_override to enable.";
+	sw_particle_size_max = Cvar_Get("sw_particle_size_max", "8.5", CVAR_ARCHIVE);
+	sw_particle_size_max->description = "Maximum particle size.  Standard formula is resolution width divided by 80 plus 0.5.  Use sw_particle_size_override to enable.";
+	sw_particle_size = Cvar_Get("sw_particle_size", "8", CVAR_ARCHIVE);
+	sw_particle_size->description = "How many bits to shift for particle sizes.  Higher numbers are smaller particles.  Use sw_particle_size_override to enable.";
 
 	r_drawpolys = false;
 	r_worldpolysbacktofront = false;
@@ -146,7 +150,7 @@ void D_SetupFrame (void)
 		screenwidth = vid.rowbytes;
 
 	/* FS: If we change the particle size stuff, updated it immediately */
-	if(sw_particle_size_override.modified || sw_particle_size.modified || sw_particle_size_min.modified || sw_particle_size_max.modified)
+	if(sw_particle_size_override->modified || sw_particle_size->modified || sw_particle_size_min->modified || sw_particle_size_max->modified)
 	{
 		D_SetParticleSize();
 	}

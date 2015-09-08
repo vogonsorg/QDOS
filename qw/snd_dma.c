@@ -184,7 +184,6 @@ S_Init
 */
 void S_Init (void)
 {
-	/* FS: Parse CFG early -- sezero */
 	Con_Printf("\nSound Initialization\n");
 
 	nosound = Cvar_Get("nosound", "0", 0);

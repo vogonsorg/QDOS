@@ -82,9 +82,9 @@ to the new value before sending out any replies.
 */
 
 int		net_drop;
-cvar_t	showpackets = {"showpackets", "0"};
-cvar_t	showdrop = {"showdrop", "0"};
-cvar_t	qport = {"qport", "0"};
+cvar_t	*showpackets;
+cvar_t	*showdrop;
+cvar_t	*qport;
 
 /*
 ===============
@@ -103,9 +103,9 @@ void Netchan_Init (void)
 	port = ((int)(getpid()+getuid()*1000) * time(NULL)) & 0xffff;
 #endif
 
-	Cvar_RegisterVariable (&showpackets);
-	Cvar_RegisterVariable (&showdrop);
-	Cvar_RegisterVariable (&qport);
+	showpackets = Cvar_Get("showpackets", "0", 0);
+	showdrop = Cvar_Get("showdrop", "0", 0);
+	qport = Cvar_Get("qport", "0", 0);
 	Cvar_SetValue("qport", port);
 }
 
