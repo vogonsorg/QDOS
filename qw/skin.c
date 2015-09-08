@@ -53,7 +53,7 @@ void Skin_Find (player_info_t *sc)
                 if (s && s[0])
                         strcpy (name, s);
                 else
-                        strcpy (name, baseskin.string);
+                        strcpy (name, baseskin->string);
         }
 
         if (strstr (name, "..") || *name == '.')
@@ -111,7 +111,7 @@ byte	*Skin_Cache (skin_t *skin)
 		return NULL;		// use base until downloaded
 	}
 
-	if (noskins.value==1) // JACK: So NOSKINS > 1 will show skins, but
+	if (noskins->value==1) // JACK: So NOSKINS > 1 will show skins, but
 	{
 		dstring_delete(name);
 		return NULL;	  // not download new ones.
@@ -139,7 +139,7 @@ byte	*Skin_Cache (skin_t *skin)
 	if (!raw)
 	{
 		Con_Printf ("Couldn't load skin %s\n", name->str);
-		dsprintf (name, "skins/%s.pcx", baseskin.string);
+		dsprintf (name, "skins/%s.pcx", baseskin->string);
 		raw = COM_LoadTempFile (name->str);
 		if (!raw)
 		{
@@ -259,7 +259,7 @@ void Skin_NextDownload (void)
 		if (!sc->name[0])
 			continue;
 		Skin_Find (sc);
-		if (noskins.value)
+		if (noskins->value)
 			continue;
 		if (!CL_CheckOrDownloadFile(va("skins/%s.pcx", sc->skin->name)))
 			return;		// started a download

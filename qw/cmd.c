@@ -285,6 +285,7 @@ Cmd_Exec_f
 void Cmd_Exec_f (void)
 {
 	char	*f;
+	char	*s;
 	int		mark;
 
 	if (Cmd_Argc () != 2)
@@ -293,24 +294,28 @@ void Cmd_Exec_f (void)
 		return;
 	}
 
-	// FIXME: is this safe freeing the hunk here???
+	s = Cmd_Argv(1);
 	mark = Hunk_LowMark ();
 
-	if(!strncmp(Cmd_Argv(1),"default.cfg",11)) /* FS: unbindall protection hack */
+	if(!strncmp(s,"default.cfg",11)) /* FS: unbindall protection hack */
 	{
 		Con_DPrintf (DEVELOPER_MSG_VERBOSE, "default.cfg unbindall protection hack\n");
 		Cvar_SetValue("cl_unbindall_protection", 0); /* FS: disable the warning if it's default.cfg */
 	}
 
-	f = (char *)COM_LoadHunkFile (Cmd_Argv(1));
+	if(quakerc_init)
+		if(!strncmp(s, "config.cfg", 10)) /* FS: Intercept config.cfg from quake.rc */
+			s = "qdos.cfg";
+
+	f = (char *)COM_LoadHunkFile (s);
 	if (!f)
 	{
-		Con_Printf ("couldn't exec %s\n",Cmd_Argv(1));
+		Con_Printf ("couldn't exec %s\n",s);
 		return;
 	}
 
-	if (!Cvar_Command () && (cl_warncmd.value || developer.value))
-		Con_Printf ("execing %s\n",Cmd_Argv(1));
+	if (!Cvar_Command () && (cl_warncmd->value || developer->value))
+		Con_Printf ("execing %s\n",s);
 	
 	Cbuf_InsertText (f);
 	Hunk_FreeToLowMark (mark);
@@ -714,7 +719,7 @@ void	Cmd_ExecuteString (char *text)
 	}
 	
 // check cvars
-	if (!Cvar_Command () && (cl_warncmd.value || developer.value))
+	if (!Cvar_Command () && (cl_warncmd->value || developer->value))
 		Con_Printf ("Unknown command \"%s\"\n", Cmd_Argv(0));
 	
 }
@@ -747,7 +752,7 @@ void Cmd_ChatInfo (int val)
 {
 	extern cvar_t chat;
 
-	if(net_broadcast_chat.value && chat.value != val)
+	if(net_broadcast_chat->value && chat->value != val)
 	{
 		switch (val)
 		{
@@ -755,13 +760,13 @@ void Cmd_ChatInfo (int val)
 			case EZQ_CHAT_AFK:
 			case EZQ_CHAT_AFK_TYPING:
 				Cbuf_AddText( va("setinfo chat %i\n",val) );
-				chat.value = val;
+				chat->value = val;
 				afk = val;
 				break;
 			default:
 				afk = 0;
 				Cbuf_AddText("setinfo chat \"\"\n");
-				chat.value = EZQ_CHAT_OFF;
+				chat->value = EZQ_CHAT_OFF;
 				break;
 		}
 	}
@@ -905,3 +910,39 @@ void Cmd_Init (void)
 #endif
 }
 
+
+/*
+===============
+Cbuf_AddEarlyCommands
+
+Adds command line parameters as script statements
+Commands lead with a +, and continue until another +
+
+Set commands are added early, so they are guaranteed to be set before
+the client and server initialize for the first time.
+
+Other commands are added late, after all initialization is complete.
+===============
+*/
+void Cbuf_AddEarlyCommands (qboolean clear)
+{
+	int		i;
+	char	*s;
+
+	for (i=0 ; i<COM_Argc(); i++)
+	{
+		s = COM_Argv(i);
+
+		if (strcmp (s, "+set"))
+			continue;
+		Cbuf_AddText (va("set %s %s\n", COM_Argv(i+1), COM_Argv(i+2)));
+		if (clear)
+		{
+			COM_ClearArgv(i);
+			COM_ClearArgv(i+1);
+			COM_ClearArgv(i+2);
+		}
+
+		i+=2;
+	}
+}

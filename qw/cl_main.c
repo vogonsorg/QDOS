@@ -239,17 +239,17 @@ unsigned int CL_SupportedFTEExtensions (void)
 	unsigned int fteprotextsupported = 0;
 
 #ifdef FTE_PEXT_256PACKETENTITIES
-	if (cl_pext_256packetentities.value)
+	if (cl_pext_256packetentities->value)
 	{
 		fteprotextsupported |= FTE_PEXT_256PACKETENTITIES;
 	}
 #endif
 #ifdef FTE_PEXT_CHUNKEDDOWNLOADS
-	if (cl_pext_chunkeddownloads.value)
+	if (cl_pext_chunkeddownloads->value)
 		fteprotextsupported |= FTE_PEXT_CHUNKEDDOWNLOADS;
 #endif
 #ifdef FTE_PEXT_FLOATCOORDS
-	if (cl_pext_floatcoords.value)
+	if (cl_pext_floatcoords->value)
 		fteprotextsupported |= FTE_PEXT_FLOATCOORDS;
 #endif
 #ifdef FTE_PEXT_HLBSP
@@ -268,7 +268,7 @@ unsigned int CL_SupportedFTEExtensions (void)
 	fteprotextsupported |= FTE_PEXT_SPAWNSTATIC2;
 #endif
 
-	if (!cl_pext_other.value)
+	if (!cl_pext_other->value)
 		fteprotextsupported &= (/*FTE_PEXT_CHUNKEDDOWNLOADS|*/FTE_PEXT_256PACKETENTITIES);
 
 	return fteprotextsupported;
@@ -447,7 +447,7 @@ void CL_Rcon_f (void)
    int      i;
    netadr_t to;
 
-   if (!rcon_password.string)
+   if (!rcon_password->string)
    {
       Con_Printf ("You must set 'rcon_password' before\n"
                "issuing an rcon command.\n");
@@ -462,7 +462,7 @@ void CL_Rcon_f (void)
 
    strcat (message, "rcon ");
 
-   strcat (message, rcon_password.string);
+   strcat (message, rcon_password->string);
    strcat (message, " ");
 
    for (i=1 ; i<Cmd_Argc() ; i++)
@@ -475,7 +475,7 @@ void CL_Rcon_f (void)
       to = cls.netchan.remote_address;
    else
    {
-      if (!strlen(rcon_address.string))
+      if (!strlen(rcon_address->string))
       {
          Con_Printf ("You must either be connected,\n"
                   "or set the 'rcon_address' cvar\n"
@@ -483,7 +483,7 @@ void CL_Rcon_f (void)
 
          return;
       }
-      NET_StringToAdr (rcon_address.string, &to);
+      NET_StringToAdr (rcon_address->string, &to);
    }
    
    NET_SendPacket (strlen(message)+1, message
@@ -1003,9 +1003,9 @@ void CL_ConnectionlessPacket (void)
 		while (*s && isspace(s[strlen(s) - 1]))
 			s[strlen(s) - 1] = 0;
 
-		if (!allowremotecmd && (!*localid.string || strcmp(localid.string, s)))
+		if (!allowremotecmd && (!*localid->string || strcmp(localid->string, s)))
 		{
-			if (!*localid.string)
+			if (!*localid->string)
 			{
 				Con_Printf("===========================\n");
 			    Con_Printf("Command packet received from local host, but no "
@@ -1017,7 +1017,7 @@ void CL_ConnectionlessPacket (void)
 			Con_Printf("===========================\n");
 			Con_Printf("Invalid localid on command packet received from local host. "
 						"\n|%s| != |%s|\n"
-						"You may need to reload your server browser and QuakeWorld.\n", s, localid.string);
+						"You may need to reload your server browser and QuakeWorld.\n", s, localid->string);
 			Con_Printf("===========================\n");
 			Cvar_Set("localid", "");
 			return;
@@ -1151,7 +1151,7 @@ void CL_ReadPackets (void)
 	// check timeout
 	//
 	if (cls.state >= ca_connected
-	&& realtime - cls.netchan.last_received > cl_timeout.value)
+	&& realtime - cls.netchan.last_received > cl_timeout->value)
 	{
 		Con_Printf ("\nServer connection timed out.\n");
 		CL_Disconnect ();
@@ -1576,10 +1576,10 @@ void Host_Frame (float time)
 	if (oldrealtime > realtime)
 		oldrealtime = 0;
 
-	if (cl_maxfps.intValue)
-		fps = bound(30, cl_maxfps.intValue, 240);
+	if (cl_maxfps->intValue)
+		fps = bound(30, cl_maxfps->intValue, 240);
 	else
-		fps = bound(30, cl_maxfps.intValue, 72);
+		fps = bound(30, cl_maxfps->intValue, 72);
 
 	if (!cls.timedemo && realtime - oldrealtime < 1.0/fps)
 	{
@@ -1645,12 +1645,12 @@ void Host_Frame (float time)
 	CL_EmitEntities ();
 
 	// update video
-	if (host_speeds.value)
+	if (host_speeds->value)
 		time1 = Sys_DoubleTime ();
 
 	SCR_UpdateScreen ();
 
-	if (host_speeds.value)
+	if (host_speeds->value)
 		time2 = Sys_DoubleTime ();
       
 	// update audio
@@ -1664,7 +1664,7 @@ void Host_Frame (float time)
    
 	CDAudio_Update();
 
-	if (host_speeds.value)
+	if (host_speeds->value)
 	{
 		pass1 = (time1 - time3)*1000;
 		time3 = Sys_DoubleTime ();
@@ -2089,7 +2089,7 @@ void CL_PingNetServers_f (void)
 	cls.gamespystarttime = (int)Sys_DoubleTime();
 	cls.gamespytotalservers = 0;
 
-	allocatedSockets = bound(5, cl_master_server_queries.intValue, 100);
+	allocatedSockets = bound(5, cl_master_server_queries->intValue, 100);
 
 	SCR_UpdateScreen(); /* FS: Force an update so the percentage bar shows some progress */
 

@@ -17,21 +17,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
+#ifndef __SYS_H
+#define __SYS_H
+
 // sys.h -- non-portable functions
-
-//
-// file IO
-//
-
-// returns the file size
-// return -1 if file is not present
-// the file should be in BINARY mode for stupid OSs that care
 
 #ifdef _MSC_VER /* FS: VS6 */
 	#define __attribute__(x)
 	#pragma warning ( disable : 4996) /* FS: Shut up VS2005 */
 #endif
 
+// returns the file size
+// return -1 if file is not present
+// the file should be in BINARY mode for stupid OSs that care
 int Sys_FileOpenRead (char *path, int *hndl);
 
 int Sys_FileOpenWrite (char *path);
@@ -73,3 +72,4 @@ void Sys_LowFPPrecision (void);
 void Sys_HighFPPrecision (void);
 void Sys_SetFPCW (void);
 
+#endif // __SYS_H

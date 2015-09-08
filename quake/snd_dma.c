@@ -189,7 +189,7 @@ void S_Init (void)
 	snd_noextraupdate = Cvar_Get("snd_noextraupdate", "0", 0);
 	snd_show = Cvar_Get("snd_show", "0", 0);
 	_snd_mixahead = Cvar_Get("_snd_mixahead", "0.2", CVAR_ARCHIVE);
-	
+
 	/* FS: New stuff */
 	s_khz = Cvar_Get("s_khz","", CVAR_ARCHIVE);
 	s_khz->description = "Sound sampling rate.";

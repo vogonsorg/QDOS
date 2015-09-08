@@ -125,7 +125,7 @@ void R_BeginEdgeFrame (void)
 	surfaces[1].flags = SURF_DRAWBACKGROUND;
 
 // put the background behind everything in the world
-	if (r_draworder.value)
+	if (r_draworder->value)
 	{
 		pdrawfunc = R_GenerateSpansBackward;
 		surfaces[1].key = 0;

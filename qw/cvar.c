@@ -26,8 +26,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 cvar_t	*cvar_vars;
-char	*cvar_null_string = "";
 void Cvar_ParseDeveloperFlags (void); /* FS: Special stuff for showing all the dev flags */
+
+/*
+============
+Cvar_InfoValidate
+============
+*/
+static qboolean Cvar_InfoValidate (char *s)
+{
+	if (strstr (s, "\\"))
+		return false;
+	if (strstr (s, "\""))
+		return false;
+	if (strstr (s, ";"))
+		return false;
+	return true;
+}
 
 /* FS: Cvar_List_f from Quakespasm */
 void Cvar_List_f (void)
@@ -55,8 +70,8 @@ void Cvar_List_f (void)
 			continue;
 		}
 		Con_SafePrintf ("%s%s %s \"%s\"\n",
-			cvar->archive ? "*" : " ",
-			cvar->info ? "s" : " ", /* FS: Not server here... */
+			cvar->flags & CVAR_ARCHIVE ? "*" : " ",
+			cvar->flags & CVAR_USERINFO ? "i" : " ",
 			cvar->name,
 			cvar->string);
 		count++;
@@ -114,7 +129,7 @@ char *Cvar_VariableString (char *var_name)
 	
 	var = Cvar_FindVar (var_name);
 	if (!var)
-		return cvar_null_string;
+		return "";
 	return var->string;
 }
 
@@ -148,35 +163,158 @@ char *Cvar_CompleteVariable (char *partial)
 }
 
 
-#ifdef SERVERONLY
-void SV_SendServerInfoChange(char *key, char *value);
-#endif
+/*
+============
+Cvar_Get
+
+If the variable already exists, the value will not be set
+The flags will be or'ed in if the variable exists.
+============
+*/
+cvar_t *Cvar_Get (char *var_name, char *var_value, int flags)
+{
+	cvar_t	*var;
+
+	if (flags & CVAR_SERVERINFO)
+	{
+		if (!Cvar_InfoValidate (var_name))
+		{
+			Con_Printf("invalid info cvar name\n");
+			return NULL;
+		}
+	}
+
+	var = Cvar_FindVar (var_name);
+	if (var)
+	{
+		var->flags |= flags;
+		// Knightmare- change default value if this is called again
+		Z_Free(var->defaultString);
+		var->defaultString = CopyString(var_value);
+		var->defaultFlags |= flags; /* FS: Ditto */
+
+		return var;
+	}
+
+	if (!var_value)
+		return NULL;
+
+	if (flags & CVAR_SERVERINFO)
+	{
+		if (!Cvar_InfoValidate (var_value))
+		{
+			Con_Printf("invalid info cvar value\n");
+			return NULL;
+		}
+	}
+
+	var = Z_Malloc (sizeof(*var));
+	var->name = CopyString (var_name);
+	var->string = CopyString (var_value);
+	var->modified = true;
+	var->value = atof (var->string);
+	var->intValue = atoi(var->string); /* FS: So we don't need to cast shit all the time */
+	var->defaultString = CopyString(var_value); /* FS: Find out what it was initially */
+	var->defaultFlags = flags; /* FS: Default flags for resetcvar */
+	var->description = NULL; /* FS: Init it first, d'oh */
+
+	// link the variable in
+	var->next = cvar_vars;
+	cvar_vars = var;
+
+	var->flags = flags;
+
+	return var;
+}
 
 /*
 ============
-Cvar_Set
+Cvar_Set2
 ============
 */
-void Cvar_Set (char *var_name, char *value)
+cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 {
 	cvar_t	*var;
 	
 	var = Cvar_FindVar (var_name);
 	if (!var)
-	{	// there is an error in C code if this happens
-		Con_Printf ("Cvar_Set: variable %s not found\n", var_name);
-		return;
+	{	// create it
+		return Cvar_Get (var_name, value, 0);
 	}
 
+	if (var->flags & CVAR_SERVERINFO)
+	{
+		if (!Cvar_InfoValidate (value))
+		{
+			Con_Printf("invalid info cvar value\n");
+			return var;
+		}
+	}
+
+	if (!force)
+	{
+		if (var->flags & CVAR_NOSET)
+		{
+			Con_Printf ("%s is write protected.\n", var_name);
+			return var;
+		}
+
+		if (var->flags & CVAR_LATCH)
+		{
+			if (var->latched_string)
+			{
+				if (strcmp(value, var->latched_string) == 0)
+					return var;
+				Z_Free (var->latched_string);
+			}
+			else
+			{
+				if (strcmp(value, var->string) == 0)
+					return var;
+			}
+
+			if (sv.active)
+			{
+				Con_Printf ("%s will be changed for next map.\n", var_name);
+				var->latched_string = CopyString(value);
+			}
+			else
+			{
+				var->string = CopyString(value);
+				var->value = atof (var->string);
+				var->intValue = atoi(var->string); /* FS: So we don't need to cast shit all the time */
+			}
+			return var;
+		}
+	}
+	else
+	{
+		if (var->latched_string)
+		{
+			Z_Free (var->latched_string);
+			var->latched_string = NULL;
+		}
+	}
+
+	if (!strcmp(value, var->string))
+		return var;		// not changed
+	
+	var->modified = true; /* FS: Added */
+
+	Z_Free (var->string);	// free the old value string
+	
+	var->string = CopyString(value);
+	var->value = atof (var->string);
+	var->intValue = atoi(var->string); /* FS: So we don't need to cast shit all the time */
+
 #ifdef SERVERONLY
-	if (var->info)
+	if (var->flags & CVAR_SERVERINFO)
 	{
 		Info_SetValueForKey (svs.info, var_name, value, MAX_SERVERINFO_STRING);
 		SV_SendServerInfoChange(var_name, value);
-//		SV_BroadcastCommand ("fullserverinfo \"%s\"\n", svs.info);
 	}
 #else
-	if (var->info)
+	if (var->flags & CVAR_USERINFO)
 	{
 		Info_SetValueForKey (cls.userinfo, var_name, value, MAX_INFO_STRING);
 		if (cls.state >= ca_connected)
@@ -186,14 +324,55 @@ void Cvar_Set (char *var_name, char *value)
 		}
 	}
 #endif
-	
+
+	return var;
+}
+
+/*
+============
+Cvar_ForceSet
+============
+*/
+cvar_t *Cvar_ForceSet (char *var_name, char *value)
+{
+	return Cvar_Set2 (var_name, value, true);
+}
+
+/*
+============
+Cvar_Set
+============
+*/
+cvar_t *Cvar_Set (char *var_name, char *value)
+{
+	return Cvar_Set2 (var_name, value, false);
+}
+
+/*
+============
+Cvar_FullSet
+============
+*/
+cvar_t *Cvar_FullSet (char *var_name, char *value, int flags)
+{
+	cvar_t	*var;
+
+	var = Cvar_FindVar (var_name);
+	if (!var)
+	{	// create it
+		return Cvar_Get (var_name, value, flags);
+	}
+
+	var->modified = true;
+
 	Z_Free (var->string);	// free the old value string
-	
-	var->string = Z_Malloc (Q_strlen(value)+1);
-	Q_strcpy (var->string, value);
-	var->value = Q_atof (var->string);
-	var->intValue = Q_atoi (var->string); /* FS: Added */
-	var->modified = true; /* FS: Added */
+
+	var->string = CopyString(value);
+	var->value = atof (var->string);
+	var->intValue = atoi(var->string); /* FS: So we don't need to cast shit all the time */
+	var->flags = flags;
+
+	return var;
 }
 
 /*
@@ -216,43 +395,27 @@ void Cvar_SetValue (char *var_name, float value)
 	dstring_delete (val);
 }
 
-
 /*
 ============
-Cvar_RegisterVariable
+Cvar_GetLatchedVars
 
-Adds a freestanding variable to the variable list.
+Any variables with latched values will now be updated
 ============
 */
-void Cvar_RegisterVariable (cvar_t *variable)
+void Cvar_GetLatchedVars (void)
 {
-	char    value[512];
-// first check to see if it has allready been defined
-	if (Cvar_FindVar (variable->name))
-	{
-		Con_Printf ("Can't register variable %s, allready defined\n", variable->name);
-		return;
-	}
-	
-// check for overlap with a command
-	if (Cmd_Exists (variable->name))
-	{
-		Con_Printf ("Cvar_RegisterVariable: %s is a command\n", variable->name);
-		return;
-	}
-		
-// link the variable in
-	variable->next = cvar_vars;
-	cvar_vars = variable;
+	cvar_t	*var;
 
-// copy the value off, because future sets will Z_Free it
-	strcpy (value, variable->string);
-	variable->string = Z_Malloc (1);
-	variable->defaultString = Z_Malloc (Q_strlen(value)+1); /* FS */
-	Q_strcpy((char *)variable->defaultString, value); /* FS */
-
-// set it through the function to be consistant
-	Cvar_Set (variable->name, value);
+	for (var = cvar_vars ; var ; var = var->next)
+	{
+		if (!var->latched_string)
+			continue;
+		Z_Free (var->string);
+		var->string = var->latched_string;
+		var->latched_string = NULL;
+		var->value = atof(var->string);
+		var->intValue = atoi(var->string); /* FS: So we don't need to cast shit all the time */
+	}
 }
 
 /*
@@ -271,10 +434,10 @@ qboolean	Cvar_Command (void)
 	if (!v)
 		return false;
 
-	if (!Q_strcmp(v->name, "developer") && con_show_dev_flags.intValue) /* FS: Special case for showing enabled flags */
+	if (!Q_strcmp(v->name, "developer") && con_show_dev_flags->intValue) /* FS: Special case for showing enabled flags */
 	{
 		if(Q_strlen(Cmd_Argv(1)) > 0)
-			Cvar_Set(developer.name, Cmd_Argv(1));
+			Cvar_Set(developer->name, Cmd_Argv(1));
 		Cvar_ParseDeveloperFlags();
 		return true;
 	}
@@ -282,14 +445,57 @@ qboolean	Cvar_Command (void)
 // perform a variable print or set
 	if (Cmd_Argc() == 1)
 	{
-		Con_Printf ("\"%s\" is \"%s\".  Default: \"%s\".\n", v->name, v->string, v->defaultString);
-		if (con_show_description.value && v->description != NULL && v->description[0] != 0)
+		if ( (v->flags & CVAR_LATCH) && v->latched_string)
+			Con_Printf ("\"%s\" is \"%s\", Default: \"%s\", Latched to: \"%s\"\n", v->name, v->string, v->defaultString, v->latched_string);
+		else
+			Con_Printf ("\"%s\" is \"%s\",  Default: \"%s\".\n", v->name, v->string, v->defaultString);
+
+		/* FS: cvar descriptions */
+		/* FS: Always show it for con_show_description so we know what it does */
+		if (v->description) {
+		    if (con_show_description->intValue || v == con_show_description)
 			Con_Printf("Description: %s\n", v->description);
+		}
 		return true;
 	}
 
 	Cvar_Set (v->name, Cmd_Argv(1));
 	return true;
+}
+
+
+/*
+============
+Cvar_Set_f
+
+Allows setting and defining of arbitrary cvars from console
+============
+*/
+void Cvar_Set_f (void)
+{
+	int		c;
+	int		flags;
+
+	c = Cmd_Argc();
+	if (c != 3 && c != 4)
+	{
+		Con_Printf ("usage: set <variable> <value> [s]\n");
+		return;
+	}
+
+	if (c == 4)
+	{
+		if (!strcmp(Cmd_Argv(3), "s"))
+			flags = CVAR_SERVERINFO;
+		else
+		{
+			Con_Printf ("flags can only be 's'\n");
+			return;
+		}
+		Cvar_FullSet (Cmd_Argv(1), Cmd_Argv(2), flags);
+	}
+	else
+		Cvar_Set (Cmd_Argv(1), Cmd_Argv(2));
 }
 
 
@@ -301,17 +507,27 @@ Writes lines containing "set variable value" for all variables
 with the archive flag set to true.
 ============
 */
-void Cvar_WriteVariables (FILE *f)
+void Cvar_WriteVariables (const char *path)
 {
 	cvar_t	*var;
+	char	buffer[1024];
+	FILE	*f;
 	
+	f = fopen (path, "a");
 	for (var = cvar_vars ; var ; var = var->next)
-		if (var->archive)
-			fprintf (f, "%s \"%s\"\n", var->name, var->string);
+	{
+		if (var->flags & CVAR_ARCHIVE)
+		{
+			Com_sprintf (buffer, sizeof(buffer), "set %s \"%s\"\n", var->name, var->string);
+			fprintf (f, "%s", buffer);
+		}
+	}
+	fclose (f);
 }
 
 void Cvar_Init (void) /* FS: from fitzquake */
 {
+	Cmd_AddCommand ("set", Cvar_Set_f);
 	Cmd_AddCommand ("cvarlist", Cvar_List_f);
 }
 
@@ -329,14 +545,14 @@ void Cvar_Set_Description (const char *var_name, const char *description) /* FS:
 
 void Cvar_ParseDeveloperFlags (void) /* FS: Special stuff for showing all the dev flags */
 {
-	Con_Printf("\"%s\" is \"%s\", Default: \"%s\"\n", developer.name, developer.string, developer.defaultString);
-	if(developer.intValue > 0)
+	Con_Printf("\"%s\" is \"%s\", Default: \"%s\"\n", developer->name, developer->string, developer->defaultString);
+	if(developer->intValue > 0)
 	{
 		unsigned long devFlags = 0;
-		if(developer.intValue == 1)
+		if(developer->intValue == 1)
 			devFlags = 65534;
 		else
-			devFlags = (unsigned long)developer.value;
+			devFlags = (unsigned long)developer->value;
 		Con_Printf("Toggled flags:\n");
 		if(devFlags & DEVELOPER_MSG_STANDARD)
 			Con_Printf(" * Standard messages - 2\n");
@@ -375,7 +591,7 @@ void Cvar_ParseDeveloperFlags (void) /* FS: Special stuff for showing all the de
 	}
 	else
 	{
-		if (developer.description && con_show_description.intValue)
-			Con_Printf("Description: %s\n", developer.description);
+		if (developer->description && con_show_description->intValue)
+			Con_Printf("Description: %s\n", developer->description);
 	}
 }

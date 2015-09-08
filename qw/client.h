@@ -17,7 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// client.h
+
+#ifndef __CLIENT_H
+#define __CLIENT_H
 
 #ifdef USE_CURL
 #include "cl_http.h"
@@ -352,58 +354,59 @@ typedef struct
 //
 // cvars
 //
-extern  cvar_t	cl_warncmd;
-extern	cvar_t	cl_upspeed;
-extern	cvar_t	cl_forwardspeed;
-extern	cvar_t	cl_backspeed;
-extern	cvar_t	cl_sidespeed;
+extern  cvar_t  *cl_unbindall_protection; /* FS: unbindall protection */
+extern  cvar_t	*in_freelook; /* FS: mlook */
+extern  cvar_t	*cl_warncmd;
+extern	cvar_t	*cl_upspeed;
+extern	cvar_t	*cl_forwardspeed;
+extern	cvar_t	*cl_backspeed;
+extern	cvar_t	*cl_sidespeed;
 
-extern	cvar_t	cl_movespeedkey;
-extern  cvar_t  cl_unbindall_protection; /* FS: unbindall protection */
-extern  cvar_t  net_broadcast_chat; /* FS: EZQ Chat */
-extern  cvar_t  chat; /* FS: EZQ Chat */
+extern	cvar_t	*cl_movespeedkey;
+extern  cvar_t  *net_broadcast_chat; /* FS: EZQ Chat */
+extern  cvar_t  *chat; /* FS: EZQ Chat */
 
-extern	cvar_t	cl_yawspeed;
-extern	cvar_t	cl_pitchspeed;
+extern	cvar_t	*cl_yawspeed;
+extern	cvar_t	*cl_pitchspeed;
 
-extern	cvar_t	cl_anglespeedkey;
+extern	cvar_t	*cl_anglespeedkey;
 
-extern	cvar_t	cl_shownet;
-extern	cvar_t	cl_sbar;
-extern	cvar_t	cl_hudswap;
+extern	cvar_t	*cl_shownet;
+extern	cvar_t	*cl_sbar;
+extern	cvar_t	*cl_hudswap;
 
-extern	cvar_t	cl_pitchdriftspeed;
-extern	cvar_t	lookspring;
-extern	cvar_t	lookstrafe;
-extern	cvar_t	sensitivity;
+extern	cvar_t	*cl_pitchdriftspeed;
+extern	cvar_t	*lookspring;
+extern	cvar_t	*lookstrafe;
+extern	cvar_t	*sensitivity;
 
-extern	cvar_t	m_pitch;
-extern	cvar_t	m_yaw;
-extern	cvar_t	m_forward;
-extern	cvar_t	m_side;
+extern	cvar_t	*m_pitch;
+extern	cvar_t	*m_yaw;
+extern	cvar_t	*m_forward;
+extern	cvar_t	*m_side;
 
-extern cvar_t	_windowed_mouse;
+extern cvar_t	*_windowed_mouse;
 
-extern	cvar_t	name;
-extern	cvar_t	show_fps;
-extern	cvar_t	rate;
+extern	cvar_t	*name;
+extern	cvar_t	*show_fps;
+extern	cvar_t	*rate;
 
-extern	cvar_t	cl_downloadrate_hack; /* FS: FIXME Shitty download hack */
+extern	cvar_t	*cl_downloadrate_hack; /* FS: FIXME Shitty download hack */
 
 /* FS: GameSpy CVARs */
-extern	cvar_t	cl_master_server_ip;
-extern	cvar_t	cl_master_server_port;
-extern	cvar_t	cl_master_server_timeout;
-extern	cvar_t	cl_master_server_retries;
-extern	cvar_t	snd_gamespy_sounds;
+extern	cvar_t	*cl_master_server_ip;
+extern	cvar_t	*cl_master_server_port;
+extern	cvar_t	*cl_master_server_timeout;
+extern	cvar_t	*cl_master_server_retries;
+extern	cvar_t	*snd_gamespy_sounds;
 
-extern	cvar_t	cl_ogg_music; /* FS: Added */
-extern	cvar_t	cl_wav_music; /* FS: Added */
+extern	cvar_t	*cl_ogg_music; /* FS: Added */
+extern	cvar_t	*cl_wav_music; /* FS: Added */
 
-extern	cvar_t	cl_autorepeat_allkeys; /* FS: Added */
+extern	cvar_t	*cl_autorepeat_allkeys; /* FS: Added */
 
-extern	cvar_t	_vid_wait_override;
-extern	cvar_t	vid_wait;
+extern	cvar_t	*_vid_wait_override;
+extern	cvar_t	*vid_wait;
 
 #define	MAX_STATIC_ENTITIES	128			// torches, etc
 
@@ -462,7 +465,6 @@ typedef struct
 	int		state;			// low bit is down state
 } kbutton_t;
 
-extern  cvar_t		in_freelook; /* FS: mlook */
 extern	kbutton_t	in_mlook, in_klook;
 extern 	kbutton_t 	in_strafe;
 extern 	kbutton_t 	in_speed;
@@ -612,3 +614,6 @@ void	Skin_NextDownload (void);
 
 #define RSSHOT_WIDTH 320
 #define RSSHOT_HEIGHT 200
+
+#endif // __CLIENT_H
+

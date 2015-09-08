@@ -19,14 +19,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // view.h
 
-extern	cvar_t		v_gamma;
-extern	cvar_t		lcd_x;
-extern  cvar_t		net_showchat; /* FS: EZQ Chat */
-extern  cvar_t		net_showchatgfx; /* FS: EZQ Chat */
-extern  cvar_t		v_contentblend; /* FS: Fucking hate palette blends */
-extern  cvar_t		show_time; /* FS: Added */
-extern  cvar_t		show_uptime; /* FS: Added */
-extern	cvar_t		show_ping; /* FS: Added */
+
+#ifndef __VIEW_H
+#define __VIEW_H
+
+extern	cvar_t		*v_gamma;
+extern	cvar_t		*lcd_x;
+extern  cvar_t		*v_contentblend; /* FS: Fucking hate palette blends */
+extern  cvar_t		*net_showchat; /* FS: EZQ Chat */
+extern  cvar_t		*net_showchatgfx; /* FS: EZQ Chat */
+extern  cvar_t		*show_time; /* FS: Added */
+extern  cvar_t		*show_uptime; /* FS: Added */
+extern	cvar_t		*show_ping; /* FS: Added */
 #ifdef GLQUAKE
 extern float v_blend[4];
 #endif
@@ -36,3 +40,4 @@ void V_RenderView (void);
 float V_CalcRoll (vec3_t angles, vec3_t velocity);
 void V_UpdatePalette (void);
 
+#endif // __VIEW_H

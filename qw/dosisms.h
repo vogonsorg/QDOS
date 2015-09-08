@@ -18,9 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-//
 // dosisms.h: I'd call it dos.h, but the name's taken
-//
 
 #ifndef _DOSISMS_H_
 #define _DOSISMS_H_
@@ -118,4 +116,3 @@ int dos_int386 (int vec, __dpmi_regs *inregs, __dpmi_regs *outregs);
 extern __dpmi_regs	regs;
 
 #endif	/* _DOSISMS_H_ */
-

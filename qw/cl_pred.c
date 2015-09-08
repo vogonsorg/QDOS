@@ -116,13 +116,13 @@ void CL_PredictMove (void)
 	frame_t		*from, *to = NULL;
 	int			oldphysent;
 
-	if (cl_pushlatency.value > 0)
+	if (cl_pushlatency->value > 0)
 		Cvar_Set ("pushlatency", "0");
 
 	if (cl.paused)
 		return;
 
-	cl.time = realtime - cls.latency - cl_pushlatency.value*0.001;
+	cl.time = realtime - cls.latency - cl_pushlatency->value*0.001;
 	if (cl.time > realtime)
 		cl.time = realtime;
 
@@ -152,7 +152,7 @@ void CL_PredictMove (void)
 #endif
 	}
 
-	if (cl_nopred.value)
+	if (cl_nopred->value)
 	{
 		VectorCopy (from->playerstate[cl.playernum].velocity, cl.simvel);
 		VectorCopy (from->playerstate[cl.playernum].origin, cl.simorg);

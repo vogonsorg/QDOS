@@ -17,7 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// screen.h
+
+#ifndef __SCREEN_H
+#define __SCREEN_H
 
 void SCR_Init (void);
 
@@ -40,9 +42,7 @@ extern	int			sb_lines;
 extern	int			clearnotify;	// set to 0 whenever notify text is drawn
 extern	qboolean	scr_disabled_for_loading;
 
-extern	cvar_t		scr_viewsize;
-
-extern cvar_t scr_viewsize;
+extern	cvar_t *scr_viewsize;
 
 // only the refresh window will be updated unless these variables are flagged 
 extern	int			scr_copytop;
@@ -51,3 +51,5 @@ extern	int			scr_copyeverything;
 qboolean	scr_skipupdate;
 
 qboolean	block_drawing;
+
+#endif // __SCREEN_H

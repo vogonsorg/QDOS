@@ -17,7 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 // winquake.h: Win32-specific Quake header file
+
+#ifndef __WINQUAKE_H
+#define __WINQUAKE_H
 
 #ifdef _WIN32 
 #pragma warning( disable : 4229 )  // mgraph gets this
@@ -116,4 +120,6 @@ void SCR_UpdateWholeScreen(void);
 void IN_ClearStates (void);
 
 #endif // _WIN32
+
+#endif // __WINQUAKE_H
 

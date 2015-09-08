@@ -30,8 +30,8 @@ qboolean PCI_Init(void)
 		unsigned int channels=2;
 
 		Con_Printf("PCI Audio: %s\n",c);
-		if(s_khz.intValue >= 11025) /* FS */
-			speed = s_khz.intValue;
+		if(s_khz->intValue >= 11025) /* FS */
+			speed = s_khz->intValue;
 
 		shm = &sn;
 
@@ -44,7 +44,7 @@ qboolean PCI_Init(void)
 		shm->speed=aui->freq_card;
 		shm->samplebits=aui->bits_set;
 		shm->channels=aui->chan_set;
-		if(shm->speed != s_khz.intValue) /* FS: In theory, our rate was not liked, so force the change. */
+		if(shm->speed != s_khz->intValue) /* FS: In theory, our rate was not liked, so force the change. */
 			Cvar_SetValue("s_khz", shm->speed);
 		Con_DPrintf(DEVELOPER_MSG_SOUND, "Post AU_setrate %d/%d/%d\n",shm->speed,shm->samplebits,shm->channels);
 

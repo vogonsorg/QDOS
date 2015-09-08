@@ -20,6 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // cmd.h -- Command buffer and command execution
 
+#ifndef __CMD_H
+#define __CMD_H
+
 //===========================================================================
 
 /*
@@ -33,7 +36,6 @@ The + command line options are also added to the command buffer.
 The game starts with a Cbuf_AddText ("exec quake.rc\n"); Cbuf_Execute ();
 
 */
-
 
 void Cbuf_Init (void);
 // allocates an initial text buffer that will grow as needed
@@ -108,3 +110,9 @@ void Cmd_StuffCmds_f (void);
 
 /* FS: EZQ Chat */
 void Cmd_ChatInfo (int val);
+
+
+char *CopyString (char *in);
+void Cbuf_AddEarlyCommands (qboolean clear);
+
+#endif // _CMD_H

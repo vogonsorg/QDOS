@@ -47,7 +47,7 @@ static char	*argvdummy = " ";
 static char	*safeargvs[NUM_SAFE_ARGVS] =
         {"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-safevga"}; /* FS: Added safevga */
 
-cvar_t	registered = {"registered","0"};
+cvar_t	*registered;
 
 qboolean	com_modified;	// set true if using non-id files
 
@@ -1157,6 +1157,26 @@ int COM_CheckParm (char *parm)
 	return 0;
 }
 
+/* FS: Quake 2 stuff */
+int COM_Argc (void)
+{
+	return com_argc;
+}
+
+char *COM_Argv (int arg)
+{
+	if (arg < 0 || arg >= com_argc || !com_argv[arg])
+		return "";
+	return com_argv[arg];
+}
+
+void COM_ClearArgv (int arg)
+{
+	if (arg < 0 || arg >= com_argc || !com_argv[arg])
+		return;
+	com_argv[arg] = "";
+}
+
 /*
 ================
 COM_CheckRegistered
@@ -1194,7 +1214,7 @@ void COM_CheckRegistered (void)
 		if (pop[i] != (unsigned short)BigShort (check[i]))
 			Sys_Error ("Corrupted data file.");
 	
-	Cvar_Set ("registered", "1");
+	Cvar_ForceSet("registered", "1");
 	static_registered = 1;
 	Con_Printf ("Playing registered version.\n");
 }
@@ -1289,6 +1309,8 @@ void COM_Init (void)
 	COM_CheckRegistered ();
 }
 
+/* FS: VA varargs from QF */
+
 /*
 ============
 va
@@ -1297,7 +1319,6 @@ does a varargs printf into a temp buffer, so I don't need to have
 varargs versions of all text functions.
 ============
 */
-/* FS: Save varargs from QuakeForge */
 VISIBLE char *
 va (const char *fmt, ...)
 {
@@ -1328,7 +1349,6 @@ nva (const char *fmt, ...)
 
 	return dstring_freeze (string);
 }
-
 
 /// just for debugging
 int	memsearch (byte *start, int count, int search)
@@ -1388,9 +1408,9 @@ typedef struct
 
 #define	MAX_FILES_IN_PACK	2048
 
-char	com_gamedir[MAX_OSPATH];
 char	com_basedir[MAX_OSPATH];
 char    com_cachedir[MAX_OSPATH]; /* FS */
+char	com_gamedir[MAX_OSPATH];
 
 typedef struct searchpath_s
 {
@@ -2447,7 +2467,7 @@ void Info_SetValueForStarKey (char *s, char *key, const char *value, int maxsize
 				c = tolower(c);
 		}
 #else
-		if (!sv_highchars.value) {
+		if (!sv_highchars->value) {
 			c &= 127;
 			if (c < 32 || c > 127)
 				continue;

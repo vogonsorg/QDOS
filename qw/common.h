@@ -17,7 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 // comndef.h  -- general definitions
+
+#ifndef __COMMON_H
+#define __COMMON_H
 
 #include "dg_misc.h" /* FS: Caedes special safe string stuff */
 
@@ -239,6 +243,10 @@ extern	char	**com_argv;
 
 int COM_CheckParm (char *parm);
 void COM_AddParm (char *parm);
+/* FS: Quake 2 stuff */
+int COM_Argc (void);
+char *COM_Argv (int arg);
+void COM_ClearArgv (int arg);
 
 void COM_Init (void);
 void COM_InitArgv (int argc, char **argv);
@@ -273,8 +281,8 @@ void COM_CreatePath (char *path);
 void COM_Gamedir (char *dir);
 
 /* FS: New Stuff */
-int Q_toupper (int c);
 int Q_tolower (int c);
+int Q_toupper (int c);
 
 /* FS: From Q2 */
 char *COM_NextPath (char *prevpath);
@@ -282,7 +290,7 @@ void COM_FreeFileList (char **list, int n);
 qboolean COM_ItemInList (char *check, int num, char **list);
 char **COM_ListFiles (char *findname, int *numfiles, unsigned musthave, unsigned canthave);
 
-extern	struct cvar_s	registered;
+extern	struct cvar_s	*registered;
 extern	qboolean		standard_quake, rogue, hipnotic;
 
 char *Info_ValueForKey (char *s, char *key);
@@ -301,3 +309,4 @@ int build_number( void );
 void CompleteCommand (void); /* FS: Autocomplete commands */
 void Com_sprintf (char *dest, int size, char *fmt, ...); /* FS: Added */
 void Com_strcpy (char *dest, int destSize, const char *src); /* FS: Added */
+#endif // __COMMON_H

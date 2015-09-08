@@ -415,47 +415,47 @@ void M_AdjustSliders (int dir)
 	switch (options_cursor)
 	{
 	case 3: // screen size
-		scr_viewsize.value += dir * 10;
-		if (scr_viewsize.value < 30)
-			scr_viewsize.value = 30;
-		if (scr_viewsize.value > 120)
-			scr_viewsize.value = 120;
-		Cvar_SetValue ("viewsize", scr_viewsize.value);
+		scr_viewsize->value += dir * 10;
+		if (scr_viewsize->value < 30)
+			scr_viewsize->value = 30;
+		if (scr_viewsize->value > 120)
+			scr_viewsize->value = 120;
+		Cvar_SetValue ("viewsize", scr_viewsize->value);
 		break;
 	case 4: // gamma
-		v_gamma.value -= dir * 0.05;
-		if (v_gamma.value < 0.5)
-			v_gamma.value = 0.5;
-		if (v_gamma.value > 1.0)
-			v_gamma.value = 1.0;
-		Cvar_SetValue ("gamma", v_gamma.value);
+		v_gamma->value -= dir * 0.05;
+		if (v_gamma->value < 0.5)
+			v_gamma->value = 0.5;
+		if (v_gamma->value > 1.0)
+			v_gamma->value = 1.0;
+		Cvar_SetValue ("gamma", v_gamma->value);
 		break;
 	case 5: // mouse speed
-		sensitivity.value += dir * 0.5;
-		if (sensitivity.value < 1)
-			sensitivity.value = 1;
-		if (sensitivity.value > 50) /* FS: 11 is so 1997. */
-			sensitivity.value = 50;
-		Cvar_SetValue ("sensitivity", sensitivity.value);
+		sensitivity->value += dir * 0.5;
+		if (sensitivity->value < 1)
+			sensitivity->value = 1;
+		if (sensitivity->value > 50) /* FS: 11 is so 1997. */
+			sensitivity->value = 50;
+		Cvar_SetValue ("sensitivity", sensitivity->value);
 		break;
 	case 6: // music volume
-		bgmvolume.value += dir * 0.1;
-		if (bgmvolume.value < 0)
-			bgmvolume.value = 0;
-		if (bgmvolume.value > 1)
-			bgmvolume.value = 1;
-		Cvar_SetValue ("bgmvolume", bgmvolume.value);
+		bgmvolume->value += dir * 0.1;
+		if (bgmvolume->value < 0)
+			bgmvolume->value = 0;
+		if (bgmvolume->value > 1)
+			bgmvolume->value = 1;
+		Cvar_SetValue ("bgmvolume", bgmvolume->value);
 		break;
 	case 7: // sfx volume
-		volume.value += dir * 0.1;
-		if (volume.value < 0)
-			volume.value = 0;
-		if (volume.value > 1)
-			volume.value = 1;
-		Cvar_SetValue ("volume", volume.value);
+		volume->value += dir * 0.1;
+		if (volume->value < 0)
+			volume->value = 0;
+		if (volume->value > 1)
+			volume->value = 1;
+		Cvar_SetValue ("volume", volume->value);
 		break;
 	case 8: // always run
-		if (cl_forwardspeed.value > 200)
+		if (cl_forwardspeed->value > 200)
 		{
 			Cvar_SetValue ("cl_forwardspeed", 200);
 			Cvar_SetValue ("cl_backspeed", 200);
@@ -469,20 +469,20 @@ void M_AdjustSliders (int dir)
 		}
 		break;
 	case 9: // invert mouse
-		Cvar_SetValue ("m_pitch", -m_pitch.value);
+		Cvar_SetValue ("m_pitch", -m_pitch->value);
 		break;
 	case 10:	// lookspring
-		Cvar_SetValue ("lookspring", !lookspring.value);
+		Cvar_SetValue ("lookspring", !lookspring->value);
 		break;
 	case 11:	// lookstrafe
-		Cvar_SetValue ("lookstrafe", !lookstrafe.value);
+		Cvar_SetValue ("lookstrafe", !lookstrafe->value);
 		break;
 	case 12:
-		Cvar_SetValue ("cl_sbar", !cl_sbar.value);
+		Cvar_SetValue ("cl_sbar", !cl_sbar->value);
 		break;
 
 	case 13:
-		Cvar_SetValue ("cl_hudswap", !cl_hudswap.value);
+		Cvar_SetValue ("cl_hudswap", !cl_hudswap->value);
 		break;  // JASON
 
 	case 14:
@@ -529,42 +529,42 @@ void M_Options_Draw (void)
 	M_Print (16, 48, "     Reset to defaults");
 
 	M_Print (16, 56, "           Screen size");
-	r = (scr_viewsize.value - 30) / (120 - 30);
+	r = (scr_viewsize->value - 30) / (120 - 30);
 	M_DrawSlider (220, 56, r);
 
 	M_Print (16, 64, "            Brightness");
-	r = (1.0 - v_gamma.value) / 0.5;
+	r = (1.0 - v_gamma->value) / 0.5;
 	M_DrawSlider (220, 64, r);
 
 	M_Print (16, 72, "           Mouse Speed");
-	r = (sensitivity.value)/50; /* FS: Was 11 */
+	r = (sensitivity->value)/50; /* FS: Was 11 */
 	M_DrawSlider (220, 72, r);
 
 	M_Print (16, 80, "       CD Music Volume");
-	r = bgmvolume.value;
+	r = bgmvolume->value;
 	M_DrawSlider (220, 80, r);
 
 	M_Print (16, 88, "          Sound Volume");
-	r = volume.value;
+	r = volume->value;
 	M_DrawSlider (220, 88, r);
 
 	M_Print (16, 96,  "            Always Run");
-	M_DrawCheckbox (220, 96, cl_forwardspeed.value > 200);
+	M_DrawCheckbox (220, 96, cl_forwardspeed->value > 200);
 
 	M_Print (16, 104, "          Invert Mouse");
-	M_DrawCheckbox (220, 104, m_pitch.value < 0);
+	M_DrawCheckbox (220, 104, m_pitch->value < 0);
 
 	M_Print (16, 112, "            Lookspring");
-	M_DrawCheckbox (220, 112, lookspring.value);
+	M_DrawCheckbox (220, 112, lookspring->value);
 
 	M_Print (16, 120, "            Lookstrafe");
-	M_DrawCheckbox (220, 120, lookstrafe.value);
+	M_DrawCheckbox (220, 120, lookstrafe->value);
 
 	M_Print (16, 128, "    Use old status bar");
-	M_DrawCheckbox (220, 128, cl_sbar.value);
+	M_DrawCheckbox (220, 128, cl_sbar->value);
 
 	M_Print (16, 136, "      HUD on left side");
-	M_DrawCheckbox (220, 136, cl_hudswap.value);
+	M_DrawCheckbox (220, 136, cl_hudswap->value);
 
 	if (vid_menudrawfn)
 		M_Print (16, 144, "         Video Options");
@@ -1363,46 +1363,46 @@ void M_Extended_Draw()
 	M_DrawPic ( (320-p->width)/2, 4, p);
 
 	M_Print (16, y, "     Chat Broadcasting");
-	M_DrawCheckbox (220, y, net_broadcast_chat.intValue);
+	M_DrawCheckbox (220, y, net_broadcast_chat->intValue);
 
 	M_Print (16, y = y + Y_SPACE, "     Chat Notification");
-	M_DrawCheckbox (220, y, net_showchat.intValue);
+	M_DrawCheckbox (220, y, net_showchat->intValue);
 
 	M_Print (16, y = y + Y_SPACE, "         Chat Graphics");
-	M_DrawCheckbox (220, y, net_showchatgfx.intValue);
+	M_DrawCheckbox (220, y, net_showchatgfx->intValue);
 
 	M_Print (16, y = y + Y_SPACE,  "      Content Blending");
-	M_DrawCheckbox (220, y, v_contentblend.intValue);
+	M_DrawCheckbox (220, y, v_contentblend->intValue);
 
 	M_Print (16, y = y + Y_SPACE,  "     Unbindall Protect");
-	M_DrawCheckbox (220, y, cl_unbindall_protection.intValue);
+	M_DrawCheckbox (220, y, cl_unbindall_protection->intValue);
 
 	M_Print (16, y = y + Y_SPACE,  "           Show Uptime");
-	M_DrawCheckbox (220, y, show_uptime.intValue);
+	M_DrawCheckbox (220, y, show_uptime->intValue);
 
 	M_Print (16, y = y + Y_SPACE,  "             Show Time");
-	if (show_time.value < 1 )
+	if (show_time->value < 1 )
 		M_Print (220, y, "off");
-	else if (show_time.value == 1)
+	else if (show_time->value == 1)
 		M_Print (220, y, "Military");
-	else if (show_time.value >= 2)
+	else if (show_time->value >= 2)
 		M_Print (220, y, "AM/PM");
 
 	M_Print (16, y = y + Y_SPACE,  "        Show Framerate");
-	M_DrawCheckbox (220, y, show_fps.intValue);
+	M_DrawCheckbox (220, y, show_fps->intValue);
 
 	M_Print (16, y = y + Y_SPACE,  "        Mouse Freelook");
-	M_DrawCheckbox (220, y, in_freelook.intValue);
+	M_DrawCheckbox (220, y, in_freelook->intValue);
 
 	M_Print (16, y = y + Y_SPACE,  "       Water View-warp");
-	M_DrawCheckbox (220, y, r_waterwarp.intValue);
+	M_DrawCheckbox (220, y, r_waterwarp->intValue);
 
 	M_Print (16, y = y + Y_SPACE, "       Field of Vision");
-	r = (scr_fov.value - 30) / (175 - 30);
+	r = (scr_fov->value - 30) / (175 - 30);
 	M_DrawSlider (220, y, r);
 
 	M_Print (16, y = y + Y_SPACE, "            Sound Rate");
-	if (s_khz.intValue < 22050)
+	if (s_khz->intValue < 22050)
 	{
 		if (havegus)
 		{
@@ -1414,7 +1414,7 @@ void M_Extended_Draw()
 		else
 			Cvar_SetValue("s_khz", 11025);
 	}
-	M_Print (220, y, s_khz.string);
+	M_Print (220, y, s_khz->string);
 
 	M_Print (16, y = y + Y_SPACE,  "               V-Sync");
 	M_DrawCheckbox (220, y, M_Extended_Get_Vsync());
@@ -1427,50 +1427,50 @@ void M_AdjustSliders_Extended (int dir)
 	switch(extended_cursor)
 	{
 	case 0:
-		Cvar_SetValue ("net_broadcast_chat", !net_broadcast_chat.intValue);
+		Cvar_SetValue ("net_broadcast_chat", !net_broadcast_chat->intValue);
 		break;
 	case 1:
-		Cvar_SetValue ("net_showchat", !net_showchat.intValue);
+		Cvar_SetValue ("net_showchat", !net_showchat->intValue);
 		break;
 	case 2:
-		Cvar_SetValue ("net_showchatgfx", !net_showchatgfx.intValue);
+		Cvar_SetValue ("net_showchatgfx", !net_showchatgfx->intValue);
 		break;
 	case 3:
-		Cvar_SetValue ("v_contentblend", !v_contentblend.intValue);
+		Cvar_SetValue ("v_contentblend", !v_contentblend->intValue);
 		break;
 	case 4:
-		Cvar_SetValue ("cl_unbindall_protection", !cl_unbindall_protection.intValue);
+		Cvar_SetValue ("cl_unbindall_protection", !cl_unbindall_protection->intValue);
 		break;
 	case 5:
-		Cvar_SetValue ("show_uptime", !show_uptime.intValue);
+		Cvar_SetValue ("show_uptime", !show_uptime->intValue);
 		break;
 	case 6:
-		if (show_time.value >= 2)
+		if (show_time->value >= 2)
 			Cvar_SetValue ("show_time", 0);
-		else if (show_time.value <= 0)
+		else if (show_time->value <= 0)
 			Cvar_SetValue ("show_time", 1);
-		else if (show_time.value == 1)
+		else if (show_time->value == 1)
 			Cvar_SetValue ("show_time", 2);
 		break;
 	case 7:
-		Cvar_SetValue ("show_fps", !show_fps.intValue);
+		Cvar_SetValue ("show_fps", !show_fps->intValue);
 		break;
 	case 8:
-		Cvar_SetValue ("in_freelook", !in_freelook.intValue);
+		Cvar_SetValue ("in_freelook", !in_freelook->intValue);
 		break;
 	case 9:
-		Cvar_SetValue ("r_waterwarp", !r_waterwarp.intValue);
+		Cvar_SetValue ("r_waterwarp", !r_waterwarp->intValue);
 		break;
 	case 10:
-		scr_fov.value += dir * 5;
-		if (scr_fov.value < 0)
-			scr_fov.value = 0;
-		if (scr_fov.value > 170)
-			scr_fov.value = 170;
-		Cvar_SetValue ("fov", scr_fov.value);
+		scr_fov->value += dir * 5;
+		if (scr_fov->value < 0)
+			scr_fov->value = 0;
+		if (scr_fov->value > 170)
+			scr_fov->value = 170;
+		Cvar_SetValue ("fov", scr_fov->value);
 		break;
 	case 11:
-		M_Extended_Set_Sound_KHz(dir, s_khz.intValue);
+		M_Extended_Set_Sound_KHz(dir, s_khz->intValue);
 		break;
 	case 12:
 		M_Extended_Set_Vsync(dir);
@@ -1517,39 +1517,39 @@ void M_Extended_Key(int k)
 		switch (extended_cursor)
 		{
 		case 0:
-			Cvar_SetValue ("net_broadcast_chat", !net_broadcast_chat.value);
+			Cvar_SetValue ("net_broadcast_chat", !net_broadcast_chat->value);
 			break;
 		case 1:
-			Cvar_SetValue ("net_showchat", !net_showchat.value);
+			Cvar_SetValue ("net_showchat", !net_showchat->value);
 			break;
 		case 2:
-			Cvar_SetValue ("net_showchatgfx", !net_showchatgfx.value);
+			Cvar_SetValue ("net_showchatgfx", !net_showchatgfx->value);
 			break;
 		case 3:
-			Cvar_SetValue ("v_contentblend", !v_contentblend.value);
+			Cvar_SetValue ("v_contentblend", !v_contentblend->value);
 			break;
 		case 4:
-			Cvar_SetValue ("cl_unbindall_protection", !cl_unbindall_protection.value);
+			Cvar_SetValue ("cl_unbindall_protection", !cl_unbindall_protection->value);
 			break;
 		case 5:
-			Cvar_SetValue ("show_uptime", !show_uptime.value);
+			Cvar_SetValue ("show_uptime", !show_uptime->value);
 			break;
 		case 6:
-			if (show_time.value >= 2)
+			if (show_time->value >= 2)
 				Cvar_SetValue ("show_time", 0);
-			else if (show_time.value <= 0)
+			else if (show_time->value <= 0)
 				Cvar_SetValue ("show_time", 1);
-			else if (show_time.value == 1)
+			else if (show_time->value == 1)
 				Cvar_SetValue ("show_time", 2);
 			break;
 		case 7:
-			Cvar_SetValue ("show_fps", !show_fps.value);
+			Cvar_SetValue ("show_fps", !show_fps->value);
 			break;
 		case 8:
-			Cvar_SetValue ("in_freelook", !in_freelook.value);
+			Cvar_SetValue ("in_freelook", !in_freelook->value);
 			break;
 		case 9:
-			Cvar_SetValue ("r_waterwarp", !r_waterwarp.value);
+			Cvar_SetValue ("r_waterwarp", !r_waterwarp->value);
 			break;
 		case 10:
 			M_AdjustSliders_Extended(1);
@@ -1568,7 +1568,7 @@ void M_Extended_Key(int k)
 
 int M_Extended_Get_Vsync(void)
 {
-	if((!_vid_wait_override.intValue) && (vid_wait.intValue != 1))
+	if((!_vid_wait_override->intValue) && (vid_wait->intValue != 1))
 		return 0;
 
 	return 1;

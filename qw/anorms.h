@@ -17,6 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
+#ifndef __ANORMS_H
+#define __ANORMS_H
+
 {-0.525731, 0.000000, 0.850651}, 
 {-0.442863, 0.238856, 0.864188}, 
 {-0.295242, 0.000000, 0.955423}, 
@@ -179,3 +183,5 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 {-0.425325, -0.688191, -0.587785}, 
 {-0.587785, -0.425325, -0.688191}, 
 {-0.688191, -0.587785, -0.425325}, 
+
+#endif // __ANORMS_H

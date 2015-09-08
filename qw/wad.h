@@ -17,7 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// wad.h
+
+#ifndef __WAD_H
+#define __WAD_H
 
 //===============
 //   TYPES
@@ -73,3 +75,5 @@ void	*W_GetLumpName (char *name);
 void	*W_GetLumpNum (int num);
 
 void SwapPic (qpic_t *pic);
+
+#endif // __WAD_H

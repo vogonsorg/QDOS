@@ -371,7 +371,7 @@ void CL_FinishDownload(qboolean rename_files)
 	cls.downloadpercent = 0;
 	cls.downloadmethod = DL_NONE;
 
-	if (cl_downloadrate_hack.intValue && (rate.intValue > 0 && cls.downloadoldrate > 0)) /* FS: FIXME Shitty hack to accelerate the downloading a bit */
+	if (cl_downloadrate_hack->intValue && (rate->intValue > 0 && cls.downloadoldrate > 0)) /* FS: FIXME Shitty hack to accelerate the downloading a bit */
 	{
 		oldrate = dstring_new();
 		dsprintf(oldrate, "%i", cls.downloadoldrate);
@@ -430,7 +430,7 @@ int CL_RequestADownloadChunk(void)
 void CL_SendChunkDownloadReq(void)
 {
 	extern cvar_t cl_chunksperframe;
-	int i, j, chunks = bound(1, cl_chunksperframe.intValue, 5);
+	int i, j, chunks = bound(1, cl_chunksperframe->intValue, 5);
 
 	for (j = 0; j < chunks; j++)
 	{
@@ -537,10 +537,10 @@ void CL_ParseChunkedDownload(void)
 				return;
 		}
 
-		if (cl_downloadrate_hack.intValue)
+		if (cl_downloadrate_hack->intValue)
 		{
 			maxrate = dstring_new();
-			cls.downloadoldrate = rate.intValue;
+			cls.downloadoldrate = rate->intValue;
 			cls.downloadmaxrate = 250000;
 			dsprintf(maxrate, "%i", cls.downloadmaxrate);
 			Con_DPrintf(DEVELOPER_MSG_NET, "Changing rate from %i to %i\n", cls.downloadoldrate, cls.downloadmaxrate);
@@ -1403,7 +1403,7 @@ void CL_SetInfo (void)
 /* FS: EZQ Chat */
 void	CL_ShowChat (char *name, int val)
 {
-	if (net_showchat.value)
+	if (net_showchat->value)
 	{
 		switch(val)
 		{
@@ -1483,7 +1483,7 @@ void CL_MuzzleFlash (void)
 
 #ifdef GLQUAKE
 	// don't draw our own muzzle flash in gl if flashblending
-	if (i-1 == cl.playernum && gl_flashblend.value)
+	if (i-1 == cl.playernum && gl_flashblend->value)
 		return;
 #endif
 
@@ -1504,7 +1504,7 @@ void CL_MuzzleFlash (void)
 }
 
 
-#define SHOWNET(x) if(cl_shownet.value==2)Con_Printf ("%3i:%s\n", msg_readcount-1, x);
+#define SHOWNET(x) if(cl_shownet->value==2)Con_Printf ("%3i:%s\n", msg_readcount-1, x);
 /*
 =====================
 CL_ParseServerMessage
@@ -1524,9 +1524,9 @@ void CL_ParseServerMessage (void)
 //
 // if recording demos, copy the message out
 //
-	if (cl_shownet.value == 1)
+	if (cl_shownet->value == 1)
 		Con_Printf ("%i ",net_message.cursize);
-	else if (cl_shownet.value == 2)
+	else if (cl_shownet->value == 2)
 		Con_Printf ("------------------\n");
 
 
@@ -1913,7 +1913,7 @@ void CL_PlayBackgroundTrack (int track)
 #endif
 
 	/* play whatever is found */
-	if ((have_extmusic&BGMUSIC_WAV) && (cl_wav_music.intValue || !(have_extmusic&BGMUSIC_OGG))) {
+	if ((have_extmusic&BGMUSIC_WAV) && (cl_wav_music->intValue || !(have_extmusic&BGMUSIC_OGG))) {
 		CDAudio_Stop();
 		strcpy (p, "wav");
 		S_StartWAVBackgroundTrack(name, name);

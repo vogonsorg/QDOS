@@ -20,8 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // snd_ogg.h -- Ogg Vorbis streaming functions
 
-#ifndef _SND_OGG_H_
-#define _SND_OGG_H_
+#ifndef __SND_OGG_H
+#define __SND_OGG_H
 
 // snd_stream.c
 void S_UpdateBackgroundTrack (void);
@@ -31,4 +31,4 @@ void S_OGG_Init (void);
 void S_OGG_Shutdown (void);
 void S_OGG_Restart (void);
 
-#endif
+#endif // __SND_OGG_H

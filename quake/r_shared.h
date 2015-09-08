@@ -157,4 +157,4 @@ typedef struct edge_s
 
 #endif	// GLQUAKE
 
-#endif	// _R_SHARED_H_
+#endif	// __R_SHARED_H

@@ -202,9 +202,9 @@ sndinitstat SNDDMA_InitDirect (void)
 	
 	rc = COM_CheckParm("-sspeed");
 
-	if (s_khz.value > 0) /* FS: Added */
+	if (s_khz->value > 0) /* FS: Added */
 	{
-		shm->speed = s_khz.value;
+		shm->speed = s_khz->value;
 	}
 
 	if (rc)

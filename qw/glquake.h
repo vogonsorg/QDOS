@@ -17,10 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
+#ifndef __GLQUAKE_H
+#define __GLQUAKE_H
+
 // disable data conversion warnings
-
 #ifdef _WIN32
-
 #pragma warning(disable : 4244)     // MIPS
 #pragma warning(disable : 4136)     // X86
 #pragma warning(disable : 4051)     // ALPHA
@@ -183,40 +185,42 @@ extern	int	playertextures;
 
 extern	int	skytexturenum;		// index in cl.loadmodel, not gl texture object
 
-extern	cvar_t	r_norefresh;
-extern	cvar_t	r_drawentities;
-extern	cvar_t	r_drawworld;
-extern	cvar_t	r_drawviewmodel;
-extern	cvar_t	r_speeds;
-extern	cvar_t	r_waterwarp;
-extern	cvar_t	r_fullbright;
-extern	cvar_t	r_lightmap;
-extern	cvar_t	r_shadows;
-extern	cvar_t	r_mirroralpha;
-extern	cvar_t	r_wateralpha;
-extern	cvar_t	r_dynamic;
-extern	cvar_t	r_novis;
-extern	cvar_t	r_netgraph;
+extern	cvar_t	*r_norefresh;
+extern	cvar_t	*r_drawentities;
+extern	cvar_t	*r_drawworld;
+extern	cvar_t	*r_drawviewmodel;
+extern	cvar_t	*r_speeds;
+extern	cvar_t	*r_waterwarp;
+extern	cvar_t	*r_fullbright;
+extern	cvar_t	*r_lightmap;
+extern	cvar_t	*r_shadows;
+extern	cvar_t	*r_mirroralpha;
+extern	cvar_t	*r_wateralpha;
+extern	cvar_t	*r_dynamic;
+extern	cvar_t	*r_novis;
+extern	cvar_t	*r_netgraph;
 
-extern	cvar_t	gl_clear;
-extern	cvar_t	gl_cull;
-extern	cvar_t	gl_poly;
-extern	cvar_t	gl_texsort;
-extern	cvar_t	gl_smoothmodels;
-extern	cvar_t	gl_affinemodels;
-extern	cvar_t	gl_polyblend;
-extern	cvar_t	gl_keeptjunctions;
-extern	cvar_t	gl_reporttjunctions;
-extern	cvar_t	gl_flashblend;
-extern	cvar_t	gl_nocolors;
-extern	cvar_t	gl_finish;
+extern	cvar_t	*gl_clear;
+extern	cvar_t	*gl_cull;
+extern	cvar_t	*gl_poly;
+extern	cvar_t	*gl_texsort;
+extern	cvar_t	*gl_smoothmodels;
+extern	cvar_t	*gl_affinemodels;
+extern	cvar_t	*gl_polyblend;
+extern	cvar_t	*gl_keeptjunctions;
+extern	cvar_t	*gl_reporttjunctions;
+extern	cvar_t	*gl_flashblend;
+extern	cvar_t	*gl_nocolors;
+
+extern	cvar_t	*gl_ztrick;
+extern	cvar_t	*gl_finish;
 
 extern	int		gl_lightmap_format;
 extern	int		gl_solid_format;
 extern	int		gl_alpha_format;
 
-extern	cvar_t	gl_max_size;
-extern	cvar_t	gl_playermip;
+extern	cvar_t	*gl_max_size;
+extern	cvar_t	*gl_playermip;
 
 extern	int			mirrortexturenum;	// quake texturenum, not gltexturenum
 extern	qboolean	mirror;
@@ -299,3 +303,4 @@ void GL_BuildLightmaps (void);
 //
 void R_NetGraph (void);
 
+#endif // __GLQUAKE_H

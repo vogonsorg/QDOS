@@ -48,11 +48,11 @@ static bgm_status_t	trk_status;		// Status indicator
 
 #define MAX_OGGLIST 512
 static char		**ogg_filelist;		// List of Ogg Vorbis files
-static int			ogg_numfiles;		// Number of Ogg Vorbis files
-static int			ogg_loopcounter;
+static int		ogg_numfiles;		// Number of Ogg Vorbis files
+static int		ogg_loopcounter;
 
-static cvar_t	ogg_loopcount = {"ogg_loopcount", "5", true};
-static cvar_t	ogg_ambient_track = {"ogg_ambient_track", "11", true};
+static cvar_t	*ogg_loopcount;
+static cvar_t	*ogg_ambient_track;
 
 static void S_OGG_LoadFileList (void);
 static void S_OGG_ParseCmd (void);
@@ -191,7 +191,7 @@ void S_StreamBackgroundTrack (void)
 	float	scale;
 	byte	data[MAX_RAW_SAMPLES];
 
-	if (!s_bgTrack.file || !s_musicvolume.value || !cl_ogg_music.intValue)
+	if (!s_bgTrack.file || !s_musicvolume->value || !cl_ogg_music->intValue)
 		return;
 
 	if (s_rawend < paintedtime)
@@ -241,7 +241,7 @@ void S_StreamBackgroundTrack (void)
 				}
 				else
 				{	// check if it's time to switch to the ambient track
-					if ( (ogg_loopcount.intValue > 0) && (++ogg_loopcounter >= (int)ogg_loopcount.value))
+					if ( (ogg_loopcount->intValue > 0) && (++ogg_loopcounter >= (int)ogg_loopcount->value))
 					{	// Close the loop track
 						S_CloseBackgroundTrack(&s_bgTrack);
 
@@ -298,7 +298,7 @@ void S_StartOGGBackgroundTrack (const char *introTrack, const char *loopTrack)
 	// Start it up
 	Q_strlcpy(s_bgTrack.introName, introTrack, sizeof(s_bgTrack.introName));
 	Q_strlcpy(s_bgTrack.loopName, loopTrack, sizeof(s_bgTrack.loopName));
-	Q_strlcpy(s_bgTrack.ambientName, va("music/%s.ogg", ogg_ambient_track.string), sizeof(s_bgTrack.ambientName));
+	Q_strlcpy(s_bgTrack.ambientName, va("music/%s.ogg", ogg_ambient_track->string), sizeof(s_bgTrack.ambientName));
 
 	// set a loop counter so that this track will change to the ambient track later
 	ogg_loopcounter = 0;
@@ -349,8 +349,8 @@ void S_OGG_Init (void)
 		return;
 
 	// Cvars
-	Cvar_RegisterVariable(&ogg_loopcount);
-	Cvar_RegisterVariable(&ogg_ambient_track);
+	ogg_loopcount = Cvar_Get("ogg_loopcount", "5", CVAR_ARCHIVE);
+	ogg_ambient_track = Cvar_Get("ogg_ambient_track", "11", CVAR_ARCHIVE);
 
 	// Console commands
 	Cmd_AddCommand("ogg", S_OGG_ParseCmd);

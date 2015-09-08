@@ -1,3 +1,6 @@
+#ifndef __RESOURCE_H
+#define __RESOURCE_H
+
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
 // Used by winquake.rc
@@ -19,3 +22,5 @@
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
+
+#endif // __RESOURCE_H

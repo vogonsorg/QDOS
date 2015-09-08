@@ -534,7 +534,7 @@ void Key_Unbindall_f (void)
 {
 	int		i;
 
-	if (cl_unbindall_protection->value) /* FS */
+	if (cl_unbindall_protection->intValue) /* FS */
 	{
 		Con_Warning("Unbindall protection enabled.  It is recommended to do exec default.cfg instead!\nUse cl_unbindall_protection 0 to continue.\n");
 		return;

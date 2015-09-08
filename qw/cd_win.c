@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 
 extern	HWND	mainwindow;
-extern	cvar_t	bgmvolume;
+extern	cvar_t	*bgmvolume;
 
 static qboolean cdValid = false;
 static qboolean	playing = false;
@@ -419,18 +419,18 @@ void CDAudio_Update(void)
 	if (!enabled)
 		return;
 
-	if (bgmvolume.value != cdvolume)
+	if (bgmvolume->value != cdvolume)
 	{
 		if (cdvolume)
 		{
 			Cvar_SetValue ("bgmvolume", 0.0);
-			cdvolume = bgmvolume.value;
+			cdvolume = bgmvolume->value;
 			CDAudio_Pause ();
 		}
 		else
 		{
 			Cvar_SetValue ("bgmvolume", 1.0);
-			cdvolume = bgmvolume.value;
+			cdvolume = bgmvolume->value;
 			CDAudio_Resume ();
 		}
 	}

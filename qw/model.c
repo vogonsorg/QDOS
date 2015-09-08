@@ -1130,7 +1130,7 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 	i = LittleLong (header->version);
 	if (i != BSPVERSION)
 	{
-		if (!cl_allownewmap.value)
+		if (!cl_allownewmap->value)
 			Sys_Error ("Mod_LoadBrushModel: %s has wrong version number (%i should be %i)", mod->name, i, BSPVERSION);
 		else
 		Con_Printf ("\nWARNING: %s has wrong version number (%i should be %i).  Error check bypassed.\n", mod->name, i, BSPVERSION); /* FS: gross map version hack */

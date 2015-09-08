@@ -1992,7 +1992,6 @@ void VID_TestMode_f (void)
 	}
 }
 
-
 /*
 =================
 VID_Windowed_f
@@ -2015,7 +2014,6 @@ void VID_Fullscreen_f (void)
 
 	VID_SetMode ((int)vid_fullscreen_mode->value, vid_curpal);
 }
-
 
 /*
 =================

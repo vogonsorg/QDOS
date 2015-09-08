@@ -270,7 +270,7 @@ void R_RecursiveClipBPoly (bedge_t *pedges, mnode_t *pnode, msurface_t *psurf)
 // plane to both sides (but in opposite directions)
 	if (makeclippededge)
 	{
-		if (numbedges >= (r_maxbmodeledges.value - 2)) /* FS: Was MAX_BMODEL_EDGES */
+		if (numbedges >= (r_maxbmodeledges->value - 2)) /* FS: Was MAX_BMODEL_EDGES */
 		{
 			Con_Printf ("Out of edges for bmodel\n");
 			return;

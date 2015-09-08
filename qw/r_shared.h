@@ -17,15 +17,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-#ifndef GLQUAKE
+
 // r_shared.h: general refresh-related stuff shared between the refresh and the
 // driver
-
-// FIXME: clean up and move into d_iface.h
 
 #ifndef _R_SHARED_H_
 #define _R_SHARED_H_
 
+#ifndef GLQUAKE
+
+// FIXME: clean up and move into d_iface.h
 #define	MAXVERTS	16					// max points in a surface polygon
 #define MAXWORKINGVERTS	(MAXVERTS+4)	// max points in an intermediate
 										//  polygon (while processing)
@@ -54,7 +55,7 @@ extern	float	pixelAspect;
 
 extern int		r_drawnpolycount;
 
-extern cvar_t	r_clearcolor;
+extern cvar_t	*r_clearcolor;
 
 extern int	sintable[SIN_BUFFER_SIZE];
 extern int	intsintable[SIN_BUFFER_SIZE];
@@ -154,6 +155,6 @@ typedef struct edge_s
 	medge_t			*owner;
 } edge_t;
 
-#endif	// _R_SHARED_H_
-
 #endif	// GLQUAKE
+
+#endif	// __R_SHARED_H

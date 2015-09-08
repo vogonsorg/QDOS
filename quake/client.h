@@ -305,6 +305,9 @@ extern cvar_t	*cl_wav_music; /* FS: Added */
 
 extern cvar_t	*cl_autorepeat_allkeys; /* FS: Added */
 
+extern qboolean	nostartupdemos; /* FS: Disable startup demos */
+extern cvar_t	*cl_demos; /* FS: Disable startup demos */
+
 extern cvar_t	*_vid_wait_override;
 extern cvar_t	*vid_wait;
 
@@ -360,13 +363,6 @@ typedef struct
 extern	kbutton_t	in_mlook, in_klook;
 extern 	kbutton_t 	in_strafe;
 extern 	kbutton_t 	in_speed;
-extern	qboolean	nostartupdemos; /* FS: Disable startup demos */
-extern cvar_t	*cl_demos; /* FS: Disable startup demos */
-
-/* FS: Gamespy Stuff */
-extern cvar_t	*cl_master_server_ip;
-extern cvar_t	*cl_master_server_port;
-
 
 void CL_InitInput (void);
 void CL_SendCmd (void);

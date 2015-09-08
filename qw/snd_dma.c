@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // snd_dma.c -- main control for any streaming sound output device
 
 #include "quakedef.h"
-#include "cfgfile.h" /* FS: Parse CFG early -- sezero */
 
 #ifdef _WIN32
 #include "winquake.h"
@@ -86,19 +85,20 @@ int		sound_started = 0;
 
 int		havegus; /* FS: Is GUS our sound card? */
 
-cvar_t bgmvolume = {"bgmvolume", "1", true};
-cvar_t volume = {"volume", "0.7", true};
+cvar_t	*nosound;
+cvar_t	*volume;
+cvar_t	*precache;
+cvar_t	*loadas8bit;
+cvar_t	*bgmvolume;
+cvar_t	*ambient_level;
+cvar_t	*ambient_fade;
+cvar_t	*snd_noextraupdate;
+cvar_t	*snd_show;
+cvar_t	*_snd_mixahead;
 
-cvar_t nosound = {"nosound", "0"};
-cvar_t precache = {"precache", "1"};
-cvar_t loadas8bit = {"loadas8bit", "0"};
-cvar_t ambient_level = {"ambient_level", "0.3"};
-cvar_t ambient_fade = {"ambient_fade", "100"};
-cvar_t snd_noextraupdate = {"snd_noextraupdate", "0"};
-cvar_t snd_show = {"snd_show", "0"};
-cvar_t _snd_mixahead = {"_snd_mixahead", "0.2", true};
-cvar_t s_khz = {"s_khz","", true, false, "Sound sampling rate."}; /* FS: Added */
-cvar_t s_musicvolume = {"s_musicvolume", "1.0", true, false, "Music volume for wav and ogg streaming."}; /* FS: Added */
+/* FS: New stuff */
+cvar_t	*s_khz;
+cvar_t	*s_musicvolume;
 
 // ====================================================================
 // User-setable variables
@@ -184,14 +184,25 @@ S_Init
 */
 void S_Init (void)
 {
-	char *read_vars[] = {
-		"s_khz",
-		"bgmvolume",
-		"volume"
-	};
-#define num_readvars	(int)(sizeof(read_vars) / sizeof(read_vars[0]))
 	/* FS: Parse CFG early -- sezero */
 	Con_Printf("\nSound Initialization\n");
+
+	nosound = Cvar_Get("nosound", "0", 0);
+	volume = Cvar_Get("volume", "0.7", CVAR_ARCHIVE);
+	precache = Cvar_Get("precache", "1", 0);
+	loadas8bit = Cvar_Get("loadas8bit", "0", 0);
+	bgmvolume = Cvar_Get("bgmvolume", "1", CVAR_ARCHIVE);
+	ambient_level = Cvar_Get("ambient_level", "0.3", 0);
+	ambient_fade = Cvar_Get("ambient_fade", "100", 0);
+	snd_noextraupdate = Cvar_Get("snd_noextraupdate", "0", 0);
+	snd_show = Cvar_Get("snd_show", "0", 0);
+	_snd_mixahead = Cvar_Get("_snd_mixahead", "0.2", CVAR_ARCHIVE);
+
+	/* FS: New stuff */
+	s_khz = Cvar_Get("s_khz","", CVAR_ARCHIVE);
+	s_khz->description = "Sound sampling rate.";
+	s_musicvolume = Cvar_Get("s_musicvolume", "1.0", CVAR_ARCHIVE);
+	s_musicvolume->description = "Music volume for wav and ogg streaming.";
 
 	if (COM_CheckParm("-nosound"))
 		return;
@@ -209,18 +220,6 @@ void S_Init (void)
 #endif
 	Cmd_AddCommand("wav_restart", S_WAV_Restart); /* FS: Added */
 
-	Cvar_RegisterVariable(&nosound);
-	Cvar_RegisterVariable(&volume);
-	Cvar_RegisterVariable(&precache);
-	Cvar_RegisterVariable(&loadas8bit);
-	Cvar_RegisterVariable(&bgmvolume);
-	Cvar_RegisterVariable(&ambient_level);
-	Cvar_RegisterVariable(&ambient_fade);
-	Cvar_RegisterVariable(&snd_noextraupdate);
-	Cvar_RegisterVariable(&snd_show);
-	Cvar_RegisterVariable(&_snd_mixahead);
-	Cvar_RegisterVariable(&s_khz); /* FS: Added */
-	Cvar_RegisterVariable(&s_musicvolume); /* Knightmare: added */
 
 	if (host_parms.memsize < 0x800000)
 	{
@@ -228,18 +227,13 @@ void S_Init (void)
 		Con_Printf ("loading all sounds as 8bit\n");
 	}
 
-	// perform an early read of config.cfg -- sezero
-	CFG_ReadCvars (read_vars, num_readvars);
-	// check for command line overrides -- sezero
-	CFG_ReadCvarOverrides (read_vars, num_readvars);
-
-	if (volume.value < 0)
+	if (volume->value < 0)
 		Cvar_Set("volume", "0");
-	else if (volume.value > 1.0)
+	else if (volume->value > 1.0)
 		Cvar_Set("volume", "1");
-	if (bgmvolume.value < 0)
+	if (bgmvolume->value < 0)
 		Cvar_Set("bgmvolume", "0");
-	else if (bgmvolume.value > 1.0)
+	else if (bgmvolume->value > 1.0)
 		Cvar_Set("bgmvolume", "1");
 
 	snd_initialized = true;
@@ -387,13 +381,13 @@ sfx_t *S_PrecacheSound (char *name)
 {
 	sfx_t	*sfx;
 
-	if (!sound_started || nosound.value)
+	if (!sound_started || nosound->value)
 		return NULL;
 
 	sfx = S_FindName (name);
 
 // cache it in
-	if (precache.value)
+	if (precache->value)
 		S_LoadSound (sfx);
 
 	return sfx;
@@ -519,7 +513,7 @@ void S_StartSound(int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float f
 	if (!sfx)
 		return;
 
-	if (nosound.value)
+	if (nosound->value)
 		return;
 
 	vol = fvol*255;
@@ -746,7 +740,7 @@ void S_UpdateAmbientSounds (void)
 		return;
 
 	l = Mod_PointInLeaf (listener_origin, cl.worldmodel);
-	if (!l || !ambient_level.value)
+	if (!l || !ambient_level->value)
 	{
 		for (ambient_channel = 0 ; ambient_channel< NUM_AMBIENTS ; ambient_channel++)
 			channels[ambient_channel].sfx = NULL;
@@ -758,20 +752,20 @@ void S_UpdateAmbientSounds (void)
 		chan = &channels[ambient_channel];      
 		chan->sfx = ambient_sfx[ambient_channel];
 	
-		vol = ambient_level.value * l->ambient_sound_level[ambient_channel];
+		vol = ambient_level->value * l->ambient_sound_level[ambient_channel];
 		if (vol < 8)
 			vol = 0;
 
 	// don't adjust volume too fast
 		if (chan->master_vol < vol)
 		{
-			chan->master_vol += host_frametime * ambient_fade.value;
+			chan->master_vol += host_frametime * ambient_fade->value;
 			if (chan->master_vol > vol)
 				chan->master_vol = vol;
 		}
 		else if (chan->master_vol > vol)
 		{
-			chan->master_vol -= host_frametime * ambient_fade.value;
+			chan->master_vol -= host_frametime * ambient_fade->value;
 			if (chan->master_vol < vol)
 				chan->master_vol = vol;
 		}
@@ -798,7 +792,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 	if (!sound_started || (snd_blocked > 0))
 		return;
 
-	if (volume.modified)
+	if (volume->modified)
 		SND_InitScaletable();
 
 	VectorCopy(origin, listener_origin);
@@ -863,7 +857,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 //
 // debugging output
 //
-	if (snd_show.value)
+	if (snd_show->value)
 	{
 		total = 0;
 		ch = channels;
@@ -922,7 +916,7 @@ void S_ExtraUpdate (void)
 	IN_Accumulate ();
 #endif
 
-	if (snd_noextraupdate.value)
+	if (snd_noextraupdate->value)
 		return;         // don't pollute timings
 	S_Update_();
 }
@@ -946,7 +940,7 @@ void S_Update_(void)
 	}
 
 // mix ahead of current position
-	endtime = soundtime + _snd_mixahead.value * shm->speed;
+	endtime = soundtime + _snd_mixahead->value * shm->speed;
 
 // mix to an even submission block size
 	endtime = (endtime + shm->submission_chunk-1) & ~(shm->submission_chunk-1);
@@ -1063,7 +1057,7 @@ void S_LocalSound (char *sound)
 {
 	sfx_t	*sfx;
 
-	if (nosound.value)
+	if (nosound->value)
 		return;
 	if (!sound_started)
 		return;
@@ -1079,7 +1073,7 @@ void S_LocalSound (char *sound)
 
 void S_GamespySound (char *sound) /* FS: Added */
 {
-	if (snd_gamespy_sounds.intValue)
+	if (snd_gamespy_sounds->intValue)
 		S_LocalSound(sound);
 }
 
@@ -1123,8 +1117,8 @@ void S_RawSamples (int samples, int rate, int width, int channels, byte *data, q
 
 	scale = (float) rate / shm->speed;
 	if (music)
-		intVolume = (int) (s_musicvolume.value * 256);
-	else	intVolume = (int) (volume.value * 256);
+		intVolume = (int) (s_musicvolume->value * 256);
+	else	intVolume = (int) (volume->value * 256);
 
 	if (channels == 2 && width == 2)
 	{

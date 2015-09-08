@@ -47,7 +47,8 @@ qboolean	menubound[256];	// if true, can't be rebound while in menu
 int		keyshift[256];		// key to map to if shift held down in console
 int		key_repeats[256];	// if > 1, it is autorepeating
 qboolean	keydown[256];
-cvar_t cl_unbindall_protection = {"cl_unbindall_protection", "1", false, false, "Protection from bad configs with unbindall.  Will warn on execute."}; /* FS: Unbindall protection */
+
+cvar_t	*cl_unbindall_protection; /* FS: Added */
 
 extern char *Sort_Possible_Cmds (char *partial); /* FS: Added */
 
@@ -307,7 +308,7 @@ extern	cvar_t	console_old_complete;
 		key_lines[edit_line][0] = ']';
 		key_linepos = 1;
 
-		if (key_dest == key_console && net_broadcast_chat.value) /* FS: EZQ Chat */
+		if (key_dest == key_console && net_broadcast_chat->value) /* FS: EZQ Chat */
 			Cmd_ChatInfo(EZQ_CHAT_AFK);/* FS: EZQ Chat */
 
 		if (cls.state == ca_disconnected)
@@ -344,7 +345,7 @@ extern	cvar_t	console_old_complete;
 	if ( key == K_TAB )
 	{
 		// command completion
-		if(!console_old_complete.value) /* FS: Added */
+		if(!console_old_complete->value) /* FS: Added */
 		{
 			Sort_Possible_Cmds(key_lines[edit_line]+1);
 		}
@@ -688,7 +689,7 @@ void Key_Unbindall_f (void)
 {
 	int		i;
 
-	if (cl_unbindall_protection.intValue) /* FS */
+	if (cl_unbindall_protection->intValue) /* FS */
 	{
 		Con_Warning("Unbindall protection enabled.  It is recommended to do exec default.cfg instead!\nUse cl_unbindall_protection 0 to continue.\n");
 		return;
@@ -856,7 +857,9 @@ void Key_Init (void)
 	Cmd_AddCommand ("unbind",Key_Unbind_f);
 	Cmd_AddCommand ("unbindall",Key_Unbindall_f);
 
-	Cvar_RegisterVariable(&cl_unbindall_protection); /* FS: unbindall protection */
+	 /* FS: Unbindall protection */
+	cl_unbindall_protection = Cvar_Get("cl_unbindall_protection", "1", 0);
+	cl_unbindall_protection->description = "Protection from bad configs with unbindall.  Will warn on execute.";
 }
 
 /*
@@ -889,7 +892,7 @@ void Key_Event (int key, qboolean down)
 	{
 		key_repeats[key]++;
 
-		if (!cl_autorepeat_allkeys.intValue) /* FS: Added */
+		if (!cl_autorepeat_allkeys->intValue) /* FS: Added */
 		{
 			if (key != K_BACKSPACE 
 				&& key != K_PAUSE 

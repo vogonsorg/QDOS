@@ -17,6 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
+#ifndef __ADIVTAB_H
+#define __ADIVTAB_H
 // table of quotients and remainders for [-15...16] / [-15...16]
 
 // numerator = -15
@@ -1075,3 +1078,5 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 {1, 2},
 {1, 1},
 {1, 0},
+
+#endif // __ADIVTAB_H
