@@ -73,35 +73,35 @@ int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 void R_MarkLeaves (void);
 
-cvar_t	r_norefresh = {"r_norefresh","0"};
-cvar_t	r_drawentities = {"r_drawentities","1"};
-cvar_t	r_drawviewmodel = {"r_drawviewmodel","1"};
-cvar_t	r_speeds = {"r_speeds","0"};
-cvar_t	r_fullbright = {"r_fullbright","0"};
-cvar_t	r_lightmap = {"r_lightmap","0"};
-cvar_t	r_shadows = {"r_shadows","0"};
-cvar_t	r_mirroralpha = {"r_mirroralpha","1"};
-cvar_t	r_wateralpha = {"r_wateralpha","1"};
-cvar_t	r_dynamic = {"r_dynamic","1"};
-cvar_t	r_novis = {"r_novis","0"};
+/* FS: Init'd in gl_rmisc in R_Init() */
+cvar_t	*r_norefresh;
+cvar_t	*r_lightmap;
+cvar_t	*r_fullbright;
+cvar_t	*r_drawentities;
+cvar_t	*r_drawviewmodel;
+cvar_t	*r_shadows;
+cvar_t	*r_mirroralpha;
+cvar_t	*r_wateralpha;
+cvar_t	*r_dynamic;
+cvar_t	*r_novis;
+cvar_t	*r_speeds;
 
-cvar_t	gl_finish = {"gl_finish","0"};
-cvar_t	gl_clear = {"gl_clear","0"};
-cvar_t	gl_cull = {"gl_cull","1"};
-cvar_t	gl_texsort = {"gl_texsort","1"};
-cvar_t	gl_smoothmodels = {"gl_smoothmodels","1"};
-cvar_t	gl_affinemodels = {"gl_affinemodels","0"};
-cvar_t	gl_polyblend = {"gl_polyblend","1", true};
-cvar_t	gl_flashblend = {"gl_flashblend","1", true};
-cvar_t	gl_playermip = {"gl_playermip","0"};
-cvar_t	gl_nocolors = {"gl_nocolors","0"};
-cvar_t	gl_keeptjunctions = {"gl_keeptjunctions","1", true};
-cvar_t	gl_reporttjunctions = {"gl_reporttjunctions","0"};
-cvar_t	gl_doubleeyes = {"gl_doubleeys", "1", true, false, "Double size of model eyes, since they are really hard to see in GL."};
+cvar_t	*gl_finish;
+cvar_t	*gl_clear;
+cvar_t	*gl_texsort;
 
-cvar_t  r_waterwarp = {"r_waterwarp","1", true}; /* FS: Shut up compiler until I fix this stuff */
+cvar_t	*gl_cull;
+cvar_t	*gl_smoothmodels;
+cvar_t	*gl_affinemodels;
+cvar_t	*gl_polyblend;
+cvar_t	*gl_flashblend;
+cvar_t	*gl_playermip;
+cvar_t	*gl_nocolors;
 
-extern	cvar_t	gl_ztrick;
+cvar_t	*gl_keeptjunctions;
+cvar_t	*gl_reporttjunctions;
+
+cvar_t	*gl_doubleeyes;
 
 /*
 =================
