@@ -43,14 +43,14 @@ typedef struct
 #define ENQUEUE(q,b)	(q.data[q.head] = b, q.head = (q.head + 1) & QUEUEMASK)
 #define DEQUEUE(q,b)	(b = q.data[q.tail], q.tail = (q.tail + 1) & QUEUEMASK)
 
-extern cvar_t	config_com_port;
-extern cvar_t	config_com_irq;
-extern cvar_t	config_com_baud;
-extern cvar_t	config_com_modem;
-extern cvar_t	config_modem_dialtype;
-extern cvar_t	config_modem_clear;
-extern cvar_t	config_modem_init;
-extern cvar_t	config_modem_hangup;
+extern cvar_t	*config_com_port;
+extern cvar_t	*config_com_irq;
+extern cvar_t	*config_com_baud;
+extern cvar_t	*config_com_modem;
+extern cvar_t	*config_modem_dialtype;
+extern cvar_t	*config_modem_clear;
+extern cvar_t	*config_modem_init;
+extern cvar_t	*config_modem_hangup;
 
 extern int m_return_state;
 extern int m_state;

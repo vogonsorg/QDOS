@@ -106,7 +106,7 @@ typedef struct
 	int		color;
 } zpointdesc_t;
 
-extern cvar_t	r_drawflat;
+extern cvar_t	*r_drawflat;
 extern int		d_spanpixcount;
 extern int		r_framecount;		// sequence # of current frame since Quake
 									//  started

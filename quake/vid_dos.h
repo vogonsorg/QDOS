@@ -54,9 +54,9 @@ extern int		VGA_width, VGA_height, VGA_rowbytes, VGA_bufferrowbytes;
 extern byte		*VGA_pagebase;
 extern vmode_t	*VGA_pcurmode;
 
-extern cvar_t	vid_wait;
-extern cvar_t	vid_nopageflip;
-extern cvar_t	_vid_wait_override;
+extern cvar_t	*vid_wait;
+extern cvar_t	*vid_nopageflip;
+extern cvar_t	*_vid_wait_override;
 
 extern unsigned char colormap256[32][256];
 

@@ -210,7 +210,7 @@ extern int			DEFAULTnet_hostport;
 extern int			net_hostport;
 
 extern int net_driverlevel;
-extern cvar_t		hostname;
+extern cvar_t		*hostname;
 extern char			playername[];
 extern int			playercolor;
 

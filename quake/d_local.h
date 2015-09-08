@@ -54,7 +54,7 @@ typedef struct sspan_s
 	int				u, v, count;
 } sspan_t;
 
-extern cvar_t	d_subdiv16;
+extern cvar_t	*d_subdiv16;
 
 extern float	scale_for_mip;
 
@@ -111,7 +111,7 @@ extern float	d_scalemip[3];
 extern void (*d_drawspans) (espan_t *pspan);
 
 /* FS: Particle size control */
-extern cvar_t	sw_particle_size_override;
-extern cvar_t	sw_particle_size_min;
-extern cvar_t	sw_particle_size_max;
-extern cvar_t	sw_particle_size;
+extern cvar_t	*sw_particle_size_override;
+extern cvar_t	*sw_particle_size_min;
+extern cvar_t	*sw_particle_size_max;
+extern cvar_t	*sw_particle_size;

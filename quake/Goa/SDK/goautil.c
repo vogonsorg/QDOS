@@ -32,7 +32,7 @@ INCLUDES
 #include "../nonport.h"
 #include <string.h>
 
-extern cvar_t	public_server; /* should heartbeats be sent */
+extern cvar_t	*public_server; /* should heartbeats be sent */
 #ifdef __cplusplus
 extern "C" {
 #endif

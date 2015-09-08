@@ -62,6 +62,10 @@ interface from being ambiguous.
  */
 
 /* FS: NOTE!!!! If you add anything here... add it after the qboolean modified!  You will goof up setting cvar_t's in the code! */
+
+#ifndef __CVAR_H
+#define __CVAR_H
+
 typedef struct cvar_s
 {
 	char	*name;
@@ -76,12 +80,20 @@ typedef struct cvar_s
 	struct cvar_s *next;
 } cvar_t;
 
-void 	Cvar_RegisterVariable (cvar_t *variable);
-// registers a cvar that allready has the name, string, and optionally the
-// archive elements set.
+extern cvar_t	*cvar_vars;
 
-void	Cvar_Set (char *var_name, char *value);
-// equivelant to "<name> <variable>" typed at the console
+cvar_t	*Cvar_Get (char *var_name, char *value, int flags);
+// creates the variable if it doesn't exist, or returns the existing one
+// if it exists, the value will not be changed, but flags will be ORed in
+// that allows variables to be unarchived without needing bitflags
+
+cvar_t	*Cvar_Set (char *var_name, char *value);
+// will create the variable if it doesn't exist
+
+cvar_t	*Cvar_ForceSet (char *var_name, char *value);
+// will set the variable even if NOSET or LATCH
+
+cvar_t	*Cvar_FullSet (char *var_name, char *value, int flags);
 
 void	Cvar_SetValue (char *var_name, float value);
 // expands value to a string and calls Cvar_Set
@@ -92,11 +104,14 @@ float	Cvar_VariableValue (char *var_name);
 char	*Cvar_VariableString (char *var_name);
 // returns an empty string if not defined
 
-char 	*Cvar_CompleteVariable (char *partial);
+char	*Cvar_CompleteVariable (char *partial);
 // attempts to match a partial variable name for command line completion
 // returns NULL if nothing fits
 
-qboolean Cvar_Command (void);
+void	Cvar_GetLatchedVars (void);
+// any CVAR_LATCHED variables that have been set will now take effect
+
+qboolean	Cvar_Command (void);
 // called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
 // command.  Returns true if the command was a variable reference that
 // was handled. (print or change)
@@ -105,9 +120,11 @@ void 	Cvar_WriteVariables (FILE *f);
 // Writes lines containing "set variable value" for all variables
 // with the archive flag set to true.
 
-cvar_t *Cvar_FindVar (const char *var_name); /* FS: Added */
-void Cvar_Set_Description (const char *var_name, const char *description); /* FS: Added */
+void	Cvar_Init (void);
 
-void Cvar_Init (void);
+cvar_t	*Cvar_FindVar (const char *var_name); /* FS: Added */
 
-extern cvar_t	*cvar_vars;
+void	Cvar_Set_Description (const char *var_name, const char *description); /* FS: Added */
+
+
+#endif // __CVAR_H

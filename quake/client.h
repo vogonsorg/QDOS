@@ -258,52 +258,52 @@ typedef struct
 //
 // cvars
 //
-extern	cvar_t	cl_name;
-extern	cvar_t	cl_color;
+extern cvar_t	*cl_name;
+extern cvar_t	*cl_color;
 
-extern  cvar_t  cl_unbindall_protection; /* FS: unbindall protection */
-extern  cvar_t  in_freelook; /* FS: mlook */
-extern  cvar_t  cl_warncmd; /* FS: From QW */
+extern cvar_t	*cl_unbindall_protection; /* FS: unbindall protection */
+extern cvar_t	*in_freelook; /* FS: mlook */
+extern cvar_t	*cl_warncmd; /* FS: From QW */
 
-extern	cvar_t	cl_upspeed;
-extern	cvar_t	cl_forwardspeed;
-extern	cvar_t	cl_backspeed;
-extern	cvar_t	cl_sidespeed;
+extern cvar_t	*cl_upspeed;
+extern cvar_t	*cl_forwardspeed;
+extern cvar_t	*cl_backspeed;
+extern cvar_t	*cl_sidespeed;
 
-extern	cvar_t	cl_movespeedkey;
+extern cvar_t	*cl_movespeedkey;
 
-extern	cvar_t	cl_yawspeed;
-extern	cvar_t	cl_pitchspeed;
+extern cvar_t	*cl_yawspeed;
+extern cvar_t	*cl_pitchspeed;
 
-extern	cvar_t	cl_anglespeedkey;
+extern cvar_t	*cl_anglespeedkey;
 
-extern	cvar_t	cl_shownet;
-extern	cvar_t	cl_nolerp;
+extern cvar_t	*cl_shownet;
+extern cvar_t	*cl_nolerp;
 
-extern	cvar_t	cl_pitchdriftspeed;
-extern	cvar_t	lookspring;
-extern	cvar_t	lookstrafe;
-extern	cvar_t	sensitivity;
+extern cvar_t	*cl_pitchdriftspeed;
+extern cvar_t	*lookspring;
+extern cvar_t	*lookstrafe;
+extern cvar_t	*sensitivity;
 
-extern	cvar_t	m_pitch;
-extern	cvar_t	m_yaw;
-extern	cvar_t	m_forward;
-extern	cvar_t	m_side;
+extern cvar_t	*m_pitch;
+extern cvar_t	*m_yaw;
+extern cvar_t	*m_forward;
+extern cvar_t	*m_side;
 
 /* FS: GameSpy CVARs */
-extern	cvar_t	cl_master_server_ip;
-extern	cvar_t	cl_master_server_port;
-extern	cvar_t	cl_master_server_timeout;
-extern	cvar_t	cl_master_server_retries;
-extern	cvar_t	snd_gamespy_sounds;
+extern cvar_t	*cl_master_server_ip;
+extern cvar_t	*cl_master_server_port;
+extern cvar_t	*cl_master_server_timeout;
+extern cvar_t	*cl_master_server_retries;
+extern cvar_t	*snd_gamespy_sounds;
 
-extern	cvar_t	cl_ogg_music; /* FS: Added */
-extern	cvar_t	cl_wav_music; /* FS: Added */
+extern cvar_t	*cl_ogg_music; /* FS: Added */
+extern cvar_t	*cl_wav_music; /* FS: Added */
 
-extern	cvar_t	cl_autorepeat_allkeys; /* FS: Added */
+extern cvar_t	*cl_autorepeat_allkeys; /* FS: Added */
 
-extern	cvar_t	_vid_wait_override;
-extern	cvar_t	vid_wait;
+extern cvar_t	*_vid_wait_override;
+extern cvar_t	*vid_wait;
 
 #define	MAX_TEMP_ENTITIES	256		//johnfitz -- was 64
 #define	MAX_STATIC_ENTITIES	512		//johnfitz -- was 128
@@ -358,11 +358,11 @@ extern	kbutton_t	in_mlook, in_klook;
 extern 	kbutton_t 	in_strafe;
 extern 	kbutton_t 	in_speed;
 extern	qboolean	nostartupdemos; /* FS: Disable startup demos */
-extern	cvar_t		cl_demos; /* FS: Disable startup demos */
+extern cvar_t	*cl_demos; /* FS: Disable startup demos */
 
 /* FS: Gamespy Stuff */
-extern	cvar_t		cl_master_server_ip;
-extern	cvar_t		cl_master_server_port;
+extern cvar_t	*cl_master_server_ip;
+extern cvar_t	*cl_master_server_port;
 
 
 void CL_InitInput (void);
