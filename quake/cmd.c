@@ -223,7 +223,7 @@ quake -nosound +cmd amlev1
 */
 void Cmd_StuffCmds_f (void)
 {
-	extern cvar_t cmdline;
+	extern	cvar_t	*cmdline;
 	char	cmds[CMDLINE_LENGTH];
 	int		i, j, plus;
 
