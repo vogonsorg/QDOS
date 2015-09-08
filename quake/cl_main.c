@@ -28,8 +28,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // references them even when on a unix system.
 
 // these two are not intended to be set directly
-cvar_t	*cl_name = {"_cl_name", "player", true, false, "Internal CVAR for setting player name.  Use cvar \"name\" to set."};
-cvar_t	*cl_color = {"_cl_color", "0", true, false, "Internal CVAR for setting player colour.  Use cvar \"color\" to set."};
+cvar_t	*cl_name;
+cvar_t	*cl_color;
 
 cvar_t	*cl_shownet; // can be 0, 1, or 2
 cvar_t	*cl_nolerp;
@@ -62,8 +62,6 @@ int				cl_max_edicts; //johnfitz -- only changes when new map loads
 
 int				cl_numvisedicts;
 entity_t		*cl_visedicts[MAX_VISEDICTS];
-
-extern cvar_t	r_lerpmodels, r_lerpmove; //johnfitz
 
 /* FS: Flashlight */
 qboolean bFlashlight;

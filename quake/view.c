@@ -31,54 +31,57 @@ when crossing a water boudnary.
 
 */
 
-cvar_t	lcd_x = {"lcd_x","0"};
-cvar_t	lcd_yaw = {"lcd_yaw","0"};
+cvar_t	*lcd_x;
+cvar_t	*lcd_yaw;
 
-cvar_t	scr_ofsx = {"scr_ofsx","0", false};
-cvar_t	scr_ofsy = {"scr_ofsy","0", false};
-cvar_t	scr_ofsz = {"scr_ofsz","0", false};
+cvar_t	*scr_ofsx;
+cvar_t	*scr_ofsy;
+cvar_t	*scr_ofsz;
 
-cvar_t	cl_rollspeed = {"cl_rollspeed", "200"};
-cvar_t	cl_rollangle = {"cl_rollangle", "2.0"};
+cvar_t	*cl_rollspeed;
+cvar_t	*cl_rollangle;
 
-cvar_t	cl_bob = {"cl_bob","0.02", false};
-cvar_t	cl_bobcycle = {"cl_bobcycle","0.6", false};
-cvar_t	cl_bobup = {"cl_bobup","0.5", false};
+cvar_t	*cl_bob;
+cvar_t	*cl_bobcycle;
+cvar_t	*cl_bobup;
 
-cvar_t	v_kicktime = {"v_kicktime", "0.5", false};
-cvar_t	v_kickroll = {"v_kickroll", "0.6", false};
-cvar_t	v_kickpitch = {"v_kickpitch", "0.6", false};
+cvar_t	*v_kicktime;
+cvar_t	*v_kickroll;
+cvar_t	*v_kickpitch;
 
-cvar_t	v_iyaw_cycle = {"v_iyaw_cycle", "2", false};
-cvar_t	v_iroll_cycle = {"v_iroll_cycle", "0.5", false};
-cvar_t	v_ipitch_cycle = {"v_ipitch_cycle", "1", false};
-cvar_t	v_iyaw_level = {"v_iyaw_level", "0.3", false};
-cvar_t	v_iroll_level = {"v_iroll_level", "0.1", false};
-cvar_t	v_ipitch_level = {"v_ipitch_level", "0.3", false};
+cvar_t	*v_iyaw_cycle;
+cvar_t	*v_iroll_cycle;
+cvar_t	*v_ipitch_cycle;
+cvar_t	*v_iyaw_level;
+cvar_t	*v_iroll_level;
+cvar_t	*v_ipitch_level;
 
-cvar_t	v_idlescale = {"v_idlescale", "0", false};
+cvar_t	*v_idlescale;
 
-cvar_t	crosshair = {"crosshair", "0", true};
-cvar_t	cl_crossx = {"cl_crossx", "0", false};
-cvar_t	cl_crossy = {"cl_crossy", "0", false};
+cvar_t	*crosshair;
+cvar_t	*cl_crossx;
+cvar_t	*cl_crossy;
 
-cvar_t	gl_cshiftpercent = {"gl_cshiftpercent", "100", false};
+cvar_t	*gl_cshiftpercent;
 
-cvar_t	v_contentblend = {"v_contentblend", "1", true, false, "Disable palette blends."}; /* FS: Fucking hate palette blends */
+cvar_t	*v_contentblend; /* FS: Fucking hate palette blends */
+
+cvar_t	*v_centermove;
+cvar_t	*v_centerspeed;
 
 /* FS: For mod compatibility */
 #ifndef GLQUAKE
-cvar_t r_wateralpha = {"r_wateralpha", "1", false, false, "Unused CVAR for mod compatibility."};
+cvar_t	*r_wateralpha;
 #endif
-cvar_t fog = {"fog", "0", false, false, "Unused CVAR for mod compatibility."};
-cvar_t r_oldsky = {"r_oldsky", "0", false, false, "Unused CVAR for mod compatibility."};
-cvar_t gl_fogenable = {"gl_fogenable", "0", false, false, "Unused CVAR for mod compatibility."};
-cvar_t gl_fogdensity = {"gl_fogdensity", "0", false, false, "Unused CVAR for mod compatibility."};
-cvar_t gl_fogred = {"gl_fogred", "0", false, false, "Unused CVAR for mod compatibility."};
-cvar_t gl_foggreen = {"gl_foggreen", "0", false, false, "Unused CVAR for mod compatibility."};
-cvar_t gl_fogblue = {"gl_fogblue", "0", false, false, "Unused CVAR for mod compatibility."};
-cvar_t r_waterripple = {"r_waterripple", "0", false, false, "Unused CVAR for mod compatibility."};
-cvar_t r_skyfog = {"r_skyfog", "0", false, false, "Unused CVAR for mod compatibility."};
+cvar_t	*fog;
+cvar_t	*r_oldsky;
+cvar_t	*gl_fogenable;
+cvar_t	*gl_fogdensity;
+cvar_t	*gl_fogred;
+cvar_t	*gl_foggreen;
+cvar_t	*gl_fogblue;
+cvar_t	*r_waterripple;
+cvar_t	*r_skyfog;
 
 float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
 
@@ -152,11 +155,6 @@ float V_CalcBob (void)
 
 
 //=============================================================================
-
-
-cvar_t	v_centermove = {"v_centermove", "0.15", false};
-cvar_t	v_centerspeed = {"v_centerspeed","500"};
-
 
 void V_StartPitchDrift (void)
 {
@@ -1128,53 +1126,64 @@ void V_Init (void)
 	Cmd_AddCommand ("bf", V_BonusFlash_f);
 	Cmd_AddCommand ("centerview", V_StartPitchDrift);
 
-	Cvar_RegisterVariable (&lcd_x);
-	Cvar_RegisterVariable (&lcd_yaw);
+	lcd_x = Cvar_Get("lcd_x","0");
+	lcd_yaw = Cvar_Get("lcd_yaw","0");
 
-	Cvar_RegisterVariable (&v_centermove);
-	Cvar_RegisterVariable (&v_centerspeed);
+	v_centermove = Cvar_Get("v_centermove", "0.15");
+	v_centerspeed = Cvar_Get("v_centerspeed","500");
 
-	Cvar_RegisterVariable (&v_iyaw_cycle);
-	Cvar_RegisterVariable (&v_iroll_cycle);
-	Cvar_RegisterVariable (&v_ipitch_cycle);
-	Cvar_RegisterVariable (&v_iyaw_level);
-	Cvar_RegisterVariable (&v_iroll_level);
-	Cvar_RegisterVariable (&v_ipitch_level);
+	v_iyaw_cycle = Cvar_Get("v_iyaw_cycle", "2");
+	v_iroll_cycle = Cvar_Get("v_iroll_cycle", "0.5");
+	v_ipitch_cycle = Cvar_Get("v_ipitch_cycle", "1");
+	v_iyaw_level = Cvar_Get("v_iyaw_level", "0.3");
+	v_iroll_level = Cvar_Get("v_iroll_level", "0.1");
+	v_ipitch_level = Cvar_Get("v_ipitch_level", "0.3");
 
-	Cvar_RegisterVariable (&v_contentblend); /* FS: Fucking hate palette blends */
+	v_contentblend = Cvar_Get("v_contentblend", "1", CVAR_ARCHIVE);
+	v_contentblend->description = "Disable palette blends."; /* FS: Fucking hate palette blends */
 
 	/* FS: For Mod Compatibility */
 #ifndef GLQUAKE
-	Cvar_RegisterVariable (&r_wateralpha);
+	r_wateralpha = Cvar_Get("r_wateralpha", "1");
+	r_wateralpha->description = "Unused CVAR for mod compatibility.";
 #endif
-	Cvar_RegisterVariable (&fog);
-	Cvar_RegisterVariable (&r_oldsky);	
-	Cvar_RegisterVariable (&gl_fogenable);
-	Cvar_RegisterVariable (&gl_fogdensity);
-	Cvar_RegisterVariable (&gl_fogred);
-	Cvar_RegisterVariable (&gl_foggreen);
-	Cvar_RegisterVariable (&gl_fogblue);
-	Cvar_RegisterVariable (&r_waterripple);
-	Cvar_RegisterVariable (&r_skyfog);
+	fog = Cvar_Get("fog", "0");
+	fog->description = "Unused CVAR for mod compatibility.";
+	r_oldsky = Cvar_Get("r_oldsky", "0");
+	r_oldsky->description = "Unused CVAR for mod compatibility.";
+	gl_fogenable = Cvar_Get("gl_fogenable", "0");
+	gl_fogenable->description = "Unused CVAR for mod compatibility.";
+	gl_fogdensity = Cvar_Get("gl_fogdensity", "0");
+	gl_fogdensity->description = "Unused CVAR for mod compatibility.";
+	gl_fogred = Cvar_Get ("gl_fogred", "0");
+	gl_fogred->description = "Unused CVAR for mod compatibility.";
+	gl_foggreen = Cvar_Get ("gl_foggreen", "0");
+	gl_foggreen->description = "Unused CVAR for mod compatibility.";
+	gl_fogblue = Cvar_Get ("gl_fogbluge", "0");
+	gl_fogblue->description = "Unused CVAR for mod compatibility.";
+	r_waterripple = Cvar_Get ("r_waterripple", "0");
+	r_waterripple->description = "Unused CVAR for mod compatibility.";
+	r_skyfog = Cvar_Get ("r_skyfog", "0");
+	r_skyfog->description = "Unused CVAR for mod compatibility.";
 
-	Cvar_RegisterVariable (&v_idlescale);
-	Cvar_RegisterVariable (&crosshair);
-	Cvar_RegisterVariable (&cl_crossx);
-	Cvar_RegisterVariable (&cl_crossy);
-	Cvar_RegisterVariable (&gl_cshiftpercent);
+	v_idlescale = Cvar_Get("v_idlescale", "0");
+	crosshair = Cvar_Get("crosshair", "0", CVAR_ARCHIVE);
+	cl_crossx = Cvar_Get("cl_crossx", "0");
+	cl_crossy = Cvar_Get("cl_crossy", "0");
+	gl_cshiftpercent = Cvar_Get("gl_cshiftpercent", "100");
 
-	Cvar_RegisterVariable (&scr_ofsx);
-	Cvar_RegisterVariable (&scr_ofsy);
-	Cvar_RegisterVariable (&scr_ofsz);
-	Cvar_RegisterVariable (&cl_rollspeed);
-	Cvar_RegisterVariable (&cl_rollangle);
-	Cvar_RegisterVariable (&cl_bob);
-	Cvar_RegisterVariable (&cl_bobcycle);
-	Cvar_RegisterVariable (&cl_bobup);
+	scr_ofsx = Cvar_Get("scr_ofsx","0");
+	scr_ofsy = Cvar_Get("scr_ofsy","0");
+	scr_ofsz = Cvar_Get("scr_ofsz","0");
+	cl_rollspeed = Cvar_Get("cl_rollspeed", "200");
+	cl_rollangle = Cvar_Get("cl_rollangle", "2.0");
+	cl_bob = Cvar_Get("cl_bob","0.02");
+	cl_bobcycle = Cvar_Get("cl_bobcycle","0.6");
+	cl_bobup = Cvar_Get("cl_bobup","0.5");
 
-	Cvar_RegisterVariable (&v_kicktime);
-	Cvar_RegisterVariable (&v_kickroll);
-	Cvar_RegisterVariable (&v_kickpitch);	
+	v_kicktime = Cvar_Get("v_kicktime", "0.5");
+	v_kickroll = Cvar_Get("v_kickroll", "0.6");
+	v_kickpitch = Cvar_Get("v_kickpitch", "0.6");
 	
 	BuildGammaTable (1.0);	// no gamma yet
 	Cvar_RegisterVariable (&v_gamma);
