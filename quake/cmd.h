@@ -123,5 +123,6 @@ void	Cmd_Print (char *text);
 // passed as a print message to the client
 
 char *CopyString (char *in);
+void Cbuf_AddEarlyCommands (qboolean clear);
 
 #endif // __CMD_H

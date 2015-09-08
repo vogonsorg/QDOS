@@ -104,7 +104,6 @@ OBJS=	$(SYSOBJ_DXE)    \
 	$(SYSOBJ_NET)    \
 	$(GAMESPY)       \
 	$(O)/cd_audio.o \
-	$(O)/cfgfile.o   \
 	$(O)/chase.o    \
 	$(O)/cl_demo.o  \
 	$(O)/cl_input.o \

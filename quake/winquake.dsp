@@ -1461,10 +1461,6 @@ SOURCE=.\cd_win.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\cfgfile.c
-# End Source File
-# Begin Source File
-
 SOURCE=.\chase.c
 # End Source File
 # Begin Source File

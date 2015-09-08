@@ -42,7 +42,6 @@ char		*con_text=0;
 
 cvar_t		*con_notifytime;		//seconds
 cvar_t		*con_logcenterprint; //johnfitz
-cvar_t		*timestamp; /* FS: Timestamp */
 
 char		con_lastcenterstring[1024]; //johnfitz
 
@@ -273,8 +272,6 @@ void Con_Init (void)
 	con_notifytime->description = "Time (in seconds) a console notification message is displayed.";
 	con_logcenterprint = Cvar_Get("con_logcenterprint", "1", 0);  //johnfitz
 	con_logcenterprint->description = "Log centerprints to console.";
-	timestamp = Cvar_Get("timestamp", "0", 0); /* FS: Timestamp */
-	timestamp->description = "Enables timestamps.  1 for military format.  2 for AM/PM format.";
 
 	Cmd_AddCommand ("toggleconsole", Con_ToggleConsole_f);
 	Cmd_AddCommand ("messagemode", Con_MessageMode_f);
@@ -428,9 +425,8 @@ void Con_Printf (const char *fmt, ...)
 	dvsprintf (msg,fmt,argptr);
 	va_end (argptr);
 
-#if 0
 	/* FS: Timestamp code */
-	if(timestamp->intValue > 0)
+	if(timestamp && (timestamp->intValue > 0)) /* FS: A Con_Printf might sneak in before this is init'd */
 	{
 		struct tm *local;
 		time_t utc;
@@ -454,7 +450,6 @@ void Con_Printf (const char *fmt, ...)
 		if(con_initialized)
 			Con_Print(st);
 	}
-#endif
 
 // also echo to debugging console
 	Sys_Printf("%s",msg->str); // also echo to debugging console

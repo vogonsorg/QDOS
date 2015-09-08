@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // snd_dma.c -- main control for any streaming sound output device
 
 #include "quakedef.h"
-#include "cfgfile.h" /* FS: Parse CFG early -- sezero */
 
 #ifdef _WIN32
 #include "winquake.h"
@@ -178,31 +177,7 @@ S_Init
 */
 void S_Init (void)
 {
-	char *read_vars[] = {
-		"s_khz",
-		"bgmvolume",
-		"volume"
-	};
-#define num_readvars	(int)(sizeof(read_vars) / sizeof(read_vars[0]))
-	/* FS: Parse CFG early -- sezero */
 	Con_Printf("\nSound Initialization\n");
-
-	if (COM_CheckParm("-nosound"))
-		return;
-
-	if (COM_CheckParm("-simsound"))
-		fakedma = true;
-
-	Cmd_AddCommand("play", S_Play);
-	Cmd_AddCommand("play2", S_Play2); /* FS: For Nehara */
-	Cmd_AddCommand("playvol", S_PlayVol);
-	Cmd_AddCommand("stopsound", S_StopAllSoundsC);
-	Cmd_AddCommand("soundlist", S_SoundList);
-	Cmd_AddCommand("soundinfo", S_SoundInfo_f);
-#ifdef OGG_SUPPORT
-	Cmd_AddCommand("ogg_restart", S_OGG_Restart); /* Knightmare added */
-#endif
-	Cmd_AddCommand("wav_restart", S_WAV_Restart); /* FS: Added */
 
 	nosound = Cvar_Get("nosound", "0", 0);
 	volume = Cvar_Get("volume", "0.7", CVAR_ARCHIVE);
@@ -221,17 +196,28 @@ void S_Init (void)
 	s_musicvolume = Cvar_Get("s_musicvolume", "1.0", CVAR_ARCHIVE);
 	s_musicvolume->description = "Music volume for wav and ogg streaming.";
 
+	if (COM_CheckParm("-nosound"))
+		return;
+
+	if (COM_CheckParm("-simsound"))
+		fakedma = true;
+
+	Cmd_AddCommand("play", S_Play);
+	Cmd_AddCommand("play2", S_Play2); /* FS: For Nehara */
+	Cmd_AddCommand("playvol", S_PlayVol);
+	Cmd_AddCommand("stopsound", S_StopAllSoundsC);
+	Cmd_AddCommand("soundlist", S_SoundList);
+	Cmd_AddCommand("soundinfo", S_SoundInfo_f);
+#ifdef OGG_SUPPORT
+	Cmd_AddCommand("ogg_restart", S_OGG_Restart); /* Knightmare added */
+#endif
+	Cmd_AddCommand("wav_restart", S_WAV_Restart); /* FS: Added */
 
 	if (host_parms.memsize < 0x800000)
 	{
 		Cvar_Set ("loadas8bit", "1");
 		Con_Printf ("loading all sounds as 8bit\n");
 	}
-
-	// perform an early read of config.cfg -- sezero
-	CFG_ReadCvars (read_vars, num_readvars);
-	// check for command line overrides -- sezero
-	CFG_ReadCvarOverrides (read_vars, num_readvars);
 
 	if (volume->value < 0)
 		Cvar_Set("volume", "0");

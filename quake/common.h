@@ -168,6 +168,12 @@ extern	int		com_argc;
 extern	char	**com_argv;
 
 int COM_CheckParm (char *parm);
+
+/* FS: Quake 2 stuff */
+int COM_Argc (void);
+char *COM_Argv (int arg);
+void COM_ClearArgv (int arg);
+
 void COM_Init (char *path);
 void COM_InitArgv (int argc, char **argv);
 

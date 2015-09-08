@@ -1200,6 +1200,26 @@ int COM_CheckParm (char *parm)
 	return 0;
 }
 
+/* FS: Quake 2 stuff */
+int COM_Argc (void)
+{
+	return com_argc;
+}
+
+char *COM_Argv (int arg)
+{
+	if (arg < 0 || arg >= com_argc || !com_argv[arg])
+		return "";
+	return com_argv[arg];
+}
+
+void COM_ClearArgv (int arg)
+{
+	if (arg < 0 || arg >= com_argc || !com_argv[arg])
+		return;
+	com_argv[arg] = "";
+}
+
 /*
 ================
 COM_CheckRegistered

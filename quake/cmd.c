@@ -930,3 +930,39 @@ qboolean	Sort_Possible_Strtolower (char *partial, char *complete)
 	}
 	return true;
 }
+
+/*
+===============
+Cbuf_AddEarlyCommands
+
+Adds command line parameters as script statements
+Commands lead with a +, and continue until another +
+
+Set commands are added early, so they are guaranteed to be set before
+the client and server initialize for the first time.
+
+Other commands are added late, after all initialization is complete.
+===============
+*/
+void Cbuf_AddEarlyCommands (qboolean clear)
+{
+	int		i;
+	char	*s;
+
+	for (i=0 ; i<COM_Argc(); i++)
+	{
+		s = COM_Argv(i);
+
+		if (strcmp (s, "+set"))
+			continue;
+		Cbuf_AddText (va("set %s %s\n", COM_Argv(i+1), COM_Argv(i+2)));
+		if (clear)
+		{
+			COM_ClearArgv(i);
+			COM_ClearArgv(i+1);
+			COM_ClearArgv(i+2);
+		}
+
+		i+=2;
+	}
+}

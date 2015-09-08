@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <stdio.h>
 
 #include "quakedef.h"
-#include "cfgfile.h"
 #include "sys_dxe.h"
 
 #include <GL/dmesa.h>
@@ -361,11 +360,11 @@ void VID_Init(unsigned char *palette)
 	char	gldir[MAX_OSPATH];
 	int width = 640, height = 480;
 
-	vid_mode = Cvar_Get("vid_mode","5");
-	vid_wait = Cvar_Get("vid_wait", "0");;
-	_vid_wait_override = Cvar_Get("_vid_wait_override", "0");
+	vid_mode = Cvar_Get("vid_mode","5", 0);
+	vid_wait = Cvar_Get("vid_wait", "0", 0);;
+	_vid_wait_override = Cvar_Get("_vid_wait_override", "0", 0);
 
-	gl_ztrick = Cvar_Get("gl_ztrick", "1");
+	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
 
 	vid.maxwarpwidth = WARP_WIDTH;
 	vid.maxwarpheight = WARP_HEIGHT;
@@ -436,11 +435,6 @@ void VID_Init(unsigned char *palette)
 	vid.aspect = ((float)vid.height / (float)vid.width) *
 				(320.0 / 240.0);
 	vid.numpages = 2;
-
-	// perform an early read of config.cfg -- sezero
-	CFG_ReadCvars (read_vars, num_readvars);
-	// check for command line overrides -- sezero
-	CFG_ReadCvarOverrides (read_vars, num_readvars);
 
 	GL_Init();
 

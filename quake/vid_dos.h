@@ -19,6 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // vid_dos.h: header file for DOS-specific video stuff
 
+#ifndef __VID_DOS_H
+#define __VID_DOS_H
+
 typedef struct vmode_s {
 	struct vmode_s	*pnext;
 	char		*name;
@@ -54,9 +57,9 @@ extern int		VGA_width, VGA_height, VGA_rowbytes, VGA_bufferrowbytes;
 extern byte		*VGA_pagebase;
 extern vmode_t	*VGA_pcurmode;
 
-extern cvar_t	*vid_wait;
-extern cvar_t	*vid_nopageflip;
-extern cvar_t	*_vid_wait_override;
+extern struct cvar_s	*vid_wait;
+extern struct cvar_s	*vid_nopageflip;
+extern struct cvar_s	*_vid_wait_override;
 
 extern unsigned char colormap256[32][256];
 
@@ -81,3 +84,4 @@ void VGA_EndDirectRect (viddef_t *vid, struct vmode_s *pcurrentmode, int x,
 void VGA_UpdateLinearScreen (void *srcptr, void *destptr, int width,
 	int height, int srcrowbytes, int destrowbytes);
 
+#endif

@@ -43,10 +43,10 @@ typedef struct
 	long	buttons;
 } externControl_t;
 
-cvar_t	*m_filter = {"m_filter","1"};
-cvar_t	*in_joystick = {"joystick","1"};
-cvar_t	*joy_numbuttons = {"joybuttons","4", true};
-cvar_t	*aux_look = {"auxlook","1", true};
+cvar_t	*m_filter;
+cvar_t	*in_joystick;
+cvar_t	*joy_numbuttons;
+cvar_t	*aux_look;
 
 static qboolean	mouse_avail;
 static qboolean mouseactive;
@@ -129,8 +129,8 @@ void IN_Init (void)
 {
 	int i;
 
-	m_filter = Cvar_Get("m_filter","1");
-	in_joystick = Cvar_Get("joystick","1");
+	m_filter = Cvar_Get("m_filter","1", 0);
+	in_joystick = Cvar_Get("joystick","1", 0);
 	joy_numbuttons = Cvar_Get("joybuttons","4", CVAR_ARCHIVE);
 	aux_look = Cvar_Get("auxlook","1", CVAR_ARCHIVE);
 

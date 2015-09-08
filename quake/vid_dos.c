@@ -87,8 +87,8 @@ VID_Init
 */
 void    VID_Init (unsigned char *palette)
 {
-	vid_mode = Cvar_Get("vid_mode","0");
-	vid_mode->description = "Current video mode."};
+	vid_mode = Cvar_Get("vid_mode","0", 0);
+	vid_mode->description = "Current video mode.";
 	vid_wait = Cvar_Get("vid_wait","0", CVAR_ARCHIVE);
 	vid_wait->description = "Vsync modes.  0 - off.  1 - on.  2 - Double buffer no vsync.";
 	vid_nopageflip = Cvar_Get("vid_nopageflip","0", CVAR_ARCHIVE);

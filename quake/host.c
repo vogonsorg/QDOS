@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <ctype.h>
 #include "quakedef.h"
 #include "r_local.h"
-#include "cfgfile.h" /* FS: Parse CFG early -- sezero */
 
 /*
 
@@ -86,6 +85,7 @@ cvar_t	*temp1;
 /* FS: New stuff */
 cvar_t	*con_show_description;
 cvar_t	*con_show_dev_flags;
+cvar_t	*timestamp; /* FS: Timestamp */
 
 /*
 ================
@@ -280,6 +280,8 @@ void Host_InitLocal (void)
 	con_show_description->description = "Show descriptions for CVARs.";
 	con_show_dev_flags = Cvar_Get("con_show_dev_flags", "1", CVAR_ARCHIVE);
 	con_show_dev_flags->description = "Show developer flag options.";
+	timestamp = Cvar_Get("timestamp", "0", 0); /* FS: Timestamp */
+	timestamp->description = "Enables timestamps.  1 for military format.  2 for AM/PM format.";
 
 	Host_FindMaxClients ();
 
@@ -890,14 +892,27 @@ void Host_Init (quakeparms_t *parms)
 	com_argv = parms->argv;
 
 	Memory_Init (parms->membase, parms->memsize);
-	Cvar_Init();
 	Cbuf_Init ();
 	Cmd_Init ();
+	Cvar_Init();
+
+	// we need to add the early commands twice, because
+	// a basedir or cddir needs to be set before execing
+	// config files, but we want other parms to override
+	// the settings of the config files
+	Cbuf_AddEarlyCommands (false);
+	Cbuf_Execute ();
+
+	COM_Init (parms->basedir);
+	Host_InitLocal ();
+
+	/* FS: Read config now */
+	Cbuf_AddText("exec config.cfg\n");
+	Cbuf_AddEarlyCommands (true);
+	Cbuf_Execute();
+
 	V_Init ();
 	Chase_Init ();
-	COM_Init (parms->basedir);
-//	CFG_OpenConfig("config.cfg"); /* FS: Parse CFG early -- sezero */
-	Host_InitLocal ();
 	W_LoadWadFile ("gfx.wad");
 	Key_Init ();
 	Con_Init ();
@@ -911,7 +926,7 @@ void Host_Init (quakeparms_t *parms)
 	Con_Printf ("%4.1f megabyte heap\n",parms->memsize/ (1024*1024.0));
 
 	R_InitTextures ();		// needed even for dedicated servers
- 
+
 	if (cls.state != ca_dedicated)
 	{
 		host_basepal = (byte *)COM_LoadHunkFile ("gfx/palette.lmp");
@@ -945,7 +960,7 @@ void Host_Init (quakeparms_t *parms)
 		}
 	}
 
-	Cbuf_InsertText ("exec quake.rc\n");
+	Cbuf_InsertText ("exec quake.rc\n"); /* FS: FIXME.  Intercept config.cfg from here so it doesn't load twice */
 	Cbuf_AddText ("cl_warncmd 1\n"); /* FS: From QW */
 
 	Hunk_AllocName (0, "-HOST_HUNKLEVEL-");
