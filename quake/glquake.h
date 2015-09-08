@@ -17,8 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// disable data conversion warnings
 
+#ifndef __GLQUAKE_H
+#define __GLQUAKE_H
+
+// disable data conversion warnings
 #ifdef _WIN32
 #pragma warning(disable : 4244)     // MIPS
 #pragma warning(disable : 4136)     // X86
@@ -281,3 +284,5 @@ extern qboolean gl_mtexable;
 void GL_DisableMultitexture(void);
 void GL_EnableMultitexture(void);
 void R_DrawBrushModel (entity_t *e);
+
+#endif // __GLQUAKE_H

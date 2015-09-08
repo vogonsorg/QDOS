@@ -17,7 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// net_wipx.h
+
+#ifndef __NET_WIPX_H
+#define __NET_WIPX_H
 
 int  WIPX_Init (void);
 void WIPX_Shutdown (void);
@@ -37,3 +39,5 @@ int  WIPX_GetAddrFromName (char *name, struct qsockaddr *addr);
 int  WIPX_AddrCompare (struct qsockaddr *addr1, struct qsockaddr *addr2);
 int  WIPX_GetSocketPort (struct qsockaddr *addr);
 int  WIPX_SetSocketPort (struct qsockaddr *addr, int port);
+
+#endif // __NET_WIPX_H

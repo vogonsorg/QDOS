@@ -203,9 +203,7 @@ extern "C" {
 #include <limits.h> // INT_MAX, maybe PATH_MAX
 
 // for uintptr_t:
-#ifdef __DJGPP__ /* FS: DJGPP doesn't have this either */
-#include "stdint.h"
-#elif !defined (_MSC_VER)
+#if !defined (_MSC_VER)
 #include <stdint.h>
 #endif
 

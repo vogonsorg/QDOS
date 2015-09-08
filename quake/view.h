@@ -17,7 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// view.h
+
+#ifndef __VIEW_H
+#define __VIEW_H
 
 extern cvar_t	*v_gamma;
 extern cvar_t	*lcd_x;
@@ -32,3 +34,4 @@ void V_RenderView (void);
 float V_CalcRoll (vec3_t angles, vec3_t velocity);
 void V_UpdatePalette (void);
 
+#endif // __VIEW_H

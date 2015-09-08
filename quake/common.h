@@ -17,7 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 // comndef.h  -- general definitions
+
+#ifndef __COMMON_H
+#define __COMMON_H
 
 #include "dg_misc.h" /* FS: Caedes special safe string stuff */
 
@@ -227,3 +231,4 @@ void Com_strcpy (char *dest, int destSize, const char *src); /* FS: Added */
 #define SHOW_POPULATED_SERVERS 1
 #define SHOW_ALL_SERVERS 2
 
+#endif // __COMMON_H

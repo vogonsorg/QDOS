@@ -16,4 +16,3 @@ typedef int		sys_socket_t;
 #define	SOCKET_ERROR	(-1)
 
 #endif	/* _DOS_SOCKDEFS_H */
-

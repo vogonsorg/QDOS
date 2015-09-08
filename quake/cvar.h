@@ -17,49 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// cvar.h
-
-/*
-
-cvar_t variables are used to hold scalar or string variables that can be changed or displayed at the console or prog code as well as accessed directly
-in C code.
-
-it is sufficient to initialize a cvar_t with just the first two fields, or
-you can add a ,true flag for variables that you want saved to the configuration
-file when the game is quit:
-
-cvar_t	r_draworder = {"r_draworder","1"};
-cvar_t	scr_screensize = {"screensize","1",true};
-
-Cvars must be registered before use, or they will have a 0 value instead of the float interpretation of the string.  Generally, all cvar_t declarations should be registered in the apropriate init function before any console commands are executed:
-Cvar_RegisterVariable (&host_framerate);
-
-
-C code usually just references a cvar in place:
-if ( r_draworder.value )
-
-It could optionally ask for the value to be looked up for a string name:
-if (Cvar_VariableValue ("r_draworder"))
-
-Interpreted prog code can access cvars with the cvar(name) or
-cvar_set (name, value) internal functions:
-teamplay = cvar("teamplay");
-cvar_set ("registered", "1");
-
-The user can access cvars from the console in two ways:
-r_draworder			prints the current value
-r_draworder 0		sets the current value to 0
-Cvars are restricted from having the same names as commands to keep this
-interface from being ambiguous.
-*/
-
-/* FS: TODO: This whole thing is stupid and should be changed over to Quake 2's version.
- *     This allows flags to be set.  Most importantly latched variables that shouldn't
- *     be commited until the next map load... like deathmatch, coop, skill, even the
- *     r_maxedges and r_maxsurfs variables.  This would also help remove some CVARs
- *     that are "fake cvars" that actually are Cmd_AddCommands that run to a function
- *     that check the variable.
- */
 
 #ifndef __CVAR_H
 #define __CVAR_H
@@ -131,6 +88,5 @@ void	Cvar_Init (void);
 cvar_t	*Cvar_FindVar (const char *var_name); /* FS: Added */
 
 void	Cvar_Set_Description (const char *var_name, const char *description); /* FS: Added */
-
 
 #endif // __CVAR_H

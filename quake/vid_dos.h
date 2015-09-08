@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 // vid_dos.h: header file for DOS-specific video stuff
 
 #ifndef __VID_DOS_H
@@ -84,4 +85,4 @@ void VGA_EndDirectRect (viddef_t *vid, struct vmode_s *pcurrentmode, int x,
 void VGA_UpdateLinearScreen (void *srcptr, void *destptr, int width,
 	int height, int srcrowbytes, int destrowbytes);
 
-#endif
+#endif // __VID_DOS_H

@@ -17,8 +17,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef HX2_DXE_H
-#define HX2_DXE_H
+#ifndef __QD_DXE_H
+#define __QD_DXE_H
 
 void Sys_InitDXE3 (void);
 
@@ -26,5 +26,4 @@ void *Sys_dlopen (const char *filename, qboolean globalmode);
 int Sys_dlclose (void *handle);
 void *Sys_dlsym (void *handle, const char *symbol);
 
-#endif	/* HX2_DXE_H */
-
+#endif	/* __QD_DXE_H */

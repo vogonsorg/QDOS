@@ -17,11 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-//
-// asm_draw.h
-//
-// Include file for asm drawing routines.
-//
+
+// asm_draw.h -- Include file for asm drawing routines.
+
+#ifndef __ASM_DRAW_H
+#define __ASM_DRAW_H
 
 //
 // !!! note that this file must match the corresponding C structures at all
@@ -149,3 +149,4 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 								// !!! d_polysa.s must be changed to match !!!
 #define mtri_shift			4
 
+#endif // __ASM_DRAW_H

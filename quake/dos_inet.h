@@ -116,4 +116,3 @@ typedef long		socklen_t;	/* NOT unsigned on DOS/WIN32.. */
 #endif	/* defined DOS */
 
 #endif	/* _DOS_INET_H */
-

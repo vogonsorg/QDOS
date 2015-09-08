@@ -17,7 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// client.h
+
+#ifndef __CLIENT_H
+#define __CLIENT_H
 
 /* FS: Gamespy stuff */
 #define MAX_SERVERS 400 /* FS: There's barely 350 active servers existing, but OK. */
@@ -419,3 +421,5 @@ void V_SetContentsColor (int contents);
 //
 void CL_InitTEnts (void);
 void CL_SignonReply (void);
+
+#endif // __CLIENT_H

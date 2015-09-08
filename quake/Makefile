@@ -29,7 +29,7 @@ CFLAGS += -mtune=pentium
 endif
 
 ifeq ($(GLQUAKE),1)
-CFLAGS+= -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE
+CFLAGS+= -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE -DUSE_3DFXGAMMA
 LIBS+= -L../3rdparty/lib -lgl
 EXE = qdosfx.exe
 SYSOBJ_DXE=$(O)/dxe.o
@@ -209,7 +209,8 @@ REFSOFT = $(O)/d_copy.o   \
 endif
 
 ifeq ($(GLQUAKE),1)
-REFGL = $(O)/gl_draw.o \
+REFGL = $(O)/fx_gamma.o \
+	$(O)/gl_draw.o \
 	$(O)/gl_mesh.o \
 	$(O)/gl_model.o \
 	$(O)/gl_refrag.o \

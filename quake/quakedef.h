@@ -17,9 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 // quakedef.h -- primary header for client
 
-//#define       GLTEST                  // experimental stuff
+#ifndef __QUAKEDEF_H
+#define __QUAKEDEF_H
 
 #define QUAKE_GAME                      // as opposed to utilities
 
@@ -372,3 +374,4 @@ char *Sys_FindFirst (char *path, unsigned musthave, unsigned canthave);
 char *Sys_FindNext (unsigned musthave, unsigned canthave);
 void Sys_FindClose (void);
 
+#endif // __QUAKEDEF_H

@@ -42,6 +42,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // <endrepeat>
 //-------------------------------------------------------
 
+#ifndef __SPRITEGN_H
+#define __SPRITEGN_H
+
 #ifdef INCLUDELIBS
 
 #include <stdlib.h>
@@ -107,4 +110,4 @@ typedef struct {
 
 #define IDSPRITEHEADER	(('P'<<24)+('S'<<16)+('D'<<8)+'I')
 														// little-endian "IDSP"
-
+#endif // __SPRITEGN_H

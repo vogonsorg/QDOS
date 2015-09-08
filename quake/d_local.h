@@ -17,7 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 // d_local.h:  private rasterization driver defs
+
+#ifndef __D_LOCAL_H
+#define __D_LOCAL_H
 
 #include "r_shared.h"
 
@@ -115,3 +119,5 @@ extern cvar_t	*sw_particle_size_override;
 extern cvar_t	*sw_particle_size_min;
 extern cvar_t	*sw_particle_size_max;
 extern cvar_t	*sw_particle_size;
+
+#endif // __D_LOCAL_H

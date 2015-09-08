@@ -29,8 +29,8 @@
 		Boston, MA  02110-1301  USA
 */
 
-#ifndef __HX2_ARCHDEFS__
-#define __HX2_ARCHDEFS__
+#ifndef __QD_ARCHDEFS_H
+#define __QD_ARCHDEFS_H
 
 
 #if defined(__APPLE__) && defined(__MACH__)
@@ -160,5 +160,5 @@
 #	warning "Platform is UNKNOWN."
 #endif	/* end of PLATFORM_STRING definitions */
 
-#endif	/* __HX2_ARCHDEFS__ */
+#endif	/* __QD_ARCHDEFS_H */
 

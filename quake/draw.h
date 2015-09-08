@@ -21,6 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // draw.h -- these are the only functions outside the refresh allowed
 // to touch the vid buffer
 
+#ifndef __DRAW_H
+#define __DRAW_H
+
 extern	qpic_t		*draw_disc;	// also used on sbar
 
 void Draw_Init (void);
@@ -38,3 +41,5 @@ void Draw_FadeScreen (void);
 void Draw_String (int x, int y, char *str);
 qpic_t *Draw_PicFromWad (char *name);
 qpic_t *Draw_CachePic (char *path);
+
+#endif // __DRAW_H

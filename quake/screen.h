@@ -17,7 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// screen.h
+
+#ifndef __SCREEN_H
+#define __SCREEN_H
 
 void SCR_Init (void);
 
@@ -56,3 +58,5 @@ extern	int			scr_copyeverything;
 extern qboolean		block_drawing;
 
 void SCR_UpdateWholeScreen (void);
+
+#endif // __SCREEN_H

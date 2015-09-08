@@ -17,7 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 // protocol.h -- communications protocols
+
+#ifndef __PROTOCOL_H
+#define __PROTOCOL_H
 
 #define	PROTOCOL_NETQUAKE	15 //johnfitz -- standard quake protocol
 #define PROTOCOL_FITZQUAKE	666 //johnfitz -- added new protocol for fitzquake 0.85
@@ -226,3 +230,5 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // Nehahra effects used in the movie (TE_EXPLOSION3 also got written up in a QSG tutorial, hence it's not marked NEH)
 #define	TE_EXPLOSION3		16 // [vector] origin [coord] red [coord] green [coord] blue
 #define TE_LIGHTNING4NEH	17 // [string] model [entity] entity [vector] start [vector] end
+
+#endif // __PROTOCOL_H

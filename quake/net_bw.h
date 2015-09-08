@@ -17,7 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// net_bw.h
+
+#ifndef __NET_BW_H
+#define __NET_BW_H
 
 int  BW_Init (void);
 void BW_Shutdown (void);
@@ -37,3 +39,5 @@ int  BW_GetAddrFromName (char *name, struct qsockaddr *addr);
 int  BW_AddrCompare (struct qsockaddr *addr1, struct qsockaddr *addr2);
 int  BW_GetSocketPort (struct qsockaddr *addr);
 int  BW_SetSocketPort (struct qsockaddr *addr, int port);
+
+#endif // __NET_BW_H

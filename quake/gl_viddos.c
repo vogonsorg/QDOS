@@ -37,6 +37,25 @@ static DMesaBuffer db;
 
 #define stringify(m) { #m, m }
 
+// Gamma stuff
+#define	USE_GAMMA_RAMPS			0
+#define GAMMA_MAX	3.0
+
+/* 3dfx gamma hacks: stuff are in fx_gamma.c
+ * Note: gamma ramps crashes voodoo graphics */
+#define	USE_3DFX_RAMPS			0
+#if defined(USE_3DFXGAMMA)
+#include "fx_gamma.h"
+#endif
+
+#if (USE_GAMMA_RAMPS) || (defined(USE_3DFXGAMMA) && (USE_3DFX_RAMPS))
+static unsigned short	orig_ramps[3][256];
+#endif
+
+static qboolean	fx_gamma   = false;	// 3dfx-specific gamma control
+static qboolean	gammaworks = false;	// whether hw-gamma works
+static qboolean is_3dfx = false;
+
 unsigned short	d_8to16table[256];
 unsigned	d_8to24table[256];
 unsigned char d_15to8table[65536];
@@ -132,9 +151,67 @@ void VID_Shutdown(void)
 	}
 }
 
-void VID_ShiftPalette(unsigned char *p)
+#if !defined(USE_3DFXGAMMA)
+static inline int Init_3dfxGammaCtrl (void)		{ return 0; }
+static inline void Shutdown_3dfxGamma (void)		{ }
+static inline int do3dfxGammaCtrl (float value)			{ return 0; }
+static inline int glGetDeviceGammaRamp3DFX (void *arrays)	{ return 0; }
+static inline int glSetDeviceGammaRamp3DFX (void *arrays)	{ return 0; }
+static inline qboolean VID_Check3dfxGamma (void)	{ return false; }
+#else
+static qboolean VID_Check3dfxGamma (void)
 {
-//	VID_SetPalette(p);
+	int		ret;
+
+#if USE_3DFX_RAMPS /* not recommended for Voodoo1, currently crashes */
+	ret = glGetDeviceGammaRamp3DFX(orig_ramps);
+	if (ret != 0)
+	{
+		Con_SafePrintf ("Using 3dfx glide3 specific gamma ramps\n");
+		return true;
+	}
+#else
+	ret = Init_3dfxGammaCtrl();
+	if (ret > 0)
+	{
+		Con_SafePrintf ("Using 3dfx glide%d gamma controls\n", ret);
+		return true;
+	}
+#endif
+	return false;
+}
+#endif	/* USE_3DFXGAMMA */
+
+static void VID_InitGamma (void)
+{
+	gammaworks = fx_gamma = false;
+	/* we don't have WGL_3DFX_gamma_control or an equivalent in dos.
+	 * assuming is_3dfx means Voodoo1 or Voodoo2, this means we dont
+	 * have hw-gamma. */
+	/* Here is an evil hack abusing the exposed Glide symbols: */
+	if (is_3dfx)
+		fx_gamma = VID_Check3dfxGamma();
+
+	if (!gammaworks && !fx_gamma)
+		Con_SafePrintf("gamma adjustment not available\n");
+}
+
+static void VID_SetGamma (void)
+{
+#if (!USE_GAMMA_RAMPS) || (!USE_3DFX_RAMPS)
+	float	value = (v_gamma->value > (1.0 / GAMMA_MAX)) ?
+			(1.0 / v_gamma->value) : GAMMA_MAX;
+#endif
+#if USE_3DFX_RAMPS
+	if (fx_gamma) glSetDeviceGammaRamp3DFX(ramps);
+#else
+	if (fx_gamma) do3dfxGammaCtrl(value);
+#endif
+}
+
+void VID_ShiftPalette (unsigned char *palette)
+{
+	VID_SetGamma();
 }
 
 void	VID_SetPalette (unsigned char *palette)
@@ -265,6 +342,20 @@ void GL_Init (void)
 	Con_Printf ("GL_VERSION: %s\n", gl_version);
 	gl_extensions = (const char *)glGetString (GL_EXTENSIONS);
 	Con_Printf ("GL_EXTENSIONS: %s\n", gl_extensions);
+
+	is_3dfx = false;
+	if (!Q_strncasecmp((char *)gl_renderer, "3dfx", 4)	  ||
+	    !Q_strncasecmp((char *)gl_renderer, "SAGE Glide", 10) ||
+	    !Q_strncasecmp((char *)gl_renderer, "Glide ", 6)	  || /* possible with Mesa 3.x/4.x/5.0.x */
+	    !Q_strncasecmp((char *)gl_renderer, "Mesa Glide", 10))
+	{
+	// This should hopefully detect Voodoo1 and Voodoo2
+	// hardware and possibly Voodoo Rush.
+	// Voodoo Banshee, Voodoo3 and later are hw-accelerated
+	// by DRI in XFree86-4.x and should be: is_3dfx = false.
+		Con_SafePrintf("3dfx Voodoo found\n");
+		is_3dfx = true;
+	}
 
 	CheckMultiTextureExtensions ();
 
@@ -441,6 +532,7 @@ void VID_Init(unsigned char *palette)
 	sprintf (gldir, "%s/glquake", com_gamedir);
 	Sys_mkdir (gldir);
 
+	VID_InitGamma();
 	Check_Gamma(palette);
 	VID_SetPalette(palette);
 

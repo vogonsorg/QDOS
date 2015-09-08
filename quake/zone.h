@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 /*
  memory allocation
 
@@ -83,6 +84,9 @@ Zone block
 
 */
 
+#ifndef __ZONE_H
+#define __ZONE_H
+
 void Memory_Init (void *buf, int size);
 
 void Z_Free (void *ptr);
@@ -127,5 +131,4 @@ void *Cache_Alloc (cache_user_t *c, int size, char *name);
 
 void Cache_Report (void);
 
-
-
+#endif // __ZONE_H

@@ -17,7 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// server.h
+
+#ifndef __SERVER_H
+#define __SERVER_H
 
 typedef struct
 {
@@ -244,3 +246,5 @@ void SV_CheckForNewClients (void);
 void SV_RunClients (void);
 void SV_SaveSpawnparms ();
 void SV_SpawnServer (char *server);
+
+#endif // __SERVER_H

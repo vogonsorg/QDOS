@@ -17,10 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 // sound.h -- client sound i/o functions
 
-#ifndef __SOUND__
-#define __SOUND__
+#ifndef __SOUND_H
+#define __SOUND_H
 
 #ifdef OGG_SUPPORT	// Knightmare added- vorbis support
 #include "snd_ogg.h"
@@ -231,4 +232,4 @@ void S_StopBackgroundTrack(void); /* FS: So we can suport both */
 extern int havegus; /* FS: Added */
 void GUS_ClearDMA(void); /* FS: Added */
 
-#endif // __SOUND__
+#endif // __SOUND_H

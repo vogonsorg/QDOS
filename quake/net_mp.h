@@ -17,7 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// net_mpath.h
+
+#ifndef __NET_MP_H
+#define __NET_MP_H
 
 int  MPATH_Init (void);
 void MPATH_Shutdown (void);
@@ -37,3 +39,5 @@ int  MPATH_GetAddrFromName (char *name, struct qsockaddr *addr);
 int  MPATH_AddrCompare (struct qsockaddr *addr1, struct qsockaddr *addr2);
 int  MPATH_GetSocketPort (struct qsockaddr *addr);
 int  MPATH_SetSocketPort (struct qsockaddr *addr, int port);
+
+#endif // __NET_MP_H
