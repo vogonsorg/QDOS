@@ -600,7 +600,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 R_DrawParticles
 ===============
 */
-extern	cvar_t	*sv_gravity;
+extern	cvar_t	*sv_gravity; /* FS: FIXME:  Is this right relying on sv_gravity for a client? */
 
 void R_DrawParticles (void)
 {
@@ -611,7 +611,7 @@ void R_DrawParticles (void)
 	float			time1;
 	float			dvel;
 	float			frametime;
-	
+
 #ifdef GLQUAKE
 	vec3_t			up, right;
 	float			scale;
@@ -628,6 +628,7 @@ void R_DrawParticles (void)
 	VectorScale (vup, yscaleshrink, r_pup);
 	VectorCopy (vpn, r_ppn);
 #endif
+
 	frametime = cl.time - cl.oldtime;
 	time3 = frametime * 15;
 	time2 = frametime * 10; // 15;
@@ -731,12 +732,8 @@ void R_DrawParticles (void)
 			p->vel[2] -= grav;
 			break;
 
-		case pt_grav:
-#ifdef QUAKE2
-			p->vel[2] -= grav * 20;
-			break;
-#endif
 		case pt_slowgrav:
+		case pt_grav:
 			p->vel[2] -= grav;
 			break;
 		}

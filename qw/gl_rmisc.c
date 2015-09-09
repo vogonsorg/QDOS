@@ -188,7 +188,7 @@ void R_Init (void)
 
 	gl_clear = Cvar_Get("gl_clear", "0", 0);
 	gl_texsort = Cvar_Get("gl_texsort", "1", 0);
- 
+
  	if (gl_mtexable)
 		Cvar_SetValue ("gl_texsort", 0.0);
 
@@ -207,7 +207,7 @@ void R_Init (void)
 	r_waterwarp = Cvar_Get("r_waterwarp", "1", CVAR_ARCHIVE); /* FS: TODO FIXME dummy */
 
 	R_InitBubble();
-	
+
 	R_InitParticles ();
 	R_InitParticleTexture ();
 

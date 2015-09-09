@@ -32,8 +32,8 @@ static bgm_status_t	trk_status;		// Status indicator
 
 #define MAX_WAVLIST 512
 static char		**wav_filelist;		// List of WAV files
-static int			wav_numfiles;		// Number of WAV files
-static int			wav_loopcounter;
+static int		wav_numfiles;		// Number of WAV files
+static int		wav_loopcounter;
 
 static cvar_t	*wav_loopcount;
 static cvar_t	*wav_ambient_track;

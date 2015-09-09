@@ -119,9 +119,6 @@ byte *Mod_DecompressVis (byte *in, model_t *model)
 	row = (model->numleafs+7)>>3;	
 	out = decompressed;
 
-#if 0
-	memcpy (out, in, row);
-#else
 	if (!in)
 	{	// no vis info, so make all visible
 		while (row)
@@ -148,7 +145,6 @@ byte *Mod_DecompressVis (byte *in, model_t *model)
 			c--;
 		}
 	} while (out - decompressed < row);
-#endif
 	
 	return decompressed;
 }
@@ -318,7 +314,6 @@ model_t *Mod_ForName (char *name, qboolean crash)
 	
 	return Mod_LoadModel (mod, crash);
 }
-
 
 /*
 ===============================================================================
@@ -715,7 +710,7 @@ void CalcSurfaceExtents (msurface_t *s)
 	maxs[0] = maxs[1] = -99999;
 
 	tex = s->texinfo;
-	
+
 	for (i=0 ; i<s->numedges ; i++)
 	{
 		e = loadmodel->surfedges[s->firstedge+i];
@@ -723,13 +718,29 @@ void CalcSurfaceExtents (msurface_t *s)
 			v = &loadmodel->vertexes[loadmodel->edges[e].v[0]];
 		else
 			v = &loadmodel->vertexes[loadmodel->edges[-e].v[1]];
-		
+
 		for (j=0 ; j<2 ; j++)
 		{
-			val = v->position[0] * tex->vecs[j][0] + 
-				v->position[1] * tex->vecs[j][1] +
-				v->position[2] * tex->vecs[j][2] +
-				tex->vecs[j][3];
+			/* The following calculation is sensitive to floating-point
+			 * precision.  It needs to produce the same result that the
+			 * light compiler does, because R_BuildLightMap uses surf->
+			 * extents to know the width/height of a surface's lightmap,
+			 * and incorrect rounding here manifests itself as patches
+			 * of "corrupted" looking lightmaps.
+			 * Most light compilers are win32 executables, so they use
+			 * x87 floating point.  This means the multiplies and adds
+			 * are done at 80-bit precision, and the result is rounded
+			 * down to 32-bits and stored in val.
+			 * Adding the casts to double seems to be good enough to fix
+			 * lighting glitches when Quakespasm is compiled as x86_64
+			 * and using SSE2 floating-point.  A potential trouble spot
+			 * is the hallway at the beginning of mfxsp17.  -- ericw
+			 */
+			val =	((double)v->position[0] * (double)tex->vecs[j][0]) +
+				((double)v->position[1] * (double)tex->vecs[j][1]) +
+				((double)v->position[2] * (double)tex->vecs[j][2]) +
+				(double)tex->vecs[j][3];
+
 			if (val < mins[j])
 				mins[j] = val;
 			if (val > maxs[j])
@@ -738,7 +749,7 @@ void CalcSurfaceExtents (msurface_t *s)
 	}
 
 	for (i=0 ; i<2 ; i++)
-	{	
+	{
 		bmins[i] = floor(mins[i]/16);
 		bmaxs[i] = ceil(maxs[i]/16);
 
@@ -787,9 +798,8 @@ void Mod_LoadFaces (lump_t *l)
 		out->texinfo = loadmodel->texinfo + LittleShort (in->texinfo);
 
 		CalcSurfaceExtents (out);
-				
-	// lighting info
 
+	// lighting info
 		for (i=0 ; i<MAXLIGHTMAPS ; i++)
 			out->styles[i] = in->styles[i];
 		i = LittleLong(in->lightofs);
@@ -1210,9 +1220,9 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 	Mod_LoadSubmodels (&header->lumps[LUMP_MODELS]);
 
 	Mod_MakeHull0 ();
-	
+
 	mod->numframes = 2;		// regular and alternate animation
-	
+
 //
 // set up the submodels (FIXME: this is confusing)
 //
@@ -1499,7 +1509,6 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 
 	return (void *)pskintype;
 }
-
 
 //=========================================================================
 

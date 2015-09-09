@@ -51,7 +51,7 @@ cachepic_t	menu_cachepics[MAX_CACHED_PICS];
 int			menu_numcachepics;
 
 
-qpic_t	*Draw_PicFromWad (char *name)
+qpic_t  *Draw_PicFromWad (char *name)
 {
 	return W_GetLumpName (name);
 }
@@ -61,7 +61,7 @@ qpic_t	*Draw_PicFromWad (char *name)
 Draw_CachePic
 ================
 */
-qpic_t	*Draw_CachePic (char *path)
+qpic_t  *Draw_CachePic (char *path)
 {
 	cachepic_t	*pic;
 	int			i;
@@ -142,6 +142,9 @@ void Draw_Character (int x, int y, int num)
 	
 	if (y <= -8 || y > vid.height - 8 || x < 0 || x > vid.width - 8) /* FS and Taniwha: CAx Overflow */
 		return;			// totally off screen
+
+	if (num < 0 || num > 255)
+		return;
 
 	row = num>>4;
 	col = num&15;
@@ -719,12 +722,12 @@ refresh window.
 */
 void Draw_TileClear (int x, int y, int w, int h)
 {
-	int				width=0, height=0; /* FS: Compiler Warning */
+	int				width = 0 , height = 0; /* FS: Compiler Warning */
 	int				tileoffsetx, tileoffsety;
 	byte			*psrc;
 	vrect_t			vr;
 
-	/* Taniwha: SCR_EraseCenterPrint Fix */
+	/* Taniwha: SCR_EraseCenterPrint Fix Begin*/
 	if (x < 0)
 	{
 		width += x;
@@ -742,6 +745,7 @@ void Draw_TileClear (int x, int y, int w, int h)
 
 	if (y + h > vid.height)
 		h = vid.height - y;
+	/* Taniwha: SCR_EraseCenterPrint Fix End */
 
 	r_rectdesc.rect.x = x;
 	r_rectdesc.rect.y = y;

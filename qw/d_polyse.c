@@ -586,22 +586,6 @@ void D_PolysetCalcGradients (int skinwidth)
 
 #endif	// !id386
 
-
-byte gelmap[256];
-void InitGel (byte *palette)
-{
-	int		i;
-	int		r;
-
-	for (i=0 ; i<256 ; i++)
-	{
-//		r = (palette[i*3]>>4);
-		r = (palette[i*3] + palette[i*3+1] + palette[i*3+2])/(16*3);
-		gelmap[i] = /* 64 */ 0 + r;
-	}
-}
-
-
 #if	!id386
 
 /*
@@ -649,7 +633,6 @@ void D_PolysetDrawSpans8 (spanpackage_t *pspanpackage)
 				if ((lzi >> 16) >= *lpz)
 				{
 					*lpdest = ((byte *)acolormap)[*lptex + (llight & 0xFF00)];
-// gel mapping					*lpdest = gelmap[*lpdest];
 					*lpz = lzi >> 16;
 				}
 				lpdest++;

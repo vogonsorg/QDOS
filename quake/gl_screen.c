@@ -261,8 +261,8 @@ Internal use only
 static void SCR_CalcRefdef (void)
 {
 	float		size;
-	int		h;
-	qboolean		full = false;
+	int			h;
+	qboolean	full = false;
 
 
 	scr_fullupdate = 0;		// force a background redraw
@@ -285,7 +285,7 @@ static void SCR_CalcRefdef (void)
 	if (scr_fov->value > 170)
 		Cvar_Set ("fov","170");
 
-// intermission is always full screen	
+// intermission is always full screen
 	if (cl.intermission)
 		size = 120;
 	else
@@ -306,7 +306,7 @@ static void SCR_CalcRefdef (void)
 	if (cl.intermission)
 	{
 		full = true;
-		size = 100;
+		size = 100.0;
 		sb_lines = 0;
 	}
 	size /= 100.0;
@@ -317,7 +317,7 @@ static void SCR_CalcRefdef (void)
 	if (r_refdef.vrect.width < 96)
 	{
 		size = 96.0 / r_refdef.vrect.width;
-		r_refdef.vrect.width = 96;	// min for icons
+		r_refdef.vrect.width = 96; // min for icons
 	}
 
 	r_refdef.vrect.height = vid.height * size;
@@ -463,6 +463,7 @@ void SCR_DrawNet (void)
 
 	Draw_Pic (scr_vrect.x+64, scr_vrect.y, scr_net);
 }
+
 /*
 ==============
 SCR_DrawFPS
@@ -473,7 +474,7 @@ void SCR_DrawFPS (void)
 {
 	int		x, y;
 	char	str[12];
-	float	t;
+	double	t;
 	static	float	lastfps;
 	static	double	lastframetime;
 	extern	int		fps_count;
@@ -500,7 +501,7 @@ void SCR_DrawUptime (void) /* FS: Connection time */
 {
 	char	str[80];
 	int		minutes, seconds, tens, units;
-	int x, y;
+	int		x, y;
 
 	if (!show_uptime->value)
 		return;
@@ -519,6 +520,7 @@ void SCR_DrawUptime (void) /* FS: Connection time */
 	
 	tens = seconds / 10;
 	units = seconds - 10*tens;
+
 	Com_sprintf (str, sizeof(str), "%3i:%i%i", minutes, tens, units);
 	x = vid.width - strlen(str) * 8 - 16;
 	y = vid.height - sb_lines - 24;
@@ -1020,7 +1022,7 @@ void SCR_UpdateScreen (void)
 			SCR_DrawFPS (); /* FS: Show FPS */
 		}
 		Sbar_Draw ();
-		SCR_DrawConsole ();	
+		SCR_DrawConsole ();
 		M_Draw ();
 	}
 

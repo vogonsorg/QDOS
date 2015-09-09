@@ -140,11 +140,9 @@ void Draw_Character (int x, int y, int num)
 
 	num &= 255;
 	
-	if (y <= -8)
+	if (y <= -8 || y > vid.height - 8 || x < 0 || x > vid.width - 8) /* FS and Taniwha: CAx Overflow */
 		return;			// totally off screen
 
-	if (y > vid.height - 8 || x < 0 || x > vid.width - 8)
-		return;
 	if (num < 0 || num > 255)
 		return;
 

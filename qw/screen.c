@@ -151,8 +151,9 @@ void SCR_CenterPrint (char *str)
 
 // count the number of lines for centering
 	scr_center_lines = 1;
-        str = scr_centerstring; // Taniwha: CAx overflow
-        while (*str)
+
+	str = scr_centerstring; // Taniwha: CAx overflow
+	while (*str)
 	{
 		if (*str == '\n')
 			scr_center_lines++;
@@ -223,7 +224,8 @@ void SCR_DrawCenterString (void)
 		if (!*start)
 			break;
 		start++;		// skip the \n
-	} while (1);
+	}
+	while (1);
 }
 
 void SCR_CheckDrawCenterString (void)
@@ -251,19 +253,19 @@ CalcFov
 */
 float CalcFov (float fov_x, float width, float height)
 {
-        float   a;
-        float   x;
+	float a;
+	float x;
 
-        if (fov_x < 1 || fov_x > 179)
-                Sys_Error ("Bad fov: %f", fov_x);
+	if (fov_x < 1 || fov_x > 179)
+		Sys_Error ("Bad fov: %f", fov_x);
 
-        x = width/tan(fov_x/360*M_PI);
+	x = width/tan(fov_x/360*M_PI);
 
-        a = atan (height/x);
+	a = atan (height/x);
 
-        a = a*360/M_PI;
+	a = a*360/M_PI;
 
-        return a;
+	return a;
 }
 
 /*
@@ -343,9 +345,10 @@ Keybinding command
 */
 void SCR_SizeUp_f (void)
 {
-	if (scr_viewsize->value < 120) {
-	Cvar_SetValue ("viewsize",scr_viewsize->value+10);
-	vid.recalc_refdef = 1;
+	if (scr_viewsize->value < 120)
+	{
+		Cvar_SetValue ("viewsize",scr_viewsize->value+10);
+		vid.recalc_refdef = 1;
 	}
 }
 
@@ -456,26 +459,61 @@ void SCR_DrawNet (void)
 	Draw_Pic (scr_vrect.x+64, scr_vrect.y, scr_net);
 }
 
+/*
+==============
+SCR_DrawFPS
+==============
+*/
+/* FS: TODO: Use Knightmare's Q2 code instead */
+void SCR_DrawFPS (void)
+{
+	int		x, y;
+	char	str[12];
+	double	t;
+	static	float	lastfps;
+	static	double	lastframetime;
+	extern	int		fps_count;
+
+	if (!show_fps->value)
+		return;
+
+	t = Sys_DoubleTime();
+
+	if ((t - lastframetime) >= 1.0)
+	{
+		lastfps = fps_count / (t - lastframetime);
+		fps_count = 0;
+		lastframetime = t;
+	}
+
+	Com_sprintf(str, sizeof(str), "%3.1f FPS", lastfps);
+
+	x = vid.width - strlen(str) * 8 - 44; /* FS: Has to be out of the way of the HUD... */
+	y = vid.height - sb_lines - 8;
+	Draw_String (x, y, str);
+}
+
 void SCR_DrawUptime (void) /* FS: Connection time */
 {
-	char	str[80];
-	int		minutes, seconds, tens, units;
-	int		x, y;
+	char str[80];
+	int minutes, seconds, tens, units;
+	int x, y;
 
 	if (!show_uptime->value)
 		return;
 
 	// time
 	if (show_uptime->value == 1) /* FS: Map time or total time playing quake time */
+	{
 		minutes = cl.time / 60;
-	else
-		minutes = realtime / 60;
-
-	if (show_uptime->value == 1)
 		seconds = cl.time - 60*minutes;
+	}
 	else
+	{
+		minutes = realtime / 60;
 		seconds = realtime - 60*minutes;
-
+	}
+	
 	tens = seconds / 10;
 	units = seconds - 10*tens;
 
@@ -487,11 +525,11 @@ void SCR_DrawUptime (void) /* FS: Connection time */
 
 void SCR_DrawTime (void) /* FS: show_time */
 {
-	int x, y;
+	int 		x, y;
 	struct tm	*local = NULL;
-	time_t	utc = 0;
-	const char	*timefmt = NULL;
-	char	st[80];
+	time_t		utc = 0;
+	const char *timefmt = NULL;
+	char		st[80];
 
 	if (!show_time->value)
 		return;
@@ -514,34 +552,6 @@ void SCR_DrawTime (void) /* FS: show_time */
 
 	x = vid.width - strlen(st) * 8 - 44; /* FS: Has to be out of the way of the HUD... */
 	y = vid.height - sb_lines - 16;
-	Draw_String(x, y, st);
-}
-
-void SCR_DrawFPS (void)
-{
-	int x, y;
-	char st[80];
-	static double lastframetime;
-	double t;
-	extern int fps_count;
-	static float lastfps;
-
-	if (!show_fps->value)
-		return;
-
-	t = Sys_DoubleTime();
-
-	if ((t - lastframetime) >= 1.0) 
-	{
-		lastfps = fps_count / (t - lastframetime);
-		fps_count = 0;
-		lastframetime = t;
-	}
-
-	Com_sprintf(st, sizeof(st), "%3.1f FPS", lastfps);
-     
-	x = vid.width - strlen(st) * 8 - 44; /* FS: Has to be out of the way of the HUD... */
-	y = vid.height - sb_lines - 8;
 	Draw_String(x, y, st);
 }
 
@@ -581,7 +591,7 @@ void SCR_DrawPing (void)
 		ping = 999;
 
 	Com_sprintf(st, sizeof(st), "%i", ping);
-     
+
     x = vid.width - strlen(st) * 8 - 44; /* FS: Has to be out of the way of the HUD... */
 	y = vid.height - sb_lines - 32;
 	Draw_String(x, y, st);
@@ -635,6 +645,7 @@ void SCR_SetUpToDrawConsole (void)
 	{
 		scr_conlines = 0;				// none visible
 	}
+
 	if (scr_conlines < scr_con_current)
 	{
 		scr_con_current -= scr_conspeed->value*host_frametime;
@@ -692,7 +703,6 @@ void SCR_DrawConsole (void)
  
 ============================================================================== 
 */ 
-
 
 /* 
 ============== 
@@ -1025,7 +1035,8 @@ void SCR_DrawNotifyString (void)
 		if (!*start)
 			break;
 		start++;		// skip the \n
-	} while (1);
+	}
+	while (1);
 }
 
 /*
@@ -1052,7 +1063,8 @@ int SCR_ModalMessage (char *text)
 	{
 		key_count = -1;		// wait for a key down and up
 		Sys_SendKeyEvents ();
-	} while (key_lastpress != 'y' && key_lastpress != 'n' && key_lastpress != K_ESCAPE);
+	}
+	while (key_lastpress != 'y' && key_lastpress != 'n' && key_lastpress != K_ESCAPE);
 
 	scr_fullupdate = 0;
 	SCR_UpdateScreen ();

@@ -346,8 +346,8 @@ void R_TeleportSplash (vec3_t org)
 
 void R_RocketTrail (vec3_t start, vec3_t end, int type)
 {
-	vec3_t	vec;
-	float	len;
+	vec3_t		vec;
+	float		len;
 	int			j;
 	particle_t	*p;
 
@@ -453,6 +453,7 @@ void R_DrawParticles (void)
 	float			time1;
 	float			dvel;
 	float			frametime;
+
 #ifdef GLQUAKE
 	unsigned char	*at;
 	unsigned char	theAlpha;

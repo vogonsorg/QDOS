@@ -87,18 +87,21 @@ cvar_t	*r_dynamic;
 cvar_t	*r_novis;
 cvar_t	*r_netgraph;
 
+cvar_t	*gl_finish;
 cvar_t	*gl_clear;
 cvar_t	*gl_cull;
 cvar_t	*gl_texsort;
+
 cvar_t	*gl_smoothmodels;
 cvar_t	*gl_affinemodels;
 cvar_t	*gl_polyblend;
 cvar_t	*gl_flashblend;
 cvar_t	*gl_playermip;
 cvar_t	*gl_nocolors;
+
 cvar_t	*gl_keeptjunctions;
 cvar_t	*gl_reporttjunctions;
-cvar_t	*gl_finish;
+
 cvar_t	*r_waterwarp; /* FS: TODO FIXME dummy */
 
 /*
@@ -1120,7 +1123,7 @@ void R_RenderView (void)
 	R_DrawWaterSurfaces ();
 
 	// render mirror view
-//	R_Mirror ();
+	// R_Mirror ();
 
 	R_PolyBlend ();
 

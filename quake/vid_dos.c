@@ -34,10 +34,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "dosisms.h"
 #include "vid_dos.h"
 
-int		vid_modenum;
-vmode_t	*pcurrentmode = NULL;
-int		vid_testingmode, vid_realmode;
-double	vid_testendtime;
+int			vid_modenum;
+vmode_t		*pcurrentmode = NULL;
+int			vid_testingmode, vid_realmode;
+double		vid_testendtime;
 
 cvar_t	*vid_mode;
 cvar_t	*vid_wait;

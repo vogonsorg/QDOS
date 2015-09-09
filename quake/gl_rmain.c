@@ -75,22 +75,22 @@ void R_MarkLeaves (void);
 
 /* FS: Init'd in gl_rmisc in R_Init() */
 cvar_t	*r_norefresh;
-cvar_t	*r_lightmap;
-cvar_t	*r_fullbright;
 cvar_t	*r_drawentities;
 cvar_t	*r_drawviewmodel;
+cvar_t	*r_speeds;
+cvar_t	*r_fullbright;
+cvar_t	*r_lightmap;
 cvar_t	*r_shadows;
 cvar_t	*r_mirroralpha;
 cvar_t	*r_wateralpha;
 cvar_t	*r_dynamic;
 cvar_t	*r_novis;
-cvar_t	*r_speeds;
 
 cvar_t	*gl_finish;
 cvar_t	*gl_clear;
+cvar_t	*gl_cull;
 cvar_t	*gl_texsort;
 
-cvar_t	*gl_cull;
 cvar_t	*gl_smoothmodels;
 cvar_t	*gl_affinemodels;
 cvar_t	*gl_polyblend;
@@ -103,7 +103,7 @@ cvar_t	*gl_reporttjunctions;
 
 cvar_t	*gl_doubleeyes;
 
-cvar_t	*r_waterwarp;
+cvar_t	*r_waterwarp; /* FS: TODO FIXME dummy */
 
 /*
 =================
@@ -531,7 +531,7 @@ void R_DrawAliasModel (entity_t *e)
 
 	if (!strcmp (clmodel->name, "progs/eyes.mdl") && gl_doubleeyes->value) {
 		glTranslatef (paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2] - (22 + 8));
-// double size of eyes, since they are really hard to see in gl
+	// double size of eyes, since they are really hard to see in gl
 		glScalef (paliashdr->scale[0]*2, paliashdr->scale[1]*2, paliashdr->scale[2]*2);
 	} else {
 		glTranslatef (paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
@@ -626,8 +626,8 @@ void R_DrawEntitiesOnList (void)
 		case mod_sprite:
 			R_DrawSpriteModel (currententity);
 			break;
-		case mod_brush:
-		case mod_alias:
+
+		default :
 			break;
 		}
 	}

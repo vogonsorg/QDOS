@@ -633,7 +633,6 @@ void D_PolysetDrawSpans8 (spanpackage_t *pspanpackage)
 				if ((lzi >> 16) >= *lpz)
 				{
 					*lpdest = ((byte *)acolormap)[*lptex + (llight & 0xFF00)];
-// gel mapping					*lpdest = gelmap[*lpdest];
 					*lpz = lzi >> 16;
 				}
 				lpdest++;
@@ -729,6 +728,9 @@ void D_RasterizeAliasPolySmooth (void)
 //
 // scan out the top (and possibly only) part of the left edge
 //
+	D_PolysetSetUpForLineScan(plefttop[0], plefttop[1],
+						  pleftbottom[0], pleftbottom[1]);
+
 	d_pedgespanpackage = a_spans;
 
 	ystart = plefttop[1];
@@ -739,88 +741,61 @@ void D_RasterizeAliasPolySmooth (void)
 #if	id386
 	d_sfrac = (plefttop[2] & 0xFFFF) << 16;
 	d_tfrac = (plefttop[3] & 0xFFFF) << 16;
+	d_pzbasestep = (d_zwidth + ubasestep) << 1;
+	d_pzextrastep = d_pzbasestep + 2;
 #else
 	d_sfrac = plefttop[2] & 0xFFFF;
 	d_tfrac = plefttop[3] & 0xFFFF;
+	d_pzbasestep = d_zwidth + ubasestep;
+	d_pzextrastep = d_pzbasestep + 1;
 #endif
 	d_light = plefttop[4];
 	d_zi = plefttop[5];
 
+	d_pdestbasestep = screenwidth + ubasestep;
+	d_pdestextrastep = d_pdestbasestep + 1;
 	d_pdest = (byte *)d_viewbuffer +
 			ystart * screenwidth + plefttop[0];
 	d_pz = d_pzbuffer + ystart * d_zwidth + plefttop[0];
 
-	if (initialleftheight == 1)
-	{
-		d_pedgespanpackage->pdest = d_pdest;
-		d_pedgespanpackage->pz = d_pz;
-		d_pedgespanpackage->count = d_aspancount;
-		d_pedgespanpackage->ptex = d_ptex;
+// TODO: can reuse partial expressions here
 
-		d_pedgespanpackage->sfrac = d_sfrac;
-		d_pedgespanpackage->tfrac = d_tfrac;
-
-	// FIXME: need to clamp l, s, t, at both ends?
-		d_pedgespanpackage->light = d_light;
-		d_pedgespanpackage->zi = d_zi;
-
-		d_pedgespanpackage++;
-	}
+// for negative steps in x along left edge, bias toward overflow rather than
+// underflow (sort of turning the floor () we did in the gradient calcs into
+// ceil (), but plus a little bit)
+	if (ubasestep < 0)
+		working_lstepx = r_lstepx - 1;
 	else
-	{
-		D_PolysetSetUpForLineScan(plefttop[0], plefttop[1],
-							  pleftbottom[0], pleftbottom[1]);
+		working_lstepx = r_lstepx;
 
-	#if	id386
-		d_pzbasestep = (d_zwidth + ubasestep) << 1;
-		d_pzextrastep = d_pzbasestep + 2;
-	#else
-		d_pzbasestep = d_zwidth + ubasestep;
-		d_pzextrastep = d_pzbasestep + 1;
-	#endif
+	d_countextrastep = ubasestep + 1;
+	d_ptexbasestep = ((r_sstepy + r_sstepx * ubasestep) >> 16) +
+			((r_tstepy + r_tstepx * ubasestep) >> 16) *
+			r_affinetridesc.skinwidth;
+#if	id386
+	d_sfracbasestep = (r_sstepy + r_sstepx * ubasestep) << 16;
+	d_tfracbasestep = (r_tstepy + r_tstepx * ubasestep) << 16;
+#else
+	d_sfracbasestep = (r_sstepy + r_sstepx * ubasestep) & 0xFFFF;
+	d_tfracbasestep = (r_tstepy + r_tstepx * ubasestep) & 0xFFFF;
+#endif
+	d_lightbasestep = r_lstepy + working_lstepx * ubasestep;
+	d_zibasestep = r_zistepy + r_zistepx * ubasestep;
 
-		d_pdestbasestep = screenwidth + ubasestep;
-		d_pdestextrastep = d_pdestbasestep + 1;
+	d_ptexextrastep = ((r_sstepy + r_sstepx * d_countextrastep) >> 16) +
+			((r_tstepy + r_tstepx * d_countextrastep) >> 16) *
+			r_affinetridesc.skinwidth;
+#if	id386
+	d_sfracextrastep = (r_sstepy + r_sstepx*d_countextrastep) << 16;
+	d_tfracextrastep = (r_tstepy + r_tstepx*d_countextrastep) << 16;
+#else
+	d_sfracextrastep = (r_sstepy + r_sstepx*d_countextrastep) & 0xFFFF;
+	d_tfracextrastep = (r_tstepy + r_tstepx*d_countextrastep) & 0xFFFF;
+#endif
+	d_lightextrastep = d_lightbasestep + working_lstepx;
+	d_ziextrastep = d_zibasestep + r_zistepx;
 
-	// TODO: can reuse partial expressions here
-
-	// for negative steps in x along left edge, bias toward overflow rather than
-	// underflow (sort of turning the floor () we did in the gradient calcs into
-	// ceil (), but plus a little bit)
-		if (ubasestep < 0)
-			working_lstepx = r_lstepx - 1;
-		else
-			working_lstepx = r_lstepx;
-
-		d_countextrastep = ubasestep + 1;
-		d_ptexbasestep = ((r_sstepy + r_sstepx * ubasestep) >> 16) +
-				((r_tstepy + r_tstepx * ubasestep) >> 16) *
-				r_affinetridesc.skinwidth;
-	#if	id386
-		d_sfracbasestep = (r_sstepy + r_sstepx * ubasestep) << 16;
-		d_tfracbasestep = (r_tstepy + r_tstepx * ubasestep) << 16;
-	#else
-		d_sfracbasestep = (r_sstepy + r_sstepx * ubasestep) & 0xFFFF;
-		d_tfracbasestep = (r_tstepy + r_tstepx * ubasestep) & 0xFFFF;
-	#endif
-		d_lightbasestep = r_lstepy + working_lstepx * ubasestep;
-		d_zibasestep = r_zistepy + r_zistepx * ubasestep;
-
-		d_ptexextrastep = ((r_sstepy + r_sstepx * d_countextrastep) >> 16) +
-				((r_tstepy + r_tstepx * d_countextrastep) >> 16) *
-				r_affinetridesc.skinwidth;
-	#if	id386
-		d_sfracextrastep = (r_sstepy + r_sstepx*d_countextrastep) << 16;
-		d_tfracextrastep = (r_tstepy + r_tstepx*d_countextrastep) << 16;
-	#else
-		d_sfracextrastep = (r_sstepy + r_sstepx*d_countextrastep) & 0xFFFF;
-		d_tfracextrastep = (r_tstepy + r_tstepx*d_countextrastep) & 0xFFFF;
-	#endif
-		d_lightextrastep = d_lightbasestep + working_lstepx;
-		d_ziextrastep = d_zibasestep + r_zistepx;
-
-		D_PolysetScanLeftEdge (initialleftheight);
-	}
+	D_PolysetScanLeftEdge (initialleftheight);
 
 //
 // scan out the bottom part of the left edge, if it exists
@@ -831,6 +806,9 @@ void D_RasterizeAliasPolySmooth (void)
 
 		plefttop = pleftbottom;
 		pleftbottom = pedgetable->pleftedgevert2;
+
+		D_PolysetSetUpForLineScan(plefttop[0], plefttop[1],
+							  pleftbottom[0], pleftbottom[1]);
 
 		height = pleftbottom[1] - plefttop[1];
 
@@ -845,75 +823,51 @@ void D_RasterizeAliasPolySmooth (void)
 		d_light = plefttop[4];
 		d_zi = plefttop[5];
 
+		d_pdestbasestep = screenwidth + ubasestep;
+		d_pdestextrastep = d_pdestbasestep + 1;
 		d_pdest = (byte *)d_viewbuffer + ystart * screenwidth + plefttop[0];
+#if	id386
+		d_pzbasestep = (d_zwidth + ubasestep) << 1;
+		d_pzextrastep = d_pzbasestep + 2;
+#else
+		d_pzbasestep = d_zwidth + ubasestep;
+		d_pzextrastep = d_pzbasestep + 1;
+#endif
 		d_pz = d_pzbuffer + ystart * d_zwidth + plefttop[0];
 
-		if (height == 1)
-		{
-			d_pedgespanpackage->pdest = d_pdest;
-			d_pedgespanpackage->pz = d_pz;
-			d_pedgespanpackage->count = d_aspancount;
-			d_pedgespanpackage->ptex = d_ptex;
-
-			d_pedgespanpackage->sfrac = d_sfrac;
-			d_pedgespanpackage->tfrac = d_tfrac;
-
-		// FIXME: need to clamp l, s, t, at both ends?
-			d_pedgespanpackage->light = d_light;
-			d_pedgespanpackage->zi = d_zi;
-
-			d_pedgespanpackage++;
-		}
+		if (ubasestep < 0)
+			working_lstepx = r_lstepx - 1;
 		else
-		{
-			D_PolysetSetUpForLineScan(plefttop[0], plefttop[1],
-								  pleftbottom[0], pleftbottom[1]);
+			working_lstepx = r_lstepx;
 
-			d_pdestbasestep = screenwidth + ubasestep;
-			d_pdestextrastep = d_pdestbasestep + 1;
+		d_countextrastep = ubasestep + 1;
+		d_ptexbasestep = ((r_sstepy + r_sstepx * ubasestep) >> 16) +
+				((r_tstepy + r_tstepx * ubasestep) >> 16) *
+				r_affinetridesc.skinwidth;
+#if	id386
+		d_sfracbasestep = (r_sstepy + r_sstepx * ubasestep) << 16;
+		d_tfracbasestep = (r_tstepy + r_tstepx * ubasestep) << 16;
+#else
+		d_sfracbasestep = (r_sstepy + r_sstepx * ubasestep) & 0xFFFF;
+		d_tfracbasestep = (r_tstepy + r_tstepx * ubasestep) & 0xFFFF;
+#endif
+		d_lightbasestep = r_lstepy + working_lstepx * ubasestep;
+		d_zibasestep = r_zistepy + r_zistepx * ubasestep;
 
-	#if	id386
-			d_pzbasestep = (d_zwidth + ubasestep) << 1;
-			d_pzextrastep = d_pzbasestep + 2;
-	#else
-			d_pzbasestep = d_zwidth + ubasestep;
-			d_pzextrastep = d_pzbasestep + 1;
-	#endif
+		d_ptexextrastep = ((r_sstepy + r_sstepx * d_countextrastep) >> 16) +
+				((r_tstepy + r_tstepx * d_countextrastep) >> 16) *
+				r_affinetridesc.skinwidth;
+#if	id386
+		d_sfracextrastep = ((r_sstepy+r_sstepx*d_countextrastep) & 0xFFFF)<<16;
+		d_tfracextrastep = ((r_tstepy+r_tstepx*d_countextrastep) & 0xFFFF)<<16;
+#else
+		d_sfracextrastep = (r_sstepy+r_sstepx*d_countextrastep) & 0xFFFF;
+		d_tfracextrastep = (r_tstepy+r_tstepx*d_countextrastep) & 0xFFFF;
+#endif
+		d_lightextrastep = d_lightbasestep + working_lstepx;
+		d_ziextrastep = d_zibasestep + r_zistepx;
 
-			if (ubasestep < 0)
-				working_lstepx = r_lstepx - 1;
-			else
-				working_lstepx = r_lstepx;
-
-			d_countextrastep = ubasestep + 1;
-			d_ptexbasestep = ((r_sstepy + r_sstepx * ubasestep) >> 16) +
-					((r_tstepy + r_tstepx * ubasestep) >> 16) *
-					r_affinetridesc.skinwidth;
-	#if	id386
-			d_sfracbasestep = (r_sstepy + r_sstepx * ubasestep) << 16;
-			d_tfracbasestep = (r_tstepy + r_tstepx * ubasestep) << 16;
-	#else
-			d_sfracbasestep = (r_sstepy + r_sstepx * ubasestep) & 0xFFFF;
-			d_tfracbasestep = (r_tstepy + r_tstepx * ubasestep) & 0xFFFF;
-	#endif
-			d_lightbasestep = r_lstepy + working_lstepx * ubasestep;
-			d_zibasestep = r_zistepy + r_zistepx * ubasestep;
-
-			d_ptexextrastep = ((r_sstepy + r_sstepx * d_countextrastep) >> 16) +
-					((r_tstepy + r_tstepx * d_countextrastep) >> 16) *
-					r_affinetridesc.skinwidth;
-	#if	id386
-			d_sfracextrastep = ((r_sstepy+r_sstepx*d_countextrastep) & 0xFFFF)<<16;
-			d_tfracextrastep = ((r_tstepy+r_tstepx*d_countextrastep) & 0xFFFF)<<16;
-	#else
-			d_sfracextrastep = (r_sstepy+r_sstepx*d_countextrastep) & 0xFFFF;
-			d_tfracextrastep = (r_tstepy+r_tstepx*d_countextrastep) & 0xFFFF;
-	#endif
-			d_lightextrastep = d_lightbasestep + working_lstepx;
-			d_ziextrastep = d_zibasestep + r_zistepx;
-
-			D_PolysetScanLeftEdge (height);
-		}
+		D_PolysetScanLeftEdge (height);
 	}
 
 // scan out the top (and possibly only) part of the right edge, updating the

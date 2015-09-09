@@ -23,8 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-#define GL_COLOR_INDEX8_EXT	0x80E5
-
 extern unsigned char d_15to8table[65536];
 
 cvar_t		*gl_nobind;
@@ -1230,10 +1228,11 @@ static	unsigned	trans[640*480];		// FIXME, temporary
 		}
 	}
 
- 	if (VID_Is8bit() && !alpha && (data!=scrap_texels[0])) {
- 		GL_Upload8_EXT (data, width, height, mipmap, alpha);
- 		return;
+	if (VID_Is8bit() && !alpha && (data!=scrap_texels[0])) {
+		GL_Upload8_EXT (data, width, height, mipmap, alpha);
+		return;
 	}
+
 	GL_Upload32 (trans, width, height, mipmap, alpha);
 }
 

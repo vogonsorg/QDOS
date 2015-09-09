@@ -135,7 +135,6 @@ PROC glVertexPointerEXT;
 typedef void (APIENTRY *lp3DFXFUNC) (int, int, int, int, int, const void*);
 lp3DFXFUNC glColorTableEXT;
 qboolean is8bit = false;
-qboolean isPermedia = false;
 qboolean gl_mtexable = false;
 
 //====================================
@@ -603,9 +602,6 @@ void GL_Init (void)
 
     if (strnicmp(gl_renderer,"PowerVR",7)==0)
          fullsbardraw = true;
-
-    if (strnicmp(gl_renderer,"Permedia",8)==0)
-         isPermedia = true;
 
 	CheckTextureExtensions ();
 	CheckMultiTextureExtensions ();

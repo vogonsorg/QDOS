@@ -32,11 +32,11 @@ int		lightmap_bytes;		// 1, 2, or 4
 
 int		lightmap_textures;
 
-
 #define	BLOCK_WIDTH		128
 #define	BLOCK_HEIGHT	128
 
 unsigned		blocklights[BLOCK_WIDTH*BLOCK_HEIGHT*3];
+
 #define	MAX_LIGHTMAPS	256 // johnfitz -- was 64
 int			active_lightmaps;
 
@@ -706,16 +706,6 @@ void R_BlendLightmaps (void)
 		{
 			lightmap_modified[i] = false;
 			theRect = &lightmap_rectchange[i];
-//			theRect->l = 0;
-//			theRect->t = 0;
-//			theRect->w = BLOCK_WIDTH;
-//			theRect->h = BLOCK_HEIGHT;
-//			glTexImage2D (GL_TEXTURE_2D, 0, lightmap_bytes
-//			, BLOCK_WIDTH, BLOCK_HEIGHT, 0, 
-//			gl_lightmap_format, GL_UNSIGNED_BYTE, lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*lightmap_bytes);
-//			glTexImage2D (GL_TEXTURE_2D, 0, lightmap_bytes
-//				, BLOCK_WIDTH, theRect->h, 0, 
-//				gl_lightmap_format, GL_UNSIGNED_BYTE, lightmaps+(i*BLOCK_HEIGHT+theRect->t)*BLOCK_WIDTH*lightmap_bytes);
 			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, theRect->t, 
 				BLOCK_WIDTH, theRect->h, gl_lightmap_format, GL_UNSIGNED_BYTE,
 				lightmaps+(i* BLOCK_HEIGHT + theRect->t) *BLOCK_WIDTH*lightmap_bytes);
@@ -768,7 +758,7 @@ void R_RenderBrushPoly (msurface_t *fa)
 	texture_t	*t;
 	byte		*base;
 	int			maps;
-	glRect_t    *theRect;
+	glRect_t	*theRect;
 	int smax, tmax;
 
 	c_brush_polys++;
@@ -847,7 +837,7 @@ void R_RenderDynamicLightmaps (msurface_t *fa)
 {
 	byte		*base;
 	int			maps;
-	glRect_t    *theRect;
+	glRect_t	*theRect;
 	int smax, tmax;
 
 	c_brush_polys++;
@@ -927,7 +917,7 @@ void R_DrawWaterSurfaces (void)
 	//
 	// go back to the world matrix
 	//
-    glLoadMatrixf (r_world_matrix);
+	glLoadMatrixf (r_world_matrix);
 
 	glEnable (GL_BLEND);
 	glColor4f (1,1,1,r_wateralpha->value);
@@ -977,7 +967,7 @@ void R_DrawWaterSurfaces (void)
 	// go back to the world matrix
 	//
 
-    glLoadMatrixf (r_world_matrix);
+	glLoadMatrixf (r_world_matrix);
 
 	if (r_wateralpha->value < 1.0) {
 		glEnable (GL_BLEND);
@@ -1153,7 +1143,7 @@ void R_DrawBrushModel (entity_t *e)
 		}
 	}
 
-    glPushMatrix ();
+	glPushMatrix ();
 e->angles[0] = -e->angles[0];	// stupid quake bug
 	R_RotateForEntity (e);
 e->angles[0] = -e->angles[0];	// stupid quake bug
@@ -1345,7 +1335,7 @@ void R_DrawWorld (void)
 
 	R_RecursiveWorldNode (cl.worldmodel->nodes);
 
-		DrawTextureChains ();
+	DrawTextureChains ();
 
 	R_BlendLightmaps ();
 

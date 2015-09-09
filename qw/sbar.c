@@ -151,7 +151,7 @@ void Sbar_Init (void)
 	sb_weapons[0][4] = Draw_PicFromWad ("inv_rlaunch");
 	sb_weapons[0][5] = Draw_PicFromWad ("inv_srlaunch");
 	sb_weapons[0][6] = Draw_PicFromWad ("inv_lightng");
-	
+
 	sb_weapons[1][0] = Draw_PicFromWad ("inv2_shotgun");
 	sb_weapons[1][1] = Draw_PicFromWad ("inv2_sshotgun");
 	sb_weapons[1][2] = Draw_PicFromWad ("inv2_nailgun");
@@ -159,7 +159,7 @@ void Sbar_Init (void)
 	sb_weapons[1][4] = Draw_PicFromWad ("inv2_rlaunch");
 	sb_weapons[1][5] = Draw_PicFromWad ("inv2_srlaunch");
 	sb_weapons[1][6] = Draw_PicFromWad ("inv2_lightng");
-	
+
 	for (i=0 ; i<5 ; i++)
 	{
 		sb_weapons[2+i][0] = Draw_PicFromWad (va("inva%i_shotgun",i+1));
@@ -289,18 +289,18 @@ int Sbar_itoa (int num, char *buf)
 	char	*str;
 	int		pow10;
 	int		dig;
-	
+
 	str = buf;
-	
+
 	if (num < 0)
 	{
 		*str++ = '-';
 		num = -num;
 	}
-	
+
 	for (pow10 = 10 ; num >= pow10 ; pow10 *= 10)
 	;
-	
+
 	do
 	{
 		pow10 /= 10;
@@ -308,9 +308,9 @@ int Sbar_itoa (int num, char *buf)
 		*str++ = '0'+dig;
 		num -= dig*pow10;
 	} while (pow10 != 1);
-	
+
 	*str = 0;
-	
+
 	return str-buf;
 }
 

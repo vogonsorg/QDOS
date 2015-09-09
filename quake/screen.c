@@ -78,7 +78,7 @@ CENTER PRINTING
 ===============================================================================
 */
 
-char		scr_centerstring[1024]; 
+char		scr_centerstring[1024];
 float		scr_centertime_start;	// for slow victory printing
 float		scr_centertime_off;
 int			scr_center_lines;
@@ -203,8 +203,8 @@ CalcFov
 */
 float CalcFov (float fov_x, float width, float height)
 {
-	float   a;
-	float   x;
+	float a;
+	float x;
 
 	if (fov_x < 1 || fov_x > 179)
 		Sys_Error ("Bad fov: %f", fov_x);
@@ -326,7 +326,7 @@ SCR_Init
 void SCR_Init (void)
 {
 	scr_viewsize = Cvar_Get("viewsize","100", CVAR_ARCHIVE);
-	scr_fov = Cvar_Get("fov","90", 0);	// 10 - 170
+	scr_fov = Cvar_Get("fov","90", 0); // 10 - 170
 	scr_conspeed = Cvar_Get("scr_conspeed","1000", 0); /* FS: Was 300 */
 	scr_centertime = Cvar_Get("scr_centertime","2", 0);
 	scr_showram = Cvar_Get("showram","1", 0);
@@ -424,7 +424,7 @@ void SCR_DrawFPS (void)
 {
 	int		x, y;
 	char	str[12];
-	float	t;
+	double	t;
 	static	float	lastfps;
 	static	double	lastframetime;
 	extern	int		fps_count;
@@ -442,6 +442,7 @@ void SCR_DrawFPS (void)
 	}
 
 	Com_sprintf(str, sizeof(str), "%3.1f FPS", lastfps);
+
 	x = vid.width - strlen(str) * 8 - 16;
 	y = vid.height - sb_lines - 8;
 	Draw_String (x, y, str);
@@ -449,8 +450,8 @@ void SCR_DrawFPS (void)
 
 void SCR_DrawUptime (void) /* FS: Connection time */
 {
-	char	str[80];
-	int		minutes, seconds, tens, units;
+	char str[80];
+	int minutes, seconds, tens, units;
 	int x, y;
 
 	if (!show_uptime->value)
@@ -470,6 +471,7 @@ void SCR_DrawUptime (void) /* FS: Connection time */
 	
 	tens = seconds / 10;
 	units = seconds - 10*tens;
+
 	Com_sprintf (str, sizeof(str), "%3i:%i%i", minutes, tens, units);
 	x = vid.width - strlen(str) * 8 - 16;
 	y = vid.height - sb_lines - 24;
@@ -574,10 +576,14 @@ void SCR_SetUpToDrawConsole (void)
 		scr_con_current = scr_conlines;
 	}
 	else if (key_dest == key_console)
+	{
 		scr_conlines = vid.height/2;	// half screen
+	}
 	else
+	{
 		scr_conlines = 0;				// none visible
-	
+	}
+
 	if (scr_conlines < scr_con_current)
 	{
 		scr_con_current -= scr_conspeed->value*host_frametime;

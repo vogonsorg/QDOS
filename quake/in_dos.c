@@ -282,33 +282,20 @@ void IN_MouseMove (usercmd_t *cmd)
 	if ( ((in_mlook.state & 1) && !(in_strafe.state & 1)) || (in_freelook->value && !(in_strafe.state & 1))) /* FS: mlook */
 	{
 		cl.viewangles[PITCH] += m_pitch->value * mouse_y;
-/*
-		if (cl.viewangles[PITCH] > 80)
-			cl.viewangles[PITCH] = 80;
-		if (cl.viewangles[PITCH] < -70)
-			cl.viewangles[PITCH] = -70;
-*/
+
 		if (pq_fullpitch->value || cl_fullpitch->value) /* FS: ProQuake server shit */
 		{
-			if (cl.viewangles[PITCH] > 90)
-			{
-				cl.viewangles[PITCH] = 90;
-			}
-			if (cl.viewangles[PITCH] < -90)
-			{
-				cl.viewangles[PITCH] = -90;
-			}
+			if (cl.viewangles[PITCH] > 90.0)
+				cl.viewangles[PITCH] = 90.0;
+			if (cl.viewangles[PITCH] < -90.0)
+				cl.viewangles[PITCH] = -90.0;
 		}
 		else
 		{
-			if (cl.viewangles[PITCH] > 80)
-			{
-				cl.viewangles[PITCH] = 80;
-			}
-			if (cl.viewangles[PITCH] < -70)
-			{
-				cl.viewangles[PITCH] = -70;
-			}
+			if (cl.viewangles[PITCH] > 80.0)
+				cl.viewangles[PITCH] = 80.0;
+			if (cl.viewangles[PITCH] < -70.0)
+				cl.viewangles[PITCH] = -70.0;
 		}
 	}
 	else
@@ -595,10 +582,20 @@ void IN_ExternalMove (usercmd_t *cmd)
 	cmd->sidemove = extern_control->sidemove;
 	cmd->upmove = extern_control->upmove;
 
-	if (cl.viewangles[PITCH] > 80)
-		cl.viewangles[PITCH] = 80;
-	if (cl.viewangles[PITCH] < -70)
-		cl.viewangles[PITCH] = -70;
+		if (pq_fullpitch->value || cl_fullpitch->value) /* FS: ProQuake server shit */
+		{
+			if (cl.viewangles[PITCH] > 90.0)
+				cl.viewangles[PITCH] = 90.0;
+			if (cl.viewangles[PITCH] < -90.0)
+				cl.viewangles[PITCH] = -90.0;
+		}
+		else
+		{
+			if (cl.viewangles[PITCH] > 80.0)
+				cl.viewangles[PITCH] = 80.0;
+			if (cl.viewangles[PITCH] < -70.0)
+				cl.viewangles[PITCH] = -70.0;
+		}
 
 	freelook = (extern_control->flags & AUX_FLAG_FREELOOK || aux_look->value || in_mlook.state & 1 || in_freelook->value); /* FS: mlook */
 

@@ -272,7 +272,6 @@ will have them chained together.
 */
 void EmitBothSkyLayers (msurface_t *fa)
 {
-
 	GL_DisableMultitexture();
 
 	GL_Bind (solidskytexture);
