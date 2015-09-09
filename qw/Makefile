@@ -18,8 +18,8 @@ GLQUAKE=0
 
 CFLAGS += -g -Wall -Werror -O2 -DNDEBUG -fno-strict-aliasing
 CFLAGS += -fomit-frame-pointer -DWATT32_NO_OLDIES -I../wat/inc
-LDFLAGS = -L../wat/lib
-LIBS    = -lwatt
+LDFLAGS =
+LIBS    =
 EXE     = qw.exe
 
 ifeq ($(USE_SSE),1)
@@ -70,7 +70,7 @@ CFLAGS += -DUSE_CURL -DCURL_NO_OLDIES
 CFLAGS += -I../libcurl/include
 LIBS   += -L../libcurl/lib -lcurl
 endif
-LIBS   += -lm
+LIBS   += -L../wat/lib -lwatt -lm
 
 # subdirectory for objects
 O=dos
