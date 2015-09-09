@@ -95,4 +95,3 @@ char *Con_Quakebar (int len); /* FS: From fitzquake */
 void Con_LogCenterPrint (char *str);  /* FS: from fitzquake */
 
 #endif // __CONSOLE_H
-

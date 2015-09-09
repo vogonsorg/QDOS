@@ -133,4 +133,5 @@ typedef struct {
 
 #define IDPOLYHEADER	(('O'<<24)+('P'<<16)+('D'<<8)+'I')
 														// little-endian "IDPO"
+
 #endif // __MODELGEN_H

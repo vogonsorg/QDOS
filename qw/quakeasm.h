@@ -17,9 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-//
+
 // quakeasm.h: general asm header file
-//
+
+#ifndef __QUAKEASM_H
+#define __QUAKEASM_H
 
 #if defined(_WIN32) && !defined(WINDED)
 
@@ -269,3 +271,4 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	.extern C(vup)
 	.extern C(vpn)
 	.extern C(BOPS_Error)
+#endif // __QUAKEASM_H

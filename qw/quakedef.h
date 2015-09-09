@@ -17,16 +17,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 // quakedef.h -- primary header for client
 
-#define	QUAKE_GAME			// as opposed to utilities
+#ifndef __QUAKEDEF_H
+#define __QUAKEDEF_H
+
+#define QUAKE_GAME                      // as opposed to utilities
 
 //define	PARANOID			// speed sapping error checking
 
 #ifdef _WIN32
 #pragma warning( disable : 4244 4127 4201 4214 4514 4305 4115 4018)
 #endif
-
 
 #include <math.h>
 #include <string.h>
@@ -164,3 +167,4 @@ char *Sys_FindFirst (char *path, unsigned musthave, unsigned canthave);
 char *Sys_FindNext (unsigned musthave, unsigned canthave);
 void Sys_FindClose (void);
 
+#endif // __QUAKEDEF_H

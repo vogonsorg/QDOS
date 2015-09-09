@@ -3,9 +3,10 @@ Original Concept and WATTCP import coding by NeoZeed
 Coding by [HCI]Mara'akate
 
 Additional code from sezero, taniwha, spoike, LordHavoc, 
-   QuakeForge, Fitzquake, Quakespasm, Darkplaces and more.
+   QuakeForge, FitzQuake, QuakeSpasm, Darkplaces and more.
 ---------------------------------------------------------
 
+* Use qdos.cfg instead of config.cfg so we won't clash with other ports.
 * Use Quake 2's CVAR system.  This allows early config files reads and
   the use of +set <cvar> at startup.
 * Gamma control for 3DFX cards from sezero's uHexen2 port.

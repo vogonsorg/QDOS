@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// comndef.h  -- general definitions
+// common.h  -- general definitions
 
 #ifndef __COMMON_H
 #define __COMMON_H
@@ -278,9 +278,9 @@ void COM_LoadCacheFile (char *path, struct cache_user_s *cu);
 void COM_CreatePath (char *path);
 void COM_Gamedir (char *dir);
 
-/* FS: New Stuff */
-int Q_tolower (int c);
-int Q_toupper (int c);
+/* FS: New stuff */
+int Q_tolower(int c);
+int Q_toupper(int c);
 
 /* FS: From Q2 */
 char *COM_NextPath (char *prevpath);
@@ -307,4 +307,5 @@ int build_number( void );
 void CompleteCommand (void); /* FS: Autocomplete commands */
 void Com_sprintf (char *dest, int size, char *fmt, ...); /* FS: Added */
 void Com_strcpy (char *dest, int destSize, const char *src); /* FS: Added */
+
 #endif // __COMMON_H

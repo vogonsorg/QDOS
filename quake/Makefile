@@ -23,7 +23,7 @@ LIBS   =
 EXE = qdos.exe
 
 ifeq ($(USE_SSE),1)
-CFLAGS+= -mtune=pentium3 -march=pentium3 -mfpmath=sse
+CFLAGS += -mtune=pentium3 -march=pentium3 -mfpmath=sse
 else
 CFLAGS += -mtune=pentium
 endif
@@ -100,9 +100,9 @@ GAMESPY = $(O)/Goa/CEngine/darray.o \
 	$(O)/Goa/nonport.o
 
 # not too sophisticated dependency
-OBJS=	$(SYSOBJ_DXE)    \
-	$(SYSOBJ_NET)    \
-	$(GAMESPY)       \
+OBJS=	$(SYSOBJ_DXE)   \
+	$(SYSOBJ_NET)   \
+	$(GAMESPY)      \
 	$(O)/cd_audio.o \
 	$(O)/chase.o    \
 	$(O)/cl_demo.o  \
@@ -116,7 +116,7 @@ OBJS=	$(SYSOBJ_DXE)    \
 	$(O)/crc.o      \
 	$(O)/cvar.o     \
 	$(O)/dos_v2.o   \
-	$(O)/dstring.o   \
+	$(O)/dstring.o  \
 	$(O)/host.o     \
 	$(O)/host_cmd.o \
 	$(O)/in_dos.o   \
@@ -133,7 +133,7 @@ OBJS=	$(SYSOBJ_DXE)    \
 	$(O)/pr_cmds.o  \
 	$(O)/pr_edict.o \
 	$(O)/pr_exec.o  \
-	$(O)/r_part.o \
+	$(O)/r_part.o   \
 	$(O)/sbar.o     \
 	$(O)/snd_dma.o  \
 	$(O)/snd_dos.o  \
@@ -142,23 +142,23 @@ OBJS=	$(SYSOBJ_DXE)    \
 	$(O)/snd_mix.o  \
 	$(O)/snd_mixa.o \
 	$(O)/snd_pci.o  \
-	$(O)/snd_sb.o  \
-	$(O)/snd_strm.o  \
+	$(O)/snd_sb.o   \
+	$(O)/snd_strm.o \
 	$(O)/snd_wavstream.o  \
 	$(O)/sv_main.o  \
 	$(O)/sv_move.o  \
 	$(O)/sv_phys.o  \
 	$(O)/sv_user.o  \
-	$(O)/sys_dos.o \
+	$(O)/sys_dos.o  \
 	$(O)/sys_dosa.o \
-	$(O)/sys_find.o  \
+	$(O)/sys_find.o \
 	$(O)/view.o     \
 	$(O)/wad.o      \
 	$(O)/world.o    \
 	$(O)/zone.o
 
 ifeq ($(GLQUAKE),0)
-REFSOFT = $(O)/d_copy.o   \
+REFSOFT = $(O)/d_copy.o \
 	$(O)/d_draw.o   \
 	$(O)/d_draw16.o \
 	$(O)/d_edge.o   \
@@ -209,18 +209,18 @@ REFSOFT = $(O)/d_copy.o   \
 endif
 
 ifeq ($(GLQUAKE),1)
-REFGL = $(O)/fx_gamma.o \
-	$(O)/gl_draw.o \
-	$(O)/gl_mesh.o \
-	$(O)/gl_model.o \
+REFGL = $(O)/fx_gamma.o  \
+	$(O)/gl_draw.o   \
+	$(O)/gl_mesh.o   \
+	$(O)/gl_model.o  \
 	$(O)/gl_refrag.o \
 	$(O)/gl_rlight.o \
-	$(O)/gl_rmain.o \
-	$(O)/gl_rmisc.o \
-	$(O)/gl_rsurf.o \
+	$(O)/gl_rmain.o  \
+	$(O)/gl_rmisc.o  \
+	$(O)/gl_rsurf.o  \
 	$(O)/gl_screen.o \
-	$(O)/gl_test.o \
-	$(O)/gl_warp.o \
+	$(O)/gl_test.o   \
+	$(O)/gl_warp.o   \
 	$(O)/gl_viddos.o
 endif
 

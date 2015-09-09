@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define DS_SPAN_LIST_END	-128
 
-#define SURFCACHE_SIZE_AT_320X200       4096*1024 /* FS: Raised for larger maps. */
+#define SURFCACHE_SIZE_AT_320X200	4096*1024 /* FS: Raised for larger maps. */
 
 typedef struct surfcache_s
 {

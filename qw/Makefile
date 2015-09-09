@@ -70,17 +70,17 @@ GAMESPY = $(O)/Goa/CEngine/darray.o \
 	$(O)/Goa/nonport.o
 
 # not too sophisticated dependency
-CLIENT = $(SYSOBJ_DXE)   \
-	$(GAMESPY)       \
-	$(O)/cd_audio.o  \
+CLIENT = $(SYSOBJ_DXE)  \
+	$(GAMESPY)      \
+	$(O)/cd_audio.o \
 	$(O)/cl_cam.o   \
 	$(O)/cl_demo.o  \
-	$(O)/cl_ents.o   \
+	$(O)/cl_ents.o  \
 	$(O)/cl_http.o  \
 	$(O)/cl_input.o \
 	$(O)/cl_main.o  \
 	$(O)/cl_parse.o \
-	$(O)/cl_pred.o   \
+	$(O)/cl_pred.o  \
 	$(O)/cl_tent.o  \
 	$(O)/cmd.o      \
 	$(O)/common.o   \
@@ -88,20 +88,20 @@ CLIENT = $(SYSOBJ_DXE)   \
 	$(O)/crc.o      \
 	$(O)/cvar.o     \
 	$(O)/dos_v2.o   \
-	$(O)/dstring.o   \
+	$(O)/dstring.o  \
 	$(O)/in_dos.o   \
 	$(O)/keys.o     \
-	$(O)/math.o \
+	$(O)/math.o     \
 	$(O)/mathlib.o  \
-	$(O)/md4.o   \
+	$(O)/md4.o      \
 	$(O)/menu.o     \
 	$(O)/net_chan.o \
 	$(O)/net_udp.o  \
-	$(O)/pmove.o   \
-	$(O)/pmovetst.o   \
+	$(O)/pmove.o    \
+	$(O)/pmovetst.o \
 	$(O)/r_part.o   \
 	$(O)/sbar.o     \
-	$(O)/skin.o   \
+	$(O)/skin.o     \
 	$(O)/snd_dma.o  \
 	$(O)/snd_dos.o  \
 	$(O)/snd_gus.o  \
@@ -109,36 +109,36 @@ CLIENT = $(SYSOBJ_DXE)   \
 	$(O)/snd_mix.o  \
 	$(O)/snd_mixa.o \
 	$(O)/snd_pci.o  \
-	$(O)/snd_sb.o  \
-	$(O)/snd_strm.o  \
+	$(O)/snd_sb.o   \
+	$(O)/snd_strm.o \
 	$(O)/snd_wavstream.o  \
-	$(O)/sys_dos.o \
+	$(O)/sys_dos.o  \
 	$(O)/sys_dosa.o \
-	$(O)/sys_find.o  \
+	$(O)/sys_find.o \
 	$(O)/view.o     \
 	$(O)/wad.o      \
 	$(O)/zone.o
 
 ifeq ($(GLQUAKE),0)
 REFSOFT = $(O)/d_copy.o \
-	$(O)/d_draw.o \
+	$(O)/d_draw.o   \
 	$(O)/d_draw16.o \
-	$(O)/d_edge.o \
+	$(O)/d_edge.o   \
 	$(O)/d_fill.o   \
 	$(O)/d_init.o   \
 	$(O)/d_modech.o \
 	$(O)/d_part.o   \
-	$(O)/d_parta.o \
+	$(O)/d_parta.o  \
 	$(O)/d_polysa.o \
 	$(O)/d_polyse.o \
 	$(O)/d_scan.o   \
-	$(O)/d_scana.o \
+	$(O)/d_scana.o  \
 	$(O)/d_sky.o    \
-	$(O)/d_spr8.o \
+	$(O)/d_spr8.o   \
 	$(O)/d_sprite.o \
 	$(O)/d_surf.o   \
 	$(O)/d_vars.o   \
-	$(O)/d_varsa.o \
+	$(O)/d_varsa.o  \
 	$(O)/d_zpoint.o \
 	$(O)/draw.o     \
 	$(O)/model.o    \
@@ -148,9 +148,9 @@ REFSOFT = $(O)/d_copy.o \
 	$(O)/r_aliasa.o \
 	$(O)/r_bsp.o    \
 	$(O)/r_draw.o   \
-	$(O)/r_drawa.o \
+	$(O)/r_drawa.o  \
 	$(O)/r_edge.o   \
-	$(O)/r_edgea.o \
+	$(O)/r_edgea.o  \
 	$(O)/r_efrag.o  \
 	$(O)/r_light.o  \
 	$(O)/r_main.o   \
@@ -159,30 +159,30 @@ REFSOFT = $(O)/d_copy.o \
 	$(O)/r_sprite.o \
 	$(O)/r_surf.o   \
 	$(O)/r_vars.o   \
-	$(O)/r_varsa.o \
+	$(O)/r_varsa.o  \
 	$(O)/screen.o   \
-	$(O)/surf16.o \
-	$(O)/surf8.o \
-	$(O)/vid_dos.o   \
+	$(O)/surf16.o   \
+	$(O)/surf8.o    \
+	$(O)/vid_dos.o  \
 	$(O)/vid_ext.o  \
 	$(O)/vid_vga.o  \
 	$(O)/vregset.o
 endif
 
 ifeq ($(GLQUAKE),1)
-REFGL = $(O)/fx_gamma.o \
-	$(O)/gl_draw.o \
-	$(O)/gl_mesh.o \
-	$(O)/gl_model.o \
+REFGL = $(O)/fx_gamma.o  \
+	$(O)/gl_draw.o   \
+	$(O)/gl_mesh.o   \
+	$(O)/gl_model.o  \
 	$(O)/gl_ngraph.o \
 	$(O)/gl_refrag.o \
 	$(O)/gl_rlight.o \
-	$(O)/gl_rmain.o \
-	$(O)/gl_rmisc.o \
-	$(O)/gl_rsurf.o \
+	$(O)/gl_rmain.o  \
+	$(O)/gl_rmisc.o  \
+	$(O)/gl_rsurf.o  \
 	$(O)/gl_screen.o \
-	$(O)/gl_test.o \
-	$(O)/gl_warp.o \
+	$(O)/gl_test.o   \
+	$(O)/gl_warp.o   \
 	$(O)/gl_viddos.o
 endif
 

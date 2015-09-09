@@ -851,6 +851,7 @@ void CL_ParseServerData (void)
 // wipe the client_state_t struct
 //
 	CL_ClearState ();
+	Cvar_GetLatchedVars (); /* FS: Update latched CVARs now, like r_maxedges, r_maxsurfs, etc */
 
 // parse protocol version number
 // allow 2.2 and 2.29 demos to play

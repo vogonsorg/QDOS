@@ -18,6 +18,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
+#ifndef __MENU_H
+#define __MENU_H
+
 //
 // the net drivers should just set the apropriate bits in m_activenet,
 // instead of having the menu code look through their internal tables
@@ -38,4 +41,4 @@ qpic_t	*M_CachePic (char *path);
 void M_DrawTextBox (int x, int y, int width, int lines);
 void M_Menu_Quit_f (void);
 
-
+#endif // __MENU_H

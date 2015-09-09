@@ -17,9 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-//
+
 // spritegn.h: header file for sprite generation program
-//
 
 // **********************************************************
 // * This file must be identical in the spritegen directory *
@@ -41,6 +40,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //     sprite bitmap
 // <endrepeat>
 //-------------------------------------------------------
+
+#ifndef __SPRITEGN_H
+#define __SPRITEGN_H
 
 #ifdef INCLUDELIBS
 
@@ -107,4 +109,4 @@ typedef struct {
 
 #define IDSPRITEHEADER	(('P'<<24)+('S'<<16)+('D'<<8)+'I')
 														// little-endian "IDSP"
-
+#endif // __SPRITEGN_H

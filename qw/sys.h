@@ -18,10 +18,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
+// sys.h -- non-portable functions
+
 #ifndef __SYS_H
 #define __SYS_H
-
-// sys.h -- non-portable functions
 
 #ifdef _MSC_VER /* FS: VS6 */
 	#define __attribute__(x)

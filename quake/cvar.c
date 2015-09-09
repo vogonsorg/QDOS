@@ -65,9 +65,10 @@ void Cvar_List_f (void)
 		{
 			continue;
 		}
-		Con_SafePrintf ("%s%s %s \"%s\"\n",
+		Con_SafePrintf ("%s%s%s %s \"%s\"\n",
 			cvar->flags & CVAR_ARCHIVE ? "*" : " ",
 			cvar->flags & CVAR_SERVERINFO ? "s" : " ",
+			cvar->flags & CVAR_LATCH ? "l" : " ",
 			cvar->name,
 			cvar->string);
 		count++;

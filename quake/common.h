@@ -114,6 +114,10 @@ extern	float	(*LittleFloat) (float l);
 
 //============================================================================
 
+/* FS: Gamespy stuff */
+#define SHOW_POPULATED_SERVERS 1
+#define SHOW_ALL_SERVERS 2
+
 void MSG_WriteChar (sizebuf_t *sb, int c);
 void MSG_WriteByte (sizebuf_t *sb, int c);
 void MSG_WriteShort (sizebuf_t *sb, int c);
@@ -224,9 +228,5 @@ extern	qboolean	warpspasm, nehahra, extended_mod; /* FS: For Nehara */
 
 void Com_sprintf (char *dest, int size, char *fmt, ...); /* FS: Added */
 void Com_strcpy (char *dest, int destSize, const char *src); /* FS: Added */
-
-/* FS: Gamespy stuff */
-#define SHOW_POPULATED_SERVERS 1
-#define SHOW_ALL_SERVERS 2
 
 #endif // __COMMON_H

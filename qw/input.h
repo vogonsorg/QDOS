@@ -17,7 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 // input.h -- external (non-keyboard) input devices
+
+#ifndef __INPUT_H
+#define __INPUT_H
 
 void IN_Init (void);
 
@@ -33,3 +37,5 @@ void IN_ModeChanged (void);
 // called whenever screen dimensions change
 
 void CL_SendClientCommand(qboolean reliable, char *format, ...); /* FS: From JQuake/EZQ/etc */
+
+#endif // __INPUT_H

@@ -18,10 +18,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
+// quakeasm.h: general asm header file
+
 #ifndef __QUAKEASM_H
 #define __QUAKEASM_H
-
-// quakeasm.h: general asm header file
 
 #if defined(_WIN32) && !defined(WINDED)
 

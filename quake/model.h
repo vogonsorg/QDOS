@@ -65,7 +65,6 @@ typedef struct mplane_s
 	byte	pad[2];
 } mplane_t;
 
-
 typedef struct texture_s
 {
 	char		name[16];

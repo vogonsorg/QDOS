@@ -30,13 +30,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef struct cvar_s
 {
-	char	*name;
-	char	*string;
+	char		*name;
+	char		*string;
 	char		*latched_string; /* FS: Added */
 	int			flags;
 	qboolean	modified; /* FS: Added */
-	float	value;
-	int		intValue; /* FS: Added */
+	float		value;
+	int			intValue; /* FS: Added */
 	char		*defaultString; /* FS: Added */
 	const char	*description; /* FS: Added */
 	int			defaultFlags; /* FS: Added */
@@ -67,14 +67,14 @@ float	Cvar_VariableValue (char *var_name);
 char	*Cvar_VariableString (char *var_name);
 // returns an empty string if not defined
 
-char 	*Cvar_CompleteVariable (char *partial);
+char	*Cvar_CompleteVariable (char *partial);
 // attempts to match a partial variable name for command line completion
 // returns NULL if nothing fits
 
 void	Cvar_GetLatchedVars (void);
 // any CVAR_LATCHED variables that have been set will now take effect
 
-qboolean Cvar_Command (void);
+qboolean	Cvar_Command (void);
 // called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
 // command.  Returns true if the command was a variable reference that
 // was handled. (print or change)
