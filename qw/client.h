@@ -32,6 +32,7 @@ typedef struct
 	cache_user_t	cache;
 } skin_t;
 
+#ifdef GAMESPY
 /* FS: Gamespy stuff */
 #define MAX_SERVERS 400 /* FS: There's barely 350 active servers existing, but OK. */
 typedef struct
@@ -49,6 +50,7 @@ extern gamespyBrowser_t browserList[MAX_SERVERS];
 extern gamespyBrowser_t browserListAll[MAX_SERVERS];
 void CL_PingNetServers_f (void);
 void Update_Gamespy_Menu(void);
+#endif
 
 // player_state_t is the information needed by a player entity
 // to do move prediction and to generate a drawable entity
@@ -243,11 +245,13 @@ typedef struct
 	int			td_startframe;		// host_framecount at start
 	float		td_starttime;		// realtime at second frame of timedemo
 
+#ifdef GAMESPY
 	/* FS: Gamespy stuff */
 	int gamespyupdate;
 	int gamespypercent;
 	int gamespytotalservers;
 	int gamespystarttime;
+#endif
 
 	int			challenge;
 
@@ -406,12 +410,14 @@ extern cvar_t	*cl_downloadrate_hack; /* FS: FIXME Shitty download hack */
 extern cvar_t	*net_broadcast_chat; /* FS: EZQ Chat */
 extern cvar_t	*chat; /* FS: EZQ Chat */
 
+#ifdef GAMESPY
 /* FS: GameSpy CVARs */
 extern cvar_t	*cl_master_server_ip;
 extern cvar_t	*cl_master_server_port;
 extern cvar_t	*cl_master_server_timeout;
 extern cvar_t	*cl_master_server_retries;
 extern cvar_t	*snd_gamespy_sounds;
+#endif
 
 extern cvar_t	*_vid_wait_override;
 extern cvar_t	*vid_wait;

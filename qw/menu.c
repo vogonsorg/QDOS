@@ -26,14 +26,20 @@ extern	cvar_t	*scr_fov;
 void (*vid_menudrawfn)(void);
 void (*vid_menukeyfn)(int key);
 
-enum {m_none, m_main, m_singleplayer, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_quit, m_serialconfig, m_modemconfig, m_lanconfig, m_gameoptions, m_search, m_slist, m_extended, m_gamespy, m_gamespy_pages} m_state;
+enum {m_none, m_main, m_singleplayer, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_quit, m_serialconfig, m_modemconfig, m_lanconfig, m_gameoptions, m_search, m_slist, m_extended,
+#ifdef GAMESPY
+      m_gamespy, m_gamespy_pages
+#endif
+} m_state;
 
 void M_Menu_Main_f (void);
 	void M_Menu_SinglePlayer_f (void);
 		void M_Menu_Load_f (void);
 		void M_Menu_Save_f (void);
 	void M_Menu_MultiPlayer_f (void);
+#ifdef GAMESPY
 		void M_Menu_Gamespy_f (void); /* FS: Gamespy stuff */
+#endif
 		void M_Menu_Setup_f (void);
 		void M_Menu_Net_f (void);
 	void M_Menu_Options_f (void);
@@ -54,7 +60,9 @@ void M_Main_Draw (void);
 		void M_Load_Draw (void);
 		void M_Save_Draw (void);
 	void M_MultiPlayer_Draw (void);
+#ifdef GAMESPY
 		void M_Gamespy_Draw (void); /* FS: Gamespy stuff */
+#endif
 		void M_Setup_Draw (void);
 		void M_Net_Draw (void);
 	void M_Options_Draw (void);
@@ -75,7 +83,9 @@ void M_Main_Key (int key);
 		void M_Load_Key (int key);
 		void M_Save_Key (int key);
 	void M_MultiPlayer_Key (int key);
+#ifdef GAMESPY
 		void M_Gamespy_Key (int key); /* FS: Gamespy stuff */
+#endif
 		void M_Setup_Key (int key);
 		void M_Net_Key (int key);
 	void M_Options_Key (int key);
@@ -91,13 +101,13 @@ void M_Search_Key (int key);
 void M_ServerList_Key (int key);
 void M_Extended_Key (int key); /* FS: Extended options unique to QDOS */
 
+#ifdef GAMESPY
 /* FS: Gamespy stuff */
 void M_Gamespy_Key (int key);
-#ifdef GAMESPY /* FS: Shut up compiler warning */
 static void SearchGamespyGames (void);
-#endif
-static void JoinGamespyServer_Redraw(int serverscale);
+static void JoinGamespyServer_Redraw(int scale);
 static int serverscale;
+#endif
 
 qboolean	m_entersound;		// play after drawing a frame, so caching
 								// won't disrupt the sound
@@ -1252,12 +1262,14 @@ void M_Draw (void)
 	case m_extended:  /* FS: Extended options unique to QDOS */
 		M_Extended_Draw();
 		break;
+#ifdef GAMESPY
 	case m_gamespy:
 		M_Gamespy_Draw();
 		break;
 	case m_gamespy_pages:
 		JoinGamespyServer_Redraw(serverscale);
 		break;
+#endif
 	}
 
 	if (m_entersound)
@@ -1335,11 +1347,12 @@ void M_Keydown (int key)
 	case m_extended: /* FS: Extended options unique to QDOS */
 		M_Extended_Key (key);
 		return;
+#ifdef GAMESPY
 	case m_gamespy:
 	case m_gamespy_pages:
 		M_Gamespy_Key (key);
 		return;
-
+#endif
 	}
 }
 
@@ -2057,7 +2070,7 @@ void M_Gamespy_Draw(void)
 	breakPoint = 0;
 }
 
-static void JoinGamespyServer_Redraw( int serverscale )
+static void JoinGamespyServer_Redraw (int scale)
 {
 	int i, vidscale;
 	qpic_t	*p;
@@ -2075,21 +2088,20 @@ static void JoinGamespyServer_Redraw( int serverscale )
 
 	for ( i = 0; i < vidscale; i++ )
 	{
-		if (i+serverscale >= MAX_GAMESPY_MENU_SERVERS)
+		if (i+scale >= MAX_GAMESPY_MENU_SERVERS)
 		{
 			didBreak = true;
 			breakPoint = i+1;
 			break;
 		}
 
-		M_PrintWhite(40, 40 + i*8, gamespy_server_names[i+serverscale]);
+		M_PrintWhite(40, 40 + i*8, gamespy_server_names[i+scale]);
 	}
 
-	if(serverscale)
+	if(scale)
 	{
 		M_PrintWhite(40, 40 + i*8, "<Previous Page>");
 	}
-
 
 	i++;
 
@@ -2100,9 +2112,5 @@ static void JoinGamespyServer_Redraw( int serverscale )
 	}
 
 }
-#else
-void M_Gamespy_Key(int k) {}
-void M_Gamespy_Draw(void) {}
-static void JoinGamespyServer_Redraw( int serverscale ) {}
 #endif
 

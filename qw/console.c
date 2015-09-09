@@ -854,6 +854,7 @@ void Con_DrawConsole (int lines)
 			Draw_Character ( (i+1)<<3, y, dlbar[i]);
 	}
 
+#ifdef GAMESPY
 	if (cls.gamespyupdate) /* FS: Gamespy stuff */
 	{
 		text = "Gamespy";
@@ -895,6 +896,7 @@ void Con_DrawConsole (int lines)
 		for (i = 0; i < strlen(dlbar); i++)
 			Draw_Character ( (i+1)<<3, y, dlbar[i]);
 	}
+#endif
 
 // draw the input prompt, user text, and cursor if desired
 	Con_DrawInput ();

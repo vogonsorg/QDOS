@@ -164,6 +164,7 @@ int         fps_count;
 qboolean bFlashlight;
 void CL_Flashlight_f (void);
 
+#ifdef GAMESPY
 /* FS: Gamespy CVARs */
 cvar_t	*cl_master_server_ip;
 cvar_t	*cl_master_server_port;
@@ -172,7 +173,6 @@ cvar_t	*cl_master_server_timeout;
 cvar_t	*cl_master_server_retries;
 cvar_t	*snd_gamespy_sounds;
 
-#ifdef GAMESPY
 /* FS: Gamespy prototypes */
 static	GServerList	serverlist = NULL;
 static	int		gspyCur;
@@ -1356,6 +1356,7 @@ void CL_Init (void)
 	net_broadcast_chat = Cvar_Get("net_broadcast_chat", "1", CVAR_ARCHIVE);  /* FS: EZQ Chat */
 	net_broadcast_chat->description = "Broadcast EZQ chats.";
 
+#ifdef GAMESPY
 	/* FS: GameSpy CVARs */
 	cl_master_server_ip = Cvar_Get("cl_master_server_ip", CL_MASTER_ADDR, CVAR_ARCHIVE);
 	cl_master_server_ip->description = "GameSpy Master Server IP.";
@@ -1369,6 +1370,7 @@ void CL_Init (void)
 	cl_master_server_retries->description = "Number of retries to attempt for receiving the server list.  Formula is 50ms + 10ms for each retry.";
 	snd_gamespy_sounds = Cvar_Get("snd_gamespy_sounds", "0", CVAR_ARCHIVE);
 	snd_gamespy_sounds->description = "Play the complete.wav and abort.wav from GameSpy3D if it exists in sounds/gamespy.";
+#endif
 
 	Cmd_AddCommand ("version", CL_Version_f);
 	Cmd_AddCommand ("cl_flashlight", CL_Flashlight_f); /* FS: Flashlight */

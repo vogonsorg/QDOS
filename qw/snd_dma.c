@@ -1070,11 +1070,13 @@ void S_LocalSound (char *sound)
 	S_StartSound (cl.viewentity, -1, sfx, vec3_origin, 1, 1);
 }
 
+#ifdef GAMESPY
 void S_GamespySound (char *sound) /* FS: Added */
 {
 	if (snd_gamespy_sounds->intValue)
 		S_LocalSound(sound);
 }
+#endif
 
 void S_ClearPrecache (void)
 {

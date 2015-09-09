@@ -652,7 +652,11 @@ void Draw_ConsoleBackground (int lines)
 	conback = Draw_CachePic ("gfx/conback.lmp");
 
 // hack the version number directly into the pic
-	if (cls.download || cls.gamespyupdate) /* FS: Added gamespy progress bar */
+	if (cls.download
+#ifdef GAMESPY
+			 || cls.gamespyupdate /* FS: Added gamespy progress bar */
+#endif
+		)
 	{
 		Com_sprintf (ver, sizeof(ver), "%4.2f", VERSION);
 		dest = conback->data + 320 + 320*186 - 11 - 8*strlen(ver);
