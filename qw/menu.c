@@ -93,7 +93,9 @@ void M_Extended_Key (int key); /* FS: Extended options unique to QDOS */
 
 /* FS: Gamespy stuff */
 void M_Gamespy_Key (int key);
+#ifdef GAMESPY /* FS: Shut up compiler warning */
 static void SearchGamespyGames (void);
+#endif
 static void JoinGamespyServer_Redraw(int serverscale);
 static int serverscale;
 
@@ -351,8 +353,11 @@ void M_Main_Key (int key)
 		M_Menu_SinglePlayer_f ();
 		break;
 	case 'm':
-//		M_Menu_MultiPlayer_f ();
+#ifndef GAMESPY
+		M_Menu_MultiPlayer_f ();
+#else
 		M_Menu_Gamespy_f ();
+#endif
 		break;
 	case 'o':
 		M_Menu_Options_f ();
@@ -374,8 +379,11 @@ void M_Main_Key (int key)
 			break;
 
 		case 1:
-//			M_Menu_MultiPlayer_f ();
+#ifndef GAMESPY
+			M_Menu_MultiPlayer_f ();
+#else
 			M_Menu_Gamespy_f ();
+#endif
 			break;
 
 		case 2:
@@ -1133,7 +1141,9 @@ void M_Init (void)
 	Cmd_AddCommand ("help", M_Menu_Help_f);
 	Cmd_AddCommand ("menu_quit", M_Menu_Quit_f);
 	Cmd_AddCommand ("menu_extended", M_Menu_Extended_f); /* FS: Extended options unique to QDOS */
+#ifdef GAMESPY
 	Cmd_AddCommand ("menu_gamespy", M_Menu_Gamespy_f); /* FS: Gamespy stuff */
+#endif
 }
 
 
@@ -1241,7 +1251,7 @@ void M_Draw (void)
 		break;
 	case m_extended:  /* FS: Extended options unique to QDOS */
 		M_Extended_Draw();
-		break;	
+		break;
 	case m_gamespy:
 		M_Gamespy_Draw();
 		break;
@@ -1483,7 +1493,7 @@ void M_AdjustSliders_Extended (int dir)
 
 void M_Extended_Key(int k)
 {
-    switch (k)
+	switch (k)
 	{
 	case K_UPARROW:
 		S_LocalSound ("misc/menu1.wav");
@@ -1715,6 +1725,7 @@ void M_Extended_Set_Sound_KHz (int dir, int khz)
 	}
 }
 
+#ifdef GAMESPY
 /* FS: Gamespy stuff */
 #define	NO_SERVER_STRING	"<no server>"
 #define MAX_GAMESPY_MENU_SERVERS MAX_SERVERS /* FS: Maximum number of servers to show in the browser */
@@ -2089,3 +2100,9 @@ static void JoinGamespyServer_Redraw( int serverscale )
 	}
 
 }
+#else
+void M_Gamespy_Key(int k) {}
+void M_Gamespy_Draw(void) {}
+static void JoinGamespyServer_Redraw( int serverscale ) {}
+#endif
+

@@ -30,7 +30,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	#include <netinet/in.h>
 #endif
 
+#ifdef GAMESPY
 #include "Goa/CEngine/goaceng.h" /* FS: For Gamespy */
+#endif
 
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
@@ -72,7 +74,6 @@ cvar_t	*cl_predict_players2;
 cvar_t	*cl_solid_players;
 
 cvar_t  *localid;
-cvar_t	*net_broadcast_chat; /* FS: EZQ Chat */
 
 static	qboolean allowremotecmd = true;
 
@@ -148,17 +149,14 @@ netadr_t master_adr;          // address of the master server
 
 cvar_t	*host_speeds;        // set for running times
 
-cvar_t  *show_fps;
-cvar_t  *show_time; /* FS: Added */
-cvar_t  *show_uptime; /* FS: Added */
-cvar_t	*console_old_complete; /* FS: Added */
-
-cvar_t	*con_show_description; /* FS: Added */
-cvar_t	*con_show_dev_flags; /* FS: Added */
-
-cvar_t	*cl_ogg_music; /* FS: Added */
-cvar_t	*cl_wav_music; /* FS: Added */
-cvar_t	*cl_autorepeat_allkeys; /* FS: So I can autorepeat whatever I want, hoss. */
+/* FS: New stuff */
+cvar_t	*console_old_complete;
+cvar_t	*con_show_description;
+cvar_t	*con_show_dev_flags;
+cvar_t	*cl_ogg_music;
+cvar_t	*cl_wav_music;
+cvar_t	*cl_autorepeat_allkeys;
+cvar_t	*net_broadcast_chat; /* FS: EZQ Chat */
 
 int         fps_count;
 
@@ -174,6 +172,7 @@ cvar_t	*cl_master_server_timeout;
 cvar_t	*cl_master_server_retries;
 cvar_t	*snd_gamespy_sounds;
 
+#ifdef GAMESPY
 /* FS: Gamespy prototypes */
 static	GServerList	serverlist = NULL;
 static	int		gspyCur;
@@ -184,6 +183,7 @@ static void ListCallBack(GServerList serverlist, int msg, void *instance, void *
 static void CL_Gspystop_f (void);
        void CL_PingNetServers_f (void);
 static void CL_PrintBrowserList_f (void);
+#endif
 
 jmp_buf  host_abort;
 
@@ -1267,8 +1267,6 @@ void CL_Init (void)
 //
 // register our commands
 //
-	show_fps = Cvar_Get("show_fps","0", CVAR_ARCHIVE);
-	show_fps->description = "Show FPS counter on the screen.";
 	host_speeds = Cvar_Get("host_speeds","0", 0); // set for running times
 
 	cl_upspeed = Cvar_Get("cl_upspeed","200", 0);
@@ -1353,10 +1351,6 @@ void CL_Init (void)
 	cl_wav_music->description = "Play WAV tracks in the format of id1/music/trackXX.wav if they exist.";
 	cl_autorepeat_allkeys = Cvar_Get("cl_autorepeat_allkeys", "0", CVAR_ARCHIVE);
 	cl_autorepeat_allkeys->description = "Allow to autorepeat any key, not just Backspace, Pause, PgUp, and PgDn keys.";
-	show_time = Cvar_Get("show_time","0", CVAR_ARCHIVE);
-	show_time->description = "Show current time on the screen,  1 - Military.  2 - AM/PM.";
-	show_uptime = Cvar_Get("show_uptime", "0", CVAR_ARCHIVE);
-	show_uptime->description = "Show current map uptime.";
 	console_old_complete = Cvar_Get("console_old_complete", "0", CVAR_ARCHIVE);
 	console_old_complete->description = "Use legacy style tab completion.";
 	net_broadcast_chat = Cvar_Get("net_broadcast_chat", "1", CVAR_ARCHIVE);  /* FS: EZQ Chat */
@@ -1375,7 +1369,6 @@ void CL_Init (void)
 	cl_master_server_retries->description = "Number of retries to attempt for receiving the server list.  Formula is 50ms + 10ms for each retry.";
 	snd_gamespy_sounds = Cvar_Get("snd_gamespy_sounds", "0", CVAR_ARCHIVE);
 	snd_gamespy_sounds->description = "Play the complete.wav and abort.wav from GameSpy3D if it exists in sounds/gamespy.";
-
 
 	Cmd_AddCommand ("version", CL_Version_f);
 	Cmd_AddCommand ("cl_flashlight", CL_Flashlight_f); /* FS: Flashlight */
@@ -1431,6 +1424,7 @@ void CL_Init (void)
 	Cmd_AddCommand ("writeconfig", CL_WriteConfig_f);
 	Cmd_AddCommand ("r_restart", R_Restart_f); /* FS: Unfinished */
 
+#ifdef GAMESPY
 	/* FS: Gamespy stuff */
 	Cmd_AddCommand ("slist2", CL_PingNetServers_f);
 	Cmd_AddCommand ("srelist", CL_PrintBrowserList_f);
@@ -1438,6 +1432,7 @@ void CL_Init (void)
 
 	memset(&browserList, 0, sizeof(browserList));
 	memset(&browserListAll, 0, sizeof(browserListAll));
+#endif
 
 	dstring_delete(version);
 
@@ -1621,7 +1616,9 @@ void Host_Frame (float time)
 	if (host_frametime > 0.2)
 		host_frametime = 0.2;
 
+#ifdef GAMESPY
 	GameSpy_Async_Think();
+#endif
 
 #ifdef USE_CURL
 	CL_HTTP_Update();
@@ -1887,6 +1884,7 @@ void CL_Flashlight_f (void) /* FS: Flashlight */
 		bFlashlight = true;
 }
 
+#ifdef GAMESPY
 /* FS: Gamespy Stuff */
 static void CL_Gamespy_Check_Error(GServerList lst, int error)
 {
@@ -2139,6 +2137,7 @@ void CL_PingNetServers_f (void)
 
 	CL_Gamespy_Check_Error(serverlist, error);
 }
+#endif
 
 //=============================================================================
 

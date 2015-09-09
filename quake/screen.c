@@ -933,7 +933,7 @@ void SCR_UpdateScreen (void)
 	static float	oldscr_viewsize;
 	static float	oldlcd_x;
 	vrect_t		vrect;
-	
+
 	if (scr_skipupdate || block_drawing)
 		return;
 

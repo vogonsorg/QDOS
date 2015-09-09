@@ -34,9 +34,7 @@ extern	cvar_t	*lcd_x;
 extern  cvar_t	*v_contentblend; /* FS: Fucking hate palette blends */
 extern  cvar_t	*net_showchat; /* FS: EZQ Chat */
 extern  cvar_t	*net_showchatgfx; /* FS: EZQ Chat */
-extern  cvar_t	*show_time; /* FS: Added */
-extern  cvar_t	*show_uptime; /* FS: Added */
-extern	cvar_t	*show_ping; /* FS: Added */
+
 #ifdef GLQUAKE
 extern float v_blend[4];
 #endif

@@ -260,9 +260,9 @@ void V_DriftPitch (void)
  
  
 cshift_t	cshift_empty = { {130,80,50}, 0 };
-cshift_t        cshift_water = { {130,80,50}, 128 };
-cshift_t        cshift_slime = { {0,25,5}, 150 };
-cshift_t        cshift_lava = { {255,80,0}, 150 };
+cshift_t	cshift_water = { {130,80,50}, 128 };
+cshift_t	cshift_slime = { {0,25,5}, 150 };
+cshift_t	cshift_lava = { {255,80,0}, 150 };
 
 byte		gammatable[256];	// palette is sent through this
 
@@ -270,6 +270,7 @@ byte		gammatable[256];	// palette is sent through this
 byte		ramps[3][256];
 float		v_blend[4];		// rgba 0.0 - 1.0
 #endif	// GLQUAKE
+
 void BuildGammaTable (float g)
 {
 	int		i, inf;
@@ -344,7 +345,7 @@ void V_ParseDamage (void)
 	if (cl.cshifts[CSHIFT_DAMAGE].percent > 150)
 		cl.cshifts[CSHIFT_DAMAGE].percent = 150;
 
-	if (!v_contentblend->value) /* FS: Ignore palette blends if we want to */
+	if (!v_contentblend->value) /* FS: Fucking hate palette blends */
 	{
 		cl.cshifts[CSHIFT_DAMAGE].destcolor[0] = 0;
 		cl.cshifts[CSHIFT_DAMAGE].destcolor[1] = 0;
@@ -396,7 +397,7 @@ V_cshift_f
 */
 void V_cshift_f (void)
 {
-	if(!v_contentblend->value) /* FS: Ignore palette blends if we want to */
+	if(!v_contentblend->value) /* FS: Fucking hate palette blends */
 	{
 		cshift_empty.destcolor[0] = 0;
 		cshift_empty.destcolor[1] = 0;
@@ -422,7 +423,7 @@ When you run over an item, the server sends this command
 */
 void V_BonusFlash_f (void)
 {
-	if (!v_contentblend->value) /* FS: Ignore palette blends if we want to */
+	if (!v_contentblend->value) /* FS: Fucking hate palette blends */
 	{
 		cl.cshifts[CSHIFT_BONUS].destcolor[0] = 0;
 		cl.cshifts[CSHIFT_BONUS].destcolor[1] = 0;
@@ -447,7 +448,7 @@ Underwater, lava, etc each has a color shift
 */
 void V_SetContentsColor (int contents)
 {
-	if (!v_contentblend->value) /* FS: Ignore palette blends if we want to */
+	if (!v_contentblend->value) /* FS: Fucking hate palette blends */
 	{
 		cl.cshifts[CSHIFT_CONTENTS] = cshift_empty;
 		return;
@@ -456,12 +457,13 @@ void V_SetContentsColor (int contents)
 	switch (contents)
 	{
 	case CONTENTS_EMPTY:
+	case CONTENTS_SOLID:
+	case CONTENTS_SKY: //johnfitz -- no blend in sky
 		cl.cshifts[CSHIFT_CONTENTS] = cshift_empty;
 		break;
 	case CONTENTS_LAVA:
 		cl.cshifts[CSHIFT_CONTENTS] = cshift_lava;
 		break;
-	case CONTENTS_SOLID:
 	case CONTENTS_SLIME:
 		cl.cshifts[CSHIFT_CONTENTS] = cshift_slime;
 		break;
@@ -469,7 +471,6 @@ void V_SetContentsColor (int contents)
 		cl.cshifts[CSHIFT_CONTENTS] = cshift_water;
 		break;
 	}
-
 }
 
 /*
@@ -488,12 +489,10 @@ void V_CalcPowerupCshift (void)
 	}
 	else if (cl.stats[STAT_ITEMS] & IT_QUAD)
 	{
-
 		cl.cshifts[CSHIFT_POWERUP].destcolor[0] = 0;
         cl.cshifts[CSHIFT_POWERUP].destcolor[1] = 0;
 		cl.cshifts[CSHIFT_POWERUP].destcolor[2] = 255;
 		cl.cshifts[CSHIFT_POWERUP].percent = 30;
-
 	}
 	else if (cl.stats[STAT_ITEMS] & IT_SUIT)
 	{
@@ -504,22 +503,21 @@ void V_CalcPowerupCshift (void)
 	}
 	else if (cl.stats[STAT_ITEMS] & IT_INVISIBILITY)
 	{
-                        cl.cshifts[CSHIFT_POWERUP].destcolor[0] = 100;
-                        cl.cshifts[CSHIFT_POWERUP].destcolor[1] = 100;
-                        cl.cshifts[CSHIFT_POWERUP].destcolor[2] = 100;
-                        cl.cshifts[CSHIFT_POWERUP].percent = 100;
-        }
+		cl.cshifts[CSHIFT_POWERUP].destcolor[0] = 100;
+		cl.cshifts[CSHIFT_POWERUP].destcolor[1] = 100;
+		cl.cshifts[CSHIFT_POWERUP].destcolor[2] = 100;
+		cl.cshifts[CSHIFT_POWERUP].percent = 100;
+	}
 	else if (cl.stats[STAT_ITEMS] & IT_INVULNERABILITY)
 	{
-                        cl.cshifts[CSHIFT_POWERUP].destcolor[0] = 255;
-                        cl.cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
-                        cl.cshifts[CSHIFT_POWERUP].percent = 30;
-                cl.cshifts[CSHIFT_POWERUP].destcolor[2] = 0;
-        }
+		cl.cshifts[CSHIFT_POWERUP].destcolor[0] = 255;
+		cl.cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
+		cl.cshifts[CSHIFT_POWERUP].percent = 30;
+		cl.cshifts[CSHIFT_POWERUP].destcolor[2] = 0;
+	}
 	else
 		cl.cshifts[CSHIFT_POWERUP].percent = 0;
 }
-
 
 /*
 =============
@@ -543,8 +541,6 @@ void V_CalcBlend (void)
 			continue;
 
 		a2 = ((cl.cshifts[j].percent * gl_cshiftpercent->value) / 100.0) / 255.0;
-
-//		a2 = (cl.cshifts[j].percent/2)/255.0;
 		if (!a2)
 			continue;
 		a = a + a2*(1-a);
@@ -617,8 +613,6 @@ void V_UpdatePalette (void)
 
 	V_CalcBlend ();
 
-//Con_Printf("b: %4.2f %4.2f %4.2f %4.6f\n", v_blend[0],	v_blend[1],	v_blend[2],	v_blend[3]);
-
 	a = v_blend[3];
 	r = 255*v_blend[0]*a;
 	g = 255*v_blend[1]*a;
@@ -661,11 +655,6 @@ void V_UpdatePalette (void)
 	VID_ShiftPalette (pal);	
 }
 #else	// !GLQUAKE
-/*
-=============
-V_UpdatePalette
-=============
-*/
 void V_UpdatePalette (void)
 {
 	int		i, j;
@@ -1024,7 +1013,7 @@ The player's clipping box goes from (-16 -16 -24) to (16 16 32) from
 the entity origin, so any view position inside that will be valid
 ==================
 */
-extern vrect_t scr_vrect;
+extern vrect_t	scr_vrect;
 
 void V_RenderView (void)
 {
@@ -1103,8 +1092,9 @@ void V_Init (void)
 
 	v_kicktime = Cvar_Get("v_kicktime", "0.5", 0);
 	v_kickroll = Cvar_Get("v_kickroll", "0.6", 0);
-	v_kickpitch = Cvar_Get("v_kickpitch", "0.6", 0);	
+	v_kickpitch = Cvar_Get("v_kickpitch", "0.6", 0);
 
+	/* FS: New stuff */
 	net_showchat = Cvar_Get("net_showchat", "1", CVAR_ARCHIVE); /* FS: EZQ Chat */
 	net_showchatgfx = Cvar_Get("net_showchatgfx", "1", CVAR_ARCHIVE); /* FS: EZQ Chat */
 	v_contentblend = Cvar_Get("v_contentblend", "1",  CVAR_ARCHIVE);

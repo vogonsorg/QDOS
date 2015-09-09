@@ -91,7 +91,12 @@ cvar_t		*scr_showturtle;
 cvar_t		*scr_showpause;
 cvar_t		*scr_printspeed;
 cvar_t		*scr_allowsnap;
-cvar_t		*show_ping; /* FS: Added */
+
+/* FS: New stuff */
+cvar_t		*show_fps; /* FS: show_fps from Qrack */
+cvar_t		*show_time;
+cvar_t		*show_uptime;
+cvar_t		*show_ping;
 
 qboolean	scr_initialized;		// ready to draw
 
@@ -384,7 +389,15 @@ void SCR_Init (void)
 	scr_showpause = Cvar_Get("showpause","1", 0);
 	scr_printspeed = Cvar_Get("scr_printspeed","8", 0);
 	scr_allowsnap = Cvar_Get("scr_allowsnap", "1", 0);
-	show_ping = Cvar_Get("show_ping", "0", CVAR_ARCHIVE); /* FS: Added */
+
+	/* FS: New stuff */
+	show_fps = Cvar_Get("show_fps","0", CVAR_ARCHIVE); /* FS: show_fps from Qrack */
+	show_fps->description = "Show framerate measured in Frames Per Second.";
+	show_time = Cvar_Get("show_time","0", CVAR_ARCHIVE);
+	show_time->description = "Show current time in the HUD.  1 for military.  2 for AM/PM.";
+	show_uptime = Cvar_Get("show_uptime","0", CVAR_ARCHIVE);
+	show_uptime->description = "Show uptime.";
+	show_ping = Cvar_Get("show_ping", "0", CVAR_ARCHIVE);
 
 //
 // register our commands

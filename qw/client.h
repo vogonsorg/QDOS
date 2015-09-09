@@ -138,7 +138,7 @@ typedef struct
 //
 // client_state_t should hold all pieces of the client state
 //
-#define	MAX_DLIGHTS		32
+#define	MAX_DLIGHTS		64 //johnfitz -- was 32
 typedef struct
 {
 	int		key;				// so entities can reuse same entry
@@ -155,8 +155,6 @@ typedef struct
 	int		length;
 	char	map[MAX_STYLESTRING];
 } lightstyle_t;
-
-
 
 #define MAX_EFRAGS		2048 /* FS: Was 512 */
 
@@ -220,12 +218,6 @@ typedef struct
 	int downloadoldrate; /* FS: Chunked downloads */
 	int downloadmaxrate; /* FS: Chunked downloads */
 
-	/* FS: Gamespy stuff */
-	int gamespyupdate;
-	int gamespypercent;
-	int gamespytotalservers;
-	int gamespystarttime;
-
 #ifdef FTE_PEXT_CHUNKEDDOWNLOADS
 	enum {DL_NONE = 0, DL_QW, DL_QWCHUNKS} downloadmethod;
 #else
@@ -250,6 +242,12 @@ typedef struct
 	float		td_lastframe;		// to meter out one message a frame
 	int			td_startframe;		// host_framecount at start
 	float		td_starttime;		// realtime at second frame of timedemo
+
+	/* FS: Gamespy stuff */
+	int gamespyupdate;
+	int gamespypercent;
+	int gamespytotalservers;
+	int gamespystarttime;
 
 	int			challenge;
 
@@ -354,67 +352,69 @@ typedef struct
 //
 // cvars
 //
-extern	cvar_t	*cl_unbindall_protection; /* FS: unbindall protection */
-extern	cvar_t	*in_freelook; /* FS: mlook */
-extern	cvar_t	*cl_warncmd;
-extern	cvar_t	*cl_upspeed;
-extern	cvar_t	*cl_forwardspeed;
-extern	cvar_t	*cl_backspeed;
-extern	cvar_t	*cl_sidespeed;
+extern cvar_t	*cl_warncmd;
+extern cvar_t	*cl_upspeed;
+extern cvar_t	*cl_forwardspeed;
+extern cvar_t	*cl_backspeed;
+extern cvar_t	*cl_sidespeed;
 
-extern	cvar_t	*cl_movespeedkey;
-extern	cvar_t	*net_broadcast_chat; /* FS: EZQ Chat */
-extern	cvar_t	*chat; /* FS: EZQ Chat */
+extern cvar_t	*cl_movespeedkey;
 
-extern	cvar_t	*cl_yawspeed;
-extern	cvar_t	*cl_pitchspeed;
+extern cvar_t	*cl_yawspeed;
+extern cvar_t	*cl_pitchspeed;
 
-extern	cvar_t	*cl_anglespeedkey;
+extern cvar_t	*cl_anglespeedkey;
 
-extern	cvar_t	*cl_shownet;
-extern	cvar_t	*cl_sbar;
-extern	cvar_t	*cl_hudswap;
+extern cvar_t	*cl_shownet;
+extern cvar_t	*cl_sbar;
+extern cvar_t	*cl_hudswap;
 
-extern	cvar_t	*cl_pitchdriftspeed;
-extern	cvar_t	*lookspring;
-extern	cvar_t	*lookstrafe;
-extern	cvar_t	*sensitivity;
+extern cvar_t	*cl_pitchdriftspeed;
+extern cvar_t	*lookspring;
+extern cvar_t	*lookstrafe;
+extern cvar_t	*sensitivity;
 
-extern	cvar_t	*m_pitch;
-extern	cvar_t	*m_yaw;
-extern	cvar_t	*m_forward;
-extern	cvar_t	*m_side;
+extern cvar_t	*m_pitch;
+extern cvar_t	*m_yaw;
+extern cvar_t	*m_forward;
+extern cvar_t	*m_side;
 
-extern	cvar_t	*_windowed_mouse;
+extern cvar_t	*_windowed_mouse;
 
-extern	cvar_t	*name;
-extern	cvar_t	*show_fps;
-extern	cvar_t	*rate;
+extern cvar_t	*name;
+extern cvar_t	*show_fps;
+extern cvar_t	*rate;
 
-extern	cvar_t	*baseskin;
-extern	cvar_t	*noskins;
+extern cvar_t	*baseskin;
+extern cvar_t	*noskins;
 
-extern	cvar_t	*cl_predict_players;
-extern	cvar_t	*cl_predict_players2;
-extern	cvar_t	*cl_solid_players;
+extern cvar_t	*cl_predict_players;
+extern cvar_t	*cl_predict_players2;
+extern cvar_t	*cl_solid_players;
 
-extern	cvar_t	*cl_downloadrate_hack; /* FS: FIXME Shitty download hack */
+/* FS: New stuff */
+extern cvar_t	*show_time;
+extern cvar_t	*show_uptime;
+extern cvar_t	*show_ping;
+extern cvar_t	*cl_ogg_music;
+extern cvar_t	*cl_wav_music;
+extern cvar_t	*cl_autorepeat_allkeys;
+extern cvar_t	*cl_unbindall_protection;
+extern cvar_t	*console_old_complete;
+extern cvar_t	*in_freelook;
+extern cvar_t	*cl_downloadrate_hack; /* FS: FIXME Shitty download hack */
+extern cvar_t	*net_broadcast_chat; /* FS: EZQ Chat */
+extern cvar_t	*chat; /* FS: EZQ Chat */
 
 /* FS: GameSpy CVARs */
-extern	cvar_t	*cl_master_server_ip;
-extern	cvar_t	*cl_master_server_port;
-extern	cvar_t	*cl_master_server_timeout;
-extern	cvar_t	*cl_master_server_retries;
-extern	cvar_t	*snd_gamespy_sounds;
+extern cvar_t	*cl_master_server_ip;
+extern cvar_t	*cl_master_server_port;
+extern cvar_t	*cl_master_server_timeout;
+extern cvar_t	*cl_master_server_retries;
+extern cvar_t	*snd_gamespy_sounds;
 
-extern	cvar_t	*cl_ogg_music; /* FS: Added */
-extern	cvar_t	*cl_wav_music; /* FS: Added */
-
-extern	cvar_t	*console_old_complete; /* FS: Added */
-extern	cvar_t	*cl_autorepeat_allkeys; /* FS: Added */
-
-extern	cvar_t	*_vid_wait_override;
-extern	cvar_t	*vid_wait;
+extern cvar_t	*_vid_wait_override;
+extern cvar_t	*vid_wait;
 
 #define	MAX_STATIC_ENTITIES	128			// torches, etc
 
@@ -624,4 +624,3 @@ void	Skin_NextDownload (void);
 #define RSSHOT_HEIGHT 200
 
 #endif // __CLIENT_H
-

@@ -479,6 +479,7 @@ void V_SetContentsColor (int contents)
 		break;
 	default:
 		cl.cshifts[CSHIFT_CONTENTS] = cshift_water;
+		break;
 	}
 }
 
@@ -498,7 +499,6 @@ void V_CalcPowerupCshift (void)
 	}
 	else if (cl.items & IT_QUAD)
 	{
-
 		cl.cshifts[CSHIFT_POWERUP].destcolor[0] = 0;
         cl.cshifts[CSHIFT_POWERUP].destcolor[1] = 0;
 		cl.cshifts[CSHIFT_POWERUP].destcolor[2] = 255;
@@ -551,8 +551,6 @@ void V_CalcBlend (void)
 			continue;
 
 		a2 = ((cl.cshifts[j].percent * gl_cshiftpercent->value) / 100.0) / 255.0;
-
-//		a2 = cl.cshifts[j].percent/255.0;
 		if (!a2)
 			continue;
 		a = a + a2*(1-a);
@@ -608,7 +606,7 @@ void V_UpdatePalette (void)
 				cl.prev_cshifts[i].destcolor[j] = cl.cshifts[i].destcolor[j];
 			}
 	}
-	
+
 // drop the damage value
 	cl.cshifts[CSHIFT_DAMAGE].percent -= host_frametime*150;
 	if (cl.cshifts[CSHIFT_DAMAGE].percent <= 0)
@@ -735,7 +733,6 @@ void V_UpdatePalette (void)
 	VID_ShiftPalette (pal);	
 }
 #endif	// !GLQUAKE
-
 
 /* 
 ============================================================================== 

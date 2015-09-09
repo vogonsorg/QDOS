@@ -47,9 +47,6 @@ extern	qboolean	scr_disabled_for_loading;
 extern	qboolean	scr_skipupdate;
 
 extern cvar_t *scr_viewsize;
-extern cvar_t *show_fps; /* FS: Added */
-extern cvar_t *show_time; /* FS: Added */
-extern cvar_t *show_uptime; /* FS: Added */
 
 // only the refresh window will be updated unless these variables are flagged 
 extern	int			scr_copytop;

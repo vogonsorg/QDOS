@@ -18,9 +18,10 @@ USE_SSE=0
 # compile Quake with fxMesa for 3DFX Voodoo Cards
 GLQUAKE=0
 
-CFLAGS = -g -Wall -Werror -O2 -DNDEBUG -fno-strict-aliasing -fomit-frame-pointer
-LIBS   =
-EXE = qdos.exe
+CFLAGS = -g -Wall -Werror -O2 -DNDEBUG -fno-strict-aliasing
+CLFAGS += -fomit-frame-pointer
+LIBS    =
+EXE     = qdos.exe
 
 ifeq ($(USE_SSE),1)
 CFLAGS += -mtune=pentium3 -march=pentium3 -mfpmath=sse
@@ -29,47 +30,48 @@ CFLAGS += -mtune=pentium
 endif
 
 ifeq ($(GLQUAKE),1)
-CFLAGS+= -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE -DUSE_3DFXGAMMA
-LIBS+= -L../3rdparty/lib -lgl
-EXE = qdosfx.exe
+CFLAGS += -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE
+CFLAGS += -DUSE_3DFXGAMMA
+LIBS   += -L../3rdparty/lib -lgl
+EXE     = qdosfx.exe
 SYSOBJ_DXE=$(O)/dxe.o
 else
 SYSOBJ_DXE=$(O)/no_dxe.o
 endif
 
 ifeq ($(USE_SNDPCI),1)
-CFLAGS+= -DUSE_SNDPCI
-CFLAGS+= -I../3rdparty/include
-LIBS += -L../3rdparty/lib -lau
+CFLAGS += -DUSE_SNDPCI
+CFLAGS += -I../3rdparty/include
+LIBS   += -L../3rdparty/lib -lau
 endif
 
 ifeq ($(USE_BWTCP),yes)
-CFLAGS+= -DUSE_BWTCP
+CFLAGS += -DUSE_BWTCP
 endif
 
 ifeq ($(USE_MPATH),yes)
-CFLAGS+= -DUSE_MPATH
+CFLAGS += -DUSE_MPATH
 endif
 
 ifeq ($(USE_WATT32),yes)
-CFLAGS+= -DUSE_WATT32 -DWATT32_NO_OLDIES
-CFLAGS+= -I../wat/inc
-LDFLAGS= -L../wat/lib
-LIBS  += -lwatt
+CFLAGS += -DUSE_WATT32 -DWATT32_NO_OLDIES
+CFLAGS += -I../wat/inc
+LDFLAGS = -L../wat/lib
+LIBS   += -lwatt
 endif
 
 ifeq ($(USE_OGG),yes)
-CFLAGS+= -DOGG_SUPPORT
-CFLAGS+= -I../3rdparty/include
+CFLAGS += -DOGG_SUPPORT
+CFLAGS += -I../3rdparty/include
 ifneq ($(USE_TREMOR),1)
-LIBS  += -L../3rdparty/lib -lvorbisfile -lvorbis -logg
+LIBS   += -L../3rdparty/lib -lvorbisfile -lvorbis -logg
 else
-CFLAGS+= -DVORBIS_USE_TREMOR
-LIBS  += -L../3rdparty/lib -lvorbisidec -logg
+CFLAGS += -DVORBIS_USE_TREMOR
+LIBS   += -L../3rdparty/lib -lvorbisidec -logg
 endif
 endif
 
-LIBS  += -lm
+LIBS   += -lm
 
 # subdirectory for objects
 O=dos

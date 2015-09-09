@@ -948,7 +948,6 @@ void GL_Resample8BitTexture (unsigned char *in, int inwidth, int inheight, unsig
 	}
 }
 
-
 /*
 ================
 GL_MipMap

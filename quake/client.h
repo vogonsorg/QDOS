@@ -63,7 +63,6 @@ typedef struct
 	char	name[MAX_SCOREBOARDNAME];
 	float	entertime;
 	int		frags;
-	int		ping; /* FS: Unfinished */
 	int		colors;			// two 4 bit fields
 	byte	translations[VID_GRADES*256];
 } scoreboard_t;
@@ -81,7 +80,6 @@ typedef struct
 #define	NUM_CSHIFTS		4
 
 #define	NAME_LENGTH	64
-
 
 //
 // client_state_t should hold all pieces of the client state
@@ -156,7 +154,7 @@ typedef struct
 	int gamespypercent;
 	int gamespytotalservers;
 	int gamespystarttime;
-	
+
 // connection information
 	int			signon;			// 0 to SIGNONS
 	struct qsocket_s	*netcon;
@@ -263,11 +261,6 @@ typedef struct
 extern cvar_t	*cl_name;
 extern cvar_t	*cl_color;
 
-extern cvar_t	*cl_unbindall_protection; /* FS: unbindall protection */
-extern cvar_t	*console_old_complete; /* FS: Added */
-extern cvar_t	*in_freelook; /* FS: mlook */
-extern cvar_t	*cl_warncmd; /* FS: From QW */
-
 extern cvar_t	*cl_upspeed;
 extern cvar_t	*cl_forwardspeed;
 extern cvar_t	*cl_backspeed;
@@ -293,6 +286,19 @@ extern cvar_t	*m_yaw;
 extern cvar_t	*m_forward;
 extern cvar_t	*m_side;
 
+/* FS: New stuff */
+extern cvar_t	*show_fps;
+extern cvar_t	*show_time;
+extern cvar_t	*show_uptime;
+extern cvar_t	*cl_ogg_music;
+extern cvar_t	*cl_wav_music;
+extern cvar_t	*cl_autorepeat_allkeys;
+extern cvar_t	*cl_demos; /* FS: Disable startup demos */
+extern cvar_t	*cl_unbindall_protection;
+extern cvar_t	*console_old_complete;
+extern cvar_t	*in_freelook;
+extern cvar_t	*cl_warncmd; /* FS: From QW */
+
 /* FS: GameSpy CVARs */
 extern cvar_t	*cl_master_server_ip;
 extern cvar_t	*cl_master_server_port;
@@ -300,13 +306,7 @@ extern cvar_t	*cl_master_server_timeout;
 extern cvar_t	*cl_master_server_retries;
 extern cvar_t	*snd_gamespy_sounds;
 
-extern cvar_t	*cl_ogg_music; /* FS: Added */
-extern cvar_t	*cl_wav_music; /* FS: Added */
-
-extern cvar_t	*cl_autorepeat_allkeys; /* FS: Added */
-
 extern qboolean	nostartupdemos; /* FS: Disable startup demos */
-extern cvar_t	*cl_demos; /* FS: Disable startup demos */
 
 extern cvar_t	*_vid_wait_override;
 extern cvar_t	*vid_wait;
@@ -396,11 +396,15 @@ void CL_TimeDemo_f (void);
 //
 // cl_parse.c
 //
+#define NET_TIMINGS 256
+#define NET_TIMINGSMASK 255
+extern int	packet_latency[NET_TIMINGS];
+
 void CL_ParseServerMessage (void);
 void CL_NewTranslation (int slot);
 
 //
-// view
+// view.c
 //
 void V_StartPitchDrift (void);
 void V_StopPitchDrift (void);

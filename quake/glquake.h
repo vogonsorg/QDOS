@@ -38,19 +38,9 @@ void GL_EndRendering (void);
 
 #ifdef _WIN32
 // Function prototypes for the Texture Object Extension routines
-typedef GLboolean (APIENTRY *ARETEXRESFUNCPTR)(GLsizei, const GLuint *,
-                    const GLboolean *);
 typedef void (APIENTRY *BINDTEXFUNCPTR)(GLenum, GLuint);
-typedef void (APIENTRY *DELTEXFUNCPTR)(GLsizei, const GLuint *);
-typedef void (APIENTRY *GENTEXFUNCPTR)(GLsizei, GLuint *);
-typedef GLboolean (APIENTRY *ISTEXFUNCPTR)(GLuint);
-typedef void (APIENTRY *PRIORTEXFUNCPTR)(GLsizei, const GLuint *,
-                    const GLclampf *);
-typedef void (APIENTRY *TEXSUBIMAGEPTR)(int, int, int, int, int, int, int, int, void *);
 
 extern	BINDTEXFUNCPTR bindTexFunc;
-extern	DELTEXFUNCPTR delTexFunc;
-extern	TEXSUBIMAGEPTR TexSubImage2DFunc;
 #endif
 
 extern	int texture_extension_number;
@@ -59,7 +49,7 @@ extern	float	gldepthmin, gldepthmax;
 
 void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap, qboolean alpha);
 void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean alpha);
-void GL_Upload8_EXT (byte *data, int width, int height,  qboolean mipmap, qboolean alpha) ;
+void GL_Upload8_EXT (byte *data, int width, int height,  qboolean mipmap, qboolean alpha);
 int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha);
 int GL_FindTexture (char *identifier);
 
@@ -100,31 +90,6 @@ extern	PROC glVertexPointerEXT;
 void R_TimeRefresh_f (void);
 void R_ReadPointFile_f (void);
 texture_t *R_TextureAnimation (texture_t *base);
-void GL_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr);
-qboolean VID_Is8bit();
-void GL_SubdivideSurface (msurface_t *fa);
-void EmitWaterPolys (msurface_t *fa);
-void EmitSkyPolys (msurface_t *fa);
-void EmitBothSkyLayers (msurface_t *fa);
-int GL_LoadPicTexture (qpic_t *pic);
-void R_InitParticles (void);
-void R_DrawSkyChain (msurface_t *s);
-void GL_Set2D (void);
-int R_LightPoint (vec3_t p);
-void R_ClearParticles (void);
-void GL_BuildLightmaps (void);
-void R_StoreEfrags (efrag_t **ppefrag);
-void R_RotateForEntity (entity_t *e);
-void R_AnimateLight (void);
-void V_CalcBlend (void);
-void R_DrawWorld (void);
-void R_RenderDlights (void);
-void R_DrawParticles (void);
-qboolean R_CullBox (vec3_t mins, vec3_t maxs);
-void R_MarkLights (dlight_t *light, int bit, mnode_t *node);
-void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, float degrees );
-void R_DrawWaterSurfaces (void);
-void R_RenderBrushPoly (msurface_t *fa);
 
 typedef struct surfcache_s
 {
@@ -281,6 +246,65 @@ extern qboolean gl_mtexable;
 
 void GL_DisableMultitexture(void);
 void GL_EnableMultitexture(void);
+
+//
+// gl_warp.c
+//
+void GL_SubdivideSurface (msurface_t *fa);
+void EmitBothSkyLayers (msurface_t *fa);
+void EmitWaterPolys (msurface_t *fa);
+void EmitSkyPolys (msurface_t *fa);
+void R_DrawSkyChain (msurface_t *s);
+
+//
+// gl_draw.c
+//
+int GL_LoadPicTexture (qpic_t *pic);
+void GL_Set2D (void);
+
+//
+// gl_rmain.c
+//
+qboolean R_CullBox (vec3_t mins, vec3_t maxs);
+void R_RotateForEntity (entity_t *e);
+
+//
+// gl_rlight.c
+//
+void R_MarkLights (dlight_t *light, int bit, mnode_t *node);
+void R_AnimateLight (void);
+void R_RenderDlights (void);
+int R_LightPoint (vec3_t p);
+
+//
+// gl_refrag.c
+//
+void R_StoreEfrags (efrag_t **ppefrag);
+
+//
+// gl_mesh.c
+//
+void GL_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr);
+
+//
+// gl_rsurf.c
+//
 void R_DrawBrushModel (entity_t *e);
+void R_DrawWorld (void);
+void GL_BuildLightmaps (void);
+void R_RenderBrushPoly (msurface_t *fa);
+void R_DrawWaterSurfaces (void);
+
+//
+// r_part.c
+//
+void R_InitParticles (void);
+void R_ClearParticles (void);
+void R_DrawParticles (void);
+
+//
+// view.c
+//
+void V_CalcBlend (void);
 
 #endif // __GLQUAKE_H

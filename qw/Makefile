@@ -3,6 +3,8 @@ STRIP= strip
 
 # libcurl/http downloads:
 USE_CURL=1
+# gamespy server browser
+USE_GAMESPY=1
 # whether to use OGG VORBIS
 USE_OGG=yes
 # use tremor library for ogg/vorbis:
@@ -14,10 +16,11 @@ USE_SSE=0
 # compile Quake with fxMesa for 3DFX Voodoo Cards
 GLQUAKE=0
 
-CFLAGS= -g -Wall -Werror -O2 -DNDEBUG -fno-strict-aliasing -fomit-frame-pointer -DWATT32_NO_OLDIES -I../wat/inc
-LDFLAGS= -L../wat/lib
-LIBS= -lwatt
-EXE = qw.exe
+CFLAGS += -g -Wall -Werror -O2 -DNDEBUG -fno-strict-aliasing
+CFLAGS += -fomit-frame-pointer -DWATT32_NO_OLDIES -I../wat/inc
+LDFLAGS = -L../wat/lib
+LIBS    = -lwatt
+EXE     = qw.exe
 
 ifeq ($(USE_SSE),1)
 CFLAGS += -mtune=pentium3 -march=pentium3 -mfpmath=sse
@@ -26,48 +29,51 @@ CFLAGS += -mtune=pentium
 endif
 
 ifeq ($(GLQUAKE),1)
-CFLAGS+= -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE -DUSE_3DFXGAMMA
-LIBS+= -L../3rdparty/lib -lgl
-EXE = qwdosfx.exe
+CFLAGS += -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE
+CFLAGS += -DUSE_3DFXGAMMA
+LIBS   += -L../3rdparty/lib -lgl
+EXE     = qwdosfx.exe
 SYSOBJ_DXE=$(O)/dxe.o
 else
 SYSOBJ_DXE=$(O)/no_dxe.o
 endif
 
 ifeq ($(USE_SNDPCI),1)
-CFLAGS+= -DUSE_SNDPCI
-CFLAGS+= -I../3rdparty/include
-LIBS += -L../3rdparty/lib -lau
+CFLAGS += -DUSE_SNDPCI
+CFLAGS += -I../3rdparty/include
+LIBS   += -L../3rdparty/lib -lau
 endif
 
 ifeq ($(USE_OGG),yes)
-CFLAGS+= -DOGG_SUPPORT
-CFLAGS+= -I../3rdparty/include
+CFLAGS += -DOGG_SUPPORT
+CFLAGS += -I../3rdparty/include
 ifneq ($(USE_TREMOR),1)
-LIBS  += -L../3rdparty/lib -lvorbisfile -lvorbis -logg
+LIBS   += -L../3rdparty/lib -lvorbisfile -lvorbis -logg
 else
-CFLAGS+= -DVORBIS_USE_TREMOR
-LIBS  += -L../3rdparty/lib -lvorbisidec -logg
+CFLAGS += -DVORBIS_USE_TREMOR
+LIBS   += -L../3rdparty/lib -lvorbisidec -logg
 endif
 endif
 
-ifeq ($(USE_CURL),1)
-CFLAGS+= -DUSE_CURL -DCURL_NO_OLDIES
-CFLAGS+= -I../libcurl/include
-LIBS+= -L../libcurl/lib -lcurl
-endif
-LIBS  += -lm
-
-# subdirectory for objects
-O=dos
-
-# FIXME: make the gspy shit optional
+ifeq ($(USE_GAMESPY),1)
+CFLAGS += -DGAMESPY
 GAMESPY = $(O)/Goa/CEngine/darray.o \
 	$(O)/Goa/CEngine/gserver.o \
 	$(O)/Goa/CEngine/gserverlist.o \
 	$(O)/Goa/CEngine/gutil.o \
 	$(O)/Goa/CEngine/hashtable.o \
 	$(O)/Goa/nonport.o
+endif
+
+ifeq ($(USE_CURL),1)
+CFLAGS += -DUSE_CURL -DCURL_NO_OLDIES
+CFLAGS += -I../libcurl/include
+LIBS   += -L../libcurl/lib -lcurl
+endif
+LIBS   += -lm
+
+# subdirectory for objects
+O=dos
 
 # not too sophisticated dependency
 CLIENT = $(SYSOBJ_DXE)  \
