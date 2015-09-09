@@ -20,6 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "winquake.h"
 
+extern	cvar_t	*r_waterwarp;
+extern	cvar_t	*scr_fov;
+
 void (*vid_menudrawfn)(void);
 void (*vid_menukeyfn)(int key);
 
@@ -1335,9 +1338,6 @@ void M_Keydown (int key)
 #define EXTENDED_OPTIONS 12
 
 int extended_cursor;
-
-extern cvar_t r_waterwarp;
-extern cvar_t scr_fov;
 
 int M_Extended_Get_Vsync(void);
 void M_Extended_Set_Vsync(int dir);

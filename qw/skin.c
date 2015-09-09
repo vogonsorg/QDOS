@@ -20,9 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-cvar_t		baseskin = {"baseskin", "base"};
-cvar_t		noskins = {"noskins", "0"};
-
 char		allskins[128];
 #define	MAX_CACHED_SKINS		128
 skin_t		skins[MAX_CACHED_SKINS];
@@ -39,30 +36,29 @@ Skin_Find
 */
 void Skin_Find (player_info_t *sc)
 {
-	skin_t		*skin;
-	int			i;
-
-        char            name[128], *s;
+	skin_t *skin;
+	int i;
+	char name[128], *s;
 
 
 	if (allskins[0])
-                strcpy (name, allskins);
-        else
+		strcpy (name, allskins);
+	else
 	{
-                s = Info_ValueForKey (sc->userinfo, "skin");
-                if (s && s[0])
-                        strcpy (name, s);
-                else
-                        strcpy (name, baseskin->string);
-        }
+		s = Info_ValueForKey (sc->userinfo, "skin");
+		if (s && s[0])
+			strcpy (name, s);
+		else
+		strcpy (name, baseskin->string);
+	}
 
-        if (strstr (name, "..") || *name == '.')
-                strcpy (name, "base");
-        COM_StripExtension (name, name);
+	if (strstr (name, "..") || *name == '.')
+		strcpy (name, "base");
+	COM_StripExtension (name, name);
 
 	for (i=0 ; i<numskins ; i++)
 	{
-                if (!strcmp (name, skins[i].name))
+		if (!strcmp (name, skins[i].name))
 		{
 			sc->skin = &skins[i];
 			Skin_Cache (sc->skin);
@@ -81,7 +77,7 @@ void Skin_Find (player_info_t *sc)
 	numskins++;
 
 	memset (skin, 0, sizeof(*skin));
-        strncpy(skin->name, name, sizeof(skin->name) - 1);
+	strncpy(skin->name, name, sizeof(skin->name) - 1);
 }
 
 

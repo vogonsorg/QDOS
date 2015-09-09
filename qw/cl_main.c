@@ -37,11 +37,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 qboolean noclip_anglehack;    // remnant from old quake
 
-cvar_t	rcon_password = {"rcon_password", "", false};
+cvar_t	*rcon_password;
+cvar_t	*rcon_address;
 
-cvar_t	rcon_address = {"rcon_address", ""};
-
-cvar_t	cl_timeout = {"cl_timeout", "60"};
+cvar_t	*cl_timeout;
 
 cvar_t	*cl_upspeed;
 cvar_t	*cl_forwardspeed;
@@ -52,62 +51,64 @@ cvar_t	*cl_yawspeed;
 cvar_t	*cl_pitchspeed;
 cvar_t	*cl_anglespeedkey;
 
-cvar_t	cl_shownet = {"cl_shownet","0"}; // can be 0, 1, or 2
+cvar_t	*cl_shownet;
 
-cvar_t	cl_sbar     = {"cl_sbar", "0", true};
-cvar_t	cl_hudswap  = {"cl_hudswap", "0", true};
-cvar_t	cl_maxfps   = {"cl_maxfps", "0", true};
+cvar_t	*cl_sbar;
+cvar_t	*cl_hudswap;
+cvar_t	*cl_maxfps;
 
-cvar_t	lookspring = {"lookspring","0", true};
-cvar_t	lookstrafe = {"lookstrafe","0", true};
-cvar_t	sensitivity = {"sensitivity","3", true};
+cvar_t	*lookspring;
+cvar_t	*lookstrafe;
+cvar_t	*sensitivity;
 
-cvar_t	m_pitch = {"m_pitch","0.022", true};
-cvar_t	m_yaw = {"m_yaw","0.022"};
-cvar_t	m_forward = {"m_forward","1"};
-cvar_t	m_side = {"m_side","0.8"};
+cvar_t	*m_pitch;
+cvar_t	*m_yaw;
+cvar_t	*m_forward;
+cvar_t	*m_side;
 
-cvar_t	entlatency = {"entlatency", "20"};
-cvar_t	cl_predict_players = {"cl_predict_players", "1"};
-cvar_t	cl_predict_players2 = {"cl_predict_players2", "1"};
-cvar_t	cl_solid_players = {"cl_solid_players", "1"};
+cvar_t	*entlatency;
+cvar_t	*cl_predict_players;
+cvar_t	*cl_predict_players2;
+cvar_t	*cl_solid_players;
 
-cvar_t  localid = {"localid", ""};
-cvar_t	net_broadcast_chat = {"net_broadcast_chat", "1", true, false, "Broadcast EZQ chats."}; /* FS: EZQ Chat */
+cvar_t  *localid;
+cvar_t	*net_broadcast_chat; /* FS: EZQ Chat */
 
 static	qboolean allowremotecmd = true;
+
+cvar_t	*baseskin;
+cvar_t	*noskins;
 
 //
 // info mirrors
 //
-cvar_t	password = {"password", "", false, true};
-cvar_t	spectator = {"spectator", "0", false, true, "Enables connecting to supported servers as a spectator."};
-cvar_t	name = {"name","unnamed", true, true, "Player name."};
-cvar_t	team = {"team","", true, true};
-cvar_t	skin = {"skin","", true, true};
-cvar_t	topcolor = {"topcolor","0", true, true};
-cvar_t	bottomcolor = {"bottomcolor","0", true, true};
-cvar_t	rate = {"rate","2500", true, true, "Connection rate.  Values over 25000 are typically unnecessary."};
-cvar_t	noaim = {"noaim","0", true, true};
-cvar_t	msg = {"msg","1", true, true};
-cvar_t	chat = {"chat", "", false, true, "Internal userinfo CVAR used for EZQ chat notifcations."}; /* FS: EZQ Chat */
+cvar_t	*password;
+cvar_t	*spectator;
+cvar_t	*name;
+cvar_t	*team;
+cvar_t	*skin;
+cvar_t	*topcolor;
+cvar_t	*bottomcolor;
+cvar_t	*rate;
+cvar_t	*noaim;
+cvar_t	*msg;
+cvar_t	*chat; /* FS: EZQ Chat */
 
-extern	cvar_t cl_hightrack;
-
+/* FS: FTE Extensions */
 #ifdef PROTOCOL_VERSION_FTE
-cvar_t  cl_pext_other = {"cl_pext_other", "1"};		// will break demos!
+cvar_t	*cl_pext_other;
 #endif
 #ifdef FTE_PEXT_256PACKETENTITIES
-cvar_t	cl_pext_256packetentities = {"cl_pext_256packetentities", "1"};
+cvar_t	*cl_pext_256packetentities;
 #endif
 #ifdef FTE_PEXT_CHUNKEDDOWNLOADS
 cvar_t	*cl_pext_chunkeddownloads;
 cvar_t	*cl_chunksperframe;
 #endif
 #ifdef FTE_PEXT_FLOATCOORDS
-cvar_t  cl_pext_floatcoords  = {"cl_pext_floatcoords", "1"};
+cvar_t	*cl_pext_floatcoords;
 #endif
-cvar_t	cl_downloadrate_hack = {"cl_downloadrate_hack", "1", true, false, "Skip rendering a few frames during downloads for faster downloading."}; /* FS: Gross download hack */
+cvar_t	*cl_downloadrate_hack; /* FS: Gross download hack */
 
 client_static_t   cls;
 client_state_t cl;
@@ -130,6 +131,7 @@ double         connect_time = -1;      // for connection retransmits
 quakeparms_t host_parms;
 
 qboolean host_initialized;    // true if into command execution
+qboolean quakerc_init; /* FS: Intercept config.cfg from quake.rc */
 qboolean nomaster;
 
 double      host_frametime;
@@ -144,19 +146,19 @@ byte     *host_colormap;
 
 netadr_t master_adr;          // address of the master server
 
-cvar_t	host_speeds = {"host_speeds","0"};        // set for running times
+cvar_t	*host_speeds;        // set for running times
 
-cvar_t  show_fps = {"show_fps","0", true, false, "Show FPS counter on the screen."}; /* FS: Added */
-cvar_t  show_time = {"show_time","0", true, false, "Show current time on the screen,  1 - Military.  2 - AM/PM."}; /* FS: Added */
-cvar_t  show_uptime = {"show_uptime", "0", true, false, "Show current map uptime."}; /* FS: Added */
-cvar_t	console_old_complete = {"console_old_complete", "0", true, false , "Use legacy style tab completion."}; /* FS: Added */
-cvar_t	developer = {"developer","0", false, false, "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Extremely verbose msgs - 65536\n  * Extremely verbose gamespy msgs - 131072\n"};  /* FS: Added Description */
-cvar_t	con_show_description = {"con_show_description", "1", true, false, "Show descriptions for CVARs."}; /* FS: Added */
-cvar_t	con_show_dev_flags = {"con_show_dev_flags", "1", true, false, "Show developer flag options."}; /* FS: Added */
+cvar_t  *show_fps;
+cvar_t  *show_time; /* FS: Added */
+cvar_t  *show_uptime; /* FS: Added */
+cvar_t	*console_old_complete; /* FS: Added */
 
-cvar_t	cl_ogg_music = {"cl_ogg_music", "1", true, false, "Play OGG tracks in the format of id1/music/trackXX.ogg if they exist."}; /* FS: Added */
-cvar_t	cl_wav_music = {"cl_wav_music", "1", true, false, "Play WAV tracks in the format of id1/music/trackXX.wav if they exist."}; /* FS: Added */
-cvar_t	cl_autorepeat_allkeys = {"cl_autorepeat_allkeys", "0", true, false, "Allow to autorepeat any key, not just Backspace, Pause, PgUp, and PgDn keys."}; /* FS: So I can autorepeat whatever I want, hoss. */
+cvar_t	*con_show_description; /* FS: Added */
+cvar_t	*con_show_dev_flags; /* FS: Added */
+
+cvar_t	*cl_ogg_music; /* FS: Added */
+cvar_t	*cl_wav_music; /* FS: Added */
+cvar_t	*cl_autorepeat_allkeys; /* FS: So I can autorepeat whatever I want, hoss. */
 
 int         fps_count;
 
@@ -165,12 +167,12 @@ qboolean bFlashlight;
 void CL_Flashlight_f (void);
 
 /* FS: Gamespy CVARs */
-cvar_t	cl_master_server_ip = {"cl_master_server_ip", CL_MASTER_ADDR, true, false, "GameSpy Master Server IP."};
-cvar_t	cl_master_server_port = {"cl_master_server_port", CL_MASTER_PORT, true, false, "GameSpy Master Server Port."};
-cvar_t	cl_master_server_queries = {"cl_master_server_queries", "10", true, false, "Number of sockets to allocate for GameSpy."};
-cvar_t	cl_master_server_timeout = {"cl_master_server_timeout", "3000", true, false, "Timeout (in milliseconds) to give up on pinging a server."};
-cvar_t	cl_master_server_retries = {"cl_master_server_retries", "20", true, false, "Number of retries to attempt for receiving the server list.  Formula is 50ms + 10ms for each retry."};
-cvar_t	snd_gamespy_sounds = {"snd_gamespy_sounds", "0", true, false, "Play the complete.wav and abort.wav from GameSpy3D if it exists in sounds/gamespy."};
+cvar_t	*cl_master_server_ip;
+cvar_t	*cl_master_server_port;
+cvar_t	*cl_master_server_queries;
+cvar_t	*cl_master_server_timeout;
+cvar_t	*cl_master_server_retries;
+cvar_t	*snd_gamespy_sounds;
 
 /* FS: Gamespy prototypes */
 static	GServerList	serverlist = NULL;
@@ -1240,9 +1242,6 @@ CL_Init
 */
 void CL_Init (void)
 {
-	extern   cvar_t	   baseskin;
-	extern   cvar_t	   noskins;
-
 	dstring_t *version = dstring_new();
 	dsprintf(version, "QWDOS v%4.2f", VERSION);
 
@@ -1264,19 +1263,14 @@ void CL_Init (void)
 	CL_InitPrediction ();
 	CL_InitCam ();
 	Pmove_Init ();
-   
+
 //
 // register our commands
 //
-	Cvar_RegisterVariable (&show_fps);
-	Cvar_RegisterVariable (&show_time); /* FS: Added */
-	Cvar_RegisterVariable (&show_uptime); /* FS: Added */
-	Cvar_RegisterVariable (&console_old_complete); /* FS: Added */
-	Cvar_RegisterVariable (&net_broadcast_chat); /* FS: EZQ Chat */
-	Cvar_RegisterVariable (&host_speeds);
-	Cvar_RegisterVariable (&developer);
+	show_fps = Cvar_Get("show_fps","0", CVAR_ARCHIVE);
+	show_fps->description = "Show FPS counter on the screen.";
+	host_speeds = Cvar_Get("host_speeds","0", 0); // set for running times
 
-	Cvar_RegisterVariable (&cl_warncmd);
 	cl_upspeed = Cvar_Get("cl_upspeed","200", 0);
 	cl_forwardspeed = Cvar_Get("cl_forwardspeed","200", CVAR_ARCHIVE);
 	cl_backspeed = Cvar_Get("cl_backspeed","200", CVAR_ARCHIVE);
@@ -1285,77 +1279,103 @@ void CL_Init (void)
 	cl_yawspeed = Cvar_Get("cl_yawspeed","140", 0);
 	cl_pitchspeed = Cvar_Get("cl_pitchspeed","150", 0);
 	cl_anglespeedkey = Cvar_Get("cl_anglespeedkey","1.5", 0);
-	Cvar_RegisterVariable (&cl_shownet);
-	Cvar_RegisterVariable (&cl_sbar);
-	Cvar_RegisterVariable (&cl_hudswap);
-	Cvar_RegisterVariable (&cl_maxfps);
-	Cvar_RegisterVariable (&cl_timeout);
-	Cvar_RegisterVariable (&lookspring);
-	Cvar_RegisterVariable (&lookstrafe);
-	Cvar_RegisterVariable (&sensitivity);
+	cl_shownet = Cvar_Get("cl_shownet","0", 0); // can be 0, 1, or 2
+	cl_sbar = Cvar_Get("cl_sbar", "0", CVAR_ARCHIVE);
+	cl_hudswap = Cvar_Get("cl_hudswap", "0", CVAR_ARCHIVE);
+	cl_maxfps = Cvar_Get("cl_maxfps", "0", CVAR_ARCHIVE);
+	cl_timeout = Cvar_Get("cl_timeout", "60", 0);
+	lookspring = Cvar_Get("lookspring","0", CVAR_ARCHIVE);
+	lookstrafe = Cvar_Get("lookstrafe","0", CVAR_ARCHIVE);
+	sensitivity = Cvar_Get("sensitivity","3", CVAR_ARCHIVE);
 
-	Cvar_RegisterVariable (&m_pitch);
-	Cvar_RegisterVariable (&m_yaw);
-	Cvar_RegisterVariable (&m_forward);
-	Cvar_RegisterVariable (&m_side);
+	m_pitch = Cvar_Get("m_pitch","0.022", CVAR_ARCHIVE);
+	m_yaw = Cvar_Get("m_yaw","0.022", 0);
+	m_forward = Cvar_Get("m_forward","1", 0);
+	m_side = Cvar_Get("m_side","0.8", 0);
 
-	Cvar_RegisterVariable (&rcon_password);
-	Cvar_RegisterVariable (&rcon_address);
+	rcon_address = Cvar_Get("rcon_address", "", 0);
+	rcon_password = Cvar_Get("rcon_password", "", 0);
 
-	Cvar_RegisterVariable (&entlatency);
-	Cvar_RegisterVariable (&cl_predict_players2);
-	Cvar_RegisterVariable (&cl_predict_players);
-	Cvar_RegisterVariable (&cl_solid_players);
+	entlatency = Cvar_Get("entlatency", "20", 0);
+	cl_predict_players2 = Cvar_Get("cl_predict_players2", "1", 0);
+	cl_predict_players = Cvar_Get("cl_predict_players", "1", 0);
+	cl_solid_players = Cvar_Get("cl_solid_players", "1", 0);
 
-	Cvar_RegisterVariable (&localid);
+	localid = Cvar_Get("localid", "", 0);
 
-	Cvar_RegisterVariable (&baseskin);
-	Cvar_RegisterVariable (&noskins);
+	baseskin = Cvar_Get("baseskin", "base", 0);
+	noskins = Cvar_Get("noskins", "0", 0);
 
-   //
-   // info mirrors
-   //
-	Cvar_RegisterVariable (&name);
-	Cvar_RegisterVariable (&password);
-	Cvar_RegisterVariable (&spectator);
-	Cvar_RegisterVariable (&skin);
-	Cvar_RegisterVariable (&team);
-	Cvar_RegisterVariable (&topcolor);
-	Cvar_RegisterVariable (&bottomcolor);
-	Cvar_RegisterVariable (&rate);
-	Cvar_RegisterVariable (&msg);
-	Cvar_RegisterVariable (&noaim);
-	Cvar_RegisterVariable (&chat); /* FS: EZQ Chat */
+	//
+	// info mirrors
+	//
+	name = Cvar_Get("name","unnamed", CVAR_ARCHIVE|CVAR_USERINFO);
+	name->description = "Player name.";
+	password = Cvar_Get("password", "", CVAR_USERINFO);
+	spectator = Cvar_Get("spectator", "0", CVAR_USERINFO);
+	spectator->description = "Enables connecting to supported servers as a spectator.";
+	skin = Cvar_Get("skin","", CVAR_ARCHIVE|CVAR_USERINFO);
+	team = Cvar_Get("team","", CVAR_ARCHIVE|CVAR_USERINFO);
+	topcolor = Cvar_Get("topcolor","0", CVAR_ARCHIVE|CVAR_USERINFO);
+	bottomcolor = Cvar_Get("bottomcolor","0", CVAR_ARCHIVE|CVAR_USERINFO);
+	rate = Cvar_Get("rate","2500", CVAR_ARCHIVE|CVAR_USERINFO);
+	rate->description = "Connection rate.  Values over 25000 are typically unnecessary.";
+	msg = Cvar_Get("msg","1", CVAR_ARCHIVE|CVAR_USERINFO);
+	noaim = Cvar_Get("noaim","0", CVAR_ARCHIVE|CVAR_USERINFO);
+	chat = Cvar_Get("chat", "", CVAR_USERINFO);
+	chat->description = "Internal userinfo CVAR used for EZQ chat notifcations.";
 
+	/* FS: FTE Extensions */
 #ifdef PROTOCOL_VERSION_FTE
-	Cvar_RegisterVariable (&cl_pext_other);
+	cl_pext_other = Cvar_Get("cl_pext_other", "1", 0); // will break demos!
 #endif
 #ifdef FTE_PEXT_256PACKETENTITIES
-	Cvar_RegisterVariable (&cl_pext_256packetentities);
+	cl_pext_256packetentities = Cvar_Get("cl_pext_256packetentities", "1", 0);
 #endif
 #ifdef FTE_PEXT_CHUNKEDDOWNLOADS
-	cl_pext_chunkeddownloads  = Cvar_Get("cl_pext_chunkeddownloads", "1". 0);
+	cl_pext_chunkeddownloads  = Cvar_Get("cl_pext_chunkeddownloads", "1", 0);
 	cl_chunksperframe  = Cvar_Get("cl_chunksperframe", "5", 0);
 #endif
 #ifdef FTE_PEXT_FLOATCOORDS
-	Cvar_RegisterVariable (&cl_pext_floatcoords);
+	cl_pext_floatcoords  = Cvar_Get("cl_pext_floatcoords", "1", 0);
 #endif
 
 	/* FS: New stuff */
-	Cvar_RegisterVariable (&cl_downloadrate_hack);
-	Cvar_RegisterVariable (&con_show_description);
-	Cvar_RegisterVariable (&con_show_dev_flags);
-	Cvar_RegisterVariable (&cl_ogg_music);
-	Cvar_RegisterVariable (&cl_wav_music);
-	Cvar_RegisterVariable (&cl_autorepeat_allkeys);
+	cl_downloadrate_hack = Cvar_Get("cl_downloadrate_hack", "0", 0); /* FS: Gross download hack */
+	cl_downloadrate_hack->description = "Skip rendering a few frames during downloads for faster downloading.";
+	con_show_description = Cvar_Get("con_show_description", "1", CVAR_ARCHIVE);
+	con_show_description->description = "Show descriptions for CVARs.";
+	con_show_dev_flags = Cvar_Get("con_show_dev_flags", "1", CVAR_ARCHIVE);
+	con_show_dev_flags->description = "Show developer flag options.";
+	cl_ogg_music = Cvar_Get("cl_ogg_music", "1", CVAR_ARCHIVE);
+	cl_ogg_music->description = "Play OGG tracks in the format of id1/music/trackXX.ogg if they exist.";
+	cl_wav_music = Cvar_Get("cl_wav_music", "1", CVAR_ARCHIVE);
+	cl_wav_music->description = "Play WAV tracks in the format of id1/music/trackXX.wav if they exist.";
+	cl_autorepeat_allkeys = Cvar_Get("cl_autorepeat_allkeys", "0", CVAR_ARCHIVE);
+	cl_autorepeat_allkeys->description = "Allow to autorepeat any key, not just Backspace, Pause, PgUp, and PgDn keys.";
+	show_time = Cvar_Get("show_time","0", CVAR_ARCHIVE);
+	show_time->description = "Show current time on the screen,  1 - Military.  2 - AM/PM.";
+	show_uptime = Cvar_Get("show_uptime", "0", CVAR_ARCHIVE);
+	show_uptime->description = "Show current map uptime.";
+	console_old_complete = Cvar_Get("console_old_complete", "0", CVAR_ARCHIVE);
+	console_old_complete->description = "Use legacy style tab completion.";
+	net_broadcast_chat = Cvar_Get("net_broadcast_chat", "1", CVAR_ARCHIVE);  /* FS: EZQ Chat */
+	net_broadcast_chat->description = "Broadcast EZQ chats.";
 
 	/* FS: GameSpy CVARs */
-	Cvar_RegisterVariable (&cl_master_server_ip);
-	Cvar_RegisterVariable (&cl_master_server_port);
-	Cvar_RegisterVariable (&cl_master_server_queries);
-	Cvar_RegisterVariable (&cl_master_server_timeout);
-	Cvar_RegisterVariable (&cl_master_server_retries);
-	Cvar_RegisterVariable (&snd_gamespy_sounds);
+	cl_master_server_ip = Cvar_Get("cl_master_server_ip", CL_MASTER_ADDR, CVAR_ARCHIVE);
+	cl_master_server_ip->description = "GameSpy Master Server IP.";
+	cl_master_server_port = Cvar_Get("cl_master_server_port", CL_MASTER_PORT, CVAR_ARCHIVE);
+	cl_master_server_port->description = "GameSpy Master Server Port.";
+	cl_master_server_queries = Cvar_Get("cl_master_server_queries", "10", CVAR_ARCHIVE);
+	cl_master_server_queries->description = "Number of sockets to allocate for GameSpy.";
+	cl_master_server_timeout = Cvar_Get("cl_master_server_timeout", "3000", CVAR_ARCHIVE);
+	cl_master_server_timeout->description = "Timeout (in milliseconds) to give up on pinging a server.";
+	cl_master_server_retries = Cvar_Get("cl_master_server_retries", "20", CVAR_ARCHIVE);
+	cl_master_server_retries->description = "Number of retries to attempt for receiving the server list.  Formula is 50ms + 10ms for each retry.";
+	snd_gamespy_sounds = Cvar_Get("snd_gamespy_sounds", "0", CVAR_ARCHIVE);
+	snd_gamespy_sounds->description = "Play the complete.wav and abort.wav from GameSpy3D if it exists in sounds/gamespy.";
+
 
 	Cmd_AddCommand ("version", CL_Version_f);
 	Cmd_AddCommand ("cl_flashlight", CL_Flashlight_f); /* FS: Flashlight */
@@ -1504,7 +1524,7 @@ Writes key bindings and archived cvars to config.cfg
 	   have to.
 */
 // Knightmare- this now takes cfgname as a parameter
-void Host_WriteConfiguration (char *cfgName)
+void Host_WriteConfiguration (const char *cfgName)
 {
 	FILE	*f;
 	char	path[MAX_QPATH];
@@ -1514,9 +1534,10 @@ void Host_WriteConfiguration (char *cfgName)
 	if (host_initialized)
 	{
 		if(!(cfgName) || (cfgName[0] == 0)) /* FS: Sanity check */
-			Com_sprintf (path, sizeof(path),"%s/config.cfg", com_gamedir);
+			Com_sprintf (path, sizeof(path),"%s/qdos.cfg", com_gamedir);
 		else
 			Com_sprintf (path, sizeof(path),"%s/%s.cfg", com_gamedir, cfgName);
+
 		f = fopen (path, "w");
 		if (!f)
 		{
@@ -1526,11 +1547,10 @@ void Host_WriteConfiguration (char *cfgName)
 
 		fprintf (f, "// This file is generated by QDOS, do not modify.\n");
 		fprintf (f, "// Use autoexec.cfg for adding custom settings.\n");
-
 		Key_WriteBindings (f);
-		Cvar_WriteVariables (f);
-
 		fclose (f);
+
+		Cvar_WriteVariables (path);
 	}
 }
 // Knightmare added
@@ -1547,7 +1567,7 @@ void CL_WriteConfig_f (void)
 	if ((Cmd_Argc() == 1) || (Cmd_Argc() == 2))
 	{
 		if(Cmd_Argc() == 1)
-			Com_sprintf(cfgName, sizeof(cfgName), "config");
+			Com_sprintf(cfgName, sizeof(cfgName), "qdos");
 		else
 			Q_strlcpy (cfgName, Cmd_Argv(1), sizeof(cfgName));
 
@@ -1683,9 +1703,9 @@ void Host_Frame (float time)
 					pass1+pass2+pass3, pass1, pass2, pass3);
 	}
 
-	if (spectator.modified) /* FS: Spectator reconnect hack */
+	if (spectator->modified) /* FS: Spectator reconnect hack */
 	{
-		spectator.modified = false;
+		spectator->modified = false;
 		
 		if (cls.state == ca_active)
 		{
@@ -1738,12 +1758,21 @@ void Host_Init (quakeparms_t *parms)
 	Memory_Init (parms->membase, parms->memsize);
 	Cbuf_Init ();
 	Cmd_Init ();
-	V_Init ();
+	Cvar_Init ();
+
+	// we need to add the early commands twice, because
+	// a basedir or cddir needs to be set before execing
+	// config files, but we want other parms to override
+	// the settings of the config files
+	Cbuf_AddEarlyCommands (false);
+	Cbuf_Execute ();
 
 	COM_Init ();
-	Cvar_Init (); /* FS: from fitzquake */
 
-//	CFG_OpenConfig("config.cfg"); /* FS: Parse CFG early -- sezero */
+	/* FS: Read config now */
+	Cbuf_AddText("exec qdos.cfg\n");
+	Cbuf_AddEarlyCommands (true);
+	Cbuf_Execute();
 
 	cls.servername = dstring_newstr ();
 	cls.downloadtempname = dstring_newstr ();
@@ -1751,6 +1780,7 @@ void Host_Init (quakeparms_t *parms)
 	cls.downloadurl = dstring_newstr();
 
 	Host_FixupModelNames();
+	V_Init ();
    
 	NET_Init (PORT_CLIENT);
 	Netchan_Init ();
@@ -1798,9 +1828,12 @@ void Host_Init (quakeparms_t *parms)
 		Cbuf_AddText("vid_mode 0");
 	}
 
-	Cbuf_InsertText ("exec quake.rc\n");
+	quakerc_init = true;
+	Cbuf_InsertText ("exec quake.rc\n"); /* FS: Yes, qdos.cfg is now executed twice.  Default.cfg runs unbindall to purge, then config.cfg is loaded next */
+	Cbuf_Execute();
 	Cbuf_AddText ("echo Type connect <internet address> or use GameSpy to connect to a game.\n");
 	Cbuf_AddText ("cl_warncmd 1\n");
+	quakerc_init = false;
 
 	Hunk_AllocName (0, "-HOST_HUNKLEVEL-");
 	host_hunklevel = Hunk_LowMark ();
@@ -1832,7 +1865,7 @@ void Host_Shutdown(void)
 	}
 	isdown = true;
 
-	Host_WriteConfiguration ("config"); 
+	Host_WriteConfiguration ("qdos"); 
 
 #ifdef USE_CURL
 	CL_HTTP_Shutdown();

@@ -23,8 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef __COMMON_H
 #define __COMMON_H
 
-#include "dg_misc.h" /* FS: Caedes special safe string stuff */
-
 #ifdef _MSC_VER /* FS: VS6 */
 	#define __attribute__(x)
 #endif

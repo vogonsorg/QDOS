@@ -1935,10 +1935,6 @@ SOURCE=.\cd_win.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\cfgfile.c
-# End Source File
-# Begin Source File
-
 SOURCE=.\cl_cam.c
 # End Source File
 # Begin Source File

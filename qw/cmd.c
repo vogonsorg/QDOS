@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <ctype.h>
 #include "quakedef.h"
 
+cvar_t	*cl_warncmd;
+
 void Cmd_ForwardToServer (void);
 
 #define MAX_ALIAS_NAME  64 /* FS: Was 32 */
@@ -37,7 +39,6 @@ cmdalias_t	*cmd_alias;
 
 qboolean	cmd_wait;
 
-cvar_t cl_warncmd = {"cl_warncmd", "0"};
 char *Sort_Possible_Cmds (char *partial);
 qboolean	Sort_Possible_Strtolower (char *partial, char *complete); /* FS: Added */
 
@@ -750,8 +751,6 @@ int Cmd_CheckParm (char *parm)
 
 void Cmd_ChatInfo (int val)
 {
-	extern cvar_t chat;
-
 	if(net_broadcast_chat->value && chat->value != val)
 	{
 		switch (val)
@@ -897,6 +896,7 @@ Cmd_Init
 */
 void Cmd_Init (void)
 {
+	cl_warncmd = Cvar_Get("cl_warncmd", "0", 0);
 //
 // register our commands
 //

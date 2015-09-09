@@ -271,7 +271,6 @@ void Draw_Pixel(int x, int y, byte color)
 void Draw_Crosshair(void)
 {
 	int x, y;
-	extern cvar_t crosshair, cl_crossx, cl_crossy, crosshaircolor;
 	extern vrect_t		scr_vrect;
 	byte c = (byte)crosshaircolor->value;
 

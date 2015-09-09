@@ -238,8 +238,6 @@ void Key_Console (int key)
 	HANDLE	th;
 	char	*clipText, *textCopied;
 #endif
-extern	cvar_t	console_old_complete;
-
 	/* FS: From Quake 2*/
 	switch ( key )
 	{

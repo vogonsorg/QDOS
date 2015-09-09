@@ -897,7 +897,7 @@ void CL_ParseServerData (void)
 
 	if (stricmp(gamedirfile, str)) {
 		// save current config
-		Host_WriteConfiguration ("config"); 
+		Host_WriteConfiguration ("qdos"); 
 		cflag = true;
 	}
 
@@ -906,11 +906,11 @@ void CL_ParseServerData (void)
 	//ZOID--run the autoexec.cfg in the gamedir
 	//if it exists
 	if (cflag) {
-		Com_sprintf(fn, sizeof(fn), "%s/%s", com_gamedir, "config.cfg");
+		Com_sprintf(fn, sizeof(fn), "%s/%s", com_gamedir, "qdos.cfg");
 		if ((f = fopen(fn, "r")) != NULL) {
 			fclose(f);
 			Cbuf_AddText ("cl_warncmd 0\n");
-			Cbuf_AddText("exec config.cfg\n");
+			Cbuf_AddText("exec qdos.cfg\n");
 			Cbuf_AddText("exec frontend.cfg\n");
 			Cbuf_AddText ("cl_warncmd 1\n");
 		}

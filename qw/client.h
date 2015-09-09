@@ -391,6 +391,13 @@ extern	cvar_t	*name;
 extern	cvar_t	*show_fps;
 extern	cvar_t	*rate;
 
+extern	cvar_t	*baseskin;
+extern	cvar_t	*noskins;
+
+extern	cvar_t	*cl_predict_players;
+extern	cvar_t	*cl_predict_players2;
+extern	cvar_t	*cl_solid_players;
+
 extern	cvar_t	*cl_downloadrate_hack; /* FS: FIXME Shitty download hack */
 
 /* FS: GameSpy CVARs */
@@ -403,6 +410,7 @@ extern	cvar_t	*snd_gamespy_sounds;
 extern	cvar_t	*cl_ogg_music; /* FS: Added */
 extern	cvar_t	*cl_wav_music; /* FS: Added */
 
+extern	cvar_t	*console_old_complete; /* FS: Added */
 extern	cvar_t	*cl_autorepeat_allkeys; /* FS: Added */
 
 extern	cvar_t	*_vid_wait_override;
@@ -434,7 +442,7 @@ dlight_t *CL_AllocDlight (int key);
 void	CL_DecayLights (void);
 
 void CL_Init (void);
-void Host_WriteConfiguration (char *cfgName); /* FS */
+void Host_WriteConfiguration (const char *cfgName); /* FS */
 
 void CL_EstablishConnection (char *host);
 
@@ -520,7 +528,7 @@ void CL_ParseDownload (void);
 void CL_FinishDownload(qboolean rename_files);
 
 #ifdef FTE_PEXT_CHUNKEDDOWNLOADS
-
+extern	cvar_t	*cl_chunksperframe;
 void	CL_ParseChunkedDownload(void);
 void	CL_Parse_OOB_ChunkedDownload(void);
 int		CL_RequestADownloadChunk(void);

@@ -73,7 +73,6 @@ GAMESPY = $(O)/Goa/CEngine/darray.o \
 CLIENT = $(SYSOBJ_DXE)   \
 	$(GAMESPY)       \
 	$(O)/cd_audio.o  \
-	$(O)/cfgfile.o   \
 	$(O)/cl_cam.o   \
 	$(O)/cl_demo.o  \
 	$(O)/cl_ents.o   \

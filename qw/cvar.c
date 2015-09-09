@@ -26,6 +26,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 cvar_t	*cvar_vars;
+cvar_t	*developer;
+
 void Cvar_ParseDeveloperFlags (void); /* FS: Special stuff for showing all the dev flags */
 
 /*
@@ -273,7 +275,7 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 					return var;
 			}
 
-			if (sv.active)
+			if (cls.state == ca_active)
 			{
 				Con_Printf ("%s will be changed for next map.\n", var_name);
 				var->latched_string = CopyString(value);
@@ -296,17 +298,6 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 		}
 	}
 
-	if (!strcmp(value, var->string))
-		return var;		// not changed
-	
-	var->modified = true; /* FS: Added */
-
-	Z_Free (var->string);	// free the old value string
-	
-	var->string = CopyString(value);
-	var->value = atof (var->string);
-	var->intValue = atoi(var->string); /* FS: So we don't need to cast shit all the time */
-
 #ifdef SERVERONLY
 	if (var->flags & CVAR_SERVERINFO)
 	{
@@ -324,6 +315,17 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 		}
 	}
 #endif
+
+	if (!strcmp(value, var->string))
+		return var;		// not changed
+	
+	var->modified = true; /* FS: Added */
+
+	Z_Free (var->string);	// free the old value string
+	
+	var->string = CopyString(value);
+	var->value = atof (var->string);
+	var->intValue = atoi(var->string); /* FS: So we don't need to cast shit all the time */
 
 	return var;
 }
@@ -527,6 +529,9 @@ void Cvar_WriteVariables (const char *path)
 
 void Cvar_Init (void) /* FS: from fitzquake */
 {
+	developer = Cvar_Get("developer","0", 0);
+	developer->description = "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Extremely verbose msgs - 65536\n  * Extremely verbose gamespy msgs - 131072\n";
+
 	Cmd_AddCommand ("set", Cvar_Set_f);
 	Cmd_AddCommand ("cvarlist", Cvar_List_f);
 }
