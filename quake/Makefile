@@ -26,7 +26,7 @@ LIBS    =
 EXE     = qdos.exe
 
 ifeq ($(USE_SSE),1)
-CFLAGS += -mtune=pentium3 -march=pentium3 -mfpmath=sse
+CFLAGS += -march=pentium3
 else
 CFLAGS += -mtune=pentium
 endif
