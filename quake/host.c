@@ -734,8 +734,9 @@ void _Host_Frame (float time)
 	if (!Host_FilterTime (time))
 		return;		  // don't run too fast, or packets will flood out
 
-	/*FS: Gamespy Stuff*/
+#ifdef GAMESPY /*FS: Gamespy Stuff*/
 	GameSpy_Async_Think();
+#endif
 
 // get new key events
 	Sys_SendKeyEvents ();

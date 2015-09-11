@@ -22,14 +22,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 void (*vid_menudrawfn)(void);
 void (*vid_menukeyfn)(int key);
 
-enum {m_none, m_main, m_singleplayer, m_demo, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_credits, m_quit, m_serialconfig, m_modemconfig, m_lanconfig, m_gameoptions, m_search, m_slist, m_extended, m_gamespy, m_gamespy_pages} m_state;
+enum {m_none, m_main, m_singleplayer, m_demo, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_credits, m_quit, m_serialconfig, m_modemconfig, m_lanconfig, m_gameoptions, m_search, m_slist, m_extended,
+#ifdef GAMESPY
+      m_gamespy, m_gamespy_pages
+#endif
+} m_state;
 
 void M_Menu_Main_f (void);
 	void M_Menu_SinglePlayer_f (void);
 		void M_Menu_Load_f (void);
 		void M_Menu_Save_f (void);
 	void M_Menu_MultiPlayer_f (void);
-		void M_Menu_Gamespy_f (void); /* FS: Gamespy stuff */
 		void M_Menu_Setup_f (void);
 		void M_Menu_Net_f (void);
 	void M_Menu_Options_f (void);
@@ -51,7 +54,6 @@ void M_Main_Draw (void);
 		void M_Load_Draw (void);
 		void M_Save_Draw (void);
 	void M_MultiPlayer_Draw (void);
-		void M_Gamespy_Draw (void); /* FS: Gamespy stuff */
 		void M_Setup_Draw (void);
 		void M_Net_Draw (void);
 	void M_Options_Draw (void);
@@ -73,7 +75,6 @@ void M_Main_Key (int key);
 		void M_Load_Key (int key);
 		void M_Save_Key (int key);
 	void M_MultiPlayer_Key (int key);
-		void M_Gamespy_Key (int key); /* FS: Gamespy stuff */
 		void M_Setup_Key (int key);
 		void M_Net_Key (int key);
 	void M_Options_Key (int key);
@@ -90,11 +91,15 @@ void M_Search_Key (int key);
 void M_ServerList_Key (int key);
 void M_Extended_Key (int key); /* FS: Extended options unique to QDOS */
 
+#ifdef GAMESPY
 /* FS: Gamespy stuff */
+void M_Menu_Gamespy_f (void);
+void M_Gamespy_Draw (void);
 void M_Gamespy_Key (int key);
 static void SearchGamespyGames (void);
-static void JoinGamespyServer_Redraw(int serverscale);
+static void JoinGamespyServer_Redraw(int scale);
 static int serverscale;
+#endif
 
 qboolean	m_entersound;		// play after drawing a frame, so caching
 								// won't disrupt the sound
@@ -2397,8 +2402,13 @@ void M_ModemConfig_Key (int key)
 /* LAN CONFIG MENU */
 
 int		lanConfig_cursor = -1;
-int		lanConfig_cursor_table [] = {72, 92, 100, 132}; /* FS: Added gamespy */
-#define NUM_LANCONFIG_CMDS	4 /* FS: Added Gamespy */
+#ifndef GAMESPY
+int		lanConfig_cursor_table [] = {72, 92, 124};
+#define NUM_LANCONFIG_CMDS	3
+#else /* FS: Added gamespy */
+int		lanConfig_cursor_table [] = {72, 92, 100, 132};
+#define NUM_LANCONFIG_CMDS	4
+#endif
 
 int 	lanConfig_port;
 char	lanConfig_portname[6];
@@ -2462,11 +2472,12 @@ void M_LanConfig_Draw (void)
 	if (JoiningGame)
 	{
 		M_Print (basex, lanConfig_cursor_table[1], "Search for local games...");
-		M_Print (basex, lanConfig_cursor_table[2], "Search Gamespy..."); /* FS: Gamespy stuff */
-
-		M_Print (basex, 116, "Join game at:");
-		M_DrawTextBox (basex+8, lanConfig_cursor_table[3]-8, 22, 1);
-		M_Print (basex+16, lanConfig_cursor_table[3], lanConfig_joinname);
+#ifdef GAMESPY /* FS: Gamespy stuff */
+		M_Print (basex, lanConfig_cursor_table[2], "Search Gamespy...");
+#endif
+		M_Print (basex, 108+(NUM_LANCONFIG_CMDS-3)*8, "Join game at:");
+		M_DrawTextBox (basex+8, lanConfig_cursor_table[NUM_LANCONFIG_CMDS-1]-8, 22, 1);
+		M_Print (basex+16, lanConfig_cursor_table[NUM_LANCONFIG_CMDS-1], lanConfig_joinname);
 	}
 	else
 	{
@@ -2479,8 +2490,8 @@ void M_LanConfig_Draw (void)
 	if (lanConfig_cursor == 0)
 		M_DrawCharacter (basex+9*8 + 8*strlen(lanConfig_portname), lanConfig_cursor_table [0], 10+((int)(realtime*4)&1));
 
-	if (lanConfig_cursor == 3)
-		M_DrawCharacter (basex+16 + 8*strlen(lanConfig_joinname), lanConfig_cursor_table [3], 10+((int)(realtime*4)&1));
+	if (lanConfig_cursor == NUM_LANCONFIG_CMDS-1)
+		M_DrawCharacter (basex+16 + 8*strlen(lanConfig_joinname), lanConfig_cursor_table [NUM_LANCONFIG_CMDS-1], 10+((int)(realtime*4)&1));
 
 	if (*m_return_reason)
 		M_PrintWhite (basex, 148, m_return_reason);
@@ -2530,13 +2541,15 @@ void M_LanConfig_Key (int key)
 			break;
 		}
 
-		if (lanConfig_cursor == 2) /* FS: Added Gamespy */
+#ifdef GAMESPY /* FS: Added Gamespy */
+		if (lanConfig_cursor == 2)
 		{
 			M_Menu_Gamespy_f();
 			break;
 		}
+#endif
 
-		if (lanConfig_cursor == 3)
+		if (lanConfig_cursor == NUM_LANCONFIG_CMDS-1)
 		{
 			m_return_state = m_state;
 			m_return_onerror = true;
@@ -2555,7 +2568,7 @@ void M_LanConfig_Key (int key)
 				lanConfig_portname[strlen(lanConfig_portname)-1] = 0;
 		}
 
-		if (lanConfig_cursor == 3)
+		if (lanConfig_cursor == NUM_LANCONFIG_CMDS-1)
 		{
 			if (strlen(lanConfig_joinname))
 				lanConfig_joinname[strlen(lanConfig_joinname)-1] = 0;
@@ -2566,7 +2579,7 @@ void M_LanConfig_Key (int key)
 		if (key < 32 || key > 127)
 			break;
 
-		if (lanConfig_cursor == 3)
+		if (lanConfig_cursor == NUM_LANCONFIG_CMDS-1)
 		{
 			l = strlen(lanConfig_joinname);
 			if (l < 21)
@@ -2589,16 +2602,12 @@ void M_LanConfig_Key (int key)
 		}
 	}
 
-	if (StartingGame && lanConfig_cursor == 3)
+	if (StartingGame && lanConfig_cursor == NUM_LANCONFIG_CMDS-1)
 	{
 		if (key == K_UPARROW)
-		{
 			lanConfig_cursor = 1;
-		}
 		else
-		{
 			lanConfig_cursor = 0;
-		}
 	}
 
 	l =  Q_atoi(lanConfig_portname);
@@ -3254,7 +3263,9 @@ void M_Init (void)
 	Cmd_AddCommand ("menu_extended", M_Menu_Extended_f); /* FS: Extended options unique to QDOS */
 	Cmd_AddCommand ("menu_credits", M_Menu_Credits_f);
 	Cmd_AddCommand ("menu_demos", M_Menu_Demos_f);
+#ifdef GAMESPY
 	Cmd_AddCommand ("menu_gamespy", M_Menu_Gamespy_f); /* FS: Gamespy stuff */
+#endif
 }
 
 
@@ -3351,12 +3362,14 @@ void M_Draw (void)
 	case m_extended:  /* FS: Extended options unique to QDOS */
 		M_Extended_Draw();
 		break;	
+#ifdef GAMESPY
 	case m_gamespy:
 		M_Gamespy_Draw();
 		break;
 	case m_gamespy_pages:
 		JoinGamespyServer_Redraw(serverscale);
 		break;
+#endif
 	}
 
 	if (m_entersound)
@@ -3439,11 +3452,12 @@ void M_Keydown (int key)
 	case m_extended: /* FS: Extended options unique to QDOS */
 		M_Extended_Key (key);
 		return;
+#ifdef GAMESPY
 	case m_gamespy:
 	case m_gamespy_pages:
 		M_Gamespy_Key (key);
 		return;
-
+#endif
 	}
 }
 
@@ -3854,7 +3868,7 @@ void M_Extended_Set_Sound_KHz (int dir, int khz)
 	}
 }
 
-/* FS: Gamespy stuff */
+#ifdef GAMESPY /* FS: Gamespy stuff */
 #define	NO_SERVER_STRING	"<no server>"
 #define MAX_GAMESPY_MENU_SERVERS MAX_SERVERS /* FS: Maximum number of servers to show in the browser */
 static char gamespy_server_names[MAX_GAMESPY_MENU_SERVERS][80]; /* FS: GameSpy Browser */
@@ -4185,7 +4199,7 @@ void M_Gamespy_Draw(void)
 	breakPoint = 0;
 }
 
-static void JoinGamespyServer_Redraw( int serverscale )
+static void JoinGamespyServer_Redraw (int scale)
 {
 	int i, vidscale;
 	qpic_t	*p;
@@ -4203,21 +4217,20 @@ static void JoinGamespyServer_Redraw( int serverscale )
 
 	for ( i = 0; i < vidscale; i++ )
 	{
-		if (i+serverscale >= MAX_GAMESPY_MENU_SERVERS)
+		if (i+scale >= MAX_GAMESPY_MENU_SERVERS)
 		{
 			didBreak = true;
 			breakPoint = i+1;
 			break;
 		}
 
-		M_PrintWhite(40, 40 + i*8, gamespy_server_names[i+serverscale]);
+		M_PrintWhite(40, 40 + i*8, gamespy_server_names[i+scale]);
 	}
 
-	if(serverscale)
+	if(scale)
 	{
 		M_PrintWhite(40, 40 + i*8, "<Previous Page>");
 	}
-
 
 	i++;
 
@@ -4226,5 +4239,5 @@ static void JoinGamespyServer_Redraw( int serverscale )
 		M_PrintWhite(40, 40 + i*8, "<Next Page>");
 		breakPoint = 0;
 	}
-
 }
+#endif

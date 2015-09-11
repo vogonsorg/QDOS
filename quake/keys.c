@@ -199,14 +199,14 @@ void Key_Console (int key)
 	{
 		if ( keydown[K_CTRL] )
 		{
+#ifdef GAMESPY
 			if(cls.gamespyupdate)
 			{
 				Cbuf_AddText("gspystop\n");
+				return;
 			}
-			else
-			{
-				Cbuf_AddText ("disconnect\n");
-			}
+#endif
+			Cbuf_AddText ("disconnect\n");
 			return;
 		}
 	}

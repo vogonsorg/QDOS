@@ -7,6 +7,8 @@ USE_WATT32=yes
 USE_BWTCP=yes
 # whether to use MPATH for DOS UDP networking under Win9x
 USE_MPATH=no
+# gamespy server browser
+USE_GAMESPY=1
 # whether to use OGG VORBIS
 USE_OGG=yes
 # use tremor library for ogg/vorbis:
@@ -92,13 +94,15 @@ DOSTCP += $(O)/dos_inet.o $(O)/inetaddr.o
 endif
 SYSOBJ_NET := $(DOSTCP)
 
-# FIXME: make the gspy shit optional
+ifeq ($(USE_GAMESPY),1)
+CFLAGS += -DGAMESPY
 GAMESPY = $(O)/Goa/CEngine/darray.o \
 	$(O)/Goa/CEngine/gserver.o \
 	$(O)/Goa/CEngine/gserverlist.o \
 	$(O)/Goa/CEngine/hashtable.o \
 	$(O)/Goa/SDK/goautil.o \
 	$(O)/Goa/nonport.o
+endif
 
 # not too sophisticated dependency
 OBJS=	$(SYSOBJ_DXE)   \

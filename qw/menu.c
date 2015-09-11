@@ -37,9 +37,6 @@ void M_Menu_Main_f (void);
 		void M_Menu_Load_f (void);
 		void M_Menu_Save_f (void);
 	void M_Menu_MultiPlayer_f (void);
-#ifdef GAMESPY
-		void M_Menu_Gamespy_f (void); /* FS: Gamespy stuff */
-#endif
 		void M_Menu_Setup_f (void);
 		void M_Menu_Net_f (void);
 	void M_Menu_Options_f (void);
@@ -60,9 +57,6 @@ void M_Main_Draw (void);
 		void M_Load_Draw (void);
 		void M_Save_Draw (void);
 	void M_MultiPlayer_Draw (void);
-#ifdef GAMESPY
-		void M_Gamespy_Draw (void); /* FS: Gamespy stuff */
-#endif
 		void M_Setup_Draw (void);
 		void M_Net_Draw (void);
 	void M_Options_Draw (void);
@@ -83,9 +77,6 @@ void M_Main_Key (int key);
 		void M_Load_Key (int key);
 		void M_Save_Key (int key);
 	void M_MultiPlayer_Key (int key);
-#ifdef GAMESPY
-		void M_Gamespy_Key (int key); /* FS: Gamespy stuff */
-#endif
 		void M_Setup_Key (int key);
 		void M_Net_Key (int key);
 	void M_Options_Key (int key);
@@ -101,8 +92,9 @@ void M_Search_Key (int key);
 void M_ServerList_Key (int key);
 void M_Extended_Key (int key); /* FS: Extended options unique to QDOS */
 
-#ifdef GAMESPY
-/* FS: Gamespy stuff */
+#ifdef GAMESPY /* FS: Gamespy stuff */
+void M_Menu_Gamespy_f (void);
+void M_Gamespy_Draw (void);
 void M_Gamespy_Key (int key);
 static void SearchGamespyGames (void);
 static void JoinGamespyServer_Redraw(int scale);

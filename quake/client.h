@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef __CLIENT_H
 #define __CLIENT_H
 
-/* FS: Gamespy stuff */
+#ifdef GAMESPY /* FS: Gamespy stuff */
 #define MAX_SERVERS 400 /* FS: There's barely 350 active servers existing, but OK. */
 typedef struct
 {
@@ -39,6 +39,7 @@ extern gamespyBrowser_t browserListAll[MAX_SERVERS];
 void CL_PingNetServers_f (void);
 void Update_Gamespy_Menu(void);
 void GameSpy_Async_Think(void);
+#endif
 
 typedef struct
 {
@@ -149,11 +150,12 @@ typedef struct
 	int			td_startframe;		// host_framecount at start
 	float		td_starttime;		// realtime at second frame of timedemo
 
-	/* FS: Gamespy stuff */
+#ifdef GAMESPY /* FS: Gamespy stuff */
 	int gamespyupdate;
 	int gamespypercent;
 	int gamespytotalservers;
 	int gamespystarttime;
+#endif
 
 // connection information
 	int			signon;			// 0 to SIGNONS
@@ -299,12 +301,13 @@ extern cvar_t	*console_old_complete;
 extern cvar_t	*in_freelook;
 extern cvar_t	*cl_warncmd; /* FS: From QW */
 
-/* FS: GameSpy CVARs */
+#ifdef GAMESPY /* FS: GameSpy CVARs */
 extern cvar_t	*cl_master_server_ip;
 extern cvar_t	*cl_master_server_port;
 extern cvar_t	*cl_master_server_timeout;
 extern cvar_t	*cl_master_server_retries;
 extern cvar_t	*snd_gamespy_sounds;
+#endif
 
 extern qboolean	nostartupdemos; /* FS: Disable startup demos */
 

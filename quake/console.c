@@ -1,4 +1,4 @@
- /*
+/*
 Copyright (C) 1996-1997 Id Software, Inc.
 
 This program is free software; you can redistribute it and/or
@@ -57,7 +57,6 @@ qboolean	con_debuglog;
 extern	char	key_lines[32][MAXCMDLINE];
 extern	int		edit_line;
 extern	int		key_linepos;
-		
 
 qboolean	con_initialized;
 
@@ -134,7 +133,6 @@ void Con_Clear_f (void)
 		Q_memset (con_text, ' ', CON_TEXTSIZE);
 }
 
-						
 /*
 ================
 Con_ClearNotify
@@ -148,7 +146,6 @@ void Con_ClearNotify (void)
 		con_times[i] = 0;
 }
 
-						
 /*
 ================
 Con_MessageMode_f
@@ -162,7 +159,6 @@ void Con_MessageMode_f (void)
 	team_message = false;
 }
 
-						
 /*
 ================
 Con_MessageMode2_f
@@ -174,7 +170,6 @@ void Con_MessageMode2_f (void)
 	team_message = true;
 }
 
-						
 /*
 ================
 Con_CheckResize
@@ -724,12 +719,14 @@ The typing input line at the bottom should only be drawn if typing is allowed
 */
 void Con_DrawConsole (int lines, qboolean drawinput)
 {
-	int				i, x, y;
+	int				i, j, x, y;
 	int				rows;
 	char			*text;
-	int				j, n;
+#ifdef GAMESPY
+	int				n;
 	char			dlbar[1024];
-	
+#endif
+
 	if (lines <= 0)
 		return;
 
@@ -741,7 +738,7 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 
 	rows = (lines-16)>>3;		// rows of text to draw
 	y = lines - 16 - (rows<<3);	// may start slightly negative
-   
+
 	if (con_current - con_backscroll != con_current) /* FS: Backscroll thingy from QW */
 	{
 		// draw arrows to show the buffer is backscrolled
@@ -763,7 +760,8 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 			Draw_Character ( (x+1)<<3, y, text[x]);
 	}
 
-	if (cls.gamespyupdate) /* FS: Gamespy stuff */
+#ifdef GAMESPY /* FS: Gamespy stuff */
+	if (cls.gamespyupdate)
 	{
 		text = "Gamespy";
 
@@ -804,6 +802,7 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 		for (i = 0; i < strlen(dlbar); i++)
 			Draw_Character ( (i+1)<<3, y, dlbar[i]);
 	}
+#endif
 
 // draw the input prompt, user text, and cursor if desired
 	if (drawinput)

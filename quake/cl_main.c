@@ -21,8 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <ctype.h>
 #include "quakedef.h"
-
+#ifdef GAMESPY
 #include "Goa/CEngine/goaceng.h" /* FS: For Gamespy */
+#endif
 
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
@@ -67,6 +68,7 @@ entity_t		*cl_visedicts[MAX_VISEDICTS];
 qboolean bFlashlight;
 void CL_Flashlight_f (void);
 
+#ifdef GAMESPY
 /* FS: Gamespy CVARs */
 cvar_t	*cl_master_server_ip;
 cvar_t	*cl_master_server_port;
@@ -85,7 +87,7 @@ static void ListCallBack(GServerList serverlist, int msg, void *instance, void *
 static void CL_Gspystop_f (void);
        void CL_PingNetServers_f (void);
 static void CL_PrintBrowserList_f (void);
-
+#endif
 
 /*
 =====================
@@ -773,7 +775,7 @@ void CL_Init (void)
 	m_forward = Cvar_Get("m_forward", "1", CVAR_ARCHIVE);
 	m_side = Cvar_Get("m_side", "0.8", CVAR_ARCHIVE);
 
-	/* FS: GameSpy CVARs */
+#ifdef GAMESPY /* FS: GameSpy CVARs */
 	cl_master_server_ip = Cvar_Get("cl_master_server_ip", CL_MASTER_ADDR, CVAR_ARCHIVE);
 	cl_master_server_ip->description = "GameSpy Master Server IP.";
 	cl_master_server_port = Cvar_Get("cl_master_server_port", CL_MASTER_PORT, CVAR_ARCHIVE); 
@@ -786,6 +788,7 @@ void CL_Init (void)
 	cl_master_server_retries->description = "Number of retries to attempt for receiving the server list.  Formula is 50ms + 10ms for each retry.";
 	snd_gamespy_sounds = Cvar_Get("snd_gamespy_sounds", "0", CVAR_ARCHIVE);
 	snd_gamespy_sounds->description = "Play the complete.wav and abort.wav from GameSpy3D if it exists in sounds/gamespy.";
+#endif
 
 	/* FS: New stuff */
 	console_old_complete = Cvar_Get("console_old_complete", "0", CVAR_ARCHIVE);
@@ -811,16 +814,17 @@ void CL_Init (void)
 	Cmd_AddCommand ("r_restart", R_Restart_f); /* FS: Unfinished */
 #endif
 
-	/* FS: Gamespy stuff */
+#ifdef GAMESPY /* FS: Gamespy stuff */
 	Cmd_AddCommand ("slist2", CL_PingNetServers_f);
 	Cmd_AddCommand ("srelist", CL_PrintBrowserList_f);
 	Cmd_AddCommand ("gspystop", CL_Gspystop_f);
 
 	memset(&browserList, 0, sizeof(browserList));
 	memset(&browserListAll, 0, sizeof(browserListAll));
+#endif
 }
 
-/* FS: Gamespy Stuff */
+#ifdef GAMESPY /* FS: Gamespy Stuff */
 static void CL_Gamespy_Check_Error(GServerList lst, int error)
 {
 	if (error != GE_NOERROR) /* FS: Grab the error code */
@@ -1072,3 +1076,4 @@ void CL_PingNetServers_f (void)
 
 	CL_Gamespy_Check_Error(serverlist, error);
 }
+#endif

@@ -54,7 +54,6 @@ qboolean	con_debuglog;
 extern	char	key_lines[32][MAXCMDLINE];
 extern	int		edit_line;
 extern	int		key_linepos;
-		
 
 qboolean	con_initialized;
 
@@ -153,7 +152,6 @@ void Con_Clear_f (void)
 	Q_memset (con_chat.text, ' ', CON_TEXTSIZE);
 }
 
-						
 /*
 ================
 Con_ClearNotify
@@ -167,7 +165,6 @@ void Con_ClearNotify (void)
 		con_times[i] = 0;
 }
 
-						
 /*
 ================
 Con_MessageMode_f
@@ -251,7 +248,6 @@ void Con_Resize (console_t *con)
 	con->display = con->current;
 }
 
-					
 /*
 ================
 Con_CheckResize
@@ -740,12 +736,13 @@ Draws the console with the solid background
 */
 void Con_DrawConsole (int lines)
 {
-	int				i, j, x, y, n;
+	int				i, j, x, y;
 	int				rows;
 	char			*text;
 	int				row;
+	int				n;
 	char			dlbar[1024];
-	
+
 	if (lines <= 0)
 		return;
 
