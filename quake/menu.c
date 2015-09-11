@@ -22,7 +22,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 void (*vid_menudrawfn)(void);
 void (*vid_menukeyfn)(int key);
 
-enum {m_none, m_main, m_singleplayer, m_demo, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_credits, m_quit, m_serialconfig, m_modemconfig, m_lanconfig, m_gameoptions, m_search, m_slist, m_extended,
+enum {m_none, m_main, m_singleplayer, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_quit, m_serialconfig, m_modemconfig, m_lanconfig, m_gameoptions, m_search, m_slist,
+      m_extended,
+      m_demo,
+#if 0/* not yet */
+      m_credits,
+#endif
 #ifdef GAMESPY
       m_gamespy, m_gamespy_pages
 #endif
@@ -39,7 +44,6 @@ void M_Menu_Main_f (void);
 		void M_Menu_Keys_f (void);
 		void M_Menu_Video_f (void);
 	void M_Menu_Help_f (void);
-	void M_Menu_Credits_f (void);
 	void M_Menu_Quit_f (void);
 void M_Menu_SerialConfig_f (void);
 	void M_Menu_ModemConfig_f (void);
@@ -60,7 +64,6 @@ void M_Main_Draw (void);
 		void M_Keys_Draw (void);
 		void M_Video_Draw (void);
 	void M_Help_Draw (void);
-	void M_Credits_Draw (void);	
 	void M_Quit_Draw (void);
 void M_SerialConfig_Draw (void);
 	void M_ModemConfig_Draw (void);
@@ -81,7 +84,6 @@ void M_Main_Key (int key);
 		void M_Keys_Key (int key);
 		void M_Video_Key (int key);
 	void M_Help_Key (int key);
-	void M_Credits_Key (int key);
 	void M_Quit_Key (int key);
 void M_SerialConfig_Key (int key);
 	void M_ModemConfig_Key (int key);
@@ -90,6 +92,12 @@ void M_GameOptions_Key (int key);
 void M_Search_Key (int key);
 void M_ServerList_Key (int key);
 void M_Extended_Key (int key); /* FS: Extended options unique to QDOS */
+
+#if 0 /* not yet */
+void M_Menu_Credits_f (void);
+void M_Credits_Draw (void);
+void M_Credits_Key (int key);
+#endif
 
 #ifdef GAMESPY
 /* FS: Gamespy stuff */
@@ -1740,15 +1748,13 @@ void M_Help_Key (int key)
 
 //=============================================================================
 /* CEDITS MENU */
-
+#if 0 /* not yet */
 void M_Menu_Credits_f (void)
 {
 	key_dest = key_menu;
 	m_state = m_credits;
 	m_entersound = true;
 }
-
-
 
 void M_Credits_Draw (void)
 {
@@ -1759,11 +1765,11 @@ void M_Credits_Draw (void)
 	M_DrawPic (0, 433, Draw_CachePic("gfx/creditsbottom.lmp"));
 }
 
-
 void M_Credits_Key (int key)
 {
-		M_Menu_Main_f ();
+	M_Menu_Main_f ();
 }
+#endif
 
 //=============================================================================
 /* QUIT MENU */
@@ -3261,7 +3267,9 @@ void M_Init (void)
 	Cmd_AddCommand ("help", M_Menu_Help_f);
 	Cmd_AddCommand ("menu_quit", M_Menu_Quit_f);
 	Cmd_AddCommand ("menu_extended", M_Menu_Extended_f); /* FS: Extended options unique to QDOS */
+#if 0
 	Cmd_AddCommand ("menu_credits", M_Menu_Credits_f);
+#endif
 	Cmd_AddCommand ("menu_demos", M_Menu_Demos_f);
 #ifdef GAMESPY
 	Cmd_AddCommand ("menu_gamespy", M_Menu_Gamespy_f); /* FS: Gamespy stuff */
@@ -3335,9 +3343,11 @@ void M_Draw (void)
 	case m_help:
 		M_Help_Draw ();
 		break;
+#if 0
 	case m_credits:
 		M_Credits_Draw ();
 		break;
+#endif
 	case m_quit:
 		M_Quit_Draw ();
 		break;
@@ -3425,9 +3435,11 @@ void M_Keydown (int key)
 	case m_help:
 		M_Help_Key (key);
 		return;
+#if 0
 	case m_credits:
 		M_Credits_Key (key);
 		return;
+#endif
 	case m_quit:
 		M_Quit_Key (key);
 		return;
