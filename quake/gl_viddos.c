@@ -274,25 +274,26 @@ void *qwglGetProcAddress(char *symbol)
 
 void CheckMultiTextureExtensions(void) 
 {
-#if 0 /* FS: TODO Use ARB multitexture */
-	if (COM_CheckParm("-nomtex"))
-		Con_Warning ("Mutitexture disabled at command line\n");
-	else
+	/* FS: Slow as shit if under 1280x1024, so explicitly require it to be set. */
+	if (COM_CheckParm("-mtex"))
 	{
-		if (strstr(gl_extensions, "GL_ARB_multitexture "))
+		if (strstr(gl_extensions, "GL_ARB_multitexture"))
 		{
-			qglMTexCoord2fSGIS = (void *) qwglGetProcAddress("glMTexCoord2fSGIS");
-			qglSelectTextureSGIS = (void *) qwglGetProcAddress("glSelectTextureSGIS");
-			if (qglMTexCoord2fSGIS && qglSelectTextureSGIS)
+			qglMTexCoord2fFunc = (void *) qwglGetProcAddress("glMultiTexCoord2fARB");
+			qglSelectTextureFunc = (void *) qwglGetProcAddress("glActiveTextureARB");
+			if (qglMTexCoord2fFunc && qglSelectTextureFunc)
 			{
-				Con_Printf("Multitexture extensions found.\n");
+				Con_Printf("FOUND: ARB_multitexture\n");
+				TEXTURE0 = GL_TEXTURE0_ARB;
+				TEXTURE1 = GL_TEXTURE1_ARB;
 				gl_mtexable = true;
 			}
 			else
-				Con_Warning ("multitexture not supported (wglGetProcAddress failed)\n");
+				Con_Warning ("multitexture not supported (DMesaGetProcAddress failed)\n");
 		}
+		else
+			Con_Warning ("multitexture not supported (extension not found)\n");
 	}
-#endif
 }
 
 /*
