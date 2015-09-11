@@ -35,8 +35,6 @@ static DMesaVisual dv;
 static DMesaContext dc;
 static DMesaBuffer db;
 
-#define stringify(m) { #m, m }
-
 // Gamma stuff
 #define	USE_GAMMA_RAMPS			0
 #define GAMMA_MAX	3.0
@@ -60,18 +58,11 @@ unsigned short	d_8to16table[256];
 unsigned	d_8to24table[256];
 unsigned char d_15to8table[65536];
 
-int num_shades=32;
-
-int	d_con_indirect = 0;
-
 cvar_t	*vid_mode;
 cvar_t	*vid_wait;
 cvar_t	*_vid_wait_override;
 
-char	*framebuffer_ptr;
-
-
-int scr_width, scr_height;
+static int scr_width, scr_height;
 
 /*-----------------------------------------------------------------------*/
 
@@ -112,7 +103,7 @@ void D_EndDirectRect (int x, int y, int width, int height)
 }
 
 /* FS: Moved here */
-void VID_CreateDMesaContext(int width, int height, int bpp)
+static void VID_CreateDMesaContext(int width, int height, int bpp)
 {
 	dv = DMesaCreateVisual((GLint)width, (GLint)height, bpp, 0, true, true, alphaBufferSize, depthBufferSize, 0, 0);
 	if (!dv)
@@ -129,25 +120,6 @@ void VID_CreateDMesaContext(int width, int height, int bpp)
 	if (!db)
 		Sys_Error("Unable to create 3DFX buffer.\n");
 	DMesaMakeCurrent(dc, db);
-}
-
-void VID_Shutdown(void)
-{
-	if (db)
-	{
-		DMesaDestroyBuffer(db);
-		db = NULL;
-	}
-	if (dc)
-	{
-		DMesaDestroyContext(dc);
-		dc = NULL;
-	}
-	if (dv)
-	{
-		DMesaDestroyVisual(dv);
-		dv = NULL;
-	}
 }
 
 #if !defined(USE_3DFXGAMMA)
@@ -184,15 +156,23 @@ static qboolean VID_Check3dfxGamma (void)
 static void VID_InitGamma (void)
 {
 	gammaworks = fx_gamma = false;
-	/* we don't have WGL_3DFX_gamma_control or an equivalent in dos.
-	 * assuming is_3dfx means Voodoo1 or Voodoo2, this means we dont
-	 * have hw-gamma. */
+	/* we don't have WGL_3DFX_gamma_control or an equivalent in dos. */
 	/* Here is an evil hack abusing the exposed Glide symbols: */
 	if (is_3dfx)
 		fx_gamma = VID_Check3dfxGamma();
 
 	if (!gammaworks && !fx_gamma)
 		Con_SafePrintf("gamma adjustment not available\n");
+}
+
+static void VID_ShutdownGamma (void)
+{
+#if USE_3DFX_RAMPS
+	if (fx_gamma) glSetDeviceGammaRamp3DFX(orig_ramps);
+#else
+/*	if (fx_gamma) do3dfxGammaCtrl(1);*/
+#endif
+	Shutdown_3dfxGamma();
 }
 
 static void VID_SetGamma (void)
@@ -547,6 +527,25 @@ void VID_Init(unsigned char *palette)
 	vid.recalc_refdef = 1;				// force a surface cache flush
 }
 
+void VID_Shutdown(void)
+{
+	VID_ShutdownGamma();
+	if (db)
+	{
+		DMesaDestroyBuffer(db);
+		db = NULL;
+	}
+	if (dc)
+	{
+		DMesaDestroyContext(dc);
+		dc = NULL;
+	}
+	if (dv)
+	{
+		DMesaDestroyVisual(dv);
+		dv = NULL;
+	}
+}
 
 
 //========================================================
