@@ -11,6 +11,14 @@ Setup:
   write-combining MTRR for the LFB.  This will dramatically increase
   performance on Voodoo Rush and higher cards.
 
+Minimum Sysem Specs:
+* Pentium 1 with a Voodoo 1.
+* A DOS OS capable of detecting more than 64MB of RAM.  DOS Quake locks
+  assets on start and locks about 24MB in addition to the default 32MB.
+  This may cause out of memory issues and other general oddness on launch.
+  DOS 7 from Win98SE is known to work properly.  FreeDOS is assumed to be OK.
+  DOS 6 and lower is NOT compatible.
+
 Recommended System Specs:
 * Pentium 2 300mhz.  Pentium 3 550mhz or higher for the best experience.
 * Voodoo 3.  Older cards will work, but unknown how well they perform in
@@ -77,3 +85,10 @@ Other tidbits:
   the smoothest framerates and is recommended to play the game comfortably.
   See http://www.falconfly.de/downloads/3dfx-v5-PC-Reviewers-Guide.zip for
   more details.
+* Dynamic lights are a big performance hit on slower computers.  3DFX has no
+  hardware tnl and Quake takes no advantage of hardware tnl.  You can either
+  disable dynamic lights entirely with gl_dynamic 0, or you can use the fake
+  dynamic lighting effect with gl_flashblend 1.  Gl_flashblend 1 enables a
+  fake dynamic lighting effect that is basically free (performance) by
+  rendering coloured halo effects via OpenGL.  They are not true dynamic
+  lights, but can help seeing rocket blasts in deathmatch :).
