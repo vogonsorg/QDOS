@@ -71,6 +71,7 @@ int		texture_extension_number = 1;
 float		gldepthmin, gldepthmax;
 
 cvar_t	*gl_ztrick;
+cvar_t	*r_ignorehwgamma;
 
 const char *gl_vendor;
 const char *gl_renderer;
@@ -156,6 +157,13 @@ static qboolean VID_Check3dfxGamma (void)
 static void VID_InitGamma (void)
 {
 	gammaworks = fx_gamma = false;
+
+	if(COM_CheckParm("-ignorehwgamma") || r_ignorehwgamma->intValue)
+	{
+		Con_SafePrintf("ignoring hardware gamma\n");
+		return;
+	}
+
 	/* we don't have WGL_3DFX_gamma_control or an equivalent in dos. */
 	/* Here is an evil hack abusing the exposed Glide symbols: */
 	if (is_3dfx)
@@ -436,6 +444,8 @@ void VID_Init(unsigned char *palette)
 	_vid_wait_override = Cvar_Get("_vid_wait_override", "0", 0);
 
 	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
+	r_ignorehwgamma = Cvar_Get("r_ignorehwgamma", "0", CVAR_ARCHIVE);
+	r_ignorehwgamma->description = "Skip testing for 3DFX Hardware Gamma capabilities";
 
 	vid.maxwarpwidth = WARP_WIDTH;
 	vid.maxwarpheight = WARP_HEIGHT;

@@ -71,6 +71,7 @@ int		texture_extension_number = 1;
 float		gldepthmin, gldepthmax;
 
 cvar_t	*gl_ztrick;
+cvar_t	*r_ignorehwgamma;
 
 const char *gl_vendor;
 const char *gl_renderer;
@@ -156,6 +157,13 @@ static qboolean VID_Check3dfxGamma (void)
 static void VID_InitGamma (void)
 {
 	gammaworks = fx_gamma = false;
+
+	if(COM_CheckParm("-ignorehwgamma") || r_ignorehwgamma->intValue)
+	{
+		Con_SafePrintf("ignoring hardware gamma\n");
+		return;
+	}
+
 	/* we don't have WGL_3DFX_gamma_control or an equivalent in dos. */
 	/* Here is an evil hack abusing the exposed Glide symbols: */
 	if (is_3dfx)
@@ -254,25 +262,26 @@ void *qwglGetProcAddress(char *symbol)
 
 void CheckMultiTextureExtensions(void) 
 {
-#if 0 /* FS: TODO Use ARB multitexture */
-	if (COM_CheckParm("-nomtex"))
-		Con_Warning ("Mutitexture disabled at command line\n");
-	else
+	/* FS: Slow as shit if under 1280x1024, so explicitly require it to be set. */
+	if (COM_CheckParm("-mtex"))
 	{
-		if (strstr(gl_extensions, "GL_ARB_multitexture "))
+		if (strstr(gl_extensions, "GL_ARB_multitexture"))
 		{
-			qglMTexCoord2fSGIS = (void *) qwglGetProcAddress("glMTexCoord2fSGIS");
-			qglSelectTextureSGIS = (void *) qwglGetProcAddress("glSelectTextureSGIS");
-			if (qglMTexCoord2fSGIS && qglSelectTextureSGIS)
+			qglMTexCoord2fFunc = (void *) qwglGetProcAddress("glMultiTexCoord2fARB");
+			qglSelectTextureFunc = (void *) qwglGetProcAddress("glActiveTextureARB");
+			if (qglMTexCoord2fFunc && qglSelectTextureFunc)
 			{
-				Con_Printf("Multitexture extensions found.\n");
+				Con_Printf("FOUND: ARB_multitexture\n");
+				TEXTURE0 = GL_TEXTURE0_ARB;
+				TEXTURE1 = GL_TEXTURE1_ARB;
 				gl_mtexable = true;
 			}
 			else
-				Con_Warning ("multitexture not supported (wglGetProcAddress failed)\n");
+				Con_Warning ("multitexture not supported (DMesaGetProcAddress failed)\n");
 		}
+		else
+			Con_Warning ("multitexture not supported (extension not found)\n");
 	}
-#endif
 }
 
 /*
@@ -435,6 +444,8 @@ void VID_Init(unsigned char *palette)
 	_vid_wait_override = Cvar_Get("_vid_wait_override", "0", 0);
 
 	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
+	r_ignorehwgamma = Cvar_Get("r_ignorehwgamma", "0", CVAR_ARCHIVE);
+	r_ignorehwgamma->description = "Skip testing for 3DFX Hardware Gamma capabilities";
 
 	vid.maxwarpwidth = WARP_WIDTH;
 	vid.maxwarpheight = WARP_HEIGHT;

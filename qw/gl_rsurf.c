@@ -275,10 +275,8 @@ extern	float	speedscale;		// for top sky and bottom sky
 void DrawGLWaterPoly (glpoly_t *p);
 void DrawGLWaterPolyLightmap (glpoly_t *p);
 
-#ifdef _WIN32
-lpMTexFUNC qglMTexCoord2fSGIS = NULL;
-lpSelTexFUNC qglSelectTextureSGIS = NULL;
-#endif
+lpMTexFUNC qglMTexCoord2fFunc = NULL;
+lpSelTexFUNC qglSelectTextureFunc = NULL;
 
 qboolean mtexenabled = false;
 
@@ -288,7 +286,7 @@ void GL_DisableMultitexture(void)
 {
 	if (mtexenabled) {
 		glDisable(GL_TEXTURE_2D);
-		GL_SelectTexture(TEXTURE0_SGIS);
+		GL_SelectTexture(TEXTURE0);
 		mtexenabled = false;
 	}
 }
@@ -296,13 +294,13 @@ void GL_DisableMultitexture(void)
 void GL_EnableMultitexture(void) 
 {
 	if (gl_mtexable) {
-		GL_SelectTexture(TEXTURE1_SGIS);
+		GL_SelectTexture(TEXTURE1);
 		glEnable(GL_TEXTURE_2D);
 		mtexenabled = true;
 	}
 }
 
-#ifndef _WIN32
+#if 0
 /*
 ================
 R_DrawSequentialPoly
@@ -417,9 +415,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 	float		*v;
 	int			i;
 	texture_t	*t;
-	vec3_t		nv, dir;
-	float		ss, ss2, length;
-	float		s1, t1;
+	vec3_t		nv;
 	glRect_t	*theRect;
 
 	//
@@ -434,7 +430,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 
 			t = R_TextureAnimation (s->texinfo->texture);
 			// Binds world to texture env 0
-			GL_SelectTexture(TEXTURE0_SGIS);
+			GL_SelectTexture(TEXTURE0);
 			GL_Bind (t->gl_texturenum);
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 			// Binds lightmap to texenv 1
@@ -458,8 +454,8 @@ void R_DrawSequentialPoly (msurface_t *s)
 			v = p->verts[0];
 			for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
 			{
-				qglMTexCoord2fSGIS (TEXTURE0_SGIS, v[3], v[4]);
-				qglMTexCoord2fSGIS (TEXTURE1_SGIS, v[5], v[6]);
+				qglMTexCoord2fFunc (TEXTURE0, v[3], v[4]);
+				qglMTexCoord2fFunc (TEXTURE1, v[5], v[6]);
 				glVertex3fv (v);
 			}
 			glEnd ();
@@ -537,7 +533,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		p = s->polys;
 
 		t = R_TextureAnimation (s->texinfo->texture);
-		GL_SelectTexture(TEXTURE0_SGIS);
+		GL_SelectTexture(TEXTURE0);
 		GL_Bind (t->gl_texturenum);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		GL_EnableMultitexture();
@@ -560,8 +556,8 @@ void R_DrawSequentialPoly (msurface_t *s)
 		v = p->verts[0];
 		for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
 		{
-			qglMTexCoord2fSGIS (TEXTURE0_SGIS, v[3], v[4]);
-			qglMTexCoord2fSGIS (TEXTURE1_SGIS, v[5], v[6]);
+			qglMTexCoord2fFunc (TEXTURE0, v[3], v[4]);
+			qglMTexCoord2fFunc (TEXTURE1, v[5], v[6]);
 
 			nv[0] = v[0] + 8*sin(v[1]*0.05+realtime)*sin(v[2]*0.05+realtime);
 			nv[1] = v[1] + 8*sin(v[0]*0.05+realtime)*sin(v[2]*0.05+realtime);
@@ -1656,7 +1652,7 @@ void GL_BuildLightmaps (void)
 	}
 
  	if (!gl_texsort->value)
- 		GL_SelectTexture(TEXTURE1_SGIS);
+		GL_SelectTexture(TEXTURE1);
 
 	//
 	// upload all lightmaps that were filled
@@ -1679,7 +1675,7 @@ void GL_BuildLightmaps (void)
 	}
 
  	if (!gl_texsort->value)
- 		GL_SelectTexture(TEXTURE0_SGIS);
+		GL_SelectTexture(TEXTURE0);
 
 }
 

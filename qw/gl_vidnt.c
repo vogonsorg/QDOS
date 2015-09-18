@@ -567,12 +567,44 @@ int		texture_extension_number = 1;
 #ifdef _WIN32
 void CheckMultiTextureExtensions(void) 
 {
-	if (strstr(gl_extensions, "GL_SGIS_multitexture ") && !COM_CheckParm("-nomtex")) {
-		Con_Printf("Multitexture extensions found.\n");
-		qglMTexCoord2fSGIS = (void *) wglGetProcAddress("glMTexCoord2fSGIS");
-		qglSelectTextureSGIS = (void *) wglGetProcAddress("glSelectTextureSGIS");
+	//
+	// multitexture
+	//
+	if (COM_CheckParm("-nomtex"))
+		Con_Warning ("Mutitexture disabled at command line\n");
+	else
+		if (strstr(gl_extensions, "GL_ARB_multitexture"))
+		{
+			qglMTexCoord2fFunc = (void *) wglGetProcAddress("glMultiTexCoord2fARB");
+			qglSelectTextureFunc = (void *) wglGetProcAddress("glActiveTextureARB");
+			if (qglMTexCoord2fFunc && qglSelectTextureFunc)
+			{
+				Con_Printf("FOUND: ARB_multitexture\n");
+				TEXTURE0 = GL_TEXTURE0_ARB;
+				TEXTURE1 = GL_TEXTURE1_ARB;
+				gl_mtexable = true;
+			}
+			else
+				Con_Warning ("multitexture not supported (wglGetProcAddress failed)\n");
+		}
+		else
+			if (strstr(gl_extensions, "GL_SGIS_multitexture"))
+			{
+				qglMTexCoord2fFunc = (void *) wglGetProcAddress("glMTexCoord2fSGIS");
+				qglSelectTextureFunc = (void *) wglGetProcAddress("glSelectTextureSGIS");
+				if (qglMTexCoord2fFunc && qglSelectTextureFunc)
+				{
+					Con_Printf("FOUND: SGIS_multitexture\n");
+					TEXTURE0 = GL_TEXTURE0_SGIS;
+					TEXTURE1 = GL_TEXTURE1_SGIS;
 		gl_mtexable = true;
 	}
+				else
+					Con_Warning ("multitexture not supported (wglGetProcAddress failed)\n");
+
+			}
+			else
+				Con_Warning ("multitexture not supported (extension not found)\n");
 }
 #else
 void CheckMultiTextureExtensions(void) 
