@@ -158,7 +158,7 @@ static void VID_InitGamma (void)
 {
 	gammaworks = fx_gamma = false;
 
-	if(COM_CheckParm("-ignorehwgamma") || r_ignorehwgamma->intValue)
+	if (COM_CheckParm("-no3dfxgamma") || r_ignorehwgamma->intValue)
 	{
 		Con_SafePrintf("ignoring hardware gamma\n");
 		return;
