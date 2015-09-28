@@ -73,7 +73,7 @@ LIBS   += -L../3rdparty/lib -lvorbisidec -logg
 endif
 endif
 
-LIBS   += -lm
+LIBS   += -lc -lgcc -lm
 
 # subdirectory for objects
 O=dos

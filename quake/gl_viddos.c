@@ -238,11 +238,6 @@ void	VID_SetPalette (unsigned char *palette)
 	}
 }
 
-void *qwglGetProcAddress(char *symbol)
-{
-	return DOSGL_GetProcAddress(symbol);
-}
-
 void CheckMultiTextureExtensions(void) 
 {
 	/* FS: Slow as shit if under 1280x1024, so explicitly require it to be set. */
@@ -250,8 +245,8 @@ void CheckMultiTextureExtensions(void)
 	{
 		if (strstr(gl_extensions, "GL_ARB_multitexture"))
 		{
-			qglMTexCoord2fFunc = (void *) qwglGetProcAddress("glMultiTexCoord2fARB");
-			qglSelectTextureFunc = (void *) qwglGetProcAddress("glActiveTextureARB");
+			qglMTexCoord2fFunc = (void *) DOSGL_GetProcAddress("glMultiTexCoord2fARB");
+			qglSelectTextureFunc = (void *) DOSGL_GetProcAddress("glActiveTextureARB");
 			if (qglMTexCoord2fFunc && qglSelectTextureFunc)
 			{
 				Con_Printf("FOUND: ARB_multitexture\n");
@@ -420,36 +415,43 @@ qboolean VID_Is8bit(void)
 void (APIENTRY * qglColorTableEXT)( GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, const GLvoid *table );
 void VID_Init8bitPalette() 
 {
-#if 0
 /* FS: This now works in Mesa 5.1 but it looks rather silly from far distances.
  *     So, bye.  Here for historical purposes.
  */
 	// Check for 8bit Extensions and initialize them.
 	int i;
 
-	if (COM_CheckParm("-no8bit"))
-		return;
-
-	if (strstr(gl_extensions, "GL_EXT_shared_texture_palette") &&
-		(qglColorTableEXT = (void *)DOSGL_GetProcAddress("glColorTableEXT")) != NULL)
+	/* FS: Because it might not work at all, or look silly... explicitly require it to be set. */
+	if (COM_CheckParm("-8bit"))
 	{
-		char thePalette[256*3];
-		char *oldPalette, *newPalette;
+		if (strstr(gl_extensions, "GL_EXT_shared_texture_palette"))
+		{
 
-		Con_SafePrintf("... Using GL_EXT_shared_texture_palette\n");
-		glEnable_fp( GL_SHARED_TEXTURE_PALETTE_EXT );
-		oldPalette = (char *) d_8to24table; //d_8to24table3dfx;
-		newPalette = thePalette;
-		for (i=0;i<256;i++) {
-			*newPalette++ = *oldPalette++;
-			*newPalette++ = *oldPalette++;
-			*newPalette++ = *oldPalette++;
-			oldPalette++;
+			qglColorTableEXT = (void *)DOSGL_GetProcAddress("glColorTableEXT");
+			if (qglColorTableEXT)
+			{
+				char thePalette[256*3];
+				char *oldPalette, *newPalette;
+
+				Con_SafePrintf("... Using GL_EXT_shared_texture_palette\n");
+				glEnable_fp( GL_SHARED_TEXTURE_PALETTE_EXT );
+				oldPalette = (char *) d_8to24table; //d_8to24table3dfx;
+				newPalette = thePalette;
+				for (i=0;i<256;i++) {
+					*newPalette++ = *oldPalette++;
+					*newPalette++ = *oldPalette++;
+					*newPalette++ = *oldPalette++;
+					oldPalette++;
+				}
+				qglColorTableEXT(GL_SHARED_TEXTURE_PALETTE_EXT, GL_RGB, 256, GL_RGB, GL_UNSIGNED_BYTE, (void *) thePalette);
+				is8bit = true;
+			}
+			else
+				Con_Warning ("Shared texture palette not supported (DOSGL_GetProcAddress failed)\n");
 		}
-		qglColorTableEXT(GL_SHARED_TEXTURE_PALETTE_EXT, GL_RGB, 256, GL_RGB, GL_UNSIGNED_BYTE, (void *) thePalette);
-		is8bit = true;
+		else
+			Con_Warning ("Shared texture palette not supported (extension not found)\n");
 	}
-#endif
 }
 
 static void Check_Gamma (unsigned char *pal)

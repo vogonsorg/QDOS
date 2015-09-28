@@ -70,7 +70,9 @@ CFLAGS += -DUSE_CURL -DCURL_NO_OLDIES
 CFLAGS += -I../libcurl/include
 LIBS   += -L../libcurl/lib -lcurl
 endif
-LIBS   += -L../wat/lib -lwatt -lm
+LIBS   += -L../wat/lib -lwatt
+
+LIBS   += -lc -lgcc -lm
 
 # subdirectory for objects
 O=dos
