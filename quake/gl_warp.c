@@ -213,7 +213,7 @@ void EmitWaterPolys (msurface_t *fa)
 			t *= (1.0/64);
 
 			glTexCoord2f_fp (s, t);
-			glVertex3fv (v);
+			glVertex3fv_fp (v);
 		}
 		glEnd_fp ();
 	}
@@ -255,7 +255,7 @@ void EmitSkyPolys (msurface_t *fa)
 			t = (speedscale + dir[1]) * (1.0/128);
 
 			glTexCoord2f_fp (s, t);
-			glVertex3fv (v);
+			glVertex3fv_fp (v);
 		}
 		glEnd_fp ();
 	}
@@ -723,7 +723,7 @@ glBegin_fp (GL_POLYGON);
 for (i=0 ; i<nump ; i++, vecs+=3)
 {
 	VectorAdd(vecs, r_origin, v);
-	glVertex3fv (v);
+	glVertex3f_fpv_fp (v);
 }
 glEnd_fp();
 return;
@@ -965,7 +965,7 @@ void MakeSkyVec (float s, float t, int axis)
 
 	t = 1.0 - t;
 	glTexCoord2f_fp (s, t);
-	glVertex3fv (v);
+	glVertex3f_fpv_fp (v);
 }
 
 /*
@@ -982,7 +982,7 @@ void R_DrawSkyBox (void)
 
 #if 0
 glEnable_fp (GL_BLEND);
-glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+glTexEnvf_fp(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 glColor4f_fp (1,1,1,0.5);
 glDisable_fp (GL_DEPTH_TEST);
 #endif
@@ -1008,7 +1008,7 @@ skymaxs[1][i] = 1;
 	}
 #if 0
 glDisable_fp (GL_BLEND);
-glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+glTexEnvf_fp(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 glColor4f_fp (1,1,1,0.5);
 glEnable_fp (GL_DEPTH_TEST);
 #endif

@@ -129,19 +129,19 @@ void DrawPuff (puff_t *p)
 
 #if 0
 	glBegin_fp (GL_LINES);
-	glVertex3fv (p->origin);
-	glVertex3f (p->origin[0] + p->length*p->reflect[0],
+	glVertex3f_fpv_fp (p->origin);
+	glVertex3f_fp (p->origin[0] + p->length*p->reflect[0],
 		p->origin[1] + p->length*p->reflect[1],
 		p->origin[2] + p->length*p->reflect[2]);
 
-	glVertex3fv (pts[0][0]);
-	glVertex3fv (pts[1][0]);
+	glVertex3f_fpv_fp (pts[0][0]);
+	glVertex3f_fpv_fp (pts[1][0]);
 
-	glVertex3fv (pts[0][1]);
-	glVertex3fv (pts[1][1]);
+	glVertex3f_fpv_fp (pts[0][1]);
+	glVertex3f_fpv_fp (pts[1][1]);
 
-	glVertex3fv (pts[0][2]);
-	glVertex3fv (pts[1][2]);
+	glVertex3f_fpv_fp (pts[0][2]);
+	glVertex3f_fpv_fp (pts[1][2]);
 
 	glEnd_fp ();
 #endif
@@ -150,17 +150,17 @@ void DrawPuff (puff_t *p)
 	for (i=0 ; i<3 ; i++)
 	{
 		j = (i+1)%3;
-		glVertex3fv (pts[0][j]);
-		glVertex3fv (pts[1][j]);
-		glVertex3fv (pts[1][i]);
-		glVertex3fv (pts[0][i]);
+		glVertex3f_fpv_fp (pts[0][j]);
+		glVertex3f_fpv_fp (pts[1][j]);
+		glVertex3f_fpv_fp (pts[1][i]);
+		glVertex3f_fpv_fp (pts[0][i]);
 	}
 	glEnd_fp ();
 
 	glBegin_fp (GL_TRIANGLES);
-	glVertex3fv (pts[1][0]);
-	glVertex3fv (pts[1][1]);
-	glVertex3fv (pts[1][2]);
+	glVertex3f_fpv_fp (pts[1][0]);
+	glVertex3f_fpv_fp (pts[1][1]);
+	glVertex3f_fpv_fp (pts[1][2]);
 	glEnd_fp ();
 
 	p->length -= host_frametime*2;

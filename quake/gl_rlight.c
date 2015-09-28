@@ -92,7 +92,7 @@ void R_RenderDlight (dlight_t *light)
 	glColor3f_fp (0.2,0.1,0.0);
 	for (i=0 ; i<3 ; i++)
 		v[i] = light->origin[i] - vpn[i]*rad;
-	glVertex3fv (v);
+	glVertex3fv_fp (v);
 	glColor3f_fp (0,0,0);
 	for (i=16 ; i>=0 ; i--)
 	{
@@ -100,7 +100,7 @@ void R_RenderDlight (dlight_t *light)
 		for (j=0 ; j<3 ; j++)
 			v[j] = light->origin[j] + vright[j]*cos(a)*rad
 				+ vup[j]*sin(a)*rad;
-		glVertex3fv (v);
+		glVertex3fv_fp (v);
 	}
 	glEnd_fp ();
 }
@@ -120,11 +120,11 @@ void R_RenderDlights (void)
 
 	r_dlightframecount = r_framecount + 1;	// because the count hasn't
 											//  advanced yet for this frame
-	glDepthMask (0);
+	glDepthMask_fp (0);
 	glDisable_fp (GL_TEXTURE_2D);
-	glShadeModel (GL_SMOOTH);
+	glShadeModel_fp (GL_SMOOTH);
 	glEnable_fp (GL_BLEND);
-	glBlendFunc (GL_ONE, GL_ONE);
+	glBlendFunc_fp (GL_ONE, GL_ONE);
 
 	l = cl_dlights;
 	for (i=0 ; i<MAX_DLIGHTS ; i++, l++)
@@ -137,8 +137,8 @@ void R_RenderDlights (void)
 	glColor3f_fp (1,1,1);
 	glDisable_fp (GL_BLEND);
 	glEnable_fp (GL_TEXTURE_2D);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDepthMask (1);
+	glBlendFunc_fp (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthMask_fp (1);
 }
 
 

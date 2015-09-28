@@ -348,24 +348,24 @@ GL_Init will still do the stuff that only needs to be done once
 */
 void GL_SetupState (void)
 {
-	glClearColor (0.15,0.15,0.15,0); //johnfitz -- originally 1,0,0,0
-	glCullFace(GL_FRONT);
+	glClearColor_fp (0.15,0.15,0.15,0); //johnfitz -- originally 1,0,0,0
+	glCullFace_fp(GL_FRONT);
 	glEnable_fp(GL_TEXTURE_2D);
 
 	glEnable_fp(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.666);
+	glAlphaFunc_fp(GL_GREATER, 0.666);
 
-	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-	glShadeModel (GL_FLAT);
+	glPolygonMode_fp (GL_FRONT_AND_BACK, GL_FILL);
+	glShadeModel_fp (GL_FLAT);
 
 	glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc_fp (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glTexEnvf_fp(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 }
 
 /*
@@ -379,14 +379,14 @@ void GL_Init (void)
 	// initialize gl function pointers
 	GL_Init_Functions();
 #endif
-	gl_vendor = (const char *)glGetString (GL_VENDOR);
+	gl_vendor = (const char *)glGetString_fp (GL_VENDOR);
 	Con_Printf ("GL_VENDOR: %s\n", gl_vendor);
-	gl_renderer = (const char *)glGetString (GL_RENDERER);
+	gl_renderer = (const char *)glGetString_fp (GL_RENDERER);
 	Con_Printf ("GL_RENDERER: %s\n", gl_renderer);
 
-	gl_version = (const char *)glGetString (GL_VERSION);
+	gl_version = (const char *)glGetString_fp (GL_VERSION);
 	Con_Printf ("GL_VERSION: %s\n", gl_version);
-	gl_extensions = (const char *)glGetString (GL_EXTENSIONS);
+	gl_extensions = (const char *)glGetString_fp (GL_EXTENSIONS);
 	Con_Printf ("GL_EXTENSIONS: %s\n", gl_extensions);
 
 	is_3dfx = false;

@@ -78,7 +78,7 @@ void GL_Bind (int texnum)
 #ifdef _WIN32
 	bindTexFunc (GL_TEXTURE_2D, texnum);
 #else
-	glBindTexture (GL_TEXTURE_2D, texnum);
+	glBindTexture_fp (GL_TEXTURE_2D, texnum);
 #endif
 }
 
@@ -600,8 +600,8 @@ void Draw_AlphaPic (int x, int y, qpic_t *pic, float alpha)
 	gl = (glpic_t *)pic->data;
 	glDisable_fp(GL_ALPHA_TEST);
 	glEnable_fp (GL_BLEND);
-//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//	glCullFace(GL_FRONT);
+//	glBlendFunc_fp(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//	glCullFace_fp(GL_FRONT);
 	glColor4f_fp (1,1,1,alpha);
 	GL_Bind (gl->texnum);
 	glBegin_fp (GL_QUADS);
