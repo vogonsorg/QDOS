@@ -350,18 +350,18 @@ void GL_SetupState (void)
 {
 	glClearColor (0.15,0.15,0.15,0); //johnfitz -- originally 1,0,0,0
 	glCullFace(GL_FRONT);
-	glEnable(GL_TEXTURE_2D);
+	glEnable_fp(GL_TEXTURE_2D);
 
-	glEnable(GL_ALPHA_TEST);
+	glEnable_fp(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.666);
 
 	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 	glShadeModel (GL_FLAT);
 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -450,7 +450,7 @@ void VID_Init8bitPalette()
 		char *oldPalette, *newPalette;
 
 		Con_SafePrintf("... Using GL_EXT_shared_texture_palette\n");
-		glEnable( GL_SHARED_TEXTURE_PALETTE_EXT );
+		glEnable_fp( GL_SHARED_TEXTURE_PALETTE_EXT );
 		oldPalette = (char *) d_8to24table; //d_8to24table3dfx;
 		newPalette = thePalette;
 		for (i=0;i<256;i++) {

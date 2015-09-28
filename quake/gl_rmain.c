@@ -229,32 +229,32 @@ void R_DrawSpriteModel (entity_t *e)
 
     GL_Bind(frame->gl_texturenum);
 
-	glEnable (GL_ALPHA_TEST);
-	glBegin (GL_QUADS);
+	glEnable_fp (GL_ALPHA_TEST);
+	glBegin_fp (GL_QUADS);
 
-	glTexCoord2f (0, 1);
+	glTexCoord2f_fp (0, 1);
 	VectorMA (e->origin, frame->down, up, point);
 	VectorMA (point, frame->left, right, point);
 	glVertex3fv (point);
 
-	glTexCoord2f (0, 0);
+	glTexCoord2f_fp (0, 0);
 	VectorMA (e->origin, frame->up, up, point);
 	VectorMA (point, frame->left, right, point);
 	glVertex3fv (point);
 
-	glTexCoord2f (1, 0);
+	glTexCoord2f_fp (1, 0);
 	VectorMA (e->origin, frame->up, up, point);
 	VectorMA (point, frame->right, right, point);
 	glVertex3fv (point);
 
-	glTexCoord2f (1, 1);
+	glTexCoord2f_fp (1, 1);
 	VectorMA (e->origin, frame->down, up, point);
 	VectorMA (point, frame->right, right, point);
 	glVertex3fv (point);
 	
-	glEnd ();
+	glEnd_fp ();
 
-	glDisable (GL_ALPHA_TEST);
+	glDisable_fp (GL_ALPHA_TEST);
 }
 
 /*
@@ -312,15 +312,15 @@ lastposenum = posenum;
 		if (count < 0)
 		{
 			count = -count;
-			glBegin (GL_TRIANGLE_FAN);
+			glBegin_fp (GL_TRIANGLE_FAN);
 		}
 		else
-			glBegin (GL_TRIANGLE_STRIP);
+			glBegin_fp (GL_TRIANGLE_STRIP);
 
 		do
 		{
 			// texture coordinates come from the draw list
-			glTexCoord2f (((float *)order)[0], ((float *)order)[1]);
+			glTexCoord2f_fp (((float *)order)[0], ((float *)order)[1]);
 			order += 2;
 
 			// normals and vertexes come from the frame list
@@ -330,7 +330,7 @@ lastposenum = posenum;
 			verts++;
 		} while (--count);
 
-		glEnd ();
+		glEnd_fp ();
 	}
 }
 
@@ -368,15 +368,15 @@ void GL_DrawAliasShadow (aliashdr_t *paliashdr, int posenum)
 		if (count < 0)
 		{
 			count = -count;
-			glBegin (GL_TRIANGLE_FAN);
+			glBegin_fp (GL_TRIANGLE_FAN);
 		}
 		else
-			glBegin (GL_TRIANGLE_STRIP);
+			glBegin_fp (GL_TRIANGLE_STRIP);
 
 		do
 		{
 			// texture coordinates come from the draw list
-			// (skipped for shadows) glTexCoord2fv ((float *)order);
+			// (skipped for shadows) glTexCoord2f_fpv ((float *)order);
 			order += 2;
 
 			// normals and vertexes come from the frame list
@@ -393,7 +393,7 @@ void GL_DrawAliasShadow (aliashdr_t *paliashdr, int posenum)
 			verts++;
 		} while (--count);
 
-		glEnd ();
+		glEnd_fp ();
 	}	
 }
 
@@ -571,13 +571,13 @@ void R_DrawAliasModel (entity_t *e)
 	{
 		glPushMatrix ();
 		R_RotateForEntity (e);
-		glDisable (GL_TEXTURE_2D);
-		glEnable (GL_BLEND);
-		glColor4f (0,0,0,0.5);
+		glDisable_fp (GL_TEXTURE_2D);
+		glEnable_fp (GL_BLEND);
+		glColor4f_fp (0,0,0,0.5);
 		GL_DrawAliasShadow (paliashdr, lastposenum);
-		glEnable (GL_TEXTURE_2D);
-		glDisable (GL_BLEND);
-		glColor4f (1,1,1,1);
+		glEnable_fp (GL_TEXTURE_2D);
+		glDisable_fp (GL_BLEND);
+		glColor4f_fp (1,1,1,1);
 		glPopMatrix ();
 	}
 
@@ -718,29 +718,29 @@ void R_PolyBlend (void)
 
 	GL_DisableMultitexture();
 
-	glDisable (GL_ALPHA_TEST);
-	glEnable (GL_BLEND);
-	glDisable (GL_DEPTH_TEST);
-	glDisable (GL_TEXTURE_2D);
+	glDisable_fp (GL_ALPHA_TEST);
+	glEnable_fp (GL_BLEND);
+	glDisable_fp (GL_DEPTH_TEST);
+	glDisable_fp (GL_TEXTURE_2D);
 
     glLoadIdentity ();
 
     glRotatef (-90,  1, 0, 0);	    // put Z going up
     glRotatef (90,  0, 0, 1);	    // put Z going up
 
-	glColor4fv (v_blend);
+	glColor4f_fpv (v_blend);
 
-	glBegin (GL_QUADS);
+	glBegin_fp (GL_QUADS);
 
 	glVertex3f (10, 100, 100);
 	glVertex3f (10, -100, 100);
 	glVertex3f (10, -100, -100);
 	glVertex3f (10, 100, -100);
-	glEnd ();
+	glEnd_fp ();
 
-	glDisable (GL_BLEND);
-	glEnable (GL_TEXTURE_2D);
-	glEnable (GL_ALPHA_TEST);
+	glDisable_fp (GL_BLEND);
+	glEnable_fp (GL_TEXTURE_2D);
+	glEnable_fp (GL_ALPHA_TEST);
 }
 
 
@@ -918,13 +918,13 @@ void R_SetupGL (void)
 	// set drawing parms
 	//
 	if (gl_cull->value)
-		glEnable(GL_CULL_FACE);
+		glEnable_fp(GL_CULL_FACE);
 	else
-		glDisable(GL_CULL_FACE);
+		glDisable_fp(GL_CULL_FACE);
 
-	glDisable(GL_BLEND);
-	glDisable(GL_ALPHA_TEST);
-	glEnable(GL_DEPTH_TEST);
+	glDisable_fp(GL_BLEND);
+	glDisable_fp(GL_ALPHA_TEST);
+	glEnable_fp(GL_DEPTH_TEST);
 }
 
 /*
@@ -1062,7 +1062,7 @@ void R_Mirror (void)
 	glDepthFunc (GL_LEQUAL);
 
 	// blend on top
-	glEnable (GL_BLEND);
+	glEnable_fp (GL_BLEND);
 	glMatrixMode(GL_PROJECTION);
 	if (mirror_plane->normal[2])
 		glScalef (1,-1,1);
@@ -1073,13 +1073,13 @@ void R_Mirror (void)
 
 	glLoadMatrixf (r_base_world_matrix);
 
-	glColor4f (1,1,1,r_mirroralpha->value);
+	glColor4f_fp (1,1,1,r_mirroralpha->value);
 	s = cl.worldmodel->textures[mirrortexturenum]->texturechain;
 	for ( ; s ; s=s->texturechain)
 		R_RenderBrushPoly (s);
 	cl.worldmodel->textures[mirrortexturenum]->texturechain = NULL;
-	glDisable (GL_BLEND);
-	glColor4f (1,1,1,1);
+	glDisable_fp (GL_BLEND);
+	glColor4f_fp (1,1,1,1);
 }
 
 /*
