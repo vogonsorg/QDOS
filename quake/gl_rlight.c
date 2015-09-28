@@ -89,11 +89,11 @@ void R_RenderDlight (dlight_t *light)
 	}
 
 	glBegin_fp (GL_TRIANGLE_FAN);
-	glColor3f (0.2,0.1,0.0);
+	glColor3f_fp (0.2,0.1,0.0);
 	for (i=0 ; i<3 ; i++)
 		v[i] = light->origin[i] - vpn[i]*rad;
 	glVertex3fv (v);
-	glColor3f (0,0,0);
+	glColor3f_fp (0,0,0);
 	for (i=16 ; i>=0 ; i--)
 	{
 		a = i/16.0 * M_PI*2;
@@ -134,7 +134,7 @@ void R_RenderDlights (void)
 		R_RenderDlight (l);
 	}
 
-	glColor3f (1,1,1);
+	glColor3f_fp (1,1,1);
 	glDisable_fp (GL_BLEND);
 	glEnable_fp (GL_TEXTURE_2D);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

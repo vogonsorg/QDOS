@@ -699,7 +699,7 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, byte *translation)
 	glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glColor3f (1,1,1);
+	glColor3f_fp (1,1,1);
 	glBegin_fp (GL_QUADS);
 	glTexCoord2f_fp (0, 0);
 	glVertex2f_fp (x, y);
@@ -740,7 +740,7 @@ refresh window.
 */
 void Draw_TileClear (int x, int y, int w, int h)
 {
-	glColor3f (1,1,1);
+	glColor3f_fp (1,1,1);
 	GL_Bind (*(int *)draw_backtile->data);
 	glBegin_fp (GL_QUADS);
 	glTexCoord2f_fp (x/64.0, y/64.0);
@@ -765,7 +765,7 @@ Fills a box of pixels with a single color
 void Draw_Fill (int x, int y, int w, int h, int c)
 {
 	glDisable_fp (GL_TEXTURE_2D);
-	glColor3f (host_basepal[c*3]/255.0,
+	glColor3f_fp (host_basepal[c*3]/255.0,
 		host_basepal[c*3+1]/255.0,
 		host_basepal[c*3+2]/255.0);
 
@@ -777,7 +777,7 @@ void Draw_Fill (int x, int y, int w, int h, int c)
 	glVertex2f_fp (x, y+h);
 
 	glEnd_fp ();
-	glColor3f (1,1,1);
+	glColor3f_fp (1,1,1);
 	glEnable_fp (GL_TEXTURE_2D);
 }
 //=============================================================================
@@ -822,9 +822,9 @@ void Draw_BeginDisc (void)
 {
 	if (!draw_disc)
 		return;
-	glDrawBuffer  (GL_FRONT);
+	glDrawBuffer_fp  (GL_FRONT);
 	Draw_Pic (vid.width - 24, 0, draw_disc);
-	glDrawBuffer  (GL_BACK);
+	glDrawBuffer_fp  (GL_BACK);
 }
 
 
@@ -849,14 +849,14 @@ Setup as if the screen was 320*200
 */
 void GL_Set2D (void)
 {
-	glViewport (glx, gly, glwidth, glheight);
+	glViewport_fp (glx, gly, glwidth, glheight);
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity ();
-	glOrtho  (0, vid.width, vid.height, 0, -99999, 99999);
+	glMatrixMode_fp(GL_PROJECTION);
+	glLoadIdentity_fp ();
+	glOrtho_fp  (0, vid.width, vid.height, 0, -99999, 99999);
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity ();
+	glMatrixMode_fp(GL_MODELVIEW);
+	glLoadIdentity_fp ();
 
 	glDisable_fp (GL_DEPTH_TEST);
 	glDisable_fp (GL_CULL_FACE);

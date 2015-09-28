@@ -107,7 +107,7 @@ void R_Envmap_f (void)
 {
 	byte	buffer[256*256*4];
 
-	glDrawBuffer  (GL_FRONT);
+	glDrawBuffer_fp  (GL_FRONT);
 	glReadBuffer  (GL_FRONT);
 	envmap = true;
 
@@ -157,7 +157,7 @@ void R_Envmap_f (void)
 	COM_WriteFile ("env5.rgb", buffer, sizeof(buffer));		
 
 	envmap = false;
-	glDrawBuffer  (GL_BACK);
+	glDrawBuffer_fp  (GL_BACK);
 	glReadBuffer  (GL_BACK);
 	GL_EndRendering ();
 }
@@ -425,7 +425,7 @@ void R_TimeRefresh_f (void)
 	int			i;
 	float		start, stop, time;
 
-	glDrawBuffer  (GL_FRONT);
+	glDrawBuffer_fp  (GL_FRONT);
 	glFinish ();
 
 	start = Sys_FloatTime ();
@@ -440,7 +440,7 @@ void R_TimeRefresh_f (void)
 	time = stop-start;
 	Con_Printf ("%f seconds (%f fps)\n", time, 128/time);
 
-	glDrawBuffer  (GL_BACK);
+	glDrawBuffer_fp  (GL_BACK);
 	GL_EndRendering ();
 }
 

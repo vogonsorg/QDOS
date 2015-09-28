@@ -125,7 +125,7 @@ void DrawPuff (puff_t *p)
 		}
 	}
 
-	glColor3f (1, 0, 0);
+	glColor3f_fp (1, 0, 0);
 
 #if 0
 	glBegin_fp (GL_LINES);

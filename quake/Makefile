@@ -34,7 +34,7 @@ endif
 ifeq ($(GLQUAKE),1)
 CFLAGS += -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE
 CFLAGS += -DUSE_3DFXGAMMA
-#CFLAGS += -DGL_DLSYM
+CFLAGS += -DGL_DLSYM
 LIBS   += -L../3rdparty/lib
 #LIBS   += -lgl
 EXE     = qdosfx.exe

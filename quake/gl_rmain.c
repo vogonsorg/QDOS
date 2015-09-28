@@ -223,7 +223,7 @@ void R_DrawSpriteModel (entity_t *e)
 		right = vright;
 	}
 
-	glColor3f (1,1,1);
+	glColor3f_fp (1,1,1);
 
 	GL_DisableMultitexture();
 
@@ -325,7 +325,7 @@ lastposenum = posenum;
 
 			// normals and vertexes come from the frame list
 			l = shadedots[verts->lightnormalindex] * shadelight;
-			glColor3f (l, l, l);
+			glColor3f_fp (l, l, l);
 			glVertex3f (verts->v[0], verts->v[1], verts->v[2]);
 			verts++;
 		} while (--count);
@@ -723,7 +723,7 @@ void R_PolyBlend (void)
 	glDisable_fp (GL_DEPTH_TEST);
 	glDisable_fp (GL_TEXTURE_2D);
 
-    glLoadIdentity ();
+    glLoadIdentity_fp ();
 
     glRotatef (-90,  1, 0, 0);	    // put Z going up
     glRotatef (90,  0, 0, 1);	    // put Z going up
@@ -860,8 +860,8 @@ void R_SetupGL (void)
 	//
 	// set up viewpoint
 	//
-	glMatrixMode(GL_PROJECTION);
-    glLoadIdentity ();
+	glMatrixMode_fp(GL_PROJECTION);
+    glLoadIdentity_fp ();
 	x = r_refdef.vrect.x * glwidth/vid.width;
 	x2 = (r_refdef.vrect.x + r_refdef.vrect.width) * glwidth/vid.width;
 	y = (vid.height-r_refdef.vrect.y) * glheight/vid.height;
@@ -886,7 +886,7 @@ void R_SetupGL (void)
 		w = h = 256;
 	}
 
-	glViewport (glx + x, gly + y2, w, h);
+	glViewport_fp (glx + x, gly + y2, w, h);
     screenaspect = (float)r_refdef.vrect.width/r_refdef.vrect.height;
 //	yfov = 2*atan((float)r_refdef.vrect.height/r_refdef.vrect.width)*180/M_PI;
     MYgluPerspective (r_refdef.fov_y,  screenaspect,  4,  4096);
@@ -902,8 +902,8 @@ void R_SetupGL (void)
 	else
 		glCullFace(GL_FRONT);
 
-	glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity ();
+	glMatrixMode_fp(GL_MODELVIEW);
+    glLoadIdentity_fp ();
 
     glRotatef (-90,  1, 0, 0);	    // put Z going up
     glRotatef (90,  0, 0, 1);	    // put Z going up
@@ -1063,13 +1063,13 @@ void R_Mirror (void)
 
 	// blend on top
 	glEnable_fp (GL_BLEND);
-	glMatrixMode(GL_PROJECTION);
+	glMatrixMode_fp(GL_PROJECTION);
 	if (mirror_plane->normal[2])
 		glScalef (1,-1,1);
 	else
 		glScalef (-1,1,1);
 	glCullFace(GL_FRONT);
-	glMatrixMode(GL_MODELVIEW);
+	glMatrixMode_fp(GL_MODELVIEW);
 
 	glLoadMatrixf (r_base_world_matrix);
 
