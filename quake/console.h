@@ -63,6 +63,7 @@ void Con_Printf (const char *fmt, ...);
 void Con_Warning (const char *fmt, ...); //johnfitz
 void Con_DPrintf (unsigned long developerFlags, const char *fmt, ...);
 void Con_SafePrintf (const char *fmt, ...);
+void Con_SafeDPrintf (unsigned long developerFlags, const char *fmt, ...);
 void Con_Clear_f (void);
 void Con_DrawNotify (void);
 void Con_ClearNotify (void);

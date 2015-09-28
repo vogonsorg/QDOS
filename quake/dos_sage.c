@@ -97,7 +97,7 @@ static int SAGE_InitCtx (int *width, int *height, int *bpp)
 	 * performance unless it's loaded twice.  SLI or not. :( */
 	if (firstRunHack) {
 		firstRunHack = false;
-		Con_SafeDPrintf("Running SAGE performance hack\n");
+		Con_SafeDPrintf(DEVELOPER_MSG_VIDEO, "Running SAGE performance hack\n");
 		SAGE_Shutdown();
 		return SAGE_InitCtx(width, height, bpp);
 	}

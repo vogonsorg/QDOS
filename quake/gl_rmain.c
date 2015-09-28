@@ -728,7 +728,7 @@ void R_PolyBlend (void)
     glRotatef (-90,  1, 0, 0);	    // put Z going up
     glRotatef (90,  0, 0, 1);	    // put Z going up
 
-	glColor4f_fpv (v_blend);
+	glColor4fv_fp (v_blend);
 
 	glBegin_fp (GL_QUADS);
 
