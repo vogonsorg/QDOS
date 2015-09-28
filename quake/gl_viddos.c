@@ -504,6 +504,23 @@ void VID_Init(unsigned char *palette)
 	r_ignorehwgamma = Cvar_Get("r_ignorehwgamma", "0", CVAR_ARCHIVE);
 	r_ignorehwgamma->description = "Skip testing for 3DFX Hardware Gamma capabilities";
 
+	/* don't let fxMesa cheat multitexturing */
+	putenv("FX_DONT_FAKE_MULTITEX=1");
+#ifdef GL_DLSYM
+	i = COM_CheckParm("-gllibrary");
+	if (i == 0)
+		i = COM_CheckParm ("-g");
+	if (i && i < com_argc - 1)
+		gl_library = com_argv[i+1];
+	else
+		gl_library = "gl.dxe";
+
+	// load the opengl library
+	if (!GL_OpenLibrary(gl_library))
+		Sys_Error ("Unable to load GL library %s", gl_library);
+#endif
+	DOSGL_Init();
+
 	vid.maxwarpwidth = WARP_WIDTH;
 	vid.maxwarpheight = WARP_HEIGHT;
 	vid.colormap = host_colormap;
@@ -557,23 +574,6 @@ void VID_Init(unsigned char *palette)
 		vid.conheight = Q_atoi(com_argv[i+1]);
 	if (vid.conheight < 200)
 		vid.conheight = 200;
-
-	/* don't let fxMesa cheat multitexturing */
-	putenv("FX_DONT_FAKE_MULTITEX=1");
-#ifdef GL_DLSYM
-	i = COM_CheckParm("-gllibrary");
-	if (i == 0)
-		i = COM_CheckParm ("-g");
-	if (i && i < com_argc - 1)
-		gl_library = com_argv[i+1];
-	else
-		gl_library = "gl.dxe";
-
-	// load the opengl library
-	if (!GL_OpenLibrary(gl_library))
-		Sys_Error ("Unable to load GL library %s", gl_library);
-#endif
-	DOSGL_Init();
 
 	if (DOSGL_InitCtx(&width, &height, &bpp) < 0)
 		Sys_Error("DOSGL: Failed creating context.");
