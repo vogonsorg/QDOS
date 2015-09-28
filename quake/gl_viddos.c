@@ -578,6 +578,9 @@ void VID_Init(unsigned char *palette)
 	if (DOSGL_InitCtx(&width, &height, &bpp) < 0)
 		Sys_Error("DOSGL: Failed creating context.");
 
+	scr_width = width;
+	scr_height = height;
+
 	if (vid.conheight > height)
 		vid.conheight = height;
 	if (vid.conwidth > width)
