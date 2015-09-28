@@ -1,17 +1,56 @@
-Setup:
+     .,o'       `o,.
+   ,o8'           `8o.
+  o8'               `8o
+ o8:                 ;8o
+.88                   88.
+:88.                 ,88:
+`888                 888'
+ 888o   `8888888'   o888
+ `888o,. `88888' .,o888'
+  `8888888888888888888'
+    `888888888888888'
+       `::88888;:'
+          88888
+          88888
+          `888'
+           `;'
+
++----------------------------------+
+|        Table of Contents         |
+|                                  |
+|  1 - Setup                       |
+|  2 - Minimum System Specs        |
+|  3 - Recommend System Specs      |
+|  4 - Mesa vs. Sage               |
+|  5 - Interesting Paramaters      |
+|  6 - Interesting Mesa Parameters |
+|  7 - Interesting Sage Parameters |
+|  8 - Known General Issues        |
+|  9 - Known Mesa Issues           |
+| 10 - Known Sage Issues           |
+| 11 - Other Tidbits               |
++----------------------------------+
+
+1 - Setup
+---------------------------------------------------------
 * Pick the correct glide driver (glide3x.dxe) for your 3dfx card from
   one of the directories listed below and put it in the same place as
-  qdosfx.exe, qwdosfx.exe, and gl.dxe:
-  - sst1  -> Voodoo Graphics
-  - sst96 -> Voodoo Rush
-  - cvg   -> Voodoo2
-  - h5    -> Banshee and Voodoo 3/4/5
+  qdosfx.exe, qwdosfx.exe:
+  - voodoo/sst1  -> Voodoo Graphics
+  - voodoo/sst96 -> Voodoo Rush
+  - voodoo/cvg   -> Voodoo2
+  - voodoo/h5    -> Banshee and Voodoo 3/4/5
+* Pick a renderer (gl.dxe) from one of the directories listed below
+  and put it in the same place as qdosfx.exe, qwdosfx.exe:
+  - opengl/mesa -> Mesa v6.4.3
+  - opengl/sage -> Sage (be sure to copy sage.ini as well)
 * It is recommended to use RayeR's MTRRLFBE.EXE utility
   (http://rayer.g6.cz/programm/mtrrlfbe.exe) to setup a
   write-combining MTRR for the LFB.  This will dramatically increase
   performance on Voodoo Rush and higher cards.
 
-Minimum Sysem Specs:
+2 - Minimum Sysem Specs
+---------------------------------------------------------
 * Pentium 1 with a Voodoo 1.
 * A DOS OS capable of detecting more than 64MB of RAM.  DOS Quake locks
   assets on start and locks about 24MB in addition to the default 32MB.
@@ -19,12 +58,23 @@ Minimum Sysem Specs:
   DOS 7 from Win98SE is known to work properly.  FreeDOS is assumed to be OK.
   DOS 6 and lower is NOT compatible.
 
-Recommended System Specs:
+3 - Recommended System Specs
+---------------------------------------------------------
 * Pentium 2 300mhz.  Pentium 3 550mhz or higher for the best experience.
 * Voodoo 3.  Older cards will work, but unknown how well they perform in
   faster computers.
 
-Interesting parameters:
+4 - Mesa vs. Sage
+---------------------------------------------------------
+* Sage is much faster than Mesa, very close to or in some cases exceeding
+  Windows performance compared to the OpenGL ICD by AmigaMerlin v2.9.
+  It is not totally perfect, it has it's own share of issues read below
+  for more information.
+* Mesa has been more thoroughly tested but also has it's own share of issues.
+  Read below for more information.
+
+5 - Interesting parameters
+---------------------------------------------------------
 * -bpp for setting 15, 16, or 32 bpp on Voodoo 4/5 cards.
 * FX_GLIDE_2PPC controls the 2 Pixels Per Clock mode.  Valid only for
   Voodoo 4/5 cards.  Disabled in multi-texturing mode.  Valid values are
@@ -35,12 +85,15 @@ Interesting parameters:
   Valid ranges are -32 to 32.
 * FX_GLIDE_NO_SPLASH=1 to disable the splash logo on Voodoo 1 and 2 cards
   on startup.
+* FX_GLIDE_REFRESH for refresh rate control on Banshee, Voodoo 3, 4, and 5.
+* FX_GLIDE_SWAPINTERVAL to control V-Sync.
 * FX_GLIDE_SWAPPENDINGCOUNT to set the number of frames to buffer.  Default
   value is 2, but can go as high as 6.  Traditionally, in Windows, higher
   values can be a slight speed advantage but can introduce input lag.  On
   the hardware I tested it on I was able to gain a few extra frames in
   timedemos (about 3-4) with 6 with no input lag and I am even able to
   use m_filter in combination with this.
+* SST_SCREENREFRESH for refresh rate control on Voodoo 1, Rush.
 * SSTH3_ALPHADITHERMODE set to 3 for the "Smoother" option that is equivalent
   in the Windows control panel for Alpha Blending Quality.  Values 0-2 all
   use the same code path.  Defaults to 1.
@@ -55,13 +108,36 @@ Interesting parameters:
     4 - SLI Disabled, AA 4x Enabled.
   Options 5-8 are for Voodoo 5 6000 users: if you're out there, send me
   an email!
+* SSTV2_SCREENREFRESH for refresh rate control on Voodoo 2.
+
+6 - Interesting Mesa parameters
+---------------------------------------------------------
 * MESA_FX_IGNORE_CMBEXT to allow Voodoo 4/5 to perform single-pass
   trilinear.  This also provides a small speed boost of 4-5 fps on average
   in my timedemo tests with bilinear.  Mesa warns some advanced (multi)texturing
   modes won't work (GL_EXT_texture_env_combine), but multitexturing is slower
   in Mesa and is recommended to be disabled (see below).
+* MESA_FX_IGNORE_TEXFMT set to any value (including 0) to disable the
+  32bpp-like quality on 16bpp modes.  This causes a slightly performance hit.
+  This is enabled by default, and only affects Voodoo 4 and 5.
+* MESA_CODEGEN enables code generation for TnL code.  May help performance,
+  but I have personally seen no benefits.
 
-Known Issues:
+7 - Interesting Sage parameters
+---------------------------------------------------------
+* See sage.ini for more information.
+
+8 - Known General Issues
+---------------------------------------------------------
+* Multitexture is supported by the driver but appears to have an
+  approximately 10fps loss on average (more in complex scenes) on everything
+  I tested it on EXCEPT in modes 1280x1024 and 1600x1200 where it really
+  helps.  It is disabled by default.  If you would like to try it anyways
+  start the game with -mtex passed at the command line.  e.g.
+  "qdosfx.exe -metx".
+
+9 - Known Mesa Issues
+---------------------------------------------------------
 * Mesa is slower than MiniGL drivers such as the WickedGL driver or the
   OpenGL ICD from 3dfx.  These DLLs rely on special Quake engine hacks
   to speed up rendering.  They are closed source so we do not know what
@@ -70,16 +146,24 @@ Known Issues:
 * Outdoor scenes are slower compared to Windows OpenGL ICD.  This issue
   also exists in Mesa.  You can verify by downloading the Windows Mesa DLLs
   from http://falconfly.de/ .
-* Multitexture is supported by the driver but appears to have an
-  approximately 10fps loss on average (more in complex scenes) on everything
-  I tested it on EXCEPT in modes 1280x1024 and 1600x1200 where it really
-  helps.  It is disabled by default.  If you would like to try it anyways
-  start the game with -mtex passed at the command line.  e.g.
-  "qdosfx.exe -metx".
 * Trilinear filtering is disabled by default on Voodoo 4/5 unless you use
   MESA_FX_IGNORE_CMBEXT.
 
-Other tidbits:
+10 - Known Sage Issues
+---------------------------------------------------------
+* Trilinear filtering does not work on Voodoo 4 and 5.
+* Black screens with segfaults on SSE processors (i.e. P3 and higher).
+  Due to an issue with the SSE specific code in Sage, you may or may not
+  be able to start the game.  As a consequence, it must be explicitly enabled
+  via the sage.ini as x86.enable.sse = y.  If you build from source you can
+  force GCC SSE optimizations with -march=pentium3 and x86.enable.sse = n and
+  get similar performance without the crashes.  Distributing SSE-only builds
+  of DXEs and binaries is impractical; you must build it yourself.
+* Requires initialization twice for proper performance.  There is a hack in
+  place until this issue can be resolved.
+
+11 - Other Tidbits
+---------------------------------------------------------
 * 3DFX's reference hardware for benchmarking with the VSA-100 chipset
   (Voodoo 4 and 5) was a Pentium 3 866mhz.  A setup in this range provides
   the smoothest framerates and is recommended to play the game comfortably.
