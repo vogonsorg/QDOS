@@ -17,6 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
+#define	__GL_FUNC_EXTERN
+
 #include <termios.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
@@ -24,16 +27,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <stdio.h>
 
 #include "quakedef.h"
+#include "gl_dos.h"
 #include "sys_dxe.h"
-
-#include <GL/dmesa.h>
 
 #define WARP_WIDTH	320
 #define WARP_HEIGHT	200
 
-static DMesaVisual dv;
-static DMesaContext dc;
-static DMesaBuffer db;
+/* DOSGL interface */
+int  (*DOSGL_InitCtx ) (int *width, int *height, int *bpp);
+void (*DOSGL_Shutdown) (void);
+void (*DOSGL_EndFrame) (void);
+void * (*DOSGL_GetProcAddress) (const char *);
+const char * (*DOSGL_APIName) (void);
+
+static void GL_Init (void);
+
+#ifdef GL_DLSYM
+static const char	*gl_library;
+#endif
+static void		*gl_handle;
 
 // Gamma stuff
 #define	USE_GAMMA_RAMPS			0
@@ -101,26 +113,6 @@ void D_BeginDirectRect (int x, int y, byte *pbitmap, int width, int height)
 
 void D_EndDirectRect (int x, int y, int width, int height)
 {
-}
-
-/* FS: Moved here */
-static void VID_CreateDMesaContext(int width, int height, int bpp)
-{
-	dv = DMesaCreateVisual((GLint)width, (GLint)height, bpp, 0, true, true, alphaBufferSize, depthBufferSize, 0, 0);
-	if (!dv)
-		Sys_Error("Unable to create 3DFX visual.\n");
-
-	dc = DMesaCreateContext(dv, NULL);
-	if (!dc)
-		Sys_Error("Unable to create 3DFX context.\n");
-
-	scr_width = width;
-	scr_height = height;
-
-	db = DMesaCreateBuffer(dv, 0,0,(GLint)width,(GLint)height);
-	if (!db)
-		Sys_Error("Unable to create 3DFX buffer.\n");
-	DMesaMakeCurrent(dc, db);
 }
 
 #if !defined(USE_3DFXGAMMA)
@@ -257,7 +249,7 @@ void	VID_SetPalette (unsigned char *palette)
 
 void *qwglGetProcAddress(char *symbol)
 {
-	return DMesaGetProcAddress(symbol);
+	return DOSGL_GetProcAddress(symbol);
 }
 
 void CheckMultiTextureExtensions(void) 
@@ -277,12 +269,74 @@ void CheckMultiTextureExtensions(void)
 				gl_mtexable = true;
 			}
 			else
-				Con_Warning ("multitexture not supported (DMesaGetProcAddress failed)\n");
+				Con_Warning ("multitexture not supported (DOSGL_GetProcAddress failed)\n");
 		}
 		else
 			Con_Warning ("multitexture not supported (extension not found)\n");
 	}
 }
+
+static void DOSGL_Init (void)
+{
+	int rc = -1;
+
+	if (rc < 0) rc = DMESA_LoadAPI (gl_handle);
+	if (rc < 0) rc = SAGE_LoadAPI (gl_handle);
+	if (rc < 0) rc = FXMESA_LoadAPI (gl_handle);
+	if (rc < 0) {
+		Sys_Error("Unable to find a supported API for DOSGL.");
+	}
+	Con_SafePrintf("DOSGL: driver using %s API.\n", DOSGL_APIName());
+}
+
+#ifdef GL_DLSYM
+static qboolean GL_OpenLibrary (const char *name)
+{
+	Con_SafePrintf("Loading OpenGL library %s\n", name);
+
+	// open the library
+	if (!(gl_handle = Sys_dlopen(name, false)))
+	{
+		Con_SafePrintf("Unable to dlopen %s\n", name);
+		return false;
+	}
+
+	return true;
+}
+
+static void GL_CloseLibrary (void)
+{
+	// clear the DOSGL function pointers
+	DOSGL_InitCtx  = NULL;
+	DOSGL_Shutdown = NULL;
+	DOSGL_EndFrame = NULL;
+	DOSGL_GetProcAddress = NULL;
+	DOSGL_APIName = NULL;
+
+	// free the library
+	if (gl_handle != NULL)
+	{
+		Sys_dlclose(gl_handle);
+		gl_handle = NULL;
+	}
+}
+#endif	/* GL_DLSYM */
+
+#ifdef GL_DLSYM
+static void GL_Init_Functions (void)
+{
+#define GL_FUNCTION(ret, func, params)				\
+    do {							\
+	func##_fp = (func##_f) Sys_dlsym(gl_handle, "_"#func);	\
+	if (func##_fp == NULL)					\
+		Sys_Error("%s not found in GL library", "_"#func);	\
+    } while (0);
+#define GL_FUNCTION_OPT(ret, func, params)
+#include "gl_func.h"
+#undef	GL_FUNCTION_OPT
+#undef	GL_FUNCTION
+}
+#endif	/* GL_DLSYM */
 
 /*
 ===============
@@ -321,6 +375,10 @@ GL_Init
 */
 void GL_Init (void)
 {
+#ifdef GL_DLSYM
+	// initialize gl function pointers
+	GL_Init_Functions();
+#endif
 	gl_vendor = (const char *)glGetString (GL_VENDOR);
 	Con_Printf ("GL_VENDOR: %s\n", gl_vendor);
 	gl_renderer = (const char *)glGetString (GL_RENDERER);
@@ -365,8 +423,7 @@ void GL_BeginRendering (int *x, int *y, int *width, int *height)
 
 void GL_EndRendering (void)
 {
-	glFlush();
-	DMesaSwapBuffers(db);
+	DOSGL_EndFrame();
 }
 
 qboolean VID_Is8bit(void)
@@ -387,7 +444,7 @@ void VID_Init8bitPalette()
 		return;
 
 	if (strstr(gl_extensions, "GL_EXT_shared_texture_palette") &&
-		(qglColorTableEXT = (void *)DMesaGetProcAddress("glColorTableEXT")) != NULL)
+		(qglColorTableEXT = (void *)DOSGL_GetProcAddress("glColorTableEXT")) != NULL)
 	{
 		char thePalette[256*3];
 		char *oldPalette, *newPalette;
@@ -503,8 +560,23 @@ void VID_Init(unsigned char *palette)
 
 	/* don't let fxMesa cheat multitexturing */
 	putenv("FX_DONT_FAKE_MULTITEX=1");
+#ifdef GL_DLSYM
+	i = COM_CheckParm("-gllibrary");
+	if (i == 0)
+		i = COM_CheckParm ("-g");
+	if (i && i < com_argc - 1)
+		gl_library = com_argv[i+1];
+	else
+		gl_library = "gl.dxe";
 
-	VID_CreateDMesaContext(width, height, bpp); /* FS: Setup DMesa contexts */
+	// load the opengl library
+	if (!GL_OpenLibrary(gl_library))
+		Sys_Error ("Unable to load GL library %s", gl_library);
+#endif
+	DOSGL_Init();
+
+	if (DOSGL_InitCtx(&width, &height, &bpp) < 0)
+		Sys_Error("DOSGL: Failed creating context.");
 
 	if (vid.conheight > height)
 		vid.conheight = height;
@@ -541,21 +613,11 @@ void VID_Init(unsigned char *palette)
 void VID_Shutdown(void)
 {
 	VID_ShutdownGamma();
-	if (db)
-	{
-		DMesaDestroyBuffer(db);
-		db = NULL;
-	}
-	if (dc)
-	{
-		DMesaDestroyContext(dc);
-		dc = NULL;
-	}
-	if (dv)
-	{
-		DMesaDestroyVisual(dv);
-		dv = NULL;
-	}
+	if (DOSGL_Shutdown)
+		DOSGL_Shutdown ();
+#ifdef GL_DLSYM
+	GL_CloseLibrary();
+#endif
 }
 
 

@@ -34,7 +34,9 @@ endif
 ifeq ($(GLQUAKE),1)
 CFLAGS += -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE
 CFLAGS += -DUSE_3DFXGAMMA
-LIBS   += -L../3rdparty/lib -lgl
+#CFLAGS += -DGL_DLSYM
+LIBS   += -L../3rdparty/lib
+#LIBS   += -lgl
 EXE     = qdosfx.exe
 SYSOBJ_DXE=$(O)/dxe.o
 else
@@ -214,7 +216,10 @@ REFSOFT = $(O)/d_copy.o \
 endif
 
 ifeq ($(GLQUAKE),1)
-REFGL = $(O)/fx_gamma.o  \
+REFGL = $(O)/dos_dmesa.o \
+	$(O)/dos_fxmesa.o \
+	$(O)/dos_sage.o \
+	$(O)/fx_gamma.o  \
 	$(O)/gl_draw.o   \
 	$(O)/gl_mesh.o   \
 	$(O)/gl_model.o  \
