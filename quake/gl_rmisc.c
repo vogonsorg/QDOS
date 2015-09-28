@@ -359,7 +359,10 @@ void R_TranslatePlayerSkin (int playernum)
 			frac += fracstep;
 		}
 	}
-	glTexImage2D_fp (GL_TEXTURE_2D, 0, gl_solid_format, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+	glTexImage2D_fp (GL_TEXTURE_2D, 0, gl_solid_format,
+		scaled_width, scaled_height, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, pixels);
 
 	glTexEnvf_fp(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

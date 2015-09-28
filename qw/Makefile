@@ -31,7 +31,8 @@ endif
 ifeq ($(GLQUAKE),1)
 CFLAGS += -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE
 CFLAGS += -DUSE_3DFXGAMMA
-LIBS   += -L../3rdparty/lib -lgl
+CFLAGS += -DGL_DLSYM
+#LIBS   += -L../3rdparty/lib -lgl
 EXE     = qwdosfx.exe
 SYSOBJ_DXE=$(O)/dxe.o
 else
@@ -178,19 +179,22 @@ REFSOFT = $(O)/d_copy.o \
 endif
 
 ifeq ($(GLQUAKE),1)
-REFGL = $(O)/fx_gamma.o  \
-	$(O)/gl_draw.o   \
-	$(O)/gl_mesh.o   \
-	$(O)/gl_model.o  \
-	$(O)/gl_ngraph.o \
-	$(O)/gl_refrag.o \
-	$(O)/gl_rlight.o \
-	$(O)/gl_rmain.o  \
-	$(O)/gl_rmisc.o  \
-	$(O)/gl_rsurf.o  \
-	$(O)/gl_screen.o \
-	$(O)/gl_test.o   \
-	$(O)/gl_warp.o   \
+REFGL = $(O)/dos_dmesa.o  \
+	$(O)/dos_fxmesa.o \
+	$(O)/dos_sage.o   \
+	$(O)/fx_gamma.o   \
+	$(O)/gl_draw.o    \
+	$(O)/gl_mesh.o    \
+	$(O)/gl_model.o   \
+	$(O)/gl_ngraph.o  \
+	$(O)/gl_refrag.o  \
+	$(O)/gl_rlight.o  \
+	$(O)/gl_rmain.o   \
+	$(O)/gl_rmisc.o   \
+	$(O)/gl_rsurf.o   \
+	$(O)/gl_screen.o  \
+	$(O)/gl_test.o    \
+	$(O)/gl_warp.o    \
 	$(O)/gl_viddos.o
 endif
 

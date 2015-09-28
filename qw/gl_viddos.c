@@ -17,23 +17,29 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-#include <termios.h>
-#include <sys/ioctl.h>
-#include <sys/stat.h>
-#include <stdarg.h>
-#include <stdio.h>
+
+#define	__GL_FUNC_EXTERN
 
 #include "quakedef.h"
+#include "gl_dos.h"
 #include "sys_dxe.h"
-
-#include <GL/dmesa.h>
 
 #define WARP_WIDTH	320
 #define WARP_HEIGHT	200
 
-static DMesaVisual dv;
-static DMesaContext dc;
-static DMesaBuffer db;
+/* DOSGL interface */
+int  (*DOSGL_InitCtx ) (int *width, int *height, int *bpp);
+void (*DOSGL_Shutdown) (void);
+void (*DOSGL_EndFrame) (void);
+void * (*DOSGL_GetProcAddress) (const char *);
+const char * (*DOSGL_APIName) (void);
+
+static void GL_Init (void);
+
+#ifdef GL_DLSYM
+static const char	*gl_library;
+#endif
+static void		*gl_handle;
 
 // Gamma stuff
 #define	USE_GAMMA_RAMPS			0
@@ -86,10 +92,7 @@ qboolean gl_mtexable = false;
 /* FS: TODO: make a real video table */
 static char currentVideoModeDesc[256];
 
-/* FS: Fine control over the DMesa Context parameters.  Mostly for debugging and experimentation, but maybe someone has a reason to play with it. */
 static int bpp = 16;
-static int alphaBufferSize = 2;
-static int depthBufferSize = 16;
 
 void VID_MenuDraw (void);
 void VID_MenuKey (int key);
@@ -101,26 +104,6 @@ void D_BeginDirectRect (int x, int y, byte *pbitmap, int width, int height)
 
 void D_EndDirectRect (int x, int y, int width, int height)
 {
-}
-
-/* FS: Moved here */
-static void VID_CreateDMesaContext(int width, int height, int bpp)
-{
-	dv = DMesaCreateVisual((GLint)width, (GLint)height, bpp, 0, true, true, alphaBufferSize, depthBufferSize, 0, 0);
-	if (!dv)
-		Sys_Error("Unable to create 3DFX visual.\n");
-
-	dc = DMesaCreateContext(dv, NULL);
-	if (!dc)
-		Sys_Error("Unable to create 3DFX context.\n");
-
-	scr_width = width;
-	scr_height = height;
-
-	db = DMesaCreateBuffer(dv, 0,0,(GLint)width,(GLint)height);
-	if (!db)
-		Sys_Error("Unable to create 3DFX buffer.\n");
-	DMesaMakeCurrent(dc, db);
 }
 
 #if !defined(USE_3DFXGAMMA)
@@ -255,11 +238,6 @@ void	VID_SetPalette (unsigned char *palette)
 	}
 }
 
-void *qwglGetProcAddress(char *symbol)
-{
-	return DMesaGetProcAddress(symbol);
-}
-
 void CheckMultiTextureExtensions(void) 
 {
 	/* FS: Slow as shit if under 1280x1024, so explicitly require it to be set. */
@@ -267,8 +245,8 @@ void CheckMultiTextureExtensions(void)
 	{
 		if (strstr(gl_extensions, "GL_ARB_multitexture"))
 		{
-			qglMTexCoord2fFunc = (void *) qwglGetProcAddress("glMultiTexCoord2fARB");
-			qglSelectTextureFunc = (void *) qwglGetProcAddress("glActiveTextureARB");
+			qglMTexCoord2fFunc = (void *) DOSGL_GetProcAddress("glMultiTexCoord2fARB");
+			qglSelectTextureFunc = (void *) DOSGL_GetProcAddress("glActiveTextureARB");
 			if (qglMTexCoord2fFunc && qglSelectTextureFunc)
 			{
 				Con_Printf("FOUND: ARB_multitexture\n");
@@ -277,12 +255,74 @@ void CheckMultiTextureExtensions(void)
 				gl_mtexable = true;
 			}
 			else
-				Con_Warning ("multitexture not supported (DMesaGetProcAddress failed)\n");
+				Con_Warning ("multitexture not supported (DOSGL_GetProcAddress failed)\n");
 		}
 		else
 			Con_Warning ("multitexture not supported (extension not found)\n");
 	}
 }
+
+static void DOSGL_Init (void)
+{
+	int rc = -1;
+
+	if (rc < 0) rc = DMESA_LoadAPI (gl_handle);
+	if (rc < 0) rc = SAGE_LoadAPI (gl_handle);
+	if (rc < 0) rc = FXMESA_LoadAPI (gl_handle);
+	if (rc < 0) {
+		Sys_Error("Unable to find a supported API for DOSGL.");
+	}
+	Con_SafePrintf("DOSGL: driver using %s API.\n", DOSGL_APIName());
+}
+
+#ifdef GL_DLSYM
+static qboolean GL_OpenLibrary (const char *name)
+{
+	Con_SafePrintf("Loading OpenGL library %s\n", name);
+
+	// open the library
+	if (!(gl_handle = Sys_dlopen(name, false)))
+	{
+		Con_SafePrintf("Unable to dlopen %s\n", name);
+		return false;
+	}
+
+	return true;
+}
+
+static void GL_CloseLibrary (void)
+{
+	// clear the DOSGL function pointers
+	DOSGL_InitCtx  = NULL;
+	DOSGL_Shutdown = NULL;
+	DOSGL_EndFrame = NULL;
+	DOSGL_GetProcAddress = NULL;
+	DOSGL_APIName = NULL;
+
+	// free the library
+	if (gl_handle != NULL)
+	{
+		Sys_dlclose(gl_handle);
+		gl_handle = NULL;
+	}
+}
+#endif	/* GL_DLSYM */
+
+#ifdef GL_DLSYM
+static void GL_Init_Functions (void)
+{
+#define GL_FUNCTION(ret, func, params)				\
+    do {							\
+	func##_fp = (func##_f) Sys_dlsym(gl_handle, "_"#func);	\
+	if (func##_fp == NULL)					\
+		Sys_Error("%s not found in GL library", "_"#func);	\
+    } while (0);
+#define GL_FUNCTION_OPT(ret, func, params)
+#include "gl_func.h"
+#undef	GL_FUNCTION_OPT
+#undef	GL_FUNCTION
+}
+#endif	/* GL_DLSYM */
 
 /*
 ===============
@@ -294,24 +334,24 @@ GL_Init will still do the stuff that only needs to be done once
 */
 void GL_SetupState (void)
 {
-	glClearColor (0.15,0.15,0.15,0); //johnfitz -- originally 1,0,0,0
-	glCullFace(GL_FRONT);
-	glEnable(GL_TEXTURE_2D);
+	glClearColor_fp (0.15,0.15,0.15,0); //johnfitz -- originally 1,0,0,0
+	glCullFace_fp(GL_FRONT);
+	glEnable_fp(GL_TEXTURE_2D);
 
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.666);
+	glEnable_fp(GL_ALPHA_TEST);
+	glAlphaFunc_fp(GL_GREATER, 0.666);
 
-	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-	glShadeModel (GL_FLAT);
+	glPolygonMode_fp (GL_FRONT_AND_BACK, GL_FILL);
+	glShadeModel_fp (GL_FLAT);
 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc_fp (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glTexEnvf_fp(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 }
 
 /*
@@ -321,14 +361,18 @@ GL_Init
 */
 void GL_Init (void)
 {
-	gl_vendor = (const char *)glGetString (GL_VENDOR);
+#ifdef GL_DLSYM
+	// initialize gl function pointers
+	GL_Init_Functions();
+#endif
+	gl_vendor = (const char *)glGetString_fp (GL_VENDOR);
 	Con_Printf ("GL_VENDOR: %s\n", gl_vendor);
-	gl_renderer = (const char *)glGetString (GL_RENDERER);
+	gl_renderer = (const char *)glGetString_fp (GL_RENDERER);
 	Con_Printf ("GL_RENDERER: %s\n", gl_renderer);
 
-	gl_version = (const char *)glGetString (GL_VERSION);
+	gl_version = (const char *)glGetString_fp (GL_VERSION);
 	Con_Printf ("GL_VERSION: %s\n", gl_version);
-	gl_extensions = (const char *)glGetString (GL_EXTENSIONS);
+	gl_extensions = (const char *)glGetString_fp (GL_EXTENSIONS);
 	Con_Printf ("GL_EXTENSIONS: %s\n", gl_extensions);
 
 	is_3dfx = false;
@@ -337,10 +381,6 @@ void GL_Init (void)
 	    !Q_strncasecmp((char *)gl_renderer, "Glide ", 6)	  || /* possible with Mesa 3.x/4.x/5.0.x */
 	    !Q_strncasecmp((char *)gl_renderer, "Mesa Glide", 10))
 	{
-	// This should hopefully detect Voodoo1 and Voodoo2
-	// hardware and possibly Voodoo Rush.
-	// Voodoo Banshee, Voodoo3 and later are hw-accelerated
-	// by DRI in XFree86-4.x and should be: is_3dfx = false.
 		Con_SafePrintf("3dfx Voodoo found\n");
 		is_3dfx = true;
 	}
@@ -365,8 +405,7 @@ void GL_BeginRendering (int *x, int *y, int *width, int *height)
 
 void GL_EndRendering (void)
 {
-	glFlush();
-	DMesaSwapBuffers(db);
+	DOSGL_EndFrame();
 }
 
 qboolean VID_Is8bit(void)
@@ -376,36 +415,43 @@ qboolean VID_Is8bit(void)
 void (APIENTRY * qglColorTableEXT)( GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, const GLvoid *table );
 void VID_Init8bitPalette() 
 {
-#if 0
 /* FS: This now works in Mesa 5.1 but it looks rather silly from far distances.
  *     So, bye.  Here for historical purposes.
  */
 	// Check for 8bit Extensions and initialize them.
 	int i;
 
-	if (COM_CheckParm("-no8bit"))
-		return;
-
-	if (strstr(gl_extensions, "GL_EXT_shared_texture_palette") &&
-		(qglColorTableEXT = (void *)DMesaGetProcAddress("glColorTableEXT")) != NULL)
+	/* FS: Because it might not work at all, or look silly... explicitly require it to be set. */
+	if (COM_CheckParm("-8bit"))
 	{
-		char thePalette[256*3];
-		char *oldPalette, *newPalette;
+		if (strstr(gl_extensions, "GL_EXT_shared_texture_palette"))
+		{
 
-		Con_SafePrintf("... Using GL_EXT_shared_texture_palette\n");
-		glEnable( GL_SHARED_TEXTURE_PALETTE_EXT );
-		oldPalette = (char *) d_8to24table; //d_8to24table3dfx;
-		newPalette = thePalette;
-		for (i=0;i<256;i++) {
-			*newPalette++ = *oldPalette++;
-			*newPalette++ = *oldPalette++;
-			*newPalette++ = *oldPalette++;
-			oldPalette++;
+			qglColorTableEXT = (void *)DOSGL_GetProcAddress("glColorTableEXT");
+			if (qglColorTableEXT)
+			{
+				char thePalette[256*3];
+				char *oldPalette, *newPalette;
+
+				Con_SafePrintf("... Using GL_EXT_shared_texture_palette\n");
+				glEnable_fp( GL_SHARED_TEXTURE_PALETTE_EXT );
+				oldPalette = (char *) d_8to24table; //d_8to24table3dfx;
+				newPalette = thePalette;
+				for (i=0;i<256;i++) {
+					*newPalette++ = *oldPalette++;
+					*newPalette++ = *oldPalette++;
+					*newPalette++ = *oldPalette++;
+					oldPalette++;
+				}
+				qglColorTableEXT(GL_SHARED_TEXTURE_PALETTE_EXT, GL_RGB, 256, GL_RGB, GL_UNSIGNED_BYTE, (void *) thePalette);
+				is8bit = true;
+			}
+			else
+				Con_Warning ("Shared texture palette not supported (DOSGL_GetProcAddress failed)\n");
 		}
-		qglColorTableEXT(GL_SHARED_TEXTURE_PALETTE_EXT, GL_RGB, 256, GL_RGB, GL_UNSIGNED_BYTE, (void *) thePalette);
-		is8bit = true;
+		else
+			Con_Warning ("Shared texture palette not supported (extension not found)\n");
 	}
-#endif
 }
 
 static void Check_Gamma (unsigned char *pal)
@@ -447,6 +493,23 @@ void VID_Init(unsigned char *palette)
 	r_ignorehwgamma = Cvar_Get("r_ignorehwgamma", "0", CVAR_ARCHIVE);
 	r_ignorehwgamma->description = "Skip testing for 3DFX Hardware Gamma capabilities";
 
+	/* don't let fxMesa cheat multitexturing */
+	putenv("FX_DONT_FAKE_MULTITEX=1");
+#ifdef GL_DLSYM
+	i = COM_CheckParm("-gllibrary");
+	if (i == 0)
+		i = COM_CheckParm ("-g");
+	if (i && i < com_argc - 1)
+		gl_library = com_argv[i+1];
+	else
+		gl_library = "gl.dxe";
+
+	// load the opengl library
+	if (!GL_OpenLibrary(gl_library))
+		Sys_Error ("Unable to load GL library %s", gl_library);
+#endif
+	DOSGL_Init();
+
 	vid.maxwarpwidth = WARP_WIDTH;
 	vid.maxwarpheight = WARP_HEIGHT;
 	vid.colormap = host_colormap;
@@ -469,24 +532,6 @@ void VID_Init(unsigned char *palette)
 		if ((x == 15) || (x == 32))
 			bpp = x;
 	}
-	if ((i = COM_CheckParm("-alphasize")) != 0) /* FS: Force alpha buffer size */
-	{
-		int x = Q_atoi(com_argv[i+1]);
-		if(x)
-		{
-			Con_SafePrintf("\x02Warning: Alpha buffer size %i.  Default %i.\n", x, alphaBufferSize);
-			alphaBufferSize = x;
-		}
-	}
-	if ((i = COM_CheckParm("-depthsize")) != 0) /* FS: Force depth buffer size */
-	{
-		int x = Q_atoi(com_argv[i+1]);
-		if(x)
-		{
-			Con_SafePrintf("\x02Warning: Depth buffer size %i.  Default %i.\n", x, depthBufferSize);
-			depthBufferSize = x;
-		}
-	}
 
 	vid.conwidth &= 0xfff8; // make it a multiple of eight
 
@@ -501,10 +546,11 @@ void VID_Init(unsigned char *palette)
 	if (vid.conheight < 200)
 		vid.conheight = 200;
 
-	/* don't let fxMesa cheat multitexturing */
-	putenv("FX_DONT_FAKE_MULTITEX=1");
+	if (DOSGL_InitCtx(&width, &height, &bpp) < 0)
+		Sys_Error("DOSGL: Failed creating context.");
 
-	VID_CreateDMesaContext(width, height, bpp); /* FS: Setup DMesa contexts */
+	scr_width = width;
+	scr_height = height;
 
 	if (vid.conheight > height)
 		vid.conheight = height;
@@ -541,21 +587,11 @@ void VID_Init(unsigned char *palette)
 void VID_Shutdown(void)
 {
 	VID_ShutdownGamma();
-	if (db)
-	{
-		DMesaDestroyBuffer(db);
-		db = NULL;
-	}
-	if (dc)
-	{
-		DMesaDestroyContext(dc);
-		dc = NULL;
-	}
-	if (dv)
-	{
-		DMesaDestroyVisual(dv);
-		dv = NULL;
-	}
+	if (DOSGL_Shutdown)
+		DOSGL_Shutdown ();
+#ifdef GL_DLSYM
+	GL_CloseLibrary();
+#endif
 }
 
 

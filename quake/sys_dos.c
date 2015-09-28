@@ -38,7 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <conio.h>
 
 int _crt0_startup_flags = _CRT0_FLAG_UNIX_SBRK; /* FS: Fake Mem Fix for Win9x (QIP) */
-unsigned int _stklen = 1048576;  /* FS: FIXME TUNE: need a 1MB stack for 3dfx or else hard lock */
+unsigned int _stklen = 1048576; /* need a 1MB stack */
 
 #include "quakedef.h"
 #include "dosisms.h"

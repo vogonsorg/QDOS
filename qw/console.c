@@ -944,9 +944,9 @@ Okay to call even when the screen can't be updated
 */
 void Con_SafePrintf (const char *fmt, ...)
 {
-	va_list		argptr;
-	int			temp;
-	static dstring_t        *msg;
+	va_list				argptr;
+	int					temp;
+	static dstring_t	*msg;
 
 	if(!msg)
 		msg = dstring_new();
@@ -954,9 +954,39 @@ void Con_SafePrintf (const char *fmt, ...)
 	va_start (argptr,fmt);
 	dvsprintf (msg,fmt,argptr);
 	va_end (argptr);
-	
+
 	temp = scr_disabled_for_loading;
 	scr_disabled_for_loading = true;
+
 	Con_Printf ("%s", msg->str);
+
+	scr_disabled_for_loading = temp;
+}
+
+/*
+==================
+Con_SafeDPrintf
+
+Okay to call even when the screen can't be updated
+==================
+*/
+void Con_SafeDPrintf (unsigned long developerFlags, const char *fmt, ...)
+{
+	va_list				argptr;
+	int					temp;
+	static dstring_t	*msg;
+
+	if(!msg)
+		msg = dstring_new();
+
+	va_start (argptr,fmt);
+	dvsprintf (msg,fmt,argptr);
+	va_end (argptr);
+
+	temp = scr_disabled_for_loading;
+	scr_disabled_for_loading = true;
+
+	Con_DPrintf (developerFlags, "%s", msg->str);
+
 	scr_disabled_for_loading = temp;
 }

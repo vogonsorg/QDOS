@@ -646,7 +646,6 @@ void Draw_Pic (int x, int y, qpic_t *pic)
 	glEnd_fp ();
 }
 
-
 /*
 =============
 Draw_TransPic

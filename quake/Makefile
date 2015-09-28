@@ -21,7 +21,7 @@ USE_SSE=0
 GLQUAKE=0
 
 CFLAGS = -g -Wall -Werror -O2 -DNDEBUG -fno-strict-aliasing
-CLFAGS += -fomit-frame-pointer
+CFLAGS += -fomit-frame-pointer
 LIBS    =
 EXE     = qdos.exe
 
@@ -215,21 +215,21 @@ REFSOFT = $(O)/d_copy.o \
 endif
 
 ifeq ($(GLQUAKE),1)
-REFGL = $(O)/dos_dmesa.o \
+REFGL = $(O)/dos_dmesa.o  \
 	$(O)/dos_fxmesa.o \
-	$(O)/dos_sage.o \
-	$(O)/fx_gamma.o  \
-	$(O)/gl_draw.o   \
-	$(O)/gl_mesh.o   \
-	$(O)/gl_model.o  \
-	$(O)/gl_refrag.o \
-	$(O)/gl_rlight.o \
-	$(O)/gl_rmain.o  \
-	$(O)/gl_rmisc.o  \
-	$(O)/gl_rsurf.o  \
-	$(O)/gl_screen.o \
-	$(O)/gl_test.o   \
-	$(O)/gl_warp.o   \
+	$(O)/dos_sage.o   \
+	$(O)/fx_gamma.o   \
+	$(O)/gl_draw.o    \
+	$(O)/gl_mesh.o    \
+	$(O)/gl_model.o   \
+	$(O)/gl_refrag.o  \
+	$(O)/gl_rlight.o  \
+	$(O)/gl_rmain.o   \
+	$(O)/gl_rmisc.o   \
+	$(O)/gl_rsurf.o   \
+	$(O)/gl_screen.o  \
+	$(O)/gl_test.o    \
+	$(O)/gl_warp.o    \
 	$(O)/gl_viddos.o
 endif
 
