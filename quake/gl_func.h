@@ -197,11 +197,10 @@ typedef ret (APIENTRY *func##_f) params; \
 __GL_FUNC_EXTERN func##_f func##_fp;
 #endif
 
-/* FS: We use qgl for these to check for them so this currently isn't needed */
-//GL_FUNCTION_OPT(void, glColorTableEXT, (int, int, int, int, int, const void *))
-//GL_FUNCTION_OPT(void, glGetTexParameterfv, (GLenum,GLenum,GLfloat *))
-//GL_FUNCTION_OPT(void, glActiveTextureARB, (GLenum))
-//GL_FUNCTION_OPT(void, glMultiTexCoord2fARB, (GLenum,GLfloat,GLfloat))
+GL_FUNCTION_OPT(void, glColorTableEXT, (int, int, int, int, int, const void *))
+GL_FUNCTION_OPT(void, glGetTexParameterfv, (GLenum,GLenum,GLfloat *))
+GL_FUNCTION_OPT(void, glActiveTextureARB, (GLenum))
+GL_FUNCTION_OPT(void, glMultiTexCoord2fARB, (GLenum,GLfloat,GLfloat))
 
 #ifdef UNDEF_GL_FUNCTION_OPT
 #undef GL_FUNCTION_OPT

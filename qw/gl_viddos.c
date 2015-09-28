@@ -245,9 +245,9 @@ void CheckMultiTextureExtensions(void)
 	{
 		if (strstr(gl_extensions, "GL_ARB_multitexture"))
 		{
-			qglMTexCoord2fFunc = (void *) DOSGL_GetProcAddress("glMultiTexCoord2fARB");
-			qglSelectTextureFunc = (void *) DOSGL_GetProcAddress("glActiveTextureARB");
-			if (qglMTexCoord2fFunc && qglSelectTextureFunc)
+			glMultiTexCoord2fARB_fp = (glMultiTexCoord2fARB_f) DOSGL_GetProcAddress("glMultiTexCoord2fARB");
+			glActiveTextureARB_fp = (glActiveTextureARB_f) DOSGL_GetProcAddress("glActiveTextureARB");
+			if (glMultiTexCoord2fARB_fp && glActiveTextureARB_fp)
 			{
 				Con_Printf("FOUND: ARB_multitexture\n");
 				TEXTURE0 = GL_TEXTURE0_ARB;
@@ -412,23 +412,22 @@ qboolean VID_Is8bit(void)
 {
 	return is8bit;
 }
-void (APIENTRY * qglColorTableEXT)( GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, const GLvoid *table );
+
 void VID_Init8bitPalette() 
 {
 /* FS: This now works in Mesa 5.1 but it looks rather silly from far distances.
- *     So, bye.  Here for historical purposes.
+ *     So, bye.  Here for historical purposes. Explicitly require it to be set.
  */
 	// Check for 8bit Extensions and initialize them.
 	int i;
 
-	/* FS: Because it might not work at all, or look silly... explicitly require it to be set. */
 	if (COM_CheckParm("-8bit"))
 	{
 		if (strstr(gl_extensions, "GL_EXT_shared_texture_palette"))
 		{
 
-			qglColorTableEXT = (void *)DOSGL_GetProcAddress("glColorTableEXT");
-			if (qglColorTableEXT)
+			glColorTableEXT_fp = (glColorTableEXT_f) DOSGL_GetProcAddress("glColorTableEXT");
+			if (glColorTableEXT_fp)
 			{
 				char thePalette[256*3];
 				char *oldPalette, *newPalette;
@@ -443,7 +442,7 @@ void VID_Init8bitPalette()
 					*newPalette++ = *oldPalette++;
 					oldPalette++;
 				}
-				qglColorTableEXT(GL_SHARED_TEXTURE_PALETTE_EXT, GL_RGB, 256, GL_RGB, GL_UNSIGNED_BYTE, (void *) thePalette);
+				glColorTableEXT_fp(GL_SHARED_TEXTURE_PALETTE_EXT, GL_RGB, 256, GL_RGB, GL_UNSIGNED_BYTE, (void *) thePalette);
 				is8bit = true;
 			}
 			else

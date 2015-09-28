@@ -275,9 +275,6 @@ extern	float	speedscale;		// for top sky and bottom sky
 void DrawGLWaterPoly (glpoly_t *p);
 void DrawGLWaterPolyLightmap (glpoly_t *p);
 
-lpMTexFUNC qglMTexCoord2fFunc = NULL;
-lpSelTexFUNC qglSelectTextureFunc = NULL;
-
 qboolean mtexenabled = false;
 
 void GL_SelectTexture (GLenum target);
@@ -451,8 +448,8 @@ void R_DrawSequentialPoly (msurface_t *s)
 			v = p->verts[0];
 			for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
 			{
-				qglMTexCoord2fFunc (TEXTURE0, v[3], v[4]);
-				qglMTexCoord2fFunc (TEXTURE1, v[5], v[6]);
+				glMultiTexCoord2fARB_fp (TEXTURE0, v[3], v[4]);
+				glMultiTexCoord2fARB_fp (TEXTURE1, v[5], v[6]);
 				glVertex3fv_fp (v);
 			}
 			glEnd_fp ();
@@ -553,8 +550,8 @@ void R_DrawSequentialPoly (msurface_t *s)
 		v = p->verts[0];
 		for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
 		{
-			qglMTexCoord2fFunc (TEXTURE0, v[3], v[4]);
-			qglMTexCoord2fFunc (TEXTURE1, v[5], v[6]);
+			glMultiTexCoord2fARB_fp (TEXTURE0, v[3], v[4]);
+			glMultiTexCoord2fARB_fp (TEXTURE1, v[5], v[6]);
 
 			nv[0] = v[0] + 8*sin(v[1]*0.05+realtime)*sin(v[2]*0.05+realtime);
 			nv[1] = v[1] + 8*sin(v[0]*0.05+realtime)*sin(v[2]*0.05+realtime);

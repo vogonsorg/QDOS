@@ -127,13 +127,6 @@ void ClearAllStates (void);
 void VID_UpdateWindowStatus (void);
 void GL_Init (void);
 
-PROC glArrayElementEXT;
-PROC glColorPointerEXT;
-PROC glTexCoordPointerEXT;
-PROC glVertexPointerEXT;
-
-typedef void (APIENTRY *lp3DFXFUNC) (int, int, int, int, int, const void*);
-lp3DFXFUNC glColorTableEXT;
 qboolean is8bit = false;
 qboolean gl_mtexable = false;
 
@@ -535,36 +528,8 @@ void CheckTextureExtensions (void)
 	}
 }
 
-void CheckArrayExtensions (void)
-{
-	char		*tmp;
-
-	/* check for texture extension */
-	tmp = (unsigned char *)glGetString(GL_EXTENSIONS);
-	while (*tmp)
-	{
-		if (strncmp((const char*)tmp, "GL_EXT_vertex_array", strlen("GL_EXT_vertex_array")) == 0)
-		{
-			if (
-((glArrayElementEXT = wglGetProcAddress("glArrayElementEXT")) == NULL) ||
-((glColorPointerEXT = wglGetProcAddress("glColorPointerEXT")) == NULL) ||
-((glTexCoordPointerEXT = wglGetProcAddress("glTexCoordPointerEXT")) == NULL) ||
-((glVertexPointerEXT = wglGetProcAddress("glVertexPointerEXT")) == NULL) )
-			{
-				Sys_Error ("GetProcAddress for vertex extension failed");
-				return;
-			}
-			return;
-		}
-		tmp++;
-	}
-
-	Sys_Error ("Vertex array extension not present");
-}
-
 int		texture_extension_number = 1;
 
-#ifdef _WIN32
 void CheckMultiTextureExtensions(void) 
 {
 	//
@@ -575,9 +540,9 @@ void CheckMultiTextureExtensions(void)
 	else
 		if (strstr(gl_extensions, "GL_ARB_multitexture"))
 		{
-			qglMTexCoord2fFunc = (void *) wglGetProcAddress("glMultiTexCoord2fARB");
-			qglSelectTextureFunc = (void *) wglGetProcAddress("glActiveTextureARB");
-			if (qglMTexCoord2fFunc && qglSelectTextureFunc)
+			glMultiTexCoord2fARB_fp = (glMultiTexCoord2fARB_f) wglGetProcAddress("glMultiTexCoord2fARB");
+			glActiveTextureARB_fp = (glActiveTextureARB_f) wglGetProcAddress("glActiveTextureARB");
+			if (glMultiTexCoord2fARB_fp && glActiveTextureARB_fp)
 			{
 				Con_Printf("FOUND: ARB_multitexture\n");
 				TEXTURE0 = GL_TEXTURE0_ARB;
@@ -590,9 +555,9 @@ void CheckMultiTextureExtensions(void)
 		else
 			if (strstr(gl_extensions, "GL_SGIS_multitexture"))
 			{
-				qglMTexCoord2fFunc = (void *) wglGetProcAddress("glMTexCoord2fSGIS");
-				qglSelectTextureFunc = (void *) wglGetProcAddress("glSelectTextureSGIS");
-				if (qglMTexCoord2fFunc && qglSelectTextureFunc)
+				glMultiTexCoord2fARB_fp = (glMultiTexCoord2fARB_f) wglGetProcAddress("glMTexCoord2fSGIS");
+				glActiveTextureARB_fp = (glActiveTextureARB_f) wglGetProcAddress("glSelectTextureSGIS");
+				if (glMultiTexCoord2fARB_fp && glActiveTextureARB_fp)
 				{
 					Con_Printf("FOUND: SGIS_multitexture\n");
 					TEXTURE0 = GL_TEXTURE0_SGIS;
@@ -606,12 +571,6 @@ void CheckMultiTextureExtensions(void)
 			else
 				Con_Warning ("multitexture not supported (extension not found)\n");
 }
-#else
-void CheckMultiTextureExtensions(void) 
-{
-		gl_mtexable = true;
-}
-#endif
 
 /*
 ===============
@@ -657,16 +616,6 @@ void GL_Init (void)
 
 //	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-#if 0
-	CheckArrayExtensions ();
-
-	glEnable (GL_VERTEX_ARRAY_EXT);
-	glEnable (GL_TEXTURE_COORD_ARRAY_EXT);
-	glVertexPointerEXT (3, GL_FLOAT, 0, 0, &glv.x);
-	glTexCoordPointerEXT (2, GL_FLOAT, 0, 0, &glv.s);
-	glColorPointerEXT (3, GL_FLOAT, 0, 0, &glv.r);
-#endif
 }
 
 /*
@@ -1535,9 +1484,11 @@ void VID_Init8bitPalette()
 	char thePalette[256*3];
 	char *oldPalette, *newPalette;
 
-	glColorTableEXT = (void *)wglGetProcAddress("glColorTableEXT");
-    if (!glColorTableEXT || strstr(gl_extensions, "GL_EXT_shared_texture_palette") ||
-		COM_CheckParm("-no8bit"))
+	if (!strstr(gl_extensions, "GL_EXT_shared_texture_palette") || COM_CheckParm("-no8bit"))
+		return;
+
+	glColorTableEXT_fp = (glColorTableEXT_f) wglGetProcAddress("glColorTableEXT");
+	if (!glColorTableEXT_fp)
 		return;
 
 	Con_SafePrintf("8-bit GL extensions enabled.\n");
@@ -1550,7 +1501,7 @@ void VID_Init8bitPalette()
 		*newPalette++ = *oldPalette++;
 		oldPalette++;
 	}
-	glColorTableEXT(GL_SHARED_TEXTURE_PALETTE_EXT, GL_RGB, 256, GL_RGB, GL_UNSIGNED_BYTE,
+	glColorTableEXT_fp(GL_SHARED_TEXTURE_PALETTE_EXT, GL_RGB, 256, GL_RGB, GL_UNSIGNED_BYTE,
 		(void *) thePalette);
 	is8bit = TRUE;
 }

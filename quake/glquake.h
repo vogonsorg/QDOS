@@ -67,13 +67,6 @@ extern glvert_t glv;
 
 extern	int glx, gly, glwidth, glheight;
 
-#ifdef _WIN32
-extern	PROC glArrayElementEXT;
-extern	PROC glColorPointerEXT;
-extern	PROC glTexturePointerEXT;
-extern	PROC glVertexPointerEXT;
-#endif
-
 // r_local.h -- private refresh defs
 
 #define ALIAS_BASE_SIZE_RATIO		(1.0 / 11.0)
@@ -243,11 +236,6 @@ extern GLenum TEXTURE0, TEXTURE1;
 #define APIENTRY /* */
 #endif
 #endif
-
-typedef void (APIENTRY *lpMTexFUNC) (GLenum, GLfloat, GLfloat);
-typedef void (APIENTRY *lpSelTexFUNC) (GLenum);
-extern lpMTexFUNC qglMTexCoord2fFunc;
-extern lpSelTexFUNC qglSelectTextureFunc;
 
 extern qboolean gl_mtexable;
 

@@ -1456,7 +1456,7 @@ void GL_SelectTexture (GLenum target)
 	if (target == currenttarget)
 		return;
 
-	qglSelectTextureFunc(target);
+	glActiveTextureARB_fp(target);
 
 	if (target == TEXTURE0)
 	{
