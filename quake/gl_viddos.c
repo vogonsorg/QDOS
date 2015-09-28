@@ -20,12 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define	__GL_FUNC_EXTERN
 
-#include <termios.h>
-#include <sys/ioctl.h>
-#include <sys/stat.h>
-#include <stdarg.h>
-#include <stdio.h>
-
 #include "quakedef.h"
 #include "gl_dos.h"
 #include "sys_dxe.h"
@@ -98,10 +92,7 @@ qboolean gl_mtexable = false;
 /* FS: TODO: make a real video table */
 static char currentVideoModeDesc[256];
 
-/* FS: Fine control over the DMesa Context parameters.  Mostly for debugging and experimentation, but maybe someone has a reason to play with it. */
 static int bpp = 16;
-static int alphaBufferSize = 2;
-static int depthBufferSize = 16;
 
 void VID_MenuDraw (void);
 void VID_MenuKey (int key);
@@ -395,10 +386,6 @@ void GL_Init (void)
 	    !Q_strncasecmp((char *)gl_renderer, "Glide ", 6)	  || /* possible with Mesa 3.x/4.x/5.0.x */
 	    !Q_strncasecmp((char *)gl_renderer, "Mesa Glide", 10))
 	{
-	// This should hopefully detect Voodoo1 and Voodoo2
-	// hardware and possibly Voodoo Rush.
-	// Voodoo Banshee, Voodoo3 and later are hw-accelerated
-	// by DRI in XFree86-4.x and should be: is_3dfx = false.
 		Con_SafePrintf("3dfx Voodoo found\n");
 		is_3dfx = true;
 	}
@@ -542,24 +529,6 @@ void VID_Init(unsigned char *palette)
 		int x = Q_atoi(com_argv[i+1]);
 		if ((x == 15) || (x == 32))
 			bpp = x;
-	}
-	if ((i = COM_CheckParm("-alphasize")) != 0) /* FS: Force alpha buffer size */
-	{
-		int x = Q_atoi(com_argv[i+1]);
-		if(x)
-		{
-			Con_SafePrintf("\x02Warning: Alpha buffer size %i.  Default %i.\n", x, alphaBufferSize);
-			alphaBufferSize = x;
-		}
-	}
-	if ((i = COM_CheckParm("-depthsize")) != 0) /* FS: Force depth buffer size */
-	{
-		int x = Q_atoi(com_argv[i+1]);
-		if(x)
-		{
-			Con_SafePrintf("\x02Warning: Depth buffer size %i.  Default %i.\n", x, depthBufferSize);
-			depthBufferSize = x;
-		}
 	}
 
 	vid.conwidth &= 0xfff8; // make it a multiple of eight
