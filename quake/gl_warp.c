@@ -723,7 +723,7 @@ glBegin_fp (GL_POLYGON);
 for (i=0 ; i<nump ; i++, vecs+=3)
 {
 	VectorAdd(vecs, r_origin, v);
-	glVertex3f_fpv_fp (v);
+	glVertex3fv_fp (v);
 }
 glEnd_fp();
 return;
@@ -965,7 +965,7 @@ void MakeSkyVec (float s, float t, int axis)
 
 	t = 1.0 - t;
 	glTexCoord2f_fp (s, t);
-	glVertex3f_fpv_fp (v);
+	glVertex3fv_fp (v);
 }
 
 /*
