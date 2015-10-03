@@ -37,7 +37,7 @@
   one of the directories listed below and put it in the same place as
   qdosfx.exe, qwdosfx.exe:
   - voodoo/sst1  -> Voodoo Graphics
-  - voodoo/sst96 -> Voodoo Rush
+  - voodoo/sst96 -> Voodoo Rush (AT3D variants only)
   - voodoo/cvg   -> Voodoo2
   - voodoo/h5    -> Banshee and Voodoo 3/4/5
 * Pick a renderer (gl.dxe) from one of the directories listed below
@@ -61,8 +61,7 @@
 3 - Recommended System Specs
 ---------------------------------------------------------
 * Pentium 2 300mhz.  Pentium 3 550mhz or higher for the best experience.
-* Voodoo 3.  Older cards will work, but unknown how well they perform in
-  faster computers.
+* Voodoo 2.  Older cards will work, but they don't perform very well.
 
 4 - Mesa vs. Sage
 ---------------------------------------------------------
@@ -101,11 +100,11 @@
   anti-aliasing on these cards.
   - For Voodoo 4 and 5:
     0 - SLI Disabled, AA Disabled.
-    1 - SLI Disabled, AA 2x Enabled.
+    1 - SLI Disabled, 2xAA Enabled. (has issues, see Known General Issues)
   - For Voodoo 5 5500:
     2 - SLI Enabled, AA Disabled (default setting).
-    3 - SLI Enabled, AA 2x Enabled.
-    4 - SLI Disabled, AA 4x Enabled.
+    3 - SLI Enabled, 2xAA Enabled. (has issues, see Known General Issues)
+    4 - SLI Disabled, 4xAA Enabled.
   Options 5-8 are for Voodoo 5 6000 users: if you're out there, send me
   an email!
 * SSTV2_SCREENREFRESH for refresh rate control on Voodoo 2.
@@ -131,10 +130,16 @@
 ---------------------------------------------------------
 * Multitexture is supported by the driver but appears to have an
   approximately 10fps loss on average (more in complex scenes) on everything
-  I tested it on EXCEPT in modes 1280x1024 and 1600x1200 where it really
-  helps.  It is disabled by default.  If you would like to try it anyways
+  I tested it on EXCEPT:
+  * 15bpp/16bpp 1280x1024 and higher.
+  * 32bpp 1024x768 and higher.
+  * AA modes (any mode and bpp combo).
+  Since most people are likely to be using 16bpp and 640x480 through 1024x768
+  it is disabled by default.  If you would like to try it anyways
   start the game with -mtex passed at the command line.  e.g.
   "qdosfx.exe -metx".
+* 2xAA (With or without SLI) locks if LFB WC is set.  4xAA is OK.
+* Macronix variants of Voodoo Rush cards do not work.
 
 9 - Known Mesa Issues
 ---------------------------------------------------------
