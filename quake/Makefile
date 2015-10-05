@@ -98,11 +98,11 @@ SYSOBJ_NET := $(DOSTCP)
 
 ifeq ($(USE_GAMESPY),1)
 CFLAGS += -DGAMESPY
-GAMESPY = $(COMMON)/Goa/CEngine/darray.o \
-	$(COMMON)/Goa/CEngine/gserver.o \
+GAMESPY = $(COMMON)/Goa/CEngine/darray.o    \
+	$(COMMON)/Goa/CEngine/gserver.o     \
 	$(COMMON)/Goa/CEngine/gserverlist.o \
-	$(COMMON)/Goa/CEngine/hashtable.o \
-	$(COMMON)/Goa/SDK/goautil.o \
+	$(COMMON)/Goa/CEngine/hashtable.o   \
+	$(COMMON)/Goa/SDK/goautil.o         \
 	$(COMMON)/Goa/nonport.o
 endif
 
@@ -151,7 +151,7 @@ OBJS=	$(SYSOBJ_DXE)        \
 	$(COMMON)/snd_pci.o  \
 	$(COMMON)/snd_sb.o   \
 	$(COMMON)/snd_strm.o \
-	$(COMMON)/snd_wavstream.o  \
+	$(COMMON)/snd_wavstream.o \
 	sv_main.o            \
 	sv_move.o            \
 	sv_phys.o            \

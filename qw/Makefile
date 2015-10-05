@@ -62,11 +62,11 @@ endif
 
 ifeq ($(USE_GAMESPY),1)
 CFLAGS += -DGAMESPY
-GAMESPY = $(COMMON)/Goa/CEngine/darray.o \
-	$(COMMON)/Goa/CEngine/gserver.o \
+GAMESPY = $(COMMON)/Goa/CEngine/darray.o    \
+	$(COMMON)/Goa/CEngine/gserver.o     \
 	$(COMMON)/Goa/CEngine/gserverlist.o \
-	$(COMMON)/Goa/CEngine/gutil.o \
-	$(COMMON)/Goa/CEngine/hashtable.o \
+	$(COMMON)/Goa/CEngine/gutil.o       \
+	$(COMMON)/Goa/CEngine/hashtable.o   \
 	$(COMMON)/Goa/nonport.o
 endif
 
@@ -121,7 +121,7 @@ CLIENT = $(SYSOBJ_DXE)       \
 	$(COMMON)/snd_pci.o  \
 	$(COMMON)/snd_sb.o   \
 	$(COMMON)/snd_strm.o \
-	$(COMMON)/snd_wavstream.o  \
+	$(COMMON)/snd_wavstream.o \
 	$(COMMON)/sys_dos.o  \
 	$(COMMON)/sys_dosa.o \
 	$(COMMON)/sys_find.o \
