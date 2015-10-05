@@ -240,7 +240,7 @@ qboolean VID_ExtraVidLookForState (unsigned state, unsigned mask)
 	int		i;
 	double	starttime, time;
 
-	starttime = Sys_FloatTime ();
+	starttime = Sys_DoubleTime();
 
 	do
 	{
@@ -250,7 +250,7 @@ qboolean VID_ExtraVidLookForState (unsigned state, unsigned mask)
 				return true;
 		}
 
-		time = Sys_FloatTime ();
+		time = Sys_DoubleTime();
 	} while ((time - starttime) < 0.1);
 
 	return false;

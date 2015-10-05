@@ -432,7 +432,7 @@ void SCR_DrawFPS (void)
 	if (!show_fps->value)
 		return;
 
-	t = Sys_FloatTime ();
+	t = Sys_DoubleTime();
 
 	if ((t - lastframetime) >= 1.0)
 	{

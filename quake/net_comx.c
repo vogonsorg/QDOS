@@ -584,21 +584,21 @@ static void Modem_Init(ComPort *p)
 	// write 0 to MCR, wait 1/2 sec, then write the real value back again
 	// I got this from the guys at head-to-head who say it's necessary.
 	outportb(p->uart + MODEM_CONTROL_REGISTER, 0);
-	start = Sys_FloatTime();
-	while ((Sys_FloatTime() - start) < 0.5)
+	start = Sys_DoubleTime();
+	while ((Sys_DoubleTime() - start) < 0.5)
 		;
 	outportb(p->uart + MODEM_CONTROL_REGISTER, MCR_OUT2 | MCR_RTS | MCR_DTR);
-	start = Sys_FloatTime();
-	while ((Sys_FloatTime() - start) < 0.25)
+	start = Sys_DoubleTime();
+	while ((Sys_DoubleTime() - start) < 0.25)
 		;
 
 	if (*p->clear)
 	{
 		Modem_Command (p, p->clear);
-		start = Sys_FloatTime();
+		start = Sys_DoubleTime();
 		while(1)
 		{
-			if ((Sys_FloatTime() - start) > 3.0)
+			if ((Sys_DoubleTime() - start) > 3.0)
 			{
 				Con_Printf("No response - clear failed\n");
 				p->enabled = false;
@@ -620,10 +620,10 @@ static void Modem_Init(ComPort *p)
 	if (*p->startup)
 	{
 		Modem_Command (p, p->startup);
-		start = Sys_FloatTime();
+		start = Sys_DoubleTime();
 		while(1)
 		{
-			if ((Sys_FloatTime() - start) > 3.0)
+			if ((Sys_DoubleTime() - start) > 3.0)
 			{
 				Con_Printf("No response - init failed\n");
 				p->enabled = false;
@@ -685,8 +685,8 @@ void TTY_Close(int handle)
 
 	p = handleToPort [handle];
 
-	startTime = Sys_FloatTime();
-	while ((Sys_FloatTime() - startTime) < 1.0)
+	startTime = Sys_DoubleTime();
+	while ((Sys_DoubleTime() - startTime) < 1.0)
 		if (EMPTY(p->outputQueue))
 			break;
 
@@ -783,10 +783,10 @@ int TTY_Connect(int handle, char *host)
 		Con_Printf ("Dialing...\n");
 		sprintf((char *)dialstring, "AT D%c %s\r", p->dialType, host);
 		Modem_Command (p, (char *)dialstring);
-		start = Sys_FloatTime();
+		start = Sys_DoubleTime();
 		while(1)
 		{
-			if ((Sys_FloatTime() - start) > 60.0)
+			if ((Sys_DoubleTime() - start) > 60.0)
 			{
 				Con_Printf("Dialing failure!\n");
 				break;
@@ -801,15 +801,15 @@ int TTY_Connect(int handle, char *host)
 					continue;
 				}
 				Con_Printf("Aborting...\n");
-				while ((Sys_FloatTime() - start) < 5.0)
+				while ((Sys_DoubleTime() - start) < 5.0)
 					;
 				disable();
 				p->outputQueue.head = p->outputQueue.tail = 0;
 				p->inputQueue.head = p->inputQueue.tail = 0;
 				outportb(p->uart + MODEM_CONTROL_REGISTER, inportb(p->uart + MODEM_CONTROL_REGISTER) & ~MCR_DTR);
 				enable();
-				start = Sys_FloatTime();
-				while ((Sys_FloatTime() - start) < 0.75)
+				start = Sys_DoubleTime();
+				while ((Sys_DoubleTime() - start) < 0.75)
 					;
 				outportb(p->uart + MODEM_CONTROL_REGISTER, inportb(p->uart + MODEM_CONTROL_REGISTER) | MCR_DTR);
 				response = "Aborted";

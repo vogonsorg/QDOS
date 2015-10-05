@@ -459,6 +459,7 @@ qboolean	Cvar_Command (void)
 		    if (con_show_description->intValue || v == con_show_description)
 			Con_Printf("Description: %s\n", v->description);
 		}
+
 		return true;
 	}
 

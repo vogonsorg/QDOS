@@ -20,7 +20,11 @@ USE_SSE=0
 # compile Quake with fxMesa for 3DFX Voodoo Cards
 GLQUAKE=0
 
-CFLAGS = -g -Wall -Werror -O2 -DNDEBUG -fno-strict-aliasing
+# common objects shared by Quake 1 and QuakeWorld
+COMMON=../common
+
+CFLAGS  = -g -Wall -Werror -O2 -DNDEBUG -DQUAKE1 -fno-strict-aliasing
+CFLAGS += -I./ -I../common
 CFLAGS += -fomit-frame-pointer
 LIBS    =
 EXE     = qdos.exe
@@ -37,9 +41,9 @@ CFLAGS += -DUSE_3DFXGAMMA
 CFLAGS += -DGL_DLSYM
 #LIBS   += -L../3rdparty/lib -lgl
 EXE     = qdosfx.exe
-SYSOBJ_DXE=$(O)/dxe.o
+SYSOBJ_DXE=$(COMMON)/dxe.o
 else
-SYSOBJ_DXE=$(O)/no_dxe.o
+SYSOBJ_DXE=$(COMMON)/no_dxe.o
 endif
 
 ifeq ($(USE_SNDPCI),1)
@@ -75,162 +79,159 @@ endif
 
 LIBS   += -lc -lgcc -lm
 
-# subdirectory for objects
-O=dos
-
 # objects:
 DOSTCP :=
 ifeq ($(USE_BWTCP),yes)
-DOSTCP += $(O)/net_bw.o
+DOSTCP += net_bw.o
 endif
 ifeq ($(USE_MPATH),yes)
-DOSTCP += $(O)/net_mp.o $(O)/mplpc.o
+DOSTCP += net_mp.o mplpc.o
 endif
 ifeq ($(USE_WATT32),yes)
-DOSTCP += $(O)/net_udp.o
+DOSTCP += net_udp.o
 else
 # get inet_addr() and inet_ntoa() either from Watt-32
 # or from our local implementation 
-DOSTCP += $(O)/dos_inet.o $(O)/inetaddr.o
+DOSTCP += dos_inet.o inetaddr.o
 endif
 SYSOBJ_NET := $(DOSTCP)
 
 ifeq ($(USE_GAMESPY),1)
 CFLAGS += -DGAMESPY
-GAMESPY = $(O)/Goa/CEngine/darray.o \
-	$(O)/Goa/CEngine/gserver.o \
-	$(O)/Goa/CEngine/gserverlist.o \
-	$(O)/Goa/CEngine/hashtable.o \
-	$(O)/Goa/SDK/goautil.o \
-	$(O)/Goa/nonport.o
+GAMESPY = $(COMMON)/Goa/CEngine/darray.o \
+	$(COMMON)/Goa/CEngine/gserver.o \
+	$(COMMON)/Goa/CEngine/gserverlist.o \
+	$(COMMON)/Goa/CEngine/hashtable.o \
+	$(COMMON)/Goa/SDK/goautil.o \
+	$(COMMON)/Goa/nonport.o
 endif
 
 # not too sophisticated dependency
 OBJS=	$(SYSOBJ_DXE)   \
 	$(SYSOBJ_NET)   \
 	$(GAMESPY)      \
-	$(O)/cd_audio.o \
-	$(O)/chase.o    \
-	$(O)/cl_demo.o  \
-	$(O)/cl_input.o \
-	$(O)/cl_main.o  \
-	$(O)/cl_parse.o \
-	$(O)/cl_tent.o  \
-	$(O)/cmd.o      \
-	$(O)/common.o   \
-	$(O)/console.o  \
-	$(O)/crc.o      \
-	$(O)/cvar.o     \
-	$(O)/dos_v2.o   \
-	$(O)/dstring.o  \
-	$(O)/host.o     \
-	$(O)/host_cmd.o \
-	$(O)/in_dos.o   \
-	$(O)/keys.o     \
-	$(O)/math.o     \
-	$(O)/mathlib.o  \
-	$(O)/menu.o     \
-	$(O)/net_dgrm.o \
-	$(O)/net_dos.o  \
-	$(O)/net_ipx.o  \
-	$(O)/net_loop.o \
-	$(O)/net_main.o \
-	$(O)/net_ser.o  \
-	$(O)/pr_cmds.o  \
-	$(O)/pr_edict.o \
-	$(O)/pr_exec.o  \
-	$(O)/r_part.o   \
-	$(O)/sbar.o     \
-	$(O)/snd_dma.o  \
-	$(O)/snd_dos.o  \
-	$(O)/snd_gus.o  \
-	$(O)/snd_mem.o  \
-	$(O)/snd_mix.o  \
-	$(O)/snd_mixa.o \
-	$(O)/snd_pci.o  \
-	$(O)/snd_sb.o   \
-	$(O)/snd_strm.o \
-	$(O)/snd_wavstream.o  \
-	$(O)/sv_main.o  \
-	$(O)/sv_move.o  \
-	$(O)/sv_phys.o  \
-	$(O)/sv_user.o  \
-	$(O)/sys_dos.o  \
-	$(O)/sys_dosa.o \
-	$(O)/sys_find.o \
-	$(O)/view.o     \
-	$(O)/wad.o      \
-	$(O)/world.o    \
-	$(O)/zone.o
+	$(COMMON)/cd_audio.o \
+	chase.o    \
+	cl_demo.o  \
+	cl_input.o \
+	cl_main.o  \
+	cl_parse.o \
+	cl_tent.o  \
+	cmd.o      \
+	common.o   \
+	console.o  \
+	crc.o      \
+	cvar.o     \
+	$(COMMON)/dos_v2.o   \
+	$(COMMON)/dstring.o  \
+	host.o     \
+	host_cmd.o \
+	$(COMMON)/in_dos.o   \
+	keys.o     \
+	math.o     \
+	mathlib.o  \
+	menu.o     \
+	net_dgrm.o \
+	net_dos.o  \
+	net_ipx.o  \
+	net_loop.o \
+	net_main.o \
+	net_ser.o  \
+	pr_cmds.o  \
+	pr_edict.o \
+	pr_exec.o  \
+	r_part.o   \
+	sbar.o     \
+	$(COMMON)/snd_dma.o  \
+	$(COMMON)/snd_dos.o  \
+	$(COMMON)/snd_gus.o  \
+	$(COMMON)/snd_mem.o  \
+	$(COMMON)/snd_mix.o  \
+	$(COMMON)/snd_mixa.o \
+	$(COMMON)/snd_pci.o  \
+	$(COMMON)/snd_sb.o   \
+	$(COMMON)/snd_strm.o \
+	$(COMMON)/snd_wavstream.o  \
+	sv_main.o  \
+	sv_move.o  \
+	sv_phys.o  \
+	sv_user.o  \
+	$(COMMON)/sys_dos.o  \
+	$(COMMON)/sys_dosa.o \
+	$(COMMON)/sys_find.o \
+	view.o     \
+	$(COMMON)/wad.o      \
+	world.o    \
+	$(COMMON)/zone.o
 
 ifeq ($(GLQUAKE),0)
-REFSOFT = $(O)/d_copy.o \
-	$(O)/d_draw.o   \
-	$(O)/d_draw16.o \
-	$(O)/d_edge.o   \
-	$(O)/d_fill.o   \
-	$(O)/d_init.o   \
-	$(O)/d_modech.o \
-	$(O)/d_part.o   \
-	$(O)/d_parta.o  \
-	$(O)/d_polysa.o \
-	$(O)/d_polyse.o \
-	$(O)/d_scan.o   \
-	$(O)/d_scana.o  \
-	$(O)/d_sky.o    \
-	$(O)/d_spr8.o   \
-	$(O)/d_sprite.o \
-	$(O)/d_surf.o   \
-	$(O)/d_vars.o   \
-	$(O)/d_varsa.o  \
-	$(O)/d_zpoint.o \
-	$(O)/draw.o     \
-	$(O)/model.o    \
-	$(O)/r_aclip.o  \
-	$(O)/r_aclipa.o \
-	$(O)/r_alias.o  \
-	$(O)/r_aliasa.o \
-	$(O)/r_bsp.o    \
-	$(O)/r_draw.o   \
-	$(O)/r_drawa.o  \
-	$(O)/r_edge.o   \
-	$(O)/r_edgea.o  \
-	$(O)/r_efrag.o  \
-	$(O)/r_light.o  \
-	$(O)/r_main.o   \
-	$(O)/r_misc.o   \
-	$(O)/r_sky.o    \
-	$(O)/r_sprite.o \
-	$(O)/r_surf.o   \
-	$(O)/r_vars.o   \
-	$(O)/r_varsa.o  \
-	$(O)/screen.o   \
-	$(O)/surf16.o   \
-	$(O)/surf8.o    \
-	$(O)/vid_dos.o  \
-	$(O)/vid_ext.o  \
-	$(O)/vid_vga.o  \
-	$(O)/vregset.o  \
-	$(O)/worlda.o
+REFSOFT = $(COMMON)/d_copy.o \
+	$(COMMON)/d_draw.o   \
+	$(COMMON)/d_draw16.o \
+	d_edge.o   \
+	$(COMMON)/d_fill.o   \
+	$(COMMON)/d_init.o   \
+	$(COMMON)/d_modech.o \
+	$(COMMON)/d_part.o   \
+	$(COMMON)/d_parta.o  \
+	$(COMMON)/d_polysa.o \
+	$(COMMON)/d_polyse.o \
+	$(COMMON)/d_scan.o   \
+	$(COMMON)/d_scana.o  \
+	$(COMMON)/d_sky.o    \
+	$(COMMON)/d_spr8.o   \
+	$(COMMON)/d_sprite.o \
+	$(COMMON)/d_surf.o   \
+	$(COMMON)/d_vars.o   \
+	$(COMMON)/d_varsa.o  \
+	$(COMMON)/d_zpoint.o \
+	draw.o     \
+	model.o    \
+	$(COMMON)/r_aclip.o  \
+	$(COMMON)/r_aclipa.o \
+	r_alias.o  \
+	$(COMMON)/r_aliasa.o \
+	r_bsp.o    \
+	$(COMMON)/r_draw.o   \
+	$(COMMON)/r_drawa.o  \
+	r_edge.o   \
+	$(COMMON)/r_edgea.o  \
+	r_efrag.o  \
+	$(COMMON)/r_light.o  \
+	r_main.o   \
+	r_misc.o   \
+	$(COMMON)/r_sky.o    \
+	$(COMMON)/r_sprite.o \
+	r_surf.o   \
+	$(COMMON)/r_vars.o   \
+	$(COMMON)/r_varsa.o  \
+	screen.o   \
+	$(COMMON)/surf16.o   \
+	$(COMMON)/surf8.o    \
+	vid_dos.o  \
+	vid_ext.o  \
+	vid_vga.o  \
+	$(COMMON)/vregset.o  \
+	worlda.o
 endif
 
 ifeq ($(GLQUAKE),1)
-REFGL = $(O)/dos_dmesa.o  \
-	$(O)/dos_fxmesa.o \
-	$(O)/dos_sage.o   \
-	$(O)/fx_gamma.o   \
-	$(O)/gl_draw.o    \
-	$(O)/gl_mesh.o    \
-	$(O)/gl_model.o   \
-	$(O)/gl_refrag.o  \
-	$(O)/gl_rlight.o  \
-	$(O)/gl_rmain.o   \
-	$(O)/gl_rmisc.o   \
-	$(O)/gl_rsurf.o   \
-	$(O)/gl_screen.o  \
-	$(O)/gl_test.o    \
-	$(O)/gl_warp.o    \
-	$(O)/gl_viddos.o
+REFGL = $(COMMON)/dos_dmesa.o  \
+	$(COMMON)/dos_fxmesa.o \
+	$(COMMON)/dos_sage.o   \
+	$(COMMON)/fx_gamma.o   \
+	gl_draw.o    \
+	$(COMMON)/gl_mesh.o    \
+	gl_model.o   \
+	gl_refrag.o  \
+	gl_rlight.o  \
+	gl_rmain.o   \
+	gl_rmisc.o   \
+	gl_rsurf.o   \
+	gl_screen.o  \
+	$(COMMON)/gl_test.o    \
+	$(COMMON)/gl_warp.o    \
+	$(COMMON)/gl_viddos.o
 endif
 
 OBJECTS = $(OBJS) $(REFSOFT) $(REFGL)
@@ -238,19 +239,20 @@ OBJECTS = $(OBJS) $(REFSOFT) $(REFGL)
 all: qdos
 
 clean:
-	rm -f $(O)/*.o
-	rm -f $(O)/Goa/*.o
-	rm -f $(O)/Goa/CEngine/*.o
-	rm -f $(O)/Goa/SDK/*.o
+	rm -f *.o
+	rm -f $(COMMON)/*.o
+	rm -f $(COMMON)/Goa/*.o
+	rm -f $(COMMON)/Goa/CEngine/*.o
+	rm -f $(COMMON)/Goa/Sdk/*.o
 
 qdos: $(OBJECTS)
 	$(CC) $(OBJECTS) $(LDFLAGS) $(LIBS) -o $(EXE)
 
 DO_AS=$(CC) -x assembler-with-cpp
 
-$(O)/%.o: %.c
+%.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@
-$(O)/%.o: %.S
+%.o: %.S
 	$(DO_AS) $(CFLAGS) -c $< -o $@
-$(O)/%.o: %.s
+%.o: %.s
 	$(DO_AS) $(CFLAGS) -c $< -o $@

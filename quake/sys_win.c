@@ -381,11 +381,11 @@ void Sys_Error (const char *error, ...)
 		WriteFile (houtput, text4, strlen (text4), &dummy, NULL);
 
 
-		starttime = Sys_FloatTime ();
+		starttime = Sys_DoubleTime();
 		sc_return_on_enter = true;	// so Enter will get us out of here
 
 		while (!Sys_ConsoleInput () &&
-				((Sys_FloatTime () - starttime) < CONSOLE_ERROR_TIMEOUT))
+				((Sys_DoubleTime() - starttime) < CONSOLE_ERROR_TIMEOUT))
 		{
 		}
 	}
@@ -460,10 +460,10 @@ void Sys_Quit (void)
 
 /*
 ================
-Sys_FloatTime
+Sys_DoubleTime
 ================
 */
-double Sys_FloatTime (void)
+double Sys_DoubleTime (void)
 {
 	static int			sametimecount;
 	static unsigned int	oldtime;
@@ -534,7 +534,7 @@ void Sys_InitFloatTime (void)
 {
 	int		j;
 
-	Sys_FloatTime ();
+	Sys_DoubleTime();
 
 	j = COM_CheckParm("-starttime");
 
@@ -852,20 +852,20 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	Sys_Printf ("Host_Init\n");
 	Host_Init (&parms);
 
-	oldtime = Sys_FloatTime ();
+	oldtime = Sys_DoubleTime();
 
     /* main window message loop */
 	while (1)
 	{
 		if (isDedicated)
 		{
-			newtime = Sys_FloatTime ();
+			newtime = Sys_DoubleTime();
 			time = newtime - oldtime;
 
 			while (time < sys_ticrate->value )
 			{
 				Sys_Sleep(1);
-				newtime = Sys_FloatTime ();
+				newtime = Sys_DoubleTime();
 				time = newtime - oldtime;
 			}
 		}
@@ -882,7 +882,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 				SleepUntilInput (NOT_FOCUS_SLEEP);
 			}
 
-			newtime = Sys_FloatTime ();
+			newtime = Sys_DoubleTime();
 			time = newtime - oldtime;
 		}
 

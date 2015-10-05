@@ -845,7 +845,7 @@ void GameSpy_Async_Think(void)
 	{
 		if (key_dest != key_menu) /* FS: Only print this from an slist2 command, not the server browser. */
 		{
-			Con_Printf("Found %i active servers out of %i in %i seconds.\n", gspyCur, cls.gamespytotalservers, (((int)Sys_FloatTime()-cls.gamespystarttime)) );
+			Con_Printf("Found %i active servers out of %i in %i seconds.\n", gspyCur, cls.gamespytotalservers, (((int)Sys_DoubleTime()-cls.gamespystarttime)) );
 		}
 		else
 		{
@@ -1064,7 +1064,7 @@ void CL_PingNetServers_f (void)
 	}
 
 	cls.gamespypercent = 0;
-	cls.gamespystarttime = (int)Sys_FloatTime();
+	cls.gamespystarttime = (int)Sys_DoubleTime();
 	cls.gamespytotalservers = 0;
 
 	allocatedSockets = bound(5, cl_master_server_queries->intValue, 100);

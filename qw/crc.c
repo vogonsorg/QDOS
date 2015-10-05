@@ -80,6 +80,7 @@ unsigned short CRC_Value(unsigned short crcvalue)
 	return crcvalue ^ CRC_XOR_VALUE;
 }
 
+//johnfitz -- texture crc
 unsigned short CRC_Block (byte *start, int count)
 {
 	unsigned short	crc;
