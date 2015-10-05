@@ -51,7 +51,6 @@ static mvertex_t	*pfrontenter, *pfrontexit;
 
 static qboolean		makeclippededge;
 
-
 //===========================================================================
 
 /*
@@ -655,7 +654,7 @@ void R_RenderWorld (void)
 
 	pbtofpolys = btofpolys;
 
-	currententity = &r_worldentity;
+	currententity = WORLDENT;
 	VectorCopy (r_origin, modelorg);
 	clmodel = currententity->model;
 	r_pcurrentvertbase = clmodel->vertexes;

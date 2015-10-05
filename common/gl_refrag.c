@@ -23,6 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 mnode_t	*r_pefragtopnode;
 
+#ifdef QUAKE1
+#define PENT pent
+#else
+#define PENT *pent
+#endif
 
 //===========================================================================
 
@@ -203,7 +208,7 @@ void R_StoreEfrags (efrag_t **ppefrag)
 
 		if ((pent->visframe != r_framecount) && (cl_numvisedicts < MAX_VISEDICTS))
 		{
-			cl_visedicts[cl_numvisedicts++] = pent;
+			cl_visedicts[cl_numvisedicts++] = PENT;
 			// mark that we've recorded this entity for this frame
 			pent->visframe = r_framecount;
 		}

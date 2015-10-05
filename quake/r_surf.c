@@ -149,7 +149,11 @@ void R_BuildLightMap (void)
 	size = smax*tmax;
 	lightmap = surf->samples;
 
-	if (r_fullbright->value || !cl.worldmodel->lightdata)
+	if (
+#ifdef QUAKE1
+	r_fullbright->value || 
+#endif
+	!cl.worldmodel->lightdata)
 	{
 		for (i=0 ; i<size ; i++)
 			blocklights[i] = 0;

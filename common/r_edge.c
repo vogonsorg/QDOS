@@ -74,7 +74,7 @@ void R_DrawCulledPolys (void)
 	surf_t			*s;
 	msurface_t		*pface;
 
-	currententity = &cl_entities[0];
+	currententity = WORLDENT;
 
 	if (r_worldpolysbacktofront)
 	{

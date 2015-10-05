@@ -106,8 +106,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // medge_t structure
 // !!! if this is changed, it must be changed in model.h too !!!
 #define me_v				0
+#ifdef QUAKE1
+#define me_cachededgeoffset	8 /* was 4 -- changed for BSP2 support */
+#define me_size				12 /* was 8 -- changed for BSP2 support */
+#else
 #define me_cachededgeoffset	4
 #define me_size				8
+#endif
 
 // mvertex_t structure
 // !!! if this is changed, it must be changed in model.h too !!!

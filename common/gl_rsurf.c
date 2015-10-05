@@ -153,7 +153,11 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 	lightmap = surf->samples;
 
 // set to full bright if no light data
-	if (r_fullbright->value || !cl.worldmodel->lightdata)
+	if (
+#ifdef QUAKE1
+		r_fullbright->value || 
+#endif
+		!cl.worldmodel->lightdata)
 	{
 		for (i=0 ; i<size ; i++)
 			blocklights[i] = 255*256;
@@ -316,7 +320,11 @@ void R_DrawSequentialPoly (msurface_t *s)
 	//
 	// normal lightmaped poly
 	//
+#ifdef QUAKE1
 	if (! (s->flags & (SURF_DRAWSKY|SURF_DRAWTURB|SURF_UNDERWATER) ) )
+#else
+	if (0)
+#endif
 	{
 		p = s->polys;
 
@@ -663,8 +671,10 @@ void R_BlendLightmaps (void)
 	float		*v;
 	glRect_t	*theRect;
 
+#ifdef QUAKE1
 	if (r_fullbright->value)
 		return;
+#endif
 	if (!gl_texsort->value)
 		return;
 
@@ -704,7 +714,13 @@ void R_BlendLightmaps (void)
 		}
 		for ( ; p ; p=p->chain)
 		{
+#ifdef QUAKE1
 			if (p->flags & SURF_UNDERWATER)
+#else
+			if (((r_viewleaf->contents==CONTENTS_EMPTY && (p->flags & SURF_UNDERWATER)) ||
+				(r_viewleaf->contents!=CONTENTS_EMPTY && !(p->flags & SURF_UNDERWATER)))
+				&& !(p->flags & SURF_DONTWARP))
+#endif
 				DrawGLWaterPolyLightmap (p);
 			else
 			{
@@ -747,11 +763,12 @@ void R_RenderBrushPoly (msurface_t *fa)
 
 	c_brush_polys++;
 
-
+#ifdef QUAKE1
 	if(fa->flags & SURF_DRAWFENCE) /* FS: Fence textures */
 	{
 		glEnable_fp (GL_ALPHA_TEST); // Flip on alpha test
 	}
+#endif
 
 	if (fa->flags & SURF_DRAWSKY)
 	{	// warp texture, no lightmaps
@@ -768,7 +785,13 @@ void R_RenderBrushPoly (msurface_t *fa)
 		return;
 	}
 
+#ifdef QUAKE1
 	if (fa->flags & SURF_UNDERWATER)
+#else
+	if (((r_viewleaf->contents==CONTENTS_EMPTY && (fa->flags & SURF_UNDERWATER)) ||
+		(r_viewleaf->contents!=CONTENTS_EMPTY && !(fa->flags & SURF_UNDERWATER)))
+		&& !(fa->flags & SURF_DONTWARP))
+#endif
 		DrawGLWaterPoly (fa->polys);
 	else
 		DrawGLPoly (fa->polys);
@@ -814,10 +837,12 @@ dynamic:
 		}
 	}
 
+#ifdef QUAKE1
 	if(fa->flags & SURF_DRAWFENCE) /* FS: Fence textures */
 	{
 		glDisable_fp (GL_ALPHA_TEST); // Flip off alpha test
 	}
+#endif
 
 }
 
@@ -1268,7 +1293,13 @@ void R_RecursiveWorldNode (mnode_t *node)
 					continue;
 
 				// don't backface underwater surfaces, because they warp
+#ifdef QUAKE1
 				if ( !(surf->flags & SURF_UNDERWATER) && ( (dot < 0) ^ !!(surf->flags & SURF_PLANEBACK)) )
+#else
+				if ( !(((r_viewleaf->contents==CONTENTS_EMPTY && (surf->flags & SURF_UNDERWATER)) ||
+					(r_viewleaf->contents!=CONTENTS_EMPTY && !(surf->flags & SURF_UNDERWATER)))
+					&& !(surf->flags & SURF_DONTWARP)) && ( (dot < 0) ^ !!(surf->flags & SURF_PLANEBACK)) )
+#endif
 					continue;		// wrong side
 
 				// if sorting by texture, just store it out

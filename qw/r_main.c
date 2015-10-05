@@ -934,7 +934,7 @@ void R_EdgeDrawing (void)
 
 	if (r_dspeeds->value)
 	{
-		rw_time1 = Sys_DoubleTime ();
+		rw_time1 = Sys_DoubleTime();
 	}
 
 	R_RenderWorld ();
@@ -948,7 +948,7 @@ void R_EdgeDrawing (void)
 
 	if (r_dspeeds->value)
 	{
-		rw_time2 = Sys_DoubleTime ();
+		rw_time2 = Sys_DoubleTime();
 		db_time1 = rw_time2;
 	}
 
@@ -956,7 +956,7 @@ void R_EdgeDrawing (void)
 
 	if (r_dspeeds->value)
 	{
-		db_time2 = Sys_DoubleTime ();
+		db_time2 = Sys_DoubleTime();
 		se_time1 = db_time2;
 	}
 
@@ -986,7 +986,7 @@ void R_RenderView_ (void)
 	r_warpbuffer = warpbuffer;
 
 	if (r_timegraph->value || r_speeds->value || r_dspeeds->value)
-		r_time1 = Sys_DoubleTime ();
+		r_time1 = Sys_DoubleTime();
 
 	if (r_maxbmodeledges->modified) /* FS: Update this before edges get drawn again */
 	{
@@ -1033,7 +1033,7 @@ void R_RenderView_ (void)
 	
 	if (r_dspeeds->value)
 	{
-		se_time2 = Sys_DoubleTime ();
+		se_time2 = Sys_DoubleTime();
 		de_time1 = se_time2;
 	}
 
@@ -1041,7 +1041,7 @@ void R_RenderView_ (void)
 
 	if (r_dspeeds->value)
 	{
-		de_time2 = Sys_DoubleTime ();
+		de_time2 = Sys_DoubleTime();
 		dv_time1 = de_time2;
 	}
 
@@ -1049,14 +1049,14 @@ void R_RenderView_ (void)
 
 	if (r_dspeeds->value)
 	{
-		dv_time2 = Sys_DoubleTime ();
-		dp_time1 = Sys_DoubleTime ();
+		dv_time2 = Sys_DoubleTime();
+		dp_time1 = Sys_DoubleTime();
 	}
 
 	R_DrawParticles ();
 
 	if (r_dspeeds->value)
-		dp_time2 = Sys_DoubleTime ();
+		dp_time2 = Sys_DoubleTime();
 
 	if (r_dowarp)
 		D_WarpScreen ();

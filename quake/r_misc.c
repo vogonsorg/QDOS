@@ -160,11 +160,7 @@ void R_TimeGraph (void)
 	r_time2 = Sys_DoubleTime();
 
 	a = (r_time2-r_time1)/0.01;
-//a = fabs(mouse_y * 0.05);
-//a = (int)((r_refdef.vieworg[2] + 1024)/1)%(int)r_graphheight->value;
-//a = fabs(velocity[0])/20;
-//a = ((int)fabs(origin[0])/8)%20;
-//a = (cl.idealpitch + 30)/5;
+
 	r_timings[timex] = a;
 	a = timex;
 
@@ -400,8 +396,6 @@ void R_SetupFrame (void)
 	if (cl.maxclients > 1)
 	{
 		Cvar_Set ("r_draworder", "0");
-//		Cvar_Set ("r_fullbright", "0");
-//		Cvar_Set ("r_ambient", "0");
 		r_fullbright->value = 0; /* FS: Don't use Cvar_Set here, it's just going to keep trigger the changed function */
 		r_ambient->value = 0;
 		Cvar_Set ("r_drawflat", "0");

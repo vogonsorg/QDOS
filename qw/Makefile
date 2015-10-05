@@ -95,13 +95,13 @@ CLIENT = $(SYSOBJ_DXE)  \
 	cmd.o      \
 	common.o   \
 	console.o  \
-	crc.o      \
+	$(COMMON)/crc.o      \
 	cvar.o     \
 	$(COMMON)/dos_v2.o   \
 	$(COMMON)/dstring.o  \
 	$(COMMON)/in_dos.o   \
 	keys.o     \
-	math.o     \
+	$(COMMON)/math.o     \
 	mathlib.o  \
 	md4.o      \
 	menu.o     \
@@ -154,12 +154,12 @@ REFSOFT = $(COMMON)/d_copy.o \
 	model.o    \
 	$(COMMON)/r_aclip.o  \
 	$(COMMON)/r_aclipa.o \
-	r_alias.o  \
+	$(COMMON)/r_alias.o  \
 	$(COMMON)/r_aliasa.o \
-	r_bsp.o    \
+	$(COMMON)/r_bsp.o    \
 	$(COMMON)/r_draw.o   \
 	$(COMMON)/r_drawa.o  \
-	r_edge.o   \
+	$(COMMON)/r_edge.o   \
 	$(COMMON)/r_edgea.o  \
 	r_efrag.o  \
 	$(COMMON)/r_light.o  \
@@ -167,7 +167,7 @@ REFSOFT = $(COMMON)/d_copy.o \
 	r_misc.o   \
 	$(COMMON)/r_sky.o    \
 	$(COMMON)/r_sprite.o \
-	r_surf.o   \
+	$(COMMON)/r_surf.o   \
 	$(COMMON)/r_vars.o   \
 	$(COMMON)/r_varsa.o  \
 	screen.o   \
@@ -188,11 +188,11 @@ REFGL = $(COMMON)/dos_dmesa.o  \
 	$(COMMON)/gl_mesh.o    \
 	gl_model.o   \
 	gl_ngraph.o  \
-	gl_refrag.o  \
-	gl_rlight.o  \
+	$(COMMON)/gl_refrag.o  \
+	$(COMMON)/gl_rlight.o  \
 	gl_rmain.o   \
 	gl_rmisc.o   \
-	gl_rsurf.o   \
+	$(COMMON)/gl_rsurf.o   \
 	gl_screen.o  \
 	$(COMMON)/gl_test.o    \
 	$(COMMON)/gl_warp.o    \

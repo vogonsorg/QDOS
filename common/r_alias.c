@@ -113,7 +113,7 @@ qboolean R_AliasCheckBBox (void)
 	if ((frame >= pmdl->numframes) || (frame < 0))
 	{
 		Con_DPrintf (DEVELOPER_MSG_VIDEO, "No such frame %d %s\n", frame,  /* FS: Don't output this garbage to the client console. */
-		pmodel->name);
+					pmodel->name);
 		frame = 0;
 	}
 
@@ -570,7 +570,7 @@ void R_AliasSetupSkin (void)
 	if ((skinnum >= pmdl->numskins) || (skinnum < 0))
 	{
 		Con_DPrintf (DEVELOPER_MSG_VERBOSE, "R_AliasSetupSkin: no such skin # %d\n", skinnum);
-       	skinnum = 0;
+		skinnum = 0;
 	}
 
 	pskindesc = ((maliasskindesc_t *)
@@ -608,6 +608,7 @@ void R_AliasSetupSkin (void)
 	r_affinetridesc.seamfixupX16 =  (a_skinwidth >> 1) << 16;
 	r_affinetridesc.skinheight = pmdl->skinheight;
 
+#ifdef QUAKEWORLD
 	if (currententity->scoreboard)
 	{
 		byte	*base;
@@ -622,6 +623,7 @@ void R_AliasSetupSkin (void)
 			r_affinetridesc.skinheight = 200;
 		}
 	}
+#endif
 }
 
 /*

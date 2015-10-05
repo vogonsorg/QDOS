@@ -34,6 +34,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define BMODEL_FULLY_CLIPPED	0x10 // value returned by R_BmodelCheckBBox ()
 									 //  if bbox is trivially rejected
 
+#ifdef QUAKE1
+#define WORLDENT &cl_entities[0]
+#else
+#define WORLDENT &r_worldentity
+#endif
+
 //===========================================================================
 // viewmodel lighting
 
