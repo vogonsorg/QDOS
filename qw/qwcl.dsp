@@ -2352,6 +2352,10 @@ SOURCE=..\common\dstring.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\common\gl_func.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\input.h
 # End Source File
 # Begin Source File
