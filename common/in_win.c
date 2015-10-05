@@ -151,6 +151,7 @@ static DIDATAFORMAT	df = {
 void IN_StartupJoystick (void);
 void Joy_AdvancedUpdate_f (void);
 void IN_JoyMove (usercmd_t *cmd);
+void IN_Accumulate (void);
 
 
 /*
@@ -420,8 +421,6 @@ IN_StartupMouse
 */
 void IN_StartupMouse (void)
 {
-	HDC			hdc;
-
 	if ( COM_CheckParm ("-nomouse") ) 
 		return; 
 
@@ -579,7 +578,6 @@ IN_MouseMove
 void IN_MouseMove (usercmd_t *cmd)
 {
 	int					mx, my;
-	HDC					hdc;
 	int					i;
 	DIDEVICEOBJECTDATA	od;
 	DWORD				dwElements;
@@ -705,27 +703,21 @@ void IN_MouseMove (usercmd_t *cmd)
 	{
 		cl.viewangles[PITCH] += m_pitch->value * mouse_y;
 
+#ifdef QUAKE1
 		if (pq_fullpitch->value || cl_fullpitch->value) /* FS: ProQuake shit */
 		{
 			if (cl.viewangles[PITCH] > 90)
-			{
 				cl.viewangles[PITCH] = 90;
-			}
 			if (cl.viewangles[PITCH] < -90)
-			{
 				cl.viewangles[PITCH] = -90;
-			}
 		}
 		else
+#endif
 		{
 			if (cl.viewangles[PITCH] > 80)
-			{
 				cl.viewangles[PITCH] = 80;
-			}
 			if (cl.viewangles[PITCH] < -70)
-			{
 				cl.viewangles[PITCH] = -70;
-			}
 		}
 	}
 	else
@@ -767,21 +759,15 @@ IN_Accumulate
 */
 void IN_Accumulate (void)
 {
-	int		mx, my;
-	HDC	hdc;
-
 	if (mouseactive)
 	{
-		if (!dinput)
-		{
-			GetCursorPos (&current_pos);
+		GetCursorPos (&current_pos);
 
-			mx_accum += current_pos.x - window_center_x;
-			my_accum += current_pos.y - window_center_y;
+		mx_accum += current_pos.x - window_center_x;
+		my_accum += current_pos.y - window_center_y;
 
-		// force the mouse to the center, so there's room to move
-			SetCursorPos (window_center_x, window_center_y);
-		}
+	// force the mouse to the center, so there's room to move
+		SetCursorPos (window_center_x, window_center_y);
 	}
 }
 
@@ -810,7 +796,7 @@ IN_StartupJoystick
 */  
 void IN_StartupJoystick (void) 
 { 
-	int			i, numdevs;
+	int			numdevs;
 	JOYCAPS		jc;
 	MMRESULT	mmr;
  

@@ -45,7 +45,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /G5 /MT /GX /I ".\scitech\include" /I ".\dxsdk\sdk\inc" /I ".\winquake" /I "..\common" /I ".\\" /D "QUAKE1" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "BSP2_SUPPORT" /D "GAMESPY" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /MT /GX /I "..\common\win32\scitech\include" /I "..\common\win32\dxsdk\sdk\inc" /I ".\winquake" /I "..\common" /I ".\\" /D "QUAKE1" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "BSP2_SUPPORT" /D "GAMESPY" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -55,7 +55,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 .\dxsdk\sdk\lib\dxguid.lib .\scitech\lib\win32\vc\mgllt.lib winmm.lib wsock32.lib opengl32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /profile /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcmtd.lib" /out:".\Release/WQDOS.exe"
+# ADD LINK32 ..\common\win32\dxsdk\sdk\lib\dxguid.lib ..\common\win32\scitech\lib\win32\vc\mgllt.lib winmm.lib wsock32.lib opengl32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /profile /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcmtd.lib" /out:".\Release/WQDOS.exe"
 # SUBTRACT LINK32 /map /debug
 
 !ELSEIF  "$(CFG)" == "winquake - Win32 Debug"
@@ -72,7 +72,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /G5 /MTd /GX /ZI /Od /I ".\scitech\include" /I ".\dxsdk\sdk\inc" /I ".\winquake" /I "..\common" /I ".\\" /D "QUAKE1" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "BSP2_SUPPORT" /D "OGG_SUPPORT" /D "GAMESPY" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /MTd /GX /ZI /Od /I "..\common\win32\scitech\include" /I "..\common\win32\dxsdk\sdk\inc" /I ".\winquake" /I "..\common" /I ".\\" /D "QUAKE1" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "BSP2_SUPPORT" /D "OGG_SUPPORT" /D "GAMESPY" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -82,7 +82,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386
-# ADD LINK32 .\dxsdk\sdk\lib\dxguid.lib .\scitech\lib\win32\vc\mgllt.lib winmm.lib wsock32.lib opengl32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /out:".\Debug/DWQDOS.exe"
+# ADD LINK32 ..\common\win32\dxsdk\sdk\lib\dxguid.lib ..\common\win32\scitech\lib\win32\vc\mgllt.lib winmm.lib wsock32.lib opengl32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /out:".\Debug/DWQDOS.exe"
 # SUBTRACT LINK32 /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "winquake - Win32 GL Release"
@@ -98,9 +98,9 @@ LINK32=link.exe
 # PROP Intermediate_Dir ".\release_gl"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /G5 /GX /Ox /Ot /Ow /I ".\scitech\include" /I ".\dxsdk\sdk\inc" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
+# ADD BASE CPP /nologo /G5 /GX /Ox /Ot /Ow /I "..\common\win32\scitech\include" /I "..\common\win32\dxsdk\sdk\inc" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
 # SUBTRACT BASE CPP /Oa /Og
-# ADD CPP /nologo /G5 /MT /GX /Ot /Ow /I ".\dxsdk\sdk\inc" /I "..\common" /I ".\\" /D "QUAKE1" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "GLQUAKE" /D "BSP2_SUPPORT" /D "GAMESPY" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /MT /GX /Ot /Ow /I "..\common\win32\dxsdk\sdk\inc" /I "..\common" /I ".\\" /D "QUAKE1" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "GLQUAKE" /D "BSP2_SUPPORT" /D "GAMESPY" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -109,9 +109,9 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 winmm.lib wsock32.lib opengl32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib .\scitech\lib\win32\vc\mgllt.lib /nologo /subsystem:windows /profile /machine:I386
+# ADD BASE LINK32 winmm.lib wsock32.lib opengl32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ..\common\win32\scitech\lib\win32\vc\mgllt.lib /nologo /subsystem:windows /profile /machine:I386
 # SUBTRACT BASE LINK32 /map /debug
-# ADD LINK32 .\dxsdk\sdk\lib\dxguid.lib comctl32.lib winmm.lib wsock32.lib opengl32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /profile /machine:I386 /out:".\release_gl\glquake2.exe"
+# ADD LINK32 ..\common\win32\dxsdk\sdk\lib\dxguid.lib comctl32.lib winmm.lib wsock32.lib opengl32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /profile /machine:I386 /out:".\release_gl\glquake2.exe"
 # SUBTRACT LINK32 /map /debug
 
 !ELSEIF  "$(CFG)" == "winquake - Win32 GL Debug"
@@ -128,8 +128,8 @@ LINK32=link.exe
 # PROP Intermediate_Dir ".\debug_gl"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /G5 /GX /Ot /Ow /I ".\dxsdk\sdk\inc" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "GLQUAKE" /D "BSP2_SUPPORT" /FR /YX /FD /c
-# ADD CPP /nologo /G5 /MTd /GX /ZI /Od /I ".\dxsdk\sdk\inc" /I "..\common" /I ".\\" /D "QUAKE1" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "GLQUAKE" /D "BSP2_SUPPORT" /D "GAMESPY" /FR /YX /FD /c
+# ADD BASE CPP /nologo /G5 /GX /Ot /Ow /I "..\common\win32\dxsdk\sdk\inc" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "GLQUAKE" /D "BSP2_SUPPORT" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /MTd /GX /ZI /Od /I "..\common\win32\dxsdk\sdk\inc" /I "..\common" /I ".\\" /D "QUAKE1" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "GLQUAKE" /D "BSP2_SUPPORT" /D "GAMESPY" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -138,9 +138,9 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 .\dxsdk\sdk\lib\dxguid.lib comctl32.lib winmm.lib wsock32.lib opengl32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /profile /machine:I386 /out:".\release_gl\glquake2.exe"
+# ADD BASE LINK32 ..\common\win32\dxsdk\sdk\lib\dxguid.lib comctl32.lib winmm.lib wsock32.lib opengl32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /profile /machine:I386 /out:".\release_gl\glquake2.exe"
 # SUBTRACT BASE LINK32 /map /debug
-# ADD LINK32 .\dxsdk\sdk\lib\dxguid.lib comctl32.lib winmm.lib wsock32.lib opengl32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /incremental:yes /debug /machine:I386 /out:".\debug_gl\glquake2.exe"
+# ADD LINK32 ..\common\win32\dxsdk\sdk\lib\dxguid.lib comctl32.lib winmm.lib wsock32.lib opengl32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /incremental:yes /debug /machine:I386 /out:".\debug_gl\glquake2.exe"
 # SUBTRACT LINK32 /profile /map
 
 !ENDIF 
@@ -1786,7 +1786,7 @@ SOURCE=.\host_cmd.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\in_win.c
+SOURCE=..\common\in_win.c
 # End Source File
 # Begin Source File
 
