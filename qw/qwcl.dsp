@@ -45,7 +45,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /G5 /MT /GX /O2 /I "dxsdk\sdk\inc" /I "scitech\include" /I "winquake" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /MT /GX /O2 /I "dxsdk\sdk\inc" /I "scitech\include" /I "winquake" /I "..\common" /I ".\\" /D "QUAKEWORLD" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -72,7 +72,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /G5 /MTd /W3 /Gm /GX /ZI /Od /I "dxsdk\sdk\inc" /I "scitech\include" /I "winquake" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /MTd /W3 /Gm /GX /ZI /Od /I "dxsdk\sdk\inc" /I "scitech\include" /I "winquake" /I "..\common" /I ".\\" /D "QUAKEWORLD" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -100,7 +100,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /G5 /MT /GX /O2 /I "dxsdk\sdk\inc" /I "scitech\include" /I "winquake" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /FR /YX /FD /c
-# ADD CPP /nologo /G5 /MT /GX /O2 /I "dxsdk\sdk\inc" /I "scitech\include" /I "winquake" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /D "GLQUAKE" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /MT /GX /O2 /I "dxsdk\sdk\inc" /I "scitech\include" /I "winquake" /I "..\common" /I ".\\" /D "QUAKEWORLD" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /D "GLQUAKE" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -129,7 +129,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /G5 /MT /GX /O2 /I "dxsdk\sdk\inc" /I "scitech\include" /I "winquake" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /D "GLQUAKE" /FR /YX /FD /c
-# ADD CPP /nologo /G5 /MTd /W3 /Gm /GX /ZI /Od /I "dxsdk\sdk\inc" /I "scitech\include" /I "winquake" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /D "GLQUAKE" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /MTd /W3 /Gm /GX /ZI /Od /I "dxsdk\sdk\inc" /I "scitech\include" /I "winquake" /I "..\common" /I ".\\" /D "QUAKEWORLD" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /D "GLQUAKE" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -159,55 +159,55 @@ LINK32=link.exe
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\Goa\CEngine\darray.c
+SOURCE=..\common\Goa\CEngine\darray.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Goa\CEngine\darray.h
+SOURCE=..\common\Goa\CEngine\darray.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Goa\CEngine\goaceng.h
+SOURCE=..\common\Goa\CEngine\goaceng.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Goa\Sdk\goautil.h
+SOURCE=..\common\Goa\Sdk\goautil.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Goa\CEngine\gserver.c
+SOURCE=..\common\Goa\CEngine\gserver.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Goa\CEngine\gserver.h
+SOURCE=..\common\Goa\CEngine\gserver.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Goa\CEngine\gserverlist.c
+SOURCE=..\common\Goa\CEngine\gserverlist.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Goa\CEngine\gutil.c
+SOURCE=..\common\Goa\CEngine\gutil.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Goa\CEngine\gutil.h
+SOURCE=..\common\Goa\CEngine\gutil.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Goa\CEngine\hashtable.c
+SOURCE=..\common\Goa\CEngine\hashtable.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Goa\CEngine\hashtable.h
+SOURCE=..\common\Goa\CEngine\hashtable.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Goa\nonport.c
+SOURCE=..\common\Goa\nonport.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\Goa\nonport.h
+SOURCE=..\common\Goa\nonport.h
 # End Source File
 # End Group
 # Begin Group "DOS"
@@ -215,7 +215,7 @@ SOURCE=.\Goa\nonport.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\dos_v2.c
+SOURCE=..\common\dos_v2.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -240,7 +240,7 @@ SOURCE=.\dos_v2.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\in_dos.c
+SOURCE=..\common\in_dos.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -290,7 +290,7 @@ SOURCE=.\net_udp.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\sys_dos.c
+SOURCE=..\common\sys_dos.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -413,7 +413,7 @@ SOURCE=.\gl_draw.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\gl_mesh.c
+SOURCE=..\common\gl_mesh.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -489,7 +489,7 @@ SOURCE=.\gl_ngraph.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\gl_refrag.c
+SOURCE=..\common\gl_refrag.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -508,7 +508,7 @@ SOURCE=.\gl_refrag.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\gl_rlight.c
+SOURCE=..\common\gl_rlight.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -565,7 +565,7 @@ SOURCE=.\gl_rmisc.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\gl_rsurf.c
+SOURCE=..\common\gl_rsurf.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -603,7 +603,7 @@ SOURCE=.\gl_screen.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\gl_test.c
+SOURCE=..\common\gl_test.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -622,7 +622,7 @@ SOURCE=.\gl_test.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\gl_vidnt.c
+SOURCE=..\common\gl_vidnt.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -641,7 +641,7 @@ SOURCE=.\gl_vidnt.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\gl_warp.c
+SOURCE=..\common\gl_warp.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -660,7 +660,7 @@ SOURCE=.\gl_warp.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\gl_warp_sin.h
+SOURCE=..\common\gl_warp_sin.h
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -705,13 +705,13 @@ SOURCE=.\glquake.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\d_draw.s
+SOURCE=..\common\d_draw.s
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
 # Begin Custom Build
 OutDir=.\Release
-InputPath=.\d_draw.s
+InputPath=..\common\d_draw.s
 InputName=d_draw
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -726,7 +726,7 @@ InputName=d_draw
 
 # Begin Custom Build
 OutDir=.\Debug
-InputPath=.\d_draw.s
+InputPath=..\common\d_draw.s
 InputName=d_draw
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -751,13 +751,13 @@ InputName=d_draw
 # End Source File
 # Begin Source File
 
-SOURCE=.\d_draw16.s
+SOURCE=..\common\d_draw16.s
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
 # Begin Custom Build
 OutDir=.\Release
-InputPath=.\d_draw16.s
+InputPath=..\common\d_draw16.s
 InputName=d_draw16
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -772,7 +772,7 @@ InputName=d_draw16
 
 # Begin Custom Build
 OutDir=.\Debug
-InputPath=.\d_draw16.s
+InputPath=..\common\d_draw16.s
 InputName=d_draw16
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -797,13 +797,13 @@ InputName=d_draw16
 # End Source File
 # Begin Source File
 
-SOURCE=.\d_parta.s
+SOURCE=..\common\d_parta.s
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
 # Begin Custom Build
 OutDir=.\Release
-InputPath=.\d_parta.s
+InputPath=..\common\d_parta.s
 InputName=d_parta
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -818,7 +818,7 @@ InputName=d_parta
 
 # Begin Custom Build
 OutDir=.\Debug
-InputPath=.\d_parta.s
+InputPath=..\common\d_parta.s
 InputName=d_parta
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -843,13 +843,13 @@ InputName=d_parta
 # End Source File
 # Begin Source File
 
-SOURCE=.\d_polysa.s
+SOURCE=..\common\d_polysa.s
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
 # Begin Custom Build
 OutDir=.\Release
-InputPath=.\d_polysa.s
+InputPath=..\common\d_polysa.s
 InputName=d_polysa
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -864,7 +864,7 @@ InputName=d_polysa
 
 # Begin Custom Build
 OutDir=.\Debug
-InputPath=.\d_polysa.s
+InputPath=..\common\d_polysa.s
 InputName=d_polysa
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -889,13 +889,13 @@ InputName=d_polysa
 # End Source File
 # Begin Source File
 
-SOURCE=.\d_scana.s
+SOURCE=..\common\d_scana.s
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
 # Begin Custom Build
 OutDir=.\Release
-InputPath=.\d_scana.s
+InputPath=..\common\d_scana.s
 InputName=d_scana
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -910,7 +910,7 @@ InputName=d_scana
 
 # Begin Custom Build
 OutDir=.\Debug
-InputPath=.\d_scana.s
+InputPath=..\common\d_scana.s
 InputName=d_scana
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -935,13 +935,13 @@ InputName=d_scana
 # End Source File
 # Begin Source File
 
-SOURCE=.\d_spr8.s
+SOURCE=..\common\d_spr8.s
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
 # Begin Custom Build
 OutDir=.\Release
-InputPath=.\d_spr8.s
+InputPath=..\common\d_spr8.s
 InputName=d_spr8
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -956,7 +956,7 @@ InputName=d_spr8
 
 # Begin Custom Build
 OutDir=.\Debug
-InputPath=.\d_spr8.s
+InputPath=..\common\d_spr8.s
 InputName=d_spr8
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -981,13 +981,13 @@ InputName=d_spr8
 # End Source File
 # Begin Source File
 
-SOURCE=.\d_varsa.s
+SOURCE=..\common\d_varsa.s
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
 # Begin Custom Build
 OutDir=.\Release
-InputPath=.\d_varsa.s
+InputPath=..\common\d_varsa.s
 InputName=d_varsa
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -1002,7 +1002,7 @@ InputName=d_varsa
 
 # Begin Custom Build
 OutDir=.\Debug
-InputPath=.\d_varsa.s
+InputPath=..\common\d_varsa.s
 InputName=d_varsa
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -1027,13 +1027,13 @@ InputName=d_varsa
 # End Source File
 # Begin Source File
 
-SOURCE=.\r_aclipa.s
+SOURCE=..\common\r_aclipa.s
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
 # Begin Custom Build
 OutDir=.\Release
-InputPath=.\r_aclipa.s
+InputPath=..\common\r_aclipa.s
 InputName=r_aclipa
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -1048,7 +1048,7 @@ InputName=r_aclipa
 
 # Begin Custom Build
 OutDir=.\Debug
-InputPath=.\r_aclipa.s
+InputPath=..\common\r_aclipa.s
 InputName=r_aclipa
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -1073,13 +1073,13 @@ InputName=r_aclipa
 # End Source File
 # Begin Source File
 
-SOURCE=.\r_aliasa.s
+SOURCE=..\common\r_aliasa.s
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
 # Begin Custom Build
 OutDir=.\Release
-InputPath=.\r_aliasa.s
+InputPath=..\common\r_aliasa.s
 InputName=r_aliasa
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -1094,7 +1094,7 @@ InputName=r_aliasa
 
 # Begin Custom Build
 OutDir=.\Debug
-InputPath=.\r_aliasa.s
+InputPath=..\common\r_aliasa.s
 InputName=r_aliasa
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -1119,13 +1119,13 @@ InputName=r_aliasa
 # End Source File
 # Begin Source File
 
-SOURCE=.\r_drawa.s
+SOURCE=..\common\r_drawa.s
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
 # Begin Custom Build
 OutDir=.\Release
-InputPath=.\r_drawa.s
+InputPath=..\common\r_drawa.s
 InputName=r_drawa
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -1140,7 +1140,7 @@ InputName=r_drawa
 
 # Begin Custom Build
 OutDir=.\Debug
-InputPath=.\r_drawa.s
+InputPath=..\common\r_drawa.s
 InputName=r_drawa
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -1165,13 +1165,13 @@ InputName=r_drawa
 # End Source File
 # Begin Source File
 
-SOURCE=.\r_edgea.s
+SOURCE=..\common\r_edgea.s
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
 # Begin Custom Build
 OutDir=.\Release
-InputPath=.\r_edgea.s
+InputPath=..\common\r_edgea.s
 InputName=r_edgea
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -1186,7 +1186,7 @@ InputName=r_edgea
 
 # Begin Custom Build
 OutDir=.\Debug
-InputPath=.\r_edgea.s
+InputPath=..\common\r_edgea.s
 InputName=r_edgea
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -1211,13 +1211,13 @@ InputName=r_edgea
 # End Source File
 # Begin Source File
 
-SOURCE=.\r_varsa.s
+SOURCE=..\common\r_varsa.s
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
 # Begin Custom Build
 OutDir=.\Release
-InputPath=.\r_varsa.s
+InputPath=..\common\r_varsa.s
 InputName=r_varsa
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -1232,7 +1232,7 @@ InputName=r_varsa
 
 # Begin Custom Build
 OutDir=.\Debug
-InputPath=.\r_varsa.s
+InputPath=..\common\r_varsa.s
 InputName=r_varsa
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -1257,13 +1257,13 @@ InputName=r_varsa
 # End Source File
 # Begin Source File
 
-SOURCE=.\surf16.s
+SOURCE=..\common\surf16.s
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
 # Begin Custom Build
 OutDir=.\Release
-InputPath=.\surf16.s
+InputPath=..\common\surf16.s
 InputName=surf16
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -1278,7 +1278,7 @@ InputName=surf16
 
 # Begin Custom Build
 OutDir=.\Debug
-InputPath=.\surf16.s
+InputPath=..\common\surf16.s
 InputName=surf16
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -1303,13 +1303,13 @@ InputName=surf16
 # End Source File
 # Begin Source File
 
-SOURCE=.\surf8.s
+SOURCE=..\common\surf8.s
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
 # Begin Custom Build
 OutDir=.\Release
-InputPath=.\surf8.s
+InputPath=..\common\surf8.s
 InputName=surf8
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -1324,7 +1324,7 @@ InputName=surf8
 
 # Begin Custom Build
 OutDir=.\Debug
-InputPath=.\surf8.s
+InputPath=..\common\surf8.s
 InputName=surf8
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -1370,7 +1370,11 @@ SOURCE=.\d_edge.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\d_fill.c
+SOURCE=..\common\d_fill.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\common\d_init.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1390,7 +1394,7 @@ SOURCE=.\d_fill.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\d_init.c
+SOURCE=..\common\d_modech.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1410,7 +1414,7 @@ SOURCE=.\d_init.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\d_modech.c
+SOURCE=..\common\d_part.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1430,7 +1434,7 @@ SOURCE=.\d_modech.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\d_part.c
+SOURCE=..\common\d_polyse.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1450,7 +1454,7 @@ SOURCE=.\d_part.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\d_polyse.c
+SOURCE=..\common\d_scan.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1470,7 +1474,7 @@ SOURCE=.\d_polyse.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\d_scan.c
+SOURCE=..\common\d_sky.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1490,7 +1494,7 @@ SOURCE=.\d_scan.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\d_sky.c
+SOURCE=..\common\d_sprite.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1510,7 +1514,7 @@ SOURCE=.\d_sky.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\d_sprite.c
+SOURCE=..\common\d_surf.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1530,7 +1534,7 @@ SOURCE=.\d_sprite.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\d_surf.c
+SOURCE=..\common\d_vars.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1550,27 +1554,7 @@ SOURCE=.\d_surf.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\d_vars.c
-
-!IF  "$(CFG)" == "qwcl - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "qwcl - Win32 Debug"
-
-!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW"
-
-# PROP Exclude_From_Build 1
-
-!ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
-
-# PROP BASE Exclude_From_Build 1
-# PROP Exclude_From_Build 1
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\d_zpoint.c
+SOURCE=..\common\d_zpoint.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1630,7 +1614,7 @@ SOURCE=.\model.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\r_aclip.c
+SOURCE=..\common\r_aclip.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1650,7 +1634,7 @@ SOURCE=.\r_aclip.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\r_alias.c
+SOURCE=..\common\r_alias.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1670,7 +1654,7 @@ SOURCE=.\r_alias.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\r_bsp.c
+SOURCE=..\common\r_bsp.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1690,7 +1674,7 @@ SOURCE=.\r_bsp.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\r_draw.c
+SOURCE=..\common\r_draw.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1710,7 +1694,7 @@ SOURCE=.\r_draw.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\r_edge.c
+SOURCE=..\common\r_edge.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1750,7 +1734,7 @@ SOURCE=.\r_efrag.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\r_light.c
+SOURCE=..\common\r_light.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1810,7 +1794,7 @@ SOURCE=.\r_misc.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\r_sky.c
+SOURCE=..\common\r_sky.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1830,7 +1814,7 @@ SOURCE=.\r_sky.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\r_sprite.c
+SOURCE=..\common\r_sprite.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1850,7 +1834,7 @@ SOURCE=.\r_sprite.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\r_surf.c
+SOURCE=..\common\r_surf.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1870,7 +1854,7 @@ SOURCE=.\r_surf.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\r_vars.c
+SOURCE=..\common\r_vars.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1931,7 +1915,7 @@ SOURCE=.\vid_win.c
 # End Group
 # Begin Source File
 
-SOURCE=.\cd_win.c
+SOURCE=..\common\cd_win.c
 # End Source File
 # Begin Source File
 
@@ -1983,7 +1967,7 @@ SOURCE=.\console.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\crc.c
+SOURCE=..\common\crc.c
 # End Source File
 # Begin Source File
 
@@ -1991,7 +1975,7 @@ SOURCE=.\cvar.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\dstring.c
+SOURCE=..\common\dstring.c
 # End Source File
 # Begin Source File
 
@@ -2003,13 +1987,13 @@ SOURCE=.\keys.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\math.s
+SOURCE=..\common\math.s
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
 # Begin Custom Build
 OutDir=.\Release
-InputPath=.\math.s
+InputPath=..\common\math.s
 InputName=math
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -2024,7 +2008,7 @@ InputName=math
 
 # Begin Custom Build - GAS2MASM Conversion
 OutDir=.\Debug
-InputPath=.\math.s
+InputPath=..\common\math.s
 InputName=math
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -2039,7 +2023,7 @@ InputName=math
 
 # Begin Custom Build
 OutDir=.\release_gl
-InputPath=.\math.s
+InputPath=..\common\math.s
 InputName=math
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -2054,7 +2038,7 @@ InputName=math
 
 # Begin Custom Build
 OutDir=.\debug_dl
-InputPath=.\math.s
+InputPath=..\common\math.s
 InputName=math
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -2114,25 +2098,25 @@ SOURCE=.\skin.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\snd_dma.c
+SOURCE=..\common\snd_dma.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\snd_mem.c
+SOURCE=..\common\snd_mem.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\snd_mix.c
+SOURCE=..\common\snd_mix.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\snd_mixa.s
+SOURCE=..\common\snd_mixa.s
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
 # Begin Custom Build
 OutDir=.\Release
-InputPath=.\snd_mixa.s
+InputPath=..\common\snd_mixa.s
 InputName=snd_mixa
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -2147,7 +2131,7 @@ InputName=snd_mixa
 
 # Begin Custom Build - GAS2MASM Conversion
 OutDir=.\Debug
-InputPath=.\snd_mixa.s
+InputPath=..\common\snd_mixa.s
 InputName=snd_mixa
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -2162,7 +2146,7 @@ InputName=snd_mixa
 
 # Begin Custom Build
 OutDir=.\release_gl
-InputPath=.\snd_mixa.s
+InputPath=..\common\snd_mixa.s
 InputName=snd_mixa
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -2177,7 +2161,7 @@ InputName=snd_mixa
 
 # Begin Custom Build
 OutDir=.\debug_dl
-InputPath=.\snd_mixa.s
+InputPath=..\common\snd_mixa.s
 InputName=snd_mixa
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -2193,19 +2177,19 @@ InputName=snd_mixa
 # End Source File
 # Begin Source File
 
-SOURCE=.\snd_strm.c
+SOURCE=..\common\snd_strm.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\snd_wavstream.c
+SOURCE=..\common\snd_wavstream.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\snd_win.c
+SOURCE=..\common\snd_win.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\sys_find.c
+SOURCE=..\common\sys_find.c
 # End Source File
 # Begin Source File
 
@@ -2213,13 +2197,13 @@ SOURCE=.\sys_win.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\sys_wina.s
+SOURCE=..\common\sys_wina.s
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
 # Begin Custom Build
 OutDir=.\Release
-InputPath=.\sys_wina.s
+InputPath=..\common\sys_wina.s
 InputName=sys_wina
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -2234,7 +2218,7 @@ InputName=sys_wina
 
 # Begin Custom Build - GAS2MASM Conversion
 OutDir=.\Debug
-InputPath=.\sys_wina.s
+InputPath=..\common\sys_wina.s
 InputName=sys_wina
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -2249,7 +2233,7 @@ InputName=sys_wina
 
 # Begin Custom Build
 OutDir=.\release_gl
-InputPath=.\sys_wina.s
+InputPath=..\common\sys_wina.s
 InputName=sys_wina
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -2264,7 +2248,7 @@ InputName=sys_wina
 
 # Begin Custom Build
 OutDir=.\debug_dl
-InputPath=.\sys_wina.s
+InputPath=..\common\sys_wina.s
 InputName=sys_wina
 
 "$(OUTDIR)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -2284,7 +2268,7 @@ SOURCE=.\view.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\wad.c
+SOURCE=..\common\wad.c
 # End Source File
 # Begin Source File
 
@@ -2292,7 +2276,7 @@ SOURCE=.\winquake.rc
 # End Source File
 # Begin Source File
 
-SOURCE=.\zone.c
+SOURCE=..\common\zone.c
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -2300,11 +2284,11 @@ SOURCE=.\zone.c
 # PROP Default_Filter "h;hpp;hxx;hm;inl;fi;fd"
 # Begin Source File
 
-SOURCE=.\adivtab.h
+SOURCE=..\common\adivtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\anorms.h
+SOURCE=..\common\anorms.h
 # End Source File
 # Begin Source File
 
@@ -2316,11 +2300,7 @@ SOURCE=.\bspfile.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\cdaudio.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\cfgfile.h
+SOURCE=..\common\cdaudio.h
 # End Source File
 # Begin Source File
 
@@ -2344,7 +2324,7 @@ SOURCE=.\console.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\crc.h
+SOURCE=..\common\crc.h
 # End Source File
 # Begin Source File
 
@@ -2352,19 +2332,15 @@ SOURCE=.\cvar.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\d_iface.h
+SOURCE=..\common\d_iface.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\d_ifacea.h
+SOURCE=..\common\d_ifacea.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\d_local.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\dg_misc.h
+SOURCE=..\common\d_local.h
 # End Source File
 # Begin Source File
 
@@ -2372,7 +2348,7 @@ SOURCE=.\draw.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\dstring.h
+SOURCE=..\common\dstring.h
 # End Source File
 # Begin Source File
 
@@ -2396,7 +2372,7 @@ SOURCE=.\model.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\modelgen.h
+SOURCE=..\common\modelgen.h
 # End Source File
 # Begin Source File
 
@@ -2416,11 +2392,11 @@ SOURCE=.\quakedef.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\r_local.h
+SOURCE=..\common\r_local.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\r_shared.h
+SOURCE=..\common\r_shared.h
 # End Source File
 # Begin Source File
 
@@ -2436,19 +2412,19 @@ SOURCE=.\screen.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\snd_ogg.h
+SOURCE=..\common\snd_ogg.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\sound.h
+SOURCE=..\common\sound.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\spritegn.h
+SOURCE=..\common\spritegn.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\sys.h
+SOURCE=..\common\sys.h
 # End Source File
 # Begin Source File
 
@@ -2460,7 +2436,7 @@ SOURCE=.\view.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\wad.h
+SOURCE=..\common\wad.h
 # End Source File
 # Begin Source File
 
@@ -2468,7 +2444,7 @@ SOURCE=.\winquake.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\zone.h
+SOURCE=..\common\zone.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
