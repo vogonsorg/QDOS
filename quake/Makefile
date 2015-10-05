@@ -107,41 +107,41 @@ GAMESPY = $(COMMON)/Goa/CEngine/darray.o \
 endif
 
 # not too sophisticated dependency
-OBJS=	$(SYSOBJ_DXE)   \
-	$(SYSOBJ_NET)   \
-	$(GAMESPY)      \
+OBJS=	$(SYSOBJ_DXE)        \
+	$(SYSOBJ_NET)        \
+	$(GAMESPY)           \
 	$(COMMON)/cd_audio.o \
-	chase.o    \
-	cl_demo.o  \
-	cl_input.o \
-	cl_main.o  \
-	cl_parse.o \
-	cl_tent.o  \
-	cmd.o      \
-	common.o   \
-	console.o  \
+	chase.o              \
+	cl_demo.o            \
+	cl_input.o           \
+	cl_main.o            \
+	cl_parse.o           \
+	$(COMMON)/cl_tent.o  \
+	cmd.o                \
+	common.o             \
+	console.o            \
 	$(COMMON)/crc.o      \
-	cvar.o     \
+	cvar.o               \
 	$(COMMON)/dos_v2.o   \
 	$(COMMON)/dstring.o  \
-	host.o     \
-	host_cmd.o \
+	host.o               \
+	host_cmd.o           \
 	$(COMMON)/in_dos.o   \
-	keys.o     \
+	keys.o               \
 	$(COMMON)/math.o     \
-	mathlib.o  \
-	menu.o     \
-	net_dgrm.o \
-	net_dos.o  \
-	net_ipx.o  \
-	net_loop.o \
-	net_main.o \
-	net_ser.o  \
-	pr_cmds.o  \
-	pr_edict.o \
-	pr_exec.o  \
-	r_part.o   \
-	sbar.o     \
+	mathlib.o            \
+	menu.o               \
+	net_dgrm.o           \
+	net_dos.o            \
+	net_ipx.o            \
+	net_loop.o           \
+	net_main.o           \
+	net_ser.o            \
+	pr_cmds.o            \
+	pr_edict.o           \
+	pr_exec.o            \
+	r_part.o             \
+	sbar.o               \
 	$(COMMON)/snd_dma.o  \
 	$(COMMON)/snd_dos.o  \
 	$(COMMON)/snd_gus.o  \
@@ -152,23 +152,23 @@ OBJS=	$(SYSOBJ_DXE)   \
 	$(COMMON)/snd_sb.o   \
 	$(COMMON)/snd_strm.o \
 	$(COMMON)/snd_wavstream.o  \
-	sv_main.o  \
-	sv_move.o  \
-	sv_phys.o  \
-	sv_user.o  \
+	sv_main.o            \
+	sv_move.o            \
+	sv_phys.o            \
+	sv_user.o            \
 	$(COMMON)/sys_dos.o  \
 	$(COMMON)/sys_dosa.o \
 	$(COMMON)/sys_find.o \
-	view.o     \
+	view.o               \
 	$(COMMON)/wad.o      \
-	world.o    \
+	world.o              \
 	$(COMMON)/zone.o
 
 ifeq ($(GLQUAKE),0)
 REFSOFT = $(COMMON)/d_copy.o \
 	$(COMMON)/d_draw.o   \
 	$(COMMON)/d_draw16.o \
-	d_edge.o   \
+	d_edge.o             \
 	$(COMMON)/d_fill.o   \
 	$(COMMON)/d_init.o   \
 	$(COMMON)/d_modech.o \
@@ -185,8 +185,8 @@ REFSOFT = $(COMMON)/d_copy.o \
 	$(COMMON)/d_vars.o   \
 	$(COMMON)/d_varsa.o  \
 	$(COMMON)/d_zpoint.o \
-	draw.o     \
-	model.o    \
+	draw.o               \
+	model.o              \
 	$(COMMON)/r_aclip.o  \
 	$(COMMON)/r_aclipa.o \
 	$(COMMON)/r_alias.o  \
@@ -196,21 +196,21 @@ REFSOFT = $(COMMON)/d_copy.o \
 	$(COMMON)/r_drawa.o  \
 	$(COMMON)/r_edge.o   \
 	$(COMMON)/r_edgea.o  \
-	r_efrag.o  \
+	r_efrag.o            \
 	$(COMMON)/r_light.o  \
-	r_main.o   \
-	r_misc.o   \
+	r_main.o             \
+	r_misc.o             \
 	$(COMMON)/r_sky.o    \
 	$(COMMON)/r_sprite.o \
 	$(COMMON)/r_surf.o   \
 	$(COMMON)/r_vars.o   \
 	$(COMMON)/r_varsa.o  \
-	screen.o   \
+	screen.o             \
 	$(COMMON)/surf16.o   \
 	$(COMMON)/surf8.o    \
-	vid_dos.o  \
-	vid_ext.o  \
-	vid_vga.o  \
+	$(COMMON)/vid_dos.o  \
+	$(COMMON)/vid_ext.o  \
+	$(COMMON)/vid_vga.o  \
 	$(COMMON)/vregset.o  \
 	$(COMMON)/worlda.o
 endif
@@ -220,15 +220,15 @@ REFGL = $(COMMON)/dos_dmesa.o  \
 	$(COMMON)/dos_fxmesa.o \
 	$(COMMON)/dos_sage.o   \
 	$(COMMON)/fx_gamma.o   \
-	gl_draw.o    \
+	gl_draw.o              \
 	$(COMMON)/gl_mesh.o    \
-	gl_model.o   \
+	gl_model.o             \
 	$(COMMON)/gl_refrag.o  \
 	$(COMMON)/gl_rlight.o  \
-	gl_rmain.o   \
-	gl_rmisc.o   \
+	gl_rmain.o             \
+	gl_rmisc.o             \
 	$(COMMON)/gl_rsurf.o   \
-	gl_screen.o  \
+	gl_screen.o            \
 	$(COMMON)/gl_test.o    \
 	$(COMMON)/gl_warp.o    \
 	$(COMMON)/gl_viddos.o

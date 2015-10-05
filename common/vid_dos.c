@@ -499,6 +499,16 @@ void VID_TestMode_f (void)
 	}
 }
 
+#ifdef QUAKEWORLD
+void VID_LockBuffer(void)
+{
+	/* FS: Nothing in DOS */
+}
+void VID_UnlockBuffer(void)
+{
+	/* FS: Nothing in DOS */
+}
+#endif
 
 /*
 ================

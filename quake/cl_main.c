@@ -638,7 +638,7 @@ int CL_ReadFromServer (void)
 		Con_Printf ("\n");
 
 	CL_RelinkEntities ();
-	CL_UpdateTEnts ();
+	CL_UpdateBeams ();
 
 //
 // bring the links up to date

@@ -143,9 +143,9 @@ void InsertLinkAfter (link_t *l, link_t *after)
 
 int Q_atoi (char *str)
 {
-	int		val;
-	int		sign;
-	int		c;
+	int val;
+	int sign;
+	int c;
 	
 	if (*str == '-')
 	{
@@ -355,8 +355,8 @@ qboolean	bigendien;
 
 short	(*BigShort) (short l);
 short	(*LittleShort) (short l);
-int	(*BigLong) (int l);
-int	(*LittleLong) (int l);
+int		(*BigLong) (int l);
+int		(*LittleLong) (int l);
 float	(*BigFloat) (float l);
 float	(*LittleFloat) (float l);
 
@@ -564,7 +564,7 @@ void MSG_WriteFloat (sizebuf_t *sb, float f)
 	union
 	{
 		float	f;
-		int	l;
+		int		l;
 	} dat;
 	
 	
@@ -740,18 +740,18 @@ float MSG_ReadFloat (void)
 	{
 		byte	b[4];
 		float	f;
-		int	l;
+		int		l;
 	} dat;
 	
-	dat.b[0] =	net_message.data[msg_readcount];
-	dat.b[1] =	net_message.data[msg_readcount+1];
-	dat.b[2] =	net_message.data[msg_readcount+2];
-	dat.b[3] =	net_message.data[msg_readcount+3];
+	dat.b[0] = net_message.data[msg_readcount];
+	dat.b[1] = net_message.data[msg_readcount+1];
+	dat.b[2] = net_message.data[msg_readcount+2];
+	dat.b[3] = net_message.data[msg_readcount+3];
 	msg_readcount += 4;
 	
 	dat.l = LittleLong (dat.l);
 
-	return dat.f;	
+	return dat.f;
 }
 
 char *MSG_ReadString (void)
@@ -898,12 +898,12 @@ void *SZ_GetSpace (sizebuf_t *buf, int length)
 
 void SZ_Write (sizebuf_t *buf, void *data, int length)
 {
-	Q_memcpy (SZ_GetSpace(buf,length),data,length);		
+	Q_memcpy (SZ_GetSpace(buf,length),data,length);
 }
 
 void SZ_Print (sizebuf_t *buf, char *data)
 {
-	int		len;
+	int	len;
 	
 	len = Q_strlen(data)+1;
 
@@ -956,7 +956,7 @@ COM_FileExtension
 char *COM_FileExtension (char *in)
 {
 	static char exten[8];
-	int		i;
+	int	i;
 
 	while (*in && *in != '.')
 		in++;
@@ -1051,7 +1051,7 @@ void COM_DefaultExtension (char *path, char *extension)
 
 //============================================================================
 
-char		com_token[1024];
+char	com_token[1024];
 int		com_argc;
 char	**com_argv;
 
@@ -1065,8 +1065,8 @@ Parse a token out of a string
 */
 char *COM_Parse (char *data)
 {
-	int		c;
-	int		len;
+	int	c;
+	int	len;
 	
 	len = 0;
 	com_token[0] = 0;
@@ -1144,12 +1144,12 @@ where the given parameter apears, or 0 if not present
 */
 int COM_CheckParm (char *parm)
 {
-	int		i;
+	int	i;
 	
 	for (i=1 ; i<com_argc ; i++)
 	{
 		if (!com_argv[i])
-			continue;		// NEXTSTEP sometimes clears appkit vars.
+			continue; // NEXTSTEP sometimes clears appkit vars.
 		if (!Q_strcmp (parm,com_argv[i]))
 			return i;
 	}
@@ -1352,9 +1352,9 @@ nva (const char *fmt, ...)
 }
 
 /// just for debugging
-int	memsearch (byte *start, int count, int search)
+int memsearch (byte *start, int count, int search)
 {
-	int		i;
+	int	i;
 	
 	for (i=0 ; i<count ; i++)
 		if (start[i] == search)
@@ -1370,7 +1370,7 @@ QUAKE FILESYSTEM
 =============================================================================
 */
 
-int	com_filesize;
+int com_filesize;
 
 
 //
@@ -1407,16 +1407,16 @@ typedef struct
 	int		dirlen;
 } dpackheader_t;
 
-#define	MAX_FILES_IN_PACK	2048
+#define MAX_FILES_IN_PACK	2048
 
 char	com_basedir[MAX_OSPATH];
-char    com_cachedir[MAX_OSPATH]; /* FS */
+char	com_cachedir[MAX_OSPATH]; /* FS */
 char	com_gamedir[MAX_OSPATH];
 
 typedef struct searchpath_s
 {
 	char	filename[MAX_OSPATH];
-	pack_t	*pack;		// only one of filename / pack will be used
+	pack_t	*pack; // only one of filename / pack will be used
 	struct searchpath_s *next;
 } searchpath_t;
 

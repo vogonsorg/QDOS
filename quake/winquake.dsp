@@ -1746,7 +1746,7 @@ SOURCE=.\cl_parse.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\cl_tent.c
+SOURCE=..\common\cl_tent.c
 # End Source File
 # Begin Source File
 

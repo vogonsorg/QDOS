@@ -51,8 +51,11 @@ void VGA_UpdatePlanarScreen (void *srcbuffer);
 
 static byte	backingbuf[48*24];
 
+#ifdef QUAKEWORLD
 /* cheesy hack into qw*/
 #define      MINIMUM_MEMORY                  0x550000
+static int minimum_memory = MINIMUM_MEMORY;
+#endif
 
 /*
 ================
@@ -267,7 +270,7 @@ qboolean VGA_FreeAndAllocVidbuffer (viddef_t *lvid, int allocnewbuffer)
 // see if there's enough memory, allowing for the normal mode 0x13 pixel,
 // z, and surface buffers
 	if ((host_parms.memsize - tbuffersize + SURFCACHE_SIZE_AT_320X200 +
-		 0x10000 * 3) < MINIMUM_MEMORY)
+		 0x10000 * 3) < minimum_memory)
 	{
 		Con_Printf ("Not enough memory for video mode\n");
 		VGA_pcurmode = NULL;	// so no further accesses to the buffer are
@@ -325,7 +328,7 @@ qboolean VGA_CheckAdequateMem (int width, int height, int rowbytes,
 // see if there's enough memory, allowing for the normal mode 0x13 pixel,
 // z, and surface buffers
 	if ((host_parms.memsize - tbuffersize + SURFCACHE_SIZE_AT_320X200 +
-		 0x10000 * 3) < MINIMUM_MEMORY)
+		 0x10000 * 3) < minimum_memory)
 	{
 		return false;		// not enough memory for mode
 	}

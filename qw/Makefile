@@ -80,38 +80,38 @@ LIBS   += -L../wat/lib -lwatt
 LIBS   += -lc -lgcc -lm
 
 # not too sophisticated dependency
-CLIENT = $(SYSOBJ_DXE)  \
-	$(GAMESPY)      \
+CLIENT = $(SYSOBJ_DXE)       \
+	$(GAMESPY)           \
 	$(COMMON)/cd_audio.o \
-	cl_cam.o   \
-	cl_demo.o  \
-	cl_ents.o  \
-	cl_http.o  \
-	cl_input.o \
-	cl_main.o  \
-	cl_parse.o \
-	cl_pred.o  \
-	cl_tent.o  \
-	cmd.o      \
-	common.o   \
-	console.o  \
+	cl_cam.o             \
+	cl_demo.o            \
+	cl_ents.o            \
+	cl_http.o            \
+	cl_input.o           \
+	cl_main.o            \
+	cl_parse.o           \
+	cl_pred.o            \
+	$(COMMON)/cl_tent.o  \
+	cmd.o                \
+	common.o             \
+	console.o            \
 	$(COMMON)/crc.o      \
-	cvar.o     \
+	cvar.o               \
 	$(COMMON)/dos_v2.o   \
 	$(COMMON)/dstring.o  \
 	$(COMMON)/in_dos.o   \
-	keys.o     \
+	keys.o               \
 	$(COMMON)/math.o     \
-	mathlib.o  \
-	md4.o      \
-	menu.o     \
-	net_chan.o \
-	net_udp.o  \
-	pmove.o    \
-	pmovetst.o \
-	r_part.o   \
-	sbar.o     \
-	skin.o     \
+	mathlib.o            \
+	md4.o                \
+	menu.o               \
+	net_chan.o           \
+	net_udp.o            \
+	pmove.o              \
+	pmovetst.o           \
+	r_part.o             \
+	sbar.o               \
+	skin.o               \
 	$(COMMON)/snd_dma.o  \
 	$(COMMON)/snd_dos.o  \
 	$(COMMON)/snd_gus.o  \
@@ -125,7 +125,7 @@ CLIENT = $(SYSOBJ_DXE)  \
 	$(COMMON)/sys_dos.o  \
 	$(COMMON)/sys_dosa.o \
 	$(COMMON)/sys_find.o \
-	view.o     \
+	view.o               \
 	$(COMMON)/wad.o      \
 	$(COMMON)/zone.o
 
@@ -133,7 +133,7 @@ ifeq ($(GLQUAKE),0)
 REFSOFT = $(COMMON)/d_copy.o \
 	$(COMMON)/d_draw.o   \
 	$(COMMON)/d_draw16.o \
-	d_edge.o   \
+	d_edge.o             \
 	$(COMMON)/d_fill.o   \
 	$(COMMON)/d_init.o   \
 	$(COMMON)/d_modech.o \
@@ -150,8 +150,8 @@ REFSOFT = $(COMMON)/d_copy.o \
 	$(COMMON)/d_vars.o   \
 	$(COMMON)/d_varsa.o  \
 	$(COMMON)/d_zpoint.o \
-	draw.o     \
-	model.o    \
+	draw.o               \
+	model.o              \
 	$(COMMON)/r_aclip.o  \
 	$(COMMON)/r_aclipa.o \
 	$(COMMON)/r_alias.o  \
@@ -161,21 +161,21 @@ REFSOFT = $(COMMON)/d_copy.o \
 	$(COMMON)/r_drawa.o  \
 	$(COMMON)/r_edge.o   \
 	$(COMMON)/r_edgea.o  \
-	r_efrag.o  \
+	r_efrag.o            \
 	$(COMMON)/r_light.o  \
-	r_main.o   \
-	r_misc.o   \
+	r_main.o             \
+	r_misc.o             \
 	$(COMMON)/r_sky.o    \
 	$(COMMON)/r_sprite.o \
 	$(COMMON)/r_surf.o   \
 	$(COMMON)/r_vars.o   \
 	$(COMMON)/r_varsa.o  \
-	screen.o   \
+	screen.o             \
 	$(COMMON)/surf16.o   \
 	$(COMMON)/surf8.o    \
-	vid_dos.o  \
-	vid_ext.o  \
-	vid_vga.o  \
+	$(COMMON)/vid_dos.o  \
+	$(COMMON)/vid_ext.o  \
+	$(COMMON)/vid_vga.o  \
 	$(COMMON)/vregset.o
 endif
 
@@ -184,16 +184,16 @@ REFGL = $(COMMON)/dos_dmesa.o  \
 	$(COMMON)/dos_fxmesa.o \
 	$(COMMON)/dos_sage.o   \
 	$(COMMON)/fx_gamma.o   \
-	gl_draw.o    \
+	gl_draw.o              \
 	$(COMMON)/gl_mesh.o    \
-	gl_model.o   \
-	gl_ngraph.o  \
+	gl_model.o             \
+	gl_ngraph.o            \
 	$(COMMON)/gl_refrag.o  \
 	$(COMMON)/gl_rlight.o  \
-	gl_rmain.o   \
-	gl_rmisc.o   \
+	gl_rmain.o             \
+	gl_rmisc.o             \
 	$(COMMON)/gl_rsurf.o   \
-	gl_screen.o  \
+	gl_screen.o            \
 	$(COMMON)/gl_test.o    \
 	$(COMMON)/gl_warp.o    \
 	$(COMMON)/gl_viddos.o

@@ -545,7 +545,7 @@ IN_MouseEvent
 */
 void IN_MouseEvent (int mstate)
 {
-	int		i;
+	int	i;
 
 	if (mouseactive && !dinput)
 	{
@@ -561,7 +561,7 @@ void IN_MouseEvent (int mstate)
 			if ( !(mstate & (1<<i)) &&
 				(mouse_oldbuttonstate & (1<<i)) )
 			{
-					Key_Event (K_MOUSE1 + i, false);
+				Key_Event (K_MOUSE1 + i, false);
 			}
 		}	
 			
@@ -667,10 +667,10 @@ void IN_MouseMove (usercmd_t *cmd)
 	else
 	{
 		GetCursorPos (&current_pos);
-	mx = current_pos.x - window_center_x + mx_accum;
-	my = current_pos.y - window_center_y + my_accum;
-	mx_accum = 0;
-	my_accum = 0;
+		mx = current_pos.x - window_center_x + mx_accum;
+		my = current_pos.y - window_center_y + my_accum;
+		mx_accum = 0;
+		my_accum = 0;
 	}
 
 	if (m_filter->value)
