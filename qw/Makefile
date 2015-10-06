@@ -21,7 +21,7 @@ COMMON=../common
 
 CFLAGS  = -g -Wall -Werror -O2 -DNDEBUG -DQUAKEWORLD -fno-strict-aliasing
 CFLAGS += -I./ -I../common
-CFLAGS += -fomit-frame-pointer -DWATT32_NO_OLDIES -I../wat/inc
+CFLAGS += -fomit-frame-pointer -DWATT32_NO_OLDIES -I../3rdparty/watt32/inc
 LDFLAGS =
 LIBS    =
 EXE     = qw.exe
@@ -75,7 +75,7 @@ CFLAGS += -DUSE_CURL -DCURL_NO_OLDIES
 CFLAGS += -I../libcurl/include
 LIBS   += -L../libcurl/lib -lcurl
 endif
-LIBS   += -L../wat/lib -lwatt
+LIBS   += -L../3rdparty/watt32/lib -lwatt
 
 LIBS   += -lc -lgcc -lm
 

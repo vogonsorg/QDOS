@@ -62,8 +62,8 @@ endif
 
 ifeq ($(USE_WATT32),yes)
 CFLAGS += -DUSE_WATT32 -DWATT32_NO_OLDIES
-CFLAGS += -I../wat/inc
-LIBS   += -L../wat/lib -lwatt
+CFLAGS += -I../3rdparty/watt32/inc
+LIBS   += -L../3rdparty/watt32/lib -lwatt
 endif
 
 ifeq ($(USE_OGG),yes)
