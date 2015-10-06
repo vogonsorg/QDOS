@@ -72,8 +72,8 @@ endif
 
 ifeq ($(USE_CURL),1)
 CFLAGS += -DUSE_CURL -DCURL_NO_OLDIES
-CFLAGS += -I../libcurl/include
-LIBS   += -L../libcurl/lib -lcurl
+CFLAGS += -I../3rdparty/libcurl/include
+LIBS   += -L../3rdparty/libcurl/lib -lcurl
 endif
 LIBS   += -L../3rdparty/watt32/lib -lwatt
 
