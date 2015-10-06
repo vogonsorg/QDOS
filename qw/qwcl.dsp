@@ -45,7 +45,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /G5 /MT /GX /O2 /I "..\common\win32\dxsdk\sdk\inc" /I "..\common\win32\scitech\include" /I "winquake" /I "..\common" /I ".\\" /D "QUAKEWORLD" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /MT /GX /O2 /I "..\common\win32" /I "..\common\win32\dxsdk\sdk\inc" /I "..\common\win32\scitech\include" /I "winquake" /I "..\common" /I ".\\" /D "QUAKEWORLD" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -72,7 +72,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /G5 /MTd /W3 /Gm /GX /ZI /Od /I "..\common\win32\dxsdk\sdk\inc" /I "..\common\win32\scitech\include" /I "winquake" /I "..\common" /I ".\\" /D "QUAKEWORLD" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /MTd /W3 /Gm /GX /ZI /Od /I "..\common\win32" /I "..\common\win32\dxsdk\sdk\inc" /I "..\common\win32\scitech\include" /I "winquake" /I "..\common" /I ".\\" /D "QUAKEWORLD" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -99,8 +99,8 @@ LINK32=link.exe
 # PROP Intermediate_Dir ".\release_gl"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /G5 /MT /GX /O2 /I "..\common\win32\dxsdk\sdk\inc" /I "..\common\win32\scitech\include" /I "winquake" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /FR /YX /FD /c
-# ADD CPP /nologo /G5 /MT /GX /O2 /I "..\common\win32\dxsdk\sdk\inc" /I "..\common\win32\scitech\include" /I "winquake" /I "..\common" /I ".\\" /D "QUAKEWORLD" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /D "GLQUAKE" /FR /YX /FD /c
+# ADD BASE CPP /nologo /G5 /MT /GX /O2 /I "..\common\win32" /I "..\common\win32\dxsdk\sdk\inc" /I "..\common\win32\scitech\include" /I "winquake" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /MT /GX /O2 /I "..\common\win32" /I "..\common\win32\dxsdk\sdk\inc" /I "..\common\win32\scitech\include" /I "winquake" /I "..\common" /I ".\\" /D "QUAKEWORLD" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /D "GLQUAKE" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -128,8 +128,8 @@ LINK32=link.exe
 # PROP Intermediate_Dir ".\debug_gl"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /G5 /MT /GX /O2 /I "..\common\win32\dxsdk\sdk\inc" /I "..\common\win32\scitech\include" /I "winquake" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /D "GLQUAKE" /FR /YX /FD /c
-# ADD CPP /nologo /G5 /MTd /W3 /Gm /GX /ZI /Od /I "..\common\win32\dxsdk\sdk\inc" /I "..\common\win32\scitech\include" /I "winquake" /I "..\common" /I ".\\" /D "QUAKEWORLD" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /D "GLQUAKE" /FR /YX /FD /c
+# ADD BASE CPP /nologo /G5 /MT /GX /O2 /I "..\common\win32" /I "..\common\win32\dxsdk\sdk\inc" /I "..\common\win32\scitech\include" /I "winquake" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /D "GLQUAKE" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /MTd /W3 /Gm /GX /ZI /Od /I "..\common\win32" /I "..\common\win32\dxsdk\sdk\inc" /I "..\common\win32\scitech\include" /I "winquake" /I "..\common" /I ".\\" /D "QUAKEWORLD" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /D "GLQUAKE" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -2469,15 +2469,15 @@ SOURCE=.\qwcl2.ico
 # End Group
 # Begin Source File
 
-SOURCE=..\win32\libogg.lib
+SOURCE=..\common\win32\libogg.lib
 # End Source File
 # Begin Source File
 
-SOURCE=..\win32\libvorbis.lib
+SOURCE=..\common\win32\libvorbis.lib
 # End Source File
 # Begin Source File
 
-SOURCE=.\winquake\libcurl.lib
+SOURCE=..\common\win32\libcurl.lib
 # End Source File
 # End Target
 # End Project

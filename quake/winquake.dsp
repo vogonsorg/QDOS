@@ -45,7 +45,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /G5 /MT /GX /I "..\common\win32\scitech\include" /I "..\common\win32\dxsdk\sdk\inc" /I ".\winquake" /I "..\common" /I ".\\" /D "QUAKE1" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "BSP2_SUPPORT" /D "GAMESPY" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /MT /GX /I "..\common\win32" /I "..\common\win32\scitech\include" /I "..\common\win32\dxsdk\sdk\inc" /I ".\winquake" /I "..\common" /I ".\\" /D "QUAKE1" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "BSP2_SUPPORT" /D "GAMESPY" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -72,7 +72,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /G5 /MTd /GX /ZI /Od /I "..\common\win32\scitech\include" /I "..\common\win32\dxsdk\sdk\inc" /I ".\winquake" /I "..\common" /I ".\\" /D "QUAKE1" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "BSP2_SUPPORT" /D "OGG_SUPPORT" /D "GAMESPY" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /MTd /GX /ZI /Od /I "..\common\win32" /I "..\common\win32\scitech\include" /I "..\common\win32\dxsdk\sdk\inc" /I ".\winquake" /I "..\common" /I ".\\" /D "QUAKE1" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "BSP2_SUPPORT" /D "OGG_SUPPORT" /D "GAMESPY" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -98,9 +98,9 @@ LINK32=link.exe
 # PROP Intermediate_Dir ".\release_gl"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /G5 /GX /Ox /Ot /Ow /I "..\common\win32\scitech\include" /I "..\common\win32\dxsdk\sdk\inc" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
+# ADD BASE CPP /nologo /G5 /GX /Ox /Ot /Ow /I "..\common\win32" /I "..\common\win32\scitech\include" /I "..\common\win32\dxsdk\sdk\inc" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
 # SUBTRACT BASE CPP /Oa /Og
-# ADD CPP /nologo /G5 /MT /GX /Ot /Ow /I "..\common\win32\dxsdk\sdk\inc" /I "..\common" /I ".\\" /D "QUAKE1" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "GLQUAKE" /D "BSP2_SUPPORT" /D "GAMESPY" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /MT /GX /Ot /Ow /I "..\common\win32" /I "..\common\win32\dxsdk\sdk\inc" /I "..\common" /I ".\\" /D "QUAKE1" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "GLQUAKE" /D "BSP2_SUPPORT" /D "GAMESPY" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -128,8 +128,8 @@ LINK32=link.exe
 # PROP Intermediate_Dir ".\debug_gl"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /G5 /GX /Ot /Ow /I "..\common\win32\dxsdk\sdk\inc" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "GLQUAKE" /D "BSP2_SUPPORT" /FR /YX /FD /c
-# ADD CPP /nologo /G5 /MTd /GX /ZI /Od /I "..\common\win32\dxsdk\sdk\inc" /I "..\common" /I ".\\" /D "QUAKE1" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "GLQUAKE" /D "BSP2_SUPPORT" /D "GAMESPY" /FR /YX /FD /c
+# ADD BASE CPP /nologo /G5 /GX /Ot /Ow /I "..\common\win32" /I "..\common\win32\dxsdk\sdk\inc" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "GLQUAKE" /D "BSP2_SUPPORT" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /MTd /GX /ZI /Od /I "..\common\win32" /I "..\common\win32\dxsdk\sdk\inc" /I "..\common" /I ".\\" /D "QUAKE1" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "GLQUAKE" /D "BSP2_SUPPORT" /D "GAMESPY" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -2220,6 +2220,10 @@ SOURCE=..\common\dstring.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\common\gl_func.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\input.h
 # End Source File
 # Begin Source File
@@ -2369,11 +2373,11 @@ SOURCE=.\progdefs.q2
 # End Source File
 # Begin Source File
 
-SOURCE=..\win32\libogg.lib
+SOURCE=..\common\win32\libogg.lib
 # End Source File
 # Begin Source File
 
-SOURCE=..\win32\libvorbis.lib
+SOURCE=..\common\win32\libvorbis.lib
 # End Source File
 # End Target
 # End Project
