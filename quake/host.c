@@ -73,8 +73,6 @@ cvar_t	*teamplay;
 cvar_t	*samelevel;
 cvar_t	*noexit;
 
-cvar_t	*developer;
-
 cvar_t	*skill; // 0 - 3
 cvar_t	*deathmatch; // 0, 1, or 2
 cvar_t	*coop; // 0 or 1
@@ -265,8 +263,6 @@ void Host_InitLocal (void)
 	noexit->description = "Do not allow exiting in a game.";
 	skill = Cvar_Get("skill","1", 0); // 0 - 3
 	skill->description = "Sets the skill.  Valid values are 0 through 3.";
-	developer = Cvar_Get("developer","0", 0);
-	developer->description = "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Server msgs - 256\n  * Progs msgs - 512\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Save/Restore msgs - 32768\n  * Extremely verbose msgs - 65536\n";
 	deathmatch = Cvar_Get("deathmatch","0", CVAR_LATCH); // 0, 1, or 2
 	deathmatch->description = "Enable a deathmatch game.  Coop must be set to 0.";
 	coop = Cvar_Get("coop","0", CVAR_LATCH); // 0 or 1

@@ -22,7 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define __CVAR_H
 
 #define	CVAR_ARCHIVE	1	// set to cause it to be saved to vars.rc
-//#define	CVAR_USERINFO	2	// added to userinfo  when changed /* FS: QW not Q1 */
+#ifdef QUAKEWORLD /* FS: QW not Q1 */
+#define	CVAR_USERINFO	2	// added to userinfo  when changed
+#endif
 #define	CVAR_SERVERINFO	4	// added to serverinfo when changed
 #define	CVAR_NOSET		8	// don't allow change from console at all,
 							// but can be set from the command line

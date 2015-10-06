@@ -1971,7 +1971,7 @@ SOURCE=..\common\crc.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\cvar.c
+SOURCE=..\common\cvar.c
 # End Source File
 # Begin Source File
 
@@ -2328,7 +2328,7 @@ SOURCE=..\common\crc.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\cvar.h
+SOURCE=..\common\cvar.h
 # End Source File
 # Begin Source File
 

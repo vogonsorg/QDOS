@@ -19,11 +19,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // cvar.c -- dynamic variable tracking
 
+#ifdef QUAKE1
+#include "quakedef.h"
+#else
 #ifdef SERVERONLY 
 #include "qwsvdef.h"
 #else
 #include "quakedef.h"
 #endif
+#endif // QUAKE1
 
 cvar_t	*cvar_vars;
 cvar_t	*developer;
@@ -73,7 +77,11 @@ void Cvar_List_f (void)
 		}
 		Con_SafePrintf ("%s%s%s %s \"%s\"\n",
 			cvar->flags & CVAR_ARCHIVE ? "*" : " ",
+#ifdef QUAKE1
+			cvar->flags & CVAR_SERVERINFO ? "s" : " ",
+#else
 			cvar->flags & CVAR_USERINFO ? "i" : " ",
+#endif
 			cvar->flags & CVAR_LATCH ? "l" : " ",
 			cvar->name,
 			cvar->string);
@@ -151,11 +159,13 @@ char *Cvar_CompleteVariable (char *partial)
 	
 	if (!len)
 		return NULL;
-		
+
+#ifdef QUAKEWORLD
 	// check exact match
 	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
 		if (!strcmp (partial,cvar->name))
 			return cvar->name;
+#endif
 
 	// check partial match
 	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
@@ -276,7 +286,11 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 					return var;
 			}
 
+#ifdef QUAKE1
+			if (sv.active)
+#else
 			if (cls.state == ca_active)
+#endif
 			{
 				Con_Printf ("%s will be changed for next map.\n", var_name);
 				var->latched_string = CopyString(value);
@@ -299,6 +313,7 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 		}
 	}
 
+#ifdef QUAKEWORLD
 #ifdef SERVERONLY
 	if (var->flags & CVAR_SERVERINFO)
 	{
@@ -315,18 +330,27 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 			SZ_Print (&cls.netchan.message, va("setinfo \"%s\" \"%s\"\n", var_name, value));
 		}
 	}
-#endif
+#endif // SERVERONLY
+#endif // QUAKEWORLD
 
 	if (!strcmp(value, var->string))
 		return var;		// not changed
-	
+
 	var->modified = true; /* FS: Added */
 
 	Z_Free (var->string);	// free the old value string
-	
+
 	var->string = CopyString(value);
 	var->value = atof (var->string);
 	var->intValue = atoi(var->string); /* FS: So we don't need to cast shit all the time */
+
+#ifdef QUAKE1
+	if (var->flags & CVAR_SERVERINFO)
+	{
+		if (sv.active)
+			SV_BroadcastPrintf ("\"%s\" changed to \"%s\"\n", var->name, var->string);
+	}
+#endif
 
 	return var;
 }
@@ -531,8 +555,13 @@ void Cvar_WriteVariables (const char *path)
 
 void Cvar_Init (void) /* FS: from fitzquake */
 {
+#ifdef QUAKE1
+	developer = Cvar_Get("developer","0", 0);
+	developer->description = "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Server msgs - 256\n  * Progs msgs - 512\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Save/Restore msgs - 32768\n  * Extremely verbose msgs - 65536\n  * Extremely verbose gamespy msgs - 131072\n";
+#else
 	developer = Cvar_Get("developer","0", 0);
 	developer->description = "Enable the use of developer messages. \nAvailable flags:\n  * All flags except verbose msgs - 1\n  * Standard msgs - 2\n  * Sound msgs - 4\n  * Network msgs - 8\n  * File IO msgs - 16\n  * Graphics renderer msgs - 32\n  * CD Player msgs - 64\n  * Memory management msgs - 128\n  * Physics msgs - 2048\n  * Entity msgs - 16384\n  * Extremely verbose msgs - 65536\n  * Extremely verbose gamespy msgs - 131072\n";
+#endif
 
 	Cmd_AddCommand ("set", Cvar_Set_f);
 	Cmd_AddCommand ("cvarlist", Cvar_List_f);
@@ -575,10 +604,12 @@ void Cvar_ParseDeveloperFlags (void) /* FS: Special stuff for showing all the de
 			Con_Printf(" * CD Player messages - 64\n");
 		if(devFlags & DEVELOPER_MSG_MEM)
 			Con_Printf(" * Memory messages - 128\n");
-//		if(devFlags & DEVELOPER_MSG_SERVER)
-//			Con_Printf(" * Server messages - 256\n");
-//		if(devFlags & DEVELOPER_MSG_PROGS)
-//			Con_Printf(" * Prog messages - 512\n");
+#ifdef QUAKE1
+		if(devFlags & DEVELOPER_MSG_SERVER)
+			Con_Printf(" * Server messages - 256\n");
+		if(devFlags & DEVELOPER_MSG_PROGS)
+			Con_Printf(" * Prog messages - 512\n");
+#endif
 //		if(devFlags & DEVELOPER_MSG_WORLD)
 //			Con_Printf(" * World.dll messages - 1024\n");
 		if(devFlags & DEVELOPER_MSG_PHYSICS)
@@ -589,8 +620,10 @@ void Cvar_ParseDeveloperFlags (void) /* FS: Special stuff for showing all the de
 //			Con_Printf(" * GCE.dll messages - 8192\n");
 		if(devFlags & DEVELOPER_MSG_ENTITY)
 			Con_Printf(" * Entity messages - 16384\n");
-//		if(devFlags & DEVELOPER_MSG_SAVE)
-//			Con_Printf(" * Save/Restore messages - 32768\n");
+#ifdef QUAKE1
+		if(devFlags & DEVELOPER_MSG_SAVE)
+			Con_Printf(" * Save/Restore messages - 32768\n");
+#endif
 		if(devFlags & DEVELOPER_MSG_VERBOSE)
 			Con_Printf(" * Extremely Verbose messages - 65536\n");
 		if(devFlags & DEVELOPER_MSG_GAMESPY)
