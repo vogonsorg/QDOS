@@ -38,7 +38,7 @@ CFLAGS += -DUSE_3DFXGAMMA
 CFLAGS += -DGL_DLSYM
 #LIBS   += -L../3rdparty/lib -lgl
 EXE     = qwdosfx.exe
-SYSOBJ_DXE=$(COMMON)/dxe.o
+SYSOBJ_DXE=dxe.o
 else
 SYSOBJ_DXE=no_dxe.o
 endif
