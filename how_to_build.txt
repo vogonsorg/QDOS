@@ -1,0 +1,20 @@
+DJGGP Version: 2.05
+GCC Version (DJGPP port): 3.4.6
+Binutils Version (DJGPP port): 2.25.1
+
+Windows: * Pick /quake or /qw and run Make -f Makefile.  Check these files
+           with a text editor for options.  Generally, you would want
+           make -f Makefile for Software and make -f Makefile GLQUAKE=1 for
+           3DFX.
+         * makesse.bat will build an SSE optimized build targeted for Pentium 3
+           and later processors with 3DFX cards.  SSE builds are entirely
+           unsupported but appear to run with no issues.
+         * NOTE: makesse.bat has hard-coded paths to my machine for
+                 distribution.  Check these batch files and modify
+                 to your needs.
+
+Linux  : You need a Linux-to-DJGPP cross compiler toolchain based on DJGPP-2.05.
+         I use a toolchain with gcc-3.4.6, binutils-2.25.1 and DJGPP-2.05.
+         See the cross_build.sh to see how I do it myself; edit those scripts to
+         represent your own build environment properly.
+         * individual cross_build.sh scripts to build only the wanted components.
