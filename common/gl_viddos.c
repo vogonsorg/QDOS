@@ -484,7 +484,7 @@ void VID_Init(unsigned char *palette)
 	char	gldir[MAX_OSPATH];
 	int width = 640, height = 480;
 
-	vid_mode = Cvar_Get("vid_mode","5", 0);
+	vid_mode = Cvar_Get("vid_mode","0", CVAR_ARCHIVE);
 	vid_wait = Cvar_Get("vid_wait", "0", 0);;
 	_vid_wait_override = Cvar_Get("_vid_wait_override", "0", 0);
 

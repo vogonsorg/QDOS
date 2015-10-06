@@ -288,6 +288,8 @@ extern cvar_t	*m_yaw;
 extern cvar_t	*m_forward;
 extern cvar_t	*m_side;
 
+extern cvar_t	*_windowed_mouse;
+
 /* FS: New stuff */
 extern cvar_t	*show_fps;
 extern cvar_t	*show_time;

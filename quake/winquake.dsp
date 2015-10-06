@@ -129,7 +129,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /G5 /GX /Ot /Ow /I "..\common\win32" /I "..\common\win32\dxsdk\sdk\inc" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "GLQUAKE" /D "BSP2_SUPPORT" /FR /YX /FD /c
-# ADD CPP /nologo /G5 /MTd /GX /ZI /Od /I "..\common\win32" /I "..\common\win32\dxsdk\sdk\inc" /I "..\common" /I ".\\" /D "QUAKE1" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "GLQUAKE" /D "BSP2_SUPPORT" /D "GAMESPY" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /MTd /W3 /GX /ZI /Od /I "..\common\win32" /I "..\common\win32\dxsdk\sdk\inc" /I "..\common" /I ".\\" /D "QUAKE1" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "GLQUAKE" /D "BSP2_SUPPORT" /D "GAMESPY" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -2228,7 +2228,7 @@ SOURCE=..\common\gl_func.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\input.h
+SOURCE=..\common\input.h
 # End Source File
 # Begin Source File
 
@@ -2312,7 +2312,7 @@ SOURCE=.\sbar.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\screen.h
+SOURCE=..\common\screen.h
 # End Source File
 # Begin Source File
 
@@ -2348,7 +2348,7 @@ SOURCE=..\common\wad.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\winquake.h
+SOURCE=..\common\winquake.h
 # End Source File
 # Begin Source File
 

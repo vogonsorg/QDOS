@@ -25,6 +25,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "winquake.h"
 #endif
 
+#ifdef QUAKEWORLD
+// QuakeWorld hack...
+#define viewentity	playernum+1
+#endif // QUAKEWORLD
+
 void S_Play(void);
 void S_Play2(void); /* FS: For Nehahra */
 void S_PlayVol(void);
@@ -33,19 +38,6 @@ void S_Update_();
 void S_StopAllSounds(qboolean clear);
 void S_StopAllSoundsC(void);
 
-#ifdef QUAKEWORLD
-// QuakeWorld hack...
-#define viewentity	playernum+1
-
-#ifndef _WINDOWS
-extern void GUS_ClearDMA(void); /* FS: Added */
-extern int havegus; /* FS: Added */
-#endif
-#endif // QUAKEWORLD
-
-#ifdef WIN32
-extern void IN_Accumulate (void);
-#endif
 
 // =======================================================================
 // Internal sound data & structures

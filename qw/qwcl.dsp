@@ -2356,7 +2356,7 @@ SOURCE=..\common\gl_func.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\input.h
+SOURCE=..\common\input.h
 # End Source File
 # Begin Source File
 
@@ -2412,7 +2412,7 @@ SOURCE=.\sbar.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\screen.h
+SOURCE=..\common\screen.h
 # End Source File
 # Begin Source File
 
@@ -2444,7 +2444,7 @@ SOURCE=..\common\wad.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\winquake.h
+SOURCE=..\common\winquake.h
 # End Source File
 # Begin Source File
 

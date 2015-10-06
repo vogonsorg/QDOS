@@ -33,9 +33,8 @@ void IN_Commands (void);
 void IN_Move (usercmd_t *cmd);
 // add additional movement on top of the keyboard move cmd
 
-void IN_ModeChanged (void);
-// called whenever screen dimensions change
-
+#ifdef QUAKEWORLD
 void CL_SendClientCommand(qboolean reliable, char *format, ...); /* FS: From JQuake/EZQ/etc */
+#endif
 
 #endif // __INPUT_H
