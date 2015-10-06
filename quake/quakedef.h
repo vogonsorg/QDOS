@@ -25,14 +25,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define QUAKE_GAME                      // as opposed to utilities
 
-#define VERSION                         1.09
-#define GLQUAKE_VERSION         1.00
-#define D3DQUAKE_VERSION        0.01
-#define WINQUAKE_VERSION        0.996
-#define LINUX_VERSION           1.30
-#define X11_VERSION                     1.10
+#define VERSION			1.09
+#define GLQUAKE_VERSION	1.00
+#define LINUX_VERSION	1.30
 
-//define        PARANOID                        // speed sapping error checking
+//define	PARANOID // speed sapping error checking
+
+#ifdef _WIN32
+#pragma warning( disable : 4244 4127 4201 4214 4514 4305 4115 4018)
+#endif
 
 #define GAMENAME        "id1"
 
@@ -47,7 +48,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <assert.h> //johnfitz
 #endif
 
+#ifndef VISIBLE
 #define VISIBLE /* FS: for dstrings */
+#endif
+
 #include "dstring.h"
 
 #if defined(_WIN32) && !defined(WINDED)
@@ -67,7 +71,7 @@ void    VID_UnlockBuffer (void);
 #endif
 
 #if defined __i386__ // && !defined __sun__
-#define id386 1
+#define id386	1
 #else
 #define id386   0
 #endif
@@ -84,8 +88,8 @@ void    VID_UnlockBuffer (void);
 
 #define UNUSED(x)       (x = x) // for pesky compiler / lint warnings
 
-#define MINIMUM_MEMORY                  0x550000
-#define MINIMUM_MEMORY_LEVELPAK (MINIMUM_MEMORY + 0x100000)
+#define MINIMUM_MEMORY				0x550000
+#define MINIMUM_MEMORY_LEVELPAK		(MINIMUM_MEMORY + 0x100000)
 
 #define MAX_NUM_ARGVS   50
 
@@ -117,7 +121,7 @@ void    VID_UnlockBuffer (void);
 #define MIN_EDICTS		256			// johnfitz -- lowest allowed value for max_edicts cvar
 #define MAX_EDICTS		32000		// johnfitz -- highest allowed value for max_edicts cvar
 									// ents past 8192 can't play sounds in the standard protocol
-#define	MAX_LIGHTSTYLES	64
+#define MAX_LIGHTSTYLES	64
 #define	MAX_MODELS		2048		// johnfitz -- was 256
 #define	MAX_SOUNDS		2048		// johnfitz -- was 256
 
@@ -125,9 +129,9 @@ void    VID_UnlockBuffer (void);
 
 #define MAX_STYLESTRING 64
 
-#define CL_MASTER_ADDR	"maraakate.org" /* FS: Gamespy dead "master.gamespy.com" */
+#define CL_MASTER_ADDR	"maraakate.org" /* FS: Gamespy dead */
 #define CL_MASTER_PORT "28900"
-#define SV_MASTER_ADDR "maraakate.org" /* FS: gamespy dead "master.gamespy.com" */
+#define SV_MASTER_ADDR "maraakate.org" /* FS: Gamespy dead */
 #define SV_MASTER_PORT "27900"
 
 //

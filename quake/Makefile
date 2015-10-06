@@ -235,12 +235,18 @@ REFGL = dos_dmesa.o  \
 	gl_viddos.o
 endif
 
+REMOVEOBJS = rm -f *.o
+
 OBJECTS = $(OBJS) $(REFSOFT) $(REFGL)
 
 all: qdos
 
 clean:
-	rm -f *.o
+	$(REMOVEOBJS)
+
+realclean:
+	$(REMOVEOBJS)
+	rm -f *.exe
 
 qdos: $(OBJECTS)
 	$(CC) $(OBJECTS) $(LDFLAGS) $(LIBS) -o $(EXE)

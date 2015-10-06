@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define QUAKE_GAME                      // as opposed to utilities
 
-//define	PARANOID			// speed sapping error checking
+//define	PARANOID // speed sapping error checking
 
 #ifdef _WIN32
 #pragma warning( disable : 4244 4127 4201 4214 4514 4305 4115 4018)
@@ -37,7 +37,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <stdio.h>
 #include <stdlib.h>
 #include <setjmp.h>
-#include <time.h>
+
+#ifdef _MSC_VER
+#include <assert.h> //johnfitz
+#endif
 
 #ifndef VISIBLE
 #define VISIBLE /* FS: for dstrings */

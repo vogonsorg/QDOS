@@ -20,13 +20,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // defs common to client and server
 
-#define GLQUAKE_VERSION 1.00
-#define VERSION         2.40
-#define LINUX_VERSION 0.98
+#ifndef __BOTHDEFS_H
+#define __BOTHDEFS_H
 
+#define VERSION			2.40
+#define GLQUAKE_VERSION	1.00
+#define LINUX_VERSION	0.98
+
+//define        PARANOID                        // speed sapping error checking
 
 #if (defined(_M_IX86) || defined(__i386__)) && !defined(id386)
-#define id386   1
+#define id386	1
 #else
 #define id386   0
 #endif
@@ -46,7 +50,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define UNUSED(x)       (x = x) // for pesky compiler / lint warnings
 
-#define MINIMUM_MEMORY  0x550000
+#define MINIMUM_MEMORY				0x550000
 
 // up / down
 #define PITCH   0
@@ -63,8 +67,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define SOUND_CHANNELS          8
 
 
-#define MAX_QPATH               64                      // max length of a quake game pathname
-#define MAX_OSPATH              256 /* FS: Was 128 */	// max length of a filesystem pathname
+#define	MAX_QPATH		64			// max length of a quake game pathname
+#define	MAX_OSPATH		256			/* FS: Was 128 */ // max length of a filesystem pathname
 
 #define ON_EPSILON              0.1                     // point on plane side epsilon
 
@@ -74,14 +78,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 // per-level limits
 //
-#define MAX_EDICTS              2048 /* FS: Was 768 */
-#define MAX_LIGHTSTYLES 64
-#define MAX_MODELS              512 /* FS: Was 256 */	// these are sent over the net as bytes
-#define MAX_SOUNDS              256						// so they cannot be blindly increased
+#define MAX_EDICTS		2048	/* FS: Was 768 */
+#define MAX_LIGHTSTYLES	64
+#define MAX_MODELS		512		/* FS: Was 256 */	// these are sent over the net as bytes
+#define MAX_SOUNDS		256							// so they cannot be blindly increased
 
-#define CL_MASTER_ADDR	"maraakate.org" /* FS: Gamespy dead  */
+#define CL_MASTER_ADDR	"maraakate.org" /* FS: Gamespy dead */
 #define CL_MASTER_PORT "28900"
-#define SV_MASTER_ADDR "maraakate.org" /* FS: Gamespy dead  */
+#define SV_MASTER_ADDR "maraakate.org" /* FS: Gamespy dead */
 #define SV_MASTER_PORT "27900"
 
 #define SAVEGAME_COMMENT_LENGTH 39
@@ -163,3 +167,4 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /* FS: QuakeForge HTTP DL */
 #define DL_HTTP	-3
 
+#endif // __BOTHDEFS_H
