@@ -130,6 +130,12 @@ void GL_Init (void);
 qboolean is8bit = false;
 qboolean gl_mtexable = false;
 
+/* FS: FIXME: This is wrong.  But, this allows it to work */
+void (APIENTRY *glColorTableEXT_fp) (int, int, int, int, int, const void *);
+void (APIENTRY *glGetTexParameterfv_fp) (GLenum,GLenum,GLfloat *);
+void (APIENTRY *glActiveTextureARB_fp) (GLenum);
+void (APIENTRY *glMultiTexCoord2fARB_fp) (GLenum,GLfloat,GLfloat);
+
 //====================================
 
 cvar_t		*vid_mode;
@@ -540,8 +546,8 @@ void CheckMultiTextureExtensions(void)
 	else
 		if (strstr(gl_extensions, "GL_ARB_multitexture"))
 		{
-			glMultiTexCoord2fARB_fp = (glMultiTexCoord2fARB_f) wglGetProcAddress("glMultiTexCoord2fARB");
-			glActiveTextureARB_fp = (glActiveTextureARB_f) wglGetProcAddress("glActiveTextureARB");
+			glMultiTexCoord2fARB_fp = (void *) wglGetProcAddress("glMultiTexCoord2fARB");
+			glActiveTextureARB_fp = (void *) wglGetProcAddress("glActiveTextureARB");
 			if (glMultiTexCoord2fARB_fp && glActiveTextureARB_fp)
 			{
 				Con_Printf("FOUND: ARB_multitexture\n");
@@ -555,8 +561,8 @@ void CheckMultiTextureExtensions(void)
 		else
 			if (strstr(gl_extensions, "GL_SGIS_multitexture"))
 			{
-				glMultiTexCoord2fARB_fp = (glMultiTexCoord2fARB_f) wglGetProcAddress("glMTexCoord2fSGIS");
-				glActiveTextureARB_fp = (glActiveTextureARB_f) wglGetProcAddress("glSelectTextureSGIS");
+				glMultiTexCoord2fARB_fp = (void *) wglGetProcAddress("glMTexCoord2fSGIS");
+				glActiveTextureARB_fp = (void *) wglGetProcAddress("glSelectTextureSGIS");
 				if (glMultiTexCoord2fARB_fp && glActiveTextureARB_fp)
 				{
 					Con_Printf("FOUND: SGIS_multitexture\n");
@@ -1487,7 +1493,7 @@ void VID_Init8bitPalette()
 	if (!strstr(gl_extensions, "GL_EXT_shared_texture_palette") || COM_CheckParm("-no8bit"))
 		return;
 
-	glColorTableEXT_fp = (glColorTableEXT_f) wglGetProcAddress("glColorTableEXT");
+	glColorTableEXT_fp = (void *) wglGetProcAddress("glColorTableEXT");
 	if (!glColorTableEXT_fp)
 		return;
 
