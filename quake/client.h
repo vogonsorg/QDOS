@@ -38,7 +38,7 @@ extern gamespyBrowser_t browserList[MAX_SERVERS];
 extern gamespyBrowser_t browserListAll[MAX_SERVERS];
 void CL_PingNetServers_f (void);
 void Update_Gamespy_Menu(void);
-void GameSpy_Async_Think(void);
+void GameSpy_Async_Think(void); /* FS: Not static in Q1 since it is called from host.c */
 #endif
 
 typedef struct
@@ -419,6 +419,7 @@ void V_UpdatePalette (void);
 void V_Register (void);
 void V_ParseDamage (void);
 void V_SetContentsColor (int contents);
+void V_CalcBlend (void);
 
 
 //

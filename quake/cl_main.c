@@ -82,7 +82,7 @@ static	GServerList	serverlist = NULL;
 static	int		gspyCur;
 gamespyBrowser_t browserList[MAX_SERVERS]; /* FS: Browser list for active servers */
 gamespyBrowser_t browserListAll[MAX_SERVERS]; /* FS: Browser list for ALL servers */
-void GameSpy_Async_Think(void);
+void GameSpy_Async_Think(void); /* FS: Not static in Q1 since it is called from host.c */
 static void ListCallBack(GServerList serverlist, int msg, void *instance, void *param1, void *param2);
 static void CL_Gspystop_f (void);
        void CL_PingNetServers_f (void);

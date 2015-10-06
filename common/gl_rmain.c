@@ -85,6 +85,9 @@ cvar_t	*r_mirroralpha;
 cvar_t	*r_wateralpha;
 cvar_t	*r_dynamic;
 cvar_t	*r_novis;
+#ifdef QUAKEWORLD
+cvar_t	*r_netgraph;
+#endif
 
 cvar_t	*gl_finish;
 cvar_t	*gl_clear;
@@ -101,7 +104,9 @@ cvar_t	*gl_nocolors;
 cvar_t	*gl_keeptjunctions;
 cvar_t	*gl_reporttjunctions;
 
+#ifdef QUAKE1
 cvar_t	*gl_doubleeyes;
+#endif
 
 cvar_t	*r_waterwarp; /* FS: TODO FIXME dummy */
 
@@ -494,15 +499,26 @@ void R_DrawAliasModel (entity_t *e)
 		shadelight = 192 - ambientlight;
 
 	// ZOID: never allow players to go totally black
+#ifdef QUAKE1
 	i = currententity - cl_entities;
-	if (i >= 1 && i<=cl.maxclients /* && !strcmp (currententity->model->name, "progs/player.mdl") */)
+	if (i >= 1 && i<=cl.maxclients)
 		if (ambientlight < 8)
 			ambientlight = shadelight = 8;
 
-	// HACK HACK HACK -- no fullbright colors, so make torches full light
 	if (!strcmp (clmodel->name, "progs/flame2.mdl")
 		|| !strcmp (clmodel->name, "progs/flame.mdl") )
+		// HACK HACK HACK -- no fullbright colors, so make torches full light
 		ambientlight = shadelight = 256;
+#else
+	if (!strcmp(clmodel->name, "progs/player.mdl")) {
+		if (ambientlight < 8)
+			ambientlight = shadelight = 8;
+
+	} else if (!strcmp (clmodel->name, "progs/flame2.mdl")
+		|| !strcmp (clmodel->name, "progs/flame.mdl") )
+		// HACK HACK HACK -- no fullbright colors, so make torches full light
+		ambientlight = shadelight = 256;
+#endif
 
 	shadedots = r_avertexnormal_dots[((int)(e->angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
 	shadelight = shadelight / 200.0;
@@ -529,7 +545,11 @@ void R_DrawAliasModel (entity_t *e)
     glPushMatrix_fp ();
 	R_RotateForEntity (e);
 
-	if (!strcmp (clmodel->name, "progs/eyes.mdl") && gl_doubleeyes->value) {
+	if (!strcmp (clmodel->name, "progs/eyes.mdl")
+#ifdef QUAKE1
+	 && gl_doubleeyes->value
+#endif
+	 ) {
 		glTranslatef_fp (paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2] - (22 + 8));
 	// double size of eyes, since they are really hard to see in gl
 		glScalef_fp (paliashdr->scale[0]*2, paliashdr->scale[1]*2, paliashdr->scale[2]*2);
@@ -543,12 +563,25 @@ void R_DrawAliasModel (entity_t *e)
 
 	// we can't dynamically colormap textures, so they are cached
 	// seperately for the players.  Heads are just uncolored.
+#ifdef QUAKE1
 	if (currententity->colormap != vid.colormap && !gl_nocolors->value)
 	{
 		i = currententity - cl_entities;
-		if (i >= 1 && i<=cl.maxclients /* && !strcmp (currententity->model->name, "progs/player.mdl") */)
+		if (i >= 1 && i<=cl.maxclients)
 		    GL_Bind(playertextures - 1 + i);
 	}
+#else
+	if (currententity->scoreboard && !gl_nocolors->value)
+	{
+		i = currententity->scoreboard - cl.players;
+		if (!currententity->scoreboard->skin) {
+			Skin_Find(currententity->scoreboard);
+			R_TranslatePlayerSkin(i);
+		}
+		if (i >= 0 && i<MAX_CLIENTS)
+		    GL_Bind(playertextures + i);
+	}
+#endif
 
 	if (gl_smoothmodels->value)
 		glShadeModel_fp (GL_SMOOTH);
@@ -600,7 +633,11 @@ void R_DrawEntitiesOnList (void)
 	// draw sprites seperately, because of alpha blending
 	for (i=0 ; i<cl_numvisedicts ; i++)
 	{
+#ifdef QUAKE1
 		currententity = cl_visedicts[i];
+#else
+		currententity = &cl_visedicts[i];
+#endif
 
 		switch (currententity->model->type)
 		{
@@ -619,7 +656,11 @@ void R_DrawEntitiesOnList (void)
 
 	for (i=0 ; i<cl_numvisedicts ; i++)
 	{
+#ifdef QUAKE1
 		currententity = cl_visedicts[i];
+#else
+		currententity = &cl_visedicts[i];
+#endif
 
 		switch (currententity->model->type)
 		{
@@ -648,11 +689,17 @@ void R_DrawViewModel (void)
 	dlight_t	*dl;
 	int			ambientlight, shadelight;
 
-	if (!r_drawviewmodel->value)
+	if (!r_drawviewmodel->value
+#ifdef QUAKEWORLD
+	 || !Cam_DrawViewModel()
+#endif
+	 )
 		return;
 
+#ifdef QUAKE1
 	if (chase_active->value)
 		return;
+#endif
 
 	if (envmap)
 		return;
@@ -660,7 +707,11 @@ void R_DrawViewModel (void)
 	if (!r_drawentities->value)
 		return;
 
+#ifdef QUAKE1
 	if (cl.items & IT_INVISIBILITY)
+#else
+	if (cl.stats[STAT_ITEMS] & IT_INVISIBILITY)
+#endif
 		return;
 
 	if (cl.stats[STAT_HEALTH] <= 0)
@@ -804,8 +855,15 @@ R_SetupFrame
 void R_SetupFrame (void)
 {
 // don't allow cheats in multiplayer
+#ifdef QUAKE1
 	if (cl.maxclients > 1)
 		Cvar_Set ("r_fullbright", "0");
+#else
+	r_fullbright->value = 0;
+	r_lightmap->value = 0;
+	if (!atoi(Info_ValueForKey(cl.serverinfo, "watervis")))
+		r_wateralpha->value = 1;
+#endif
 
 	R_AnimateLight ();
 
@@ -1015,6 +1073,7 @@ void R_Clear (void)
 	glDepthRange_fp (gldepthmin, gldepthmax);
 }
 
+#ifdef QUAKE1 //!!! FIXME, Zoid, mirror is disabled for now
 /*
 =============
 R_Mirror
@@ -1081,6 +1140,7 @@ void R_Mirror (void)
 	glDisable_fp (GL_BLEND);
 	glColor4f_fp (1,1,1,1);
 }
+#endif
 
 /*
 ================
@@ -1120,7 +1180,9 @@ void R_RenderView (void)
 	R_DrawWaterSurfaces ();
 
 	// render mirror view
+#ifdef QUAKE1
 	R_Mirror ();
+#endif
 
 	R_PolyBlend ();
 
@@ -1131,3 +1193,8 @@ void R_RenderView (void)
 		Con_Printf ("%3i ms  %4i wpoly %4i epoly\n", (int)((time2-time1)*1000), c_brush_polys, c_alias_polys); 
 	}
 }
+
+/* FS: TODO FIXME: dummy */
+void R_ClearDynamic (void) {}
+
+void R_Restart_f (void) {}

@@ -73,6 +73,8 @@ void AddLightBlend (float r, float g, float b, float a2)
 }
 
 #ifdef QUAKE1
+void R_InitBubble (void) {} /* FS: Not in Q1 */
+
 void R_RenderDlight (dlight_t *light)
 {
 	int		i, j;
@@ -108,7 +110,8 @@ void R_RenderDlight (dlight_t *light)
 #else
 float bubble_sintable[17], bubble_costable[17];
 
-void R_InitBubble() {
+void R_InitBubble (void)
+{
 	float a;
 	int i;
 	float *bub_sin, *bub_cos;

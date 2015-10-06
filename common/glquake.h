@@ -168,7 +168,9 @@ extern	qboolean	envmap;
 extern	int	currenttexture;
 extern	int	cnttextures[2];
 extern	int	particletexture;
+#ifdef QUAKEWORLD
 extern	int	netgraphtexture;	// netgraph texture
+#endif
 extern	int	playertextures;
 
 extern	int	skytexturenum;		// index in cl.loadmodel, not gl texture object
@@ -186,7 +188,10 @@ extern	cvar_t	*r_mirroralpha;
 extern	cvar_t	*r_wateralpha;
 extern	cvar_t	*r_dynamic;
 extern	cvar_t	*r_novis;
+
+#ifdef QUAKEWORLD
 extern	cvar_t	*r_netgraph;
+#endif
 
 extern	cvar_t	*gl_clear;
 extern	cvar_t	*gl_cull;
@@ -199,6 +204,10 @@ extern	cvar_t	*gl_keeptjunctions;
 extern	cvar_t	*gl_reporttjunctions;
 extern	cvar_t	*gl_flashblend;
 extern	cvar_t	*gl_nocolors;
+
+#ifdef QUAKE1
+extern	cvar_t	*gl_doubleeyes;
+#endif
 
 extern	cvar_t	*gl_ztrick;
 extern	cvar_t	*gl_finish;
@@ -270,6 +279,7 @@ void R_RotateForEntity (entity_t *e);
 void R_MarkLights (dlight_t *light, int bit, mnode_t *node);
 void R_AnimateLight (void);
 void R_RenderDlights (void);
+void R_InitBubble (void);
 int R_LightPoint (vec3_t p);
 
 //
@@ -288,10 +298,13 @@ void GL_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr);
 void R_DrawBrushModel (entity_t *e);
 void R_DrawWorld (void);
 void GL_BuildLightmaps (void);
+void R_RenderBrushPoly (msurface_t *fa);
 
 //
 // gl_ngraph.c
 //
+#ifdef QUAKEWORLD
 void R_NetGraph (void);
+#endif
 
 #endif // __GLQUAKE_H

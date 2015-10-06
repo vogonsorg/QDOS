@@ -329,7 +329,7 @@ SOURCE=..\common\gl_rlight.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\gl_rmain.c
+SOURCE=..\common\gl_rmain.c
 
 !IF  "$(CFG)" == "winquake - Win32 Release"
 
@@ -348,7 +348,7 @@ SOURCE=.\gl_rmain.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\gl_rmisc.c
+SOURCE=..\common\gl_rmisc.c
 
 !IF  "$(CFG)" == "winquake - Win32 Release"
 
@@ -481,7 +481,7 @@ SOURCE=..\common\gl_warp_sin.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\glquake.h
+SOURCE=..\common\glquake.h
 
 !IF  "$(CFG)" == "winquake - Win32 Release"
 

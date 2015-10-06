@@ -32,8 +32,7 @@ typedef struct
 	cache_user_t	cache;
 } skin_t;
 
-#ifdef GAMESPY
-/* FS: Gamespy stuff */
+#ifdef GAMESPY /* FS: Gamespy stuff */
 #define MAX_SERVERS 400 /* FS: There's barely 350 active servers existing, but OK. */
 typedef struct
 {
