@@ -301,7 +301,7 @@ void Con_Init (void)
 //
 // register our commands
 //
-	con_notifytime = Cvar_Get("con_notifytime","3", 0);		//seconds
+	con_notifytime = Cvar_Get("con_notifytime", "3", 0); //seconds
 	con_notifytime->description = "Time (in seconds) a console notification message is displayed.";
 	con_logcenterprint = Cvar_Get("con_logcenterprint", "1", 0);  //johnfitz
 	con_logcenterprint->description = "Log centerprints to console.";
@@ -423,7 +423,7 @@ void Con_Printf (const char *fmt, ...)
 	va_list argptr;
 	static dstring_t *msg;
 #if 0
-	static qboolean inupdate;
+	static qboolean	inupdate;
 #endif
 
 	if (!msg)
@@ -852,8 +852,8 @@ void Con_DrawConsole (int lines)
 			Draw_Character ( (i+1)<<3, y, dlbar[i]);
 	}
 
-#ifdef GAMESPY
-	if (cls.gamespyupdate) /* FS: Gamespy stuff */
+#ifdef GAMESPY /* FS: Gamespy stuff */
+	if (cls.gamespyupdate)
 	{
 		text = "Gamespy";
 
@@ -900,7 +900,6 @@ void Con_DrawConsole (int lines)
 	Con_DrawInput ();
 }
 
-
 /*
 ==================
 Con_NotifyBox
@@ -923,10 +922,10 @@ void Con_NotifyBox (char *text)
 
 	do
 	{
-		t1 = Sys_DoubleTime ();
+		t1 = Sys_DoubleTime();
 		SCR_UpdateScreen ();
 		Sys_SendKeyEvents ();
-		t2 = Sys_DoubleTime ();
+		t2 = Sys_DoubleTime();
 		realtime += t2-t1;		// make the cursor blink
 	} while (key_count < 0);
 

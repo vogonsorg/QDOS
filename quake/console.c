@@ -263,7 +263,7 @@ void Con_Init (void)
 //
 // register our commands
 //
-	con_notifytime = Cvar_Get("con_notifytime","3", 0); // seconds
+	con_notifytime = Cvar_Get("con_notifytime", "3", 0); //seconds
 	con_notifytime->description = "Time (in seconds) a console notification message is displayed.";
 	con_logcenterprint = Cvar_Get("con_logcenterprint", "1", 0);  //johnfitz
 	con_logcenterprint->description = "Log centerprints to console.";
@@ -446,10 +446,10 @@ void Con_Printf (const char *fmt, ...)
 			Con_Print(st);
 	}
 
-// also echo to debugging console
+	// also echo to debugging console
 	Sys_Printf("%s",msg->str); // also echo to debugging console
 
-// log all messages to file
+	// log all messages to file
 	if (con_debuglog)
 		Con_DebugLog(va("%s/qconsole.log",com_gamedir), "%s", msg->str);
 
@@ -459,10 +459,10 @@ void Con_Printf (const char *fmt, ...)
 	if (cls.state == ca_dedicated)
 		return;		// no graphics mode
 
-// write it to the scrollable buffer
+	// write it to the scrollable buffer
 	Con_Print (msg->str);
 
-// update the screen immediately if the console is displayed
+	// update the screen immediately if the console is displayed
 #if 0 /* FS: This makes scrolling painfully slow, and Quake 2 doesn't even use something like this */
 	if (cls.state != ca_active)
 	{
@@ -484,7 +484,7 @@ Con_Warning -- johnfitz -- prints a warning to the console
 */
 void Con_Warning (const char *fmt, ...)
 {
-	va_list		argptr;
+	va_list argptr;
 	static dstring_t *msg;
 
 	if (!msg)
@@ -509,7 +509,7 @@ void Con_DPrintf (unsigned long developerFlags, const char *fmt, ...)
 {
 	va_list argptr;
 	static dstring_t *msg;
-	unsigned long devValue = 0; /* FS: Developer flags */
+	unsigned long devValue = 0; /* FS: Developer Flags */
 
 	if (!developer->value)
 		return;			// don't confuse non-developers with techie stuff...
@@ -531,7 +531,6 @@ void Con_DPrintf (unsigned long developerFlags, const char *fmt, ...)
 	
 	Con_Printf ("%s", msg->str);
 }
-
 
 /*
 ================
@@ -714,10 +713,9 @@ void Con_DrawNotify (void)
 Con_DrawConsole
 
 Draws the console with the solid background
-The typing input line at the bottom should only be drawn if typing is allowed
 ================
 */
-void Con_DrawConsole (int lines, qboolean drawinput)
+void Con_DrawConsole (int lines)
 {
 	int				i, j, x, y;
 	int				rows;
@@ -805,8 +803,7 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 #endif
 
 // draw the input prompt, user text, and cursor if desired
-	if (drawinput)
-		Con_DrawInput ();
+	Con_DrawInput ();
 }
 
 /*
