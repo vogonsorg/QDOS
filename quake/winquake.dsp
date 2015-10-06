@@ -1893,6 +1893,10 @@ SOURCE=.\net_wipx.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\common\nonintel.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\pr_cmds.c
 # End Source File
 # Begin Source File

@@ -137,6 +137,7 @@ OBJS=	$(SYSOBJ_DXE)        \
 	net_loop.o \
 	net_main.o \
 	net_ser.o  \
+	nonintel.o \
 	pr_cmds.o  \
 	pr_edict.o \
 	pr_exec.o  \

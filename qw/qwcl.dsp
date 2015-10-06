@@ -2074,7 +2074,7 @@ SOURCE=.\net_wins.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\nonintel.c
+SOURCE=..\common\nonintel.c
 # End Source File
 # Begin Source File
 

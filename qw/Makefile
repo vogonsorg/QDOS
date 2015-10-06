@@ -107,6 +107,7 @@ CLIENT = $(SYSOBJ_DXE)       \
 	menu.o     \
 	net_chan.o \
 	net_udp.o  \
+	nonintel.o \
 	pmove.o    \
 	pmovetst.o \
 	r_part.o   \
