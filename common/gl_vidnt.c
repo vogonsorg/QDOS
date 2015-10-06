@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // gl_vidnt.c -- NT GL vid component
 
+#define	__GL_FUNC_EXTERN
+
 #include "quakedef.h"
 #include "winquake.h"
 #include "resource.h"
@@ -129,12 +131,6 @@ void GL_Init (void);
 
 qboolean is8bit = false;
 qboolean gl_mtexable = false;
-
-/* FS: FIXME: This is wrong.  But, this allows it to work */
-void (APIENTRY *glColorTableEXT_fp) (int, int, int, int, int, const void *);
-void (APIENTRY *glGetTexParameterfv_fp) (GLenum,GLenum,GLfloat *);
-void (APIENTRY *glActiveTextureARB_fp) (GLenum);
-void (APIENTRY *glMultiTexCoord2fARB_fp) (GLenum,GLfloat,GLfloat);
 
 //====================================
 
