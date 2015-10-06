@@ -24,6 +24,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef _R_SHARED_H_
 #define _R_SHARED_H_
 
+#ifdef QUAKE1
+#define PENT pent
+#define WORLDENT &cl_entities[0]
+#else
+#define PENT *pent
+#define WORLDENT &r_worldentity
+#endif
+
 #ifndef GLQUAKE
 
 // FIXME: clean up and move into d_iface.h

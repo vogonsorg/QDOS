@@ -1350,7 +1350,7 @@ InputName=surf8
 # End Group
 # Begin Source File
 
-SOURCE=.\d_edge.c
+SOURCE=..\common\d_edge.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1714,7 +1714,7 @@ SOURCE=..\common\r_edge.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\r_efrag.c
+SOURCE=..\common\r_efrag.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
