@@ -2054,7 +2054,7 @@ InputName=math
 # End Source File
 # Begin Source File
 
-SOURCE=.\mathlib.c
+SOURCE=..\common\mathlib.c
 # End Source File
 # Begin Source File
 
@@ -2364,7 +2364,7 @@ SOURCE=.\keys.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\mathlib.h
+SOURCE=..\common\mathlib.h
 # End Source File
 # Begin Source File
 

@@ -383,7 +383,7 @@ void VectorScale (vec3_t in, vec_t scale, vec3_t out)
 int Q_log2(int val)
 {
 	int answer=0;
-	while (val>>=1)
+	while ((val>>=1) != 0)
 		answer++;
 	return answer;
 }
