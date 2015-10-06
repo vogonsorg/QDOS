@@ -40,7 +40,7 @@ CFLAGS += -DGL_DLSYM
 EXE     = qwdosfx.exe
 SYSOBJ_DXE=$(COMMON)/dxe.o
 else
-SYSOBJ_DXE=$(COMMON)/no_dxe.o
+SYSOBJ_DXE=no_dxe.o
 endif
 
 ifeq ($(USE_SNDPCI),1)
@@ -62,12 +62,12 @@ endif
 
 ifeq ($(USE_GAMESPY),1)
 CFLAGS += -DGAMESPY
-GAMESPY = $(COMMON)/Goa/CEngine/darray.o    \
-	$(COMMON)/Goa/CEngine/gserver.o     \
-	$(COMMON)/Goa/CEngine/gserverlist.o \
-	$(COMMON)/Goa/CEngine/gutil.o       \
-	$(COMMON)/Goa/CEngine/hashtable.o   \
-	$(COMMON)/Goa/nonport.o
+GAMESPY = darray.o    \
+	gserver.o     \
+	gserverlist.o \
+	gutil.o       \
+	hashtable.o   \
+	nonport.o
 endif
 
 ifeq ($(USE_CURL),1)
@@ -82,121 +82,121 @@ LIBS   += -lc -lgcc -lm
 # not too sophisticated dependency
 CLIENT = $(SYSOBJ_DXE)       \
 	$(GAMESPY)           \
-	$(COMMON)/cd_audio.o \
-	cl_cam.o             \
-	cl_demo.o            \
-	cl_ents.o            \
-	cl_http.o            \
-	cl_input.o           \
-	cl_main.o            \
-	cl_parse.o           \
-	cl_pred.o            \
-	$(COMMON)/cl_tent.o  \
-	cmd.o                \
-	common.o             \
-	console.o            \
-	$(COMMON)/crc.o      \
-	cvar.o               \
-	$(COMMON)/dos_v2.o   \
-	$(COMMON)/dstring.o  \
-	$(COMMON)/in_dos.o   \
-	keys.o               \
-	$(COMMON)/math.o     \
-	mathlib.o            \
-	md4.o                \
-	menu.o               \
-	net_chan.o           \
-	net_udp.o            \
-	pmove.o              \
-	pmovetst.o           \
-	r_part.o             \
-	sbar.o               \
-	skin.o               \
-	$(COMMON)/snd_dma.o  \
-	$(COMMON)/snd_dos.o  \
-	$(COMMON)/snd_gus.o  \
-	$(COMMON)/snd_mem.o  \
-	$(COMMON)/snd_mix.o  \
-	$(COMMON)/snd_mixa.o \
-	$(COMMON)/snd_pci.o  \
-	$(COMMON)/snd_sb.o   \
-	$(COMMON)/snd_strm.o \
-	$(COMMON)/snd_wavstream.o \
-	$(COMMON)/sys_dos.o  \
-	$(COMMON)/sys_dosa.o \
-	$(COMMON)/sys_find.o \
-	view.o               \
-	$(COMMON)/wad.o      \
-	$(COMMON)/zone.o
+	cd_audio.o \
+	cl_cam.o   \
+	cl_demo.o  \
+	cl_ents.o  \
+	cl_http.o  \
+	cl_input.o \
+	cl_main.o  \
+	cl_parse.o \
+	cl_pred.o  \
+	cl_tent.o  \
+	cmd.o      \
+	common.o   \
+	console.o  \
+	crc.o      \
+	cvar.o     \
+	dos_v2.o   \
+	dstring.o  \
+	in_dos.o   \
+	keys.o     \
+	math.o     \
+	mathlib.o  \
+	md4.o      \
+	menu.o     \
+	net_chan.o \
+	net_udp.o  \
+	pmove.o    \
+	pmovetst.o \
+	r_part.o   \
+	sbar.o     \
+	skin.o     \
+	snd_dma.o  \
+	snd_dos.o  \
+	snd_gus.o  \
+	snd_mem.o  \
+	snd_mix.o  \
+	snd_mixa.o \
+	snd_pci.o  \
+	snd_sb.o   \
+	snd_strm.o \
+	snd_wavstream.o \
+	sys_dos.o  \
+	sys_dosa.o \
+	sys_find.o \
+	view.o     \
+	wad.o      \
+	zone.o
 
 ifeq ($(GLQUAKE),0)
-REFSOFT = $(COMMON)/d_copy.o \
-	$(COMMON)/d_draw.o   \
-	$(COMMON)/d_draw16.o \
-	d_edge.o             \
-	$(COMMON)/d_fill.o   \
-	$(COMMON)/d_init.o   \
-	$(COMMON)/d_modech.o \
-	$(COMMON)/d_part.o   \
-	$(COMMON)/d_parta.o  \
-	$(COMMON)/d_polysa.o \
-	$(COMMON)/d_polyse.o \
-	$(COMMON)/d_scan.o   \
-	$(COMMON)/d_scana.o  \
-	$(COMMON)/d_sky.o    \
-	$(COMMON)/d_spr8.o   \
-	$(COMMON)/d_sprite.o \
-	$(COMMON)/d_surf.o   \
-	$(COMMON)/d_vars.o   \
-	$(COMMON)/d_varsa.o  \
-	$(COMMON)/d_zpoint.o \
-	draw.o               \
-	model.o              \
-	$(COMMON)/r_aclip.o  \
-	$(COMMON)/r_aclipa.o \
-	$(COMMON)/r_alias.o  \
-	$(COMMON)/r_aliasa.o \
-	$(COMMON)/r_bsp.o    \
-	$(COMMON)/r_draw.o   \
-	$(COMMON)/r_drawa.o  \
-	$(COMMON)/r_edge.o   \
-	$(COMMON)/r_edgea.o  \
-	r_efrag.o            \
-	$(COMMON)/r_light.o  \
-	r_main.o             \
-	r_misc.o             \
-	$(COMMON)/r_sky.o    \
-	$(COMMON)/r_sprite.o \
-	$(COMMON)/r_surf.o   \
-	$(COMMON)/r_vars.o   \
-	$(COMMON)/r_varsa.o  \
-	screen.o             \
-	$(COMMON)/surf16.o   \
-	$(COMMON)/surf8.o    \
-	$(COMMON)/vid_dos.o  \
-	$(COMMON)/vid_ext.o  \
-	$(COMMON)/vid_vga.o  \
-	$(COMMON)/vregset.o
+REFSOFT = d_copy.o \
+	d_draw.o   \
+	d_draw16.o \
+	d_edge.o   \
+	d_fill.o   \
+	d_init.o   \
+	d_modech.o \
+	d_part.o   \
+	d_parta.o  \
+	d_polysa.o \
+	d_polyse.o \
+	d_scan.o   \
+	d_scana.o  \
+	d_sky.o    \
+	d_spr8.o   \
+	d_sprite.o \
+	d_surf.o   \
+	d_vars.o   \
+	d_varsa.o  \
+	d_zpoint.o \
+	draw.o     \
+	model.o    \
+	r_aclip.o  \
+	r_aclipa.o \
+	r_alias.o  \
+	r_aliasa.o \
+	r_bsp.o    \
+	r_draw.o   \
+	r_drawa.o  \
+	r_edge.o   \
+	r_edgea.o  \
+	r_efrag.o  \
+	r_light.o  \
+	r_main.o   \
+	r_misc.o   \
+	r_sky.o    \
+	r_sprite.o \
+	r_surf.o   \
+	r_vars.o   \
+	r_varsa.o  \
+	screen.o   \
+	surf16.o   \
+	surf8.o    \
+	vid_dos.o  \
+	vid_ext.o  \
+	vid_vga.o  \
+	vregset.o
 endif
 
 ifeq ($(GLQUAKE),1)
-REFGL = $(COMMON)/dos_dmesa.o  \
-	$(COMMON)/dos_fxmesa.o \
-	$(COMMON)/dos_sage.o   \
-	$(COMMON)/fx_gamma.o   \
-	gl_draw.o              \
-	$(COMMON)/gl_mesh.o    \
-	gl_model.o             \
-	gl_ngraph.o            \
-	$(COMMON)/gl_refrag.o  \
-	$(COMMON)/gl_rlight.o  \
-	gl_rmain.o             \
-	gl_rmisc.o             \
-	$(COMMON)/gl_rsurf.o   \
-	gl_screen.o            \
-	$(COMMON)/gl_test.o    \
-	$(COMMON)/gl_warp.o    \
-	$(COMMON)/gl_viddos.o
+REFGL = dos_dmesa.o  \
+	dos_fxmesa.o \
+	dos_sage.o   \
+	fx_gamma.o   \
+	gl_draw.o    \
+	gl_mesh.o    \
+	gl_model.o   \
+	gl_ngraph.o  \
+	gl_refrag.o  \
+	gl_rlight.o  \
+	gl_rmain.o   \
+	gl_rmisc.o   \
+	gl_rsurf.o   \
+	gl_screen.o  \
+	gl_test.o    \
+	gl_warp.o    \
+	gl_viddos.o
 endif
 
 OBJECTS = $(CLIENT) $(REFSOFT) $(REFGL)
@@ -205,10 +205,6 @@ all:     qw
 
 clean:
 	rm -f *.o
-	rm -f $(COMMON)/*.o
-	rm -f $(COMMON)/Goa/*.o
-	rm -f $(COMMON)/Goa/CEngine/*.o
-	rm -f $(COMMON)/Goa/Sdk/*.o
 
 qw: $(OBJECTS)
 	$(CC) $(OBJECTS) $(LDFLAGS) $(LIBS) -o $(EXE)
@@ -217,7 +213,19 @@ DO_AS=$(CC) -x assembler-with-cpp
 
 %.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@
+%.o : $(COMMON)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
 %.o: %.S
+	$(DO_AS) $(CFLAGS) -c $< -o $@
+%.o: $(COMMON)/%.S
 	$(DO_AS) $(CFLAGS) -c $< -o $@
 %.o: %.s
 	$(DO_AS) $(CFLAGS) -c $< -o $@
+%.o: $(COMMON)/%.s
+	$(DO_AS) $(CFLAGS) -c $< -o $@
+%.o : $(COMMON)/Goa/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+%.o : $(COMMON)/Goa/CEngine/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+%.o : $(COMMON)/Goa/Sdk/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
