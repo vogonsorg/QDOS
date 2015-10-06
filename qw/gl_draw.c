@@ -1085,14 +1085,14 @@ Mipping for 8 bit textures
 */
 void GL_MipMap8Bit (byte *in, int width, int height)
 {
-	int		i, j;
-	byte	*out;
-	unsigned short     r,g,b;
-	byte	*at1, *at2, *at3, *at4;
+	int i, j;
+	unsigned short r,g,b;
+	byte *out, *at1, *at2, *at3, *at4;
 
 	height >>= 1;
 	out = in;
 	for (i=0 ; i<height ; i++, in+=width)
+	{
 		for (j=0 ; j<width ; j+=2, out+=1, in+=2)
 		{
 			at1 = (byte *) &d_8to24table[in[0]];
@@ -1106,6 +1106,7 @@ void GL_MipMap8Bit (byte *in, int width, int height)
 
 			out[0] = d_15to8table[(r<<0) + (g<<5) + (b<<10)];
 		}
+	}
 }
 
 /*

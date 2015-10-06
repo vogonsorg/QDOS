@@ -179,8 +179,55 @@ Interactive line editing and console scrollback
 void Key_Console (int key)
 {
 	char	*cmd;
-	
-	if (key == K_ENTER)
+
+	/* FS: From Quake 2*/
+	switch ( key )
+	{
+	case K_KP_SLASH:
+		key = '/';
+		break;
+	case K_KP_MINUS:
+		key = '-';
+		break;
+	case K_KP_PLUS:
+		key = '+';
+		break;
+	case K_KP_HOME:
+		key = '7';
+		break;
+	case K_KP_UPARROW:
+		key = '8';
+		break;
+	case K_KP_PGUP:
+		key = '9';
+		break;
+	case K_KP_LEFTARROW:
+		key = '4';
+		break;
+	case K_KP_5:
+		key = '5';
+		break;
+	case K_KP_RIGHTARROW:
+		key = '6';
+		break;
+	case K_KP_END:
+		key = '1';
+		break;
+	case K_KP_DOWNARROW:
+		key = '2';
+		break;
+	case K_KP_PGDN:
+		key = '3';
+		break;
+	case K_KP_INS:
+		key = '0';
+		break;
+	case K_KP_DEL:
+		key = '.';
+		break;
+	}
+
+	if ( (key == K_ENTER) || (key == K_KP_ENTER) )
 	{
 		Cbuf_AddText (key_lines[edit_line]+1);	// skip the >
 		Cbuf_AddText ("\n");
@@ -189,6 +236,7 @@ void Key_Console (int key)
 		history_line = edit_line;
 		key_lines[edit_line][0] = ']';
 		key_linepos = 1;
+
 		if (cls.state == ca_disconnected)
 			SCR_UpdateScreen ();	// force an update, because the command
 									// may take some time
@@ -212,8 +260,9 @@ void Key_Console (int key)
 	}
 
 	if (key == K_TAB)
-	{	// command completion
-		if(!console_old_complete->value)
+	{
+		// command completion
+		if(!console_old_complete->value) /* FS: Added */
 		{
 			cmd = Sort_Possible_Cmds(key_lines[edit_line]+1);
 		}
@@ -233,7 +282,7 @@ void Key_Console (int key)
 			return;
 		}
 	}
-	
+
 	if ( (key == K_BACKSPACE) || (key == K_LEFTARROW) || (key == K_KP_LEFTARROW) )
 	{
 		if (key_linepos > 1)
@@ -314,7 +363,6 @@ void Key_Console (int key)
 		key_linepos++;
 		key_lines[edit_line][key_linepos] = 0;
 	}
-
 }
 
 //============================================================================

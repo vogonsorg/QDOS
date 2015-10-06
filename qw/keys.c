@@ -238,6 +238,7 @@ void Key_Console (int key)
 	HANDLE	th;
 	char	*clipText, *textCopied;
 #endif
+
 	/* FS: From Quake 2*/
 	switch ( key )
 	{
@@ -310,8 +311,8 @@ void Key_Console (int key)
 			Cmd_ChatInfo(EZQ_CHAT_AFK);/* FS: EZQ Chat */
 
 		if (cls.state == ca_disconnected)
-			SCR_UpdateScreen ();    // force an update, because the command
-                							// may take some time
+			SCR_UpdateScreen ();	// force an update, because the command
+									// may take some time
 		return;
 	}
 
@@ -340,7 +341,7 @@ void Key_Console (int key)
 		}
 	}
 
-	if ( key == K_TAB )
+	if (key == K_TAB)
 	{
 		// command completion
 		if(!console_old_complete->value) /* FS: Added */
@@ -501,8 +502,10 @@ void Key_Message (int key)
 		/* Taniwha's chat ring array */
 		strcpy (chat_buffer_array[chat_head], chat_buffer);
 		chat_head = (chat_head + 1) % MAX_CHAT;
+
 		if (chat_head == chat_tail)
 			chat_tail = (chat_tail + 1) % MAX_CHAT;
+
 		chat_buffer_array[chat_head][0] = 0;
 		chat_index = chat_head;
 		/* end */

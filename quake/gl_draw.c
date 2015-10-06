@@ -983,11 +983,10 @@ Mipping for 8 bit textures
 */
 void GL_MipMap8Bit (byte *in, int width, int height)
 {
-	int	 i, j;
+	int i, j;
 	unsigned short r,g,b;
 	byte *out, *at1, *at2, *at3, *at4;
 
-//	width <<=2;
 	height >>= 1;
 	out = in;
 	for (i=0 ; i<height ; i++, in+=width)
