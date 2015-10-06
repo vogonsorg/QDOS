@@ -1351,9 +1351,10 @@ void M_Keydown (int key)
 
 /* FS: Extended options unique to QDOS */
 #define Y_SPACE 8
-#define EXTENDED_OPTIONS 12
+#define EXTENDED_OPTIONS 13
 
 int extended_cursor;
+extern cvar_t *m_filter;
 
 int M_Extended_Get_Vsync(void);
 void M_Extended_Set_Vsync(int dir);
@@ -1433,7 +1434,13 @@ void M_Extended_Draw()
 	M_Print (220, y, s_khz->string);
 
 	M_Print (16, y = y + Y_SPACE,  "               V-Sync");
+#ifdef GLQUAKE
+	M_Print (220, y, "DISABLED");
+#else
 	M_DrawCheckbox (220, y, M_Extended_Get_Vsync());
+#endif
+	M_Print (16, y = y + Y_SPACE,  "      Mouse Filtering");
+	M_DrawCheckbox (220, y, m_filter->intValue);
 
 	M_DrawCharacter (200, 32 + extended_cursor*8, 12+((int)(realtime*4)&1));
 }
@@ -1490,6 +1497,9 @@ void M_AdjustSliders_Extended (int dir)
 		break;
 	case 12:
 		M_Extended_Set_Vsync(dir);
+		break;
+	case 13:
+		Cvar_SetValue ("m_filter", !m_filter->intValue);
 		break;
 	default:
 		break;
@@ -1592,6 +1602,9 @@ int M_Extended_Get_Vsync(void)
 
 void M_Extended_Set_Vsync(int dir)
 {
+#ifdef GLQUAKE
+	return;
+#endif
 	if (dir > 0)
 	{
 		Cvar_SetValue("_vid_wait_override", 1.0f);
