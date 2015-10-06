@@ -89,8 +89,8 @@ LINK32=link.exe
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
-# PROP BASE Output_Dir "qwcl___Win32_GL_QW"
-# PROP BASE Intermediate_Dir "qwcl___Win32_GL_QW"
+# PROP BASE Output_Dir ".\release_gl"
+# PROP BASE Intermediate_Dir ".\release_gl"
 # PROP BASE Ignore_Export_Lib 0
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
@@ -118,14 +118,14 @@ LINK32=link.exe
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
-# PROP BASE Output_Dir "qwcl___Win32_GL_QW_Debug"
-# PROP BASE Intermediate_Dir "qwcl___Win32_GL_QW_Debug"
+# PROP BASE Output_Dir ".\debug_gl"
+# PROP BASE Intermediate_Dir ".\debug_gl"
 # PROP BASE Ignore_Export_Lib 0
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir ".\debug_dl"
-# PROP Intermediate_Dir ".\debug_dl"
+# PROP Output_Dir ".\debug_gl"
+# PROP Intermediate_Dir ".\debug_gl"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /G5 /MT /GX /O2 /I "..\common\win32\dxsdk\sdk\inc" /I "..\common\win32\scitech\include" /I "winquake" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OGG_SUPPORT" /D "GAMESPY" /D "USE_CURL" /D "GLQUAKE" /FR /YX /FD /c
@@ -1894,7 +1894,7 @@ SOURCE=.\screen.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\vid_win.c
+SOURCE=..\common\vid_win.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -2037,7 +2037,7 @@ InputName=math
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
 
 # Begin Custom Build
-OutDir=.\debug_dl
+OutDir=.\debug_gl
 InputPath=..\common\math.s
 InputName=math
 
@@ -2160,7 +2160,7 @@ InputName=snd_mixa
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
 
 # Begin Custom Build
-OutDir=.\debug_dl
+OutDir=.\debug_gl
 InputPath=..\common\snd_mixa.s
 InputName=snd_mixa
 
@@ -2247,7 +2247,7 @@ InputName=sys_wina
 !ELSEIF  "$(CFG)" == "qwcl - Win32 GL QW Debug"
 
 # Begin Custom Build
-OutDir=.\debug_dl
+OutDir=.\debug_gl
 InputPath=..\common\sys_wina.s
 InputName=sys_wina
 

@@ -24,6 +24,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "d_local.h"
 #include "resource.h"
 
+#ifdef QUAKEWORLD
+#define MINIMUM_MEMORY	0x550000
+static int minimum_memory = MINIMUM_MEMORY;
+#endif
+
+
 #define MAX_MODE_LIST	30
 #define VID_ROW_SIZE	3
 
@@ -302,8 +308,7 @@ void initFatalError(void)
 	exit(EXIT_FAILURE);
 }
 
-
-int VID_Suspend (MGLDC *dc,m_int flags)
+int VID_Suspend (MGLDC *dc, int flags)
 {
 
 	if (flags & MGL_DEACTIVATE)
@@ -320,7 +325,7 @@ int VID_Suspend (MGLDC *dc,m_int flags)
 		IN_RestoreOriginalMouseState ();
 		CDAudio_Pause ();
 
-	// keep WM_PAINT from trying to redraw
+		// keep WM_PAINT from trying to redraw
 		in_mode_set = true;
 
 		block_drawing = true;	// so we don't try to draw while switched away
@@ -330,7 +335,7 @@ int VID_Suspend (MGLDC *dc,m_int flags)
 	else if (flags & MGL_REACTIVATE)
 	{
 		IN_SetQuakeMouseState ();
-	// fix the leftover Alt from any Alt-Tab or the like that switched us away
+		// fix the leftover Alt from any Alt-Tab or the like that switched us away
 		ClearAllStates ();
 		CDAudio_Resume ();
 		S_UnblockSound ();
@@ -345,7 +350,6 @@ int VID_Suspend (MGLDC *dc,m_int flags)
 	}
 	return 0; /* FS: Compiler Warning */
 }
-
 
 void registerAllDispDrivers(void)
 {
@@ -383,7 +387,7 @@ void registerAllMemDrivers(void)
 
 void VID_InitMGLFull (HINSTANCE hInstance)
 {
-	int			i, xRes, yRes, bits, vMode, lowres, curmode, temp;
+	int			i, xRes, yRes, bits, lowres, curmode, temp;
 	int			lowstretchedres, stretchedmode, lowstretched;
     uchar		*m;
 
@@ -555,7 +559,7 @@ MGLDC *createDisplayDC(int forcemem)
 
 	// Start the specified video mode
 	if (!MGL_changeDisplayMode(mode))
-        initFatalError();
+		initFatalError();
 
 	npages = MGL_availablePages(mode);
 
@@ -618,7 +622,6 @@ void VID_InitMGLDIB (HINSTANCE hInstance)
 {
 	WNDCLASS		wc;
 	HDC				hdc;
-	int				i;
 
 	hIcon = LoadIcon (hInstance, MAKEINTRESOURCE (IDI_ICON2));
 
@@ -632,8 +635,11 @@ void VID_InitMGLDIB (HINSTANCE hInstance)
     wc.hCursor       = LoadCursor (NULL,IDC_ARROW);
 	wc.hbrBackground = NULL;
     wc.lpszMenuName  = 0;
+#ifdef QUAKE1
     wc.lpszClassName = "QDOS";
-
+#else
+    wc.lpszClassName = "QWDOS";
+#endif
     if (!RegisterClass (&wc) )
 		Sys_Error ("Couldn't register window class");
 
@@ -709,7 +715,7 @@ VID_InitFullDIB
 void VID_InitFullDIB (HINSTANCE hInstance)
 {
 	DEVMODE	devmode;
-	int		i, j, modenum, cmodes, existingmode, originalnummodes, lowestres;
+	int		i, j, modenum, existingmode, originalnummodes, lowestres;
 	int		numlowresmodes, bpp, done;
 	int		cstretch, istretch, mstretch;
 	BOOL	stat;
@@ -1217,7 +1223,6 @@ qboolean VID_SetWindowedMode (int modenum)
 	pixel_format_t	pf;
 	qboolean		stretched;
 	int				lastmodestate;
-	LONG			wlong;
 
 	if (!windowed_mode_set)
 	{
@@ -1275,8 +1280,13 @@ qboolean VID_SetWindowedMode (int modenum)
 	{
 		mainwindow = CreateWindowEx (
 			 ExWindowStyle,
-			 "QDOS",
-			 "QDOS",
+#ifdef QUAKE1
+			"QDOS",
+			"QDOS",
+#else
+			 "QWDOS",
+			 "QWDOS",
+#endif
 			 WindowStyle,
 			 0, 0,
 			 WindowRect.right - WindowRect.left,
@@ -1435,7 +1445,7 @@ qboolean VID_SetFullDIBMode (int modenum)
 		MGL_destroyDC(dibdc);
 	windc = dibdc = NULL;
 
-// KJB: Signal to the MGL that we are going back to windowed mode
+	// KJB: Signal to the MGL that we are going back to windowed mode
 	if (!MGL_changeDisplayMode(grWINDOWED))
 		initFatalError();
 
@@ -1562,7 +1572,7 @@ void VID_SetDefaultMode (void)
 
 int VID_SetMode (int modenum, unsigned char *palette)
 {
-	int				original_mode, temp, dummy;
+	int				original_mode, temp;
 	qboolean		stat;
     MSG				msg;
 	HDC				hdc;
@@ -1749,8 +1759,10 @@ void VID_LockBuffer (void)
 	else
 		screenwidth = vid.rowbytes;
 
+#ifdef QUAKE1
 	if (lcd_x->value)
 		screenwidth <<= 1;
+#endif
 }
 		
 		
@@ -2039,7 +2051,6 @@ VID_ForceMode_f
 void VID_ForceMode_f (void)
 {
 	int		modenum;
-	double	testduration;
 
 	if (!vid_testingmode)
 	{
@@ -2177,9 +2188,6 @@ void	VID_Init (unsigned char *palette)
 
 void	VID_Shutdown (void)
 {
-	HDC				hdc;
-	int				dummy;
-
 	if (vid_initialized)
 	{
 		if (modestate == MS_FULLDIB)
@@ -2214,8 +2222,6 @@ FlipScreen
 */
 void FlipScreen(vrect_t *rects)
 {
-	HRESULT		ddrval;
-
 	// Flip the surfaces
 
 	if (DDActive)
@@ -2782,7 +2788,7 @@ VID_HandlePause
 */
 void VID_HandlePause (qboolean pause)
 {
-
+#ifdef QUAKE1
 	if ((modestate == MS_WINDOWED) && _windowed_mouse->value)
 	{
 		if (pause)
@@ -2796,6 +2802,7 @@ void VID_HandlePause (qboolean pause)
 			IN_HideMouse ();
 		}
 	}
+#endif
 }
 
 
@@ -2817,10 +2824,18 @@ LONG WINAPI MainWndProc (
     LPARAM  lParam)
 {
 	LONG			lRet = 0;
-	int				fwKeys, xPos, yPos, fActive, fMinimized, temp;
+	int				fActive, fMinimized, temp;
 	HDC				hdc;
 	PAINTSTRUCT		ps;
 	static int		recursiveflag;
+#ifdef QUAKEWORLD
+	extern unsigned int uiWheelMessage;
+
+	if ( uMsg == uiWheelMessage ) {
+		uMsg = WM_MOUSEWHEEL;
+		wParam <<= 16;
+	}
+#endif
 
 	switch (uMsg)
 	{

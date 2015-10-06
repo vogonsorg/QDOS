@@ -89,8 +89,8 @@ LINK32=link.exe
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
-# PROP BASE Output_Dir ".\winquak0"
-# PROP BASE Intermediate_Dir ".\winquak0"
+# PROP BASE Output_Dir "..\release_gl"
+# PROP BASE Intermediate_Dir ".\release_gl"
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
@@ -118,8 +118,8 @@ LINK32=link.exe
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
-# PROP BASE Output_Dir "winquake___Win32_GL_Debug"
-# PROP BASE Intermediate_Dir "winquake___Win32_GL_Debug"
+# PROP BASE Output_Dir ".\debug_gl"
+# PROP BASE Intermediate_Dir ".\debug_gl"
 # PROP BASE Ignore_Export_Lib 0
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
@@ -1701,7 +1701,7 @@ SOURCE=.\screen.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\vid_win.c
+SOURCE=..\common\vid_win.c
 
 !IF  "$(CFG)" == "winquake - Win32 Release"
 
