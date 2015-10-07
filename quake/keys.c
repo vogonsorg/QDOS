@@ -18,6 +18,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 #include "quakedef.h"
+#ifdef _WINDOWS
+#include <windows.h>
+#endif
 
 /*
 
@@ -179,6 +182,11 @@ Interactive line editing and console scrollback
 void Key_Console (int key)
 {
 	char	*cmd;
+#ifdef _WIN32
+	int		i;
+	HANDLE	th;
+	char	*clipText, *textCopied;
+#endif
 
 	/* FS: From Quake 2*/
 	switch ( key )
@@ -354,6 +362,38 @@ void Key_Console (int key)
 		return;
 	}
 	
+#ifdef _WIN32
+	if ((key=='V' || key=='v') && GetKeyState(VK_CONTROL)<0)
+	{
+		if (OpenClipboard(NULL))
+		{
+			th = GetClipboardData(CF_TEXT);
+			if (th)
+			{
+				clipText = GlobalLock(th);
+				if (clipText)
+				{
+					textCopied = malloc(GlobalSize(th)+1);
+					strcpy(textCopied, clipText);
+	/* Substitutes a NULL for every token */strtok(textCopied, "\n\r\b");
+					i = strlen(textCopied);
+					if (i+key_linepos>=MAXCMDLINE)
+						i=MAXCMDLINE-key_linepos;
+					if (i>0) {
+						textCopied[i]=0;
+						strcat(key_lines[edit_line], textCopied);
+						key_linepos+=i;;
+					}
+					free(textCopied);
+				}
+				GlobalUnlock(th);
+			}
+			CloseClipboard();
+		return;
+		}
+	}
+#endif
+
 	if (key < 32 || key > 127)
 		return;	// non printable
 		
@@ -370,21 +410,20 @@ void Key_Console (int key)
 #define MAX_CHAT 32
 #define MAXCHATLINE 32
 
-char chat_buffer[MAXCHATLINE]; 
-qboolean team_message = false;
+qboolean	chat_team;
+char		chat_buffer[MAXCHATLINE]; 
+int			chat_bufferlen = 0;
 
 /* FS: Chat buffer ring array */
-char    chat_buffer_array[MAX_CHAT][MAXCHATLINE];
-int	chat_head = 0, chat_tail = 0;
-int	chat_index = 0;
+char	chat_buffer_array[MAX_CHAT][MAXCHATLINE];
+int		chat_head = 0, chat_tail = 0;
+int		chat_index = 0;
 
 void Key_Message (int key)
 {
-	static int chat_bufferlen = 0;
-
 	if (key == K_ENTER)
 	{
-		if (team_message)
+		if (chat_team)
 			Cbuf_AddText ("say_team \"");
 		else
 			Cbuf_AddText ("say \"");

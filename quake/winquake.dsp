@@ -2232,7 +2232,7 @@ SOURCE=..\common\input.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\keys.h
+SOURCE=..\common\keys.h
 # End Source File
 # Begin Source File
 

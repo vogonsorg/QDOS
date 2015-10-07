@@ -97,7 +97,7 @@ CL_ClearState
 */
 void CL_ClearState (void)
 {
-	int			i;
+	int i;
 
 	if (!sv.active)
 		Host_ClearMemory ();

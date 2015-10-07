@@ -151,12 +151,10 @@ void Con_ClearNotify (void)
 Con_MessageMode_f
 ================
 */
-extern qboolean team_message;
-
 void Con_MessageMode_f (void)
 {
+	chat_team = false;
 	key_dest = key_message;
-	team_message = false;
 }
 
 /*
@@ -166,8 +164,8 @@ Con_MessageMode2_f
 */
 void Con_MessageMode2_f (void)
 {
+	chat_team = true;
 	key_dest = key_message;
-	team_message = true;
 }
 
 /*
@@ -662,7 +660,6 @@ void Con_DrawNotify (void)
 	char	*text;
 	int		i;
 	float	time;
-	extern char chat_buffer[];
 
 	v = 0;
 	for (i= con_current-NUM_CON_TIMES+1 ; i<=con_current ; i++)

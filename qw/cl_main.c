@@ -508,37 +508,37 @@ CL_ClearState
 */
 void CL_ClearState (void)
 {
-   int         i;
+	int i;
 
-   S_StopAllSounds (true);
+	S_StopAllSounds (true);
 
-   Con_DPrintf (DEVELOPER_MSG_MEM, "Clearing memory\n");
-   D_FlushCaches ();
-   Mod_ClearAll ();
-   R_ClearDynamic(); /* FS */
+	Con_DPrintf (DEVELOPER_MSG_MEM, "Clearing memory\n");
+	D_FlushCaches ();
+	Mod_ClearAll ();
+	R_ClearDynamic(); /* FS */
 
-   if (host_hunklevel)  // FIXME: check this...
-      Hunk_FreeToLowMark (host_hunklevel);
+	if (host_hunklevel)  // FIXME: check this...
+		Hunk_FreeToLowMark (host_hunklevel);
 
-   CL_ClearTEnts ();
+	CL_ClearTEnts ();
 
 // wipe the entire cl structure
-   memset (&cl, 0, sizeof(cl));
+	memset (&cl, 0, sizeof(cl));
 
-   SZ_Clear (&cls.netchan.message);
+	SZ_Clear (&cls.netchan.message);
 
 // clear other arrays   
-   memset (cl_efrags, 0, sizeof(cl_efrags));
-   memset (cl_dlights, 0, sizeof(cl_dlights));
-   memset (cl_lightstyle, 0, sizeof(cl_lightstyle));
+	memset (cl_efrags, 0, sizeof(cl_efrags));
+	memset (cl_dlights, 0, sizeof(cl_dlights));
+	memset (cl_lightstyle, 0, sizeof(cl_lightstyle));
 
 //
 // allocate the efrags and chain together into a free list
 //
-   cl.free_efrags = cl_efrags;
-   for (i=0 ; i<MAX_EFRAGS-1 ; i++)
-      cl.free_efrags[i].entnext = &cl.free_efrags[i+1];
-   cl.free_efrags[i].entnext = NULL;
+	cl.free_efrags = cl_efrags;
+	for (i=0 ; i<MAX_EFRAGS-1 ; i++)
+		cl.free_efrags[i].entnext = &cl.free_efrags[i+1];
+	cl.free_efrags[i].entnext = NULL;
 }
 
 /*

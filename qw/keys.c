@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef _WINDOWS
 #include <windows.h>
 #endif
+
 /*
 
 key up events are sent even if in console mode
@@ -482,9 +483,9 @@ char		chat_buffer[MAXCMDLINE];
 int			chat_bufferlen = 0;
 
 /* FS: Chat history ring array by taniwha */
-char    chat_buffer_array[MAX_CHAT][MAXCMDLINE];
-int	chat_head = 0, chat_tail = 0;
-int	chat_index = 0;
+char	chat_buffer_array[MAX_CHAT][MAXCMDLINE];
+int		chat_head = 0, chat_tail = 0;
+int		chat_index = 0;
 
 void Key_Message (int key)
 {
