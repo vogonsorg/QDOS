@@ -29,6 +29,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "winquake.h"
 #include "resource.h"
 
+#ifdef QUAKE1
+#include "conproc.h"
+#define CONSOLE_ERROR_TIMEOUT	60.0	// # of seconds to wait on Sys_Error running
+										//  dedicated before exiting
+static qboolean		sc_return_on_enter = false;
+static char			*tracking_tag = "Clams & Mooses";
+static HANDLE	hFile;
+static HANDLE	heventParent;
+static HANDLE	heventChild;
+#endif
 
 #define MINIMUM_WIN_MEMORY	0x2000000 /* FS: Was 0x0c00000 */
 #define MAXIMUM_WIN_MEMORY	0x4000000 /* FS: Was 0x1000000 */
@@ -36,19 +46,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define PAUSE_SLEEP		50				// sleep time on pause or minimization
 #define NOT_FOCUS_SLEEP	20				// sleep time when not focus
 
-int		starttime;
-qboolean ActiveApp, Minimized;
+int			starttime;
+qboolean	ActiveApp, Minimized;
 qboolean	WinNT;
-
-HWND	hwnd_dialog;		// startup dialog box
 
 static double		pfreq;
 static double		curtime = 0.0;
 static double		lastcurtime = 0.0;
 static int			lowshift;
+qboolean			isDedicated;
 static HANDLE		hinput, houtput;
 
-HANDLE		qwclsemaphore;
 
 static HANDLE	tevent;
 
@@ -112,16 +120,6 @@ int fileLength (FILE *f)
 	return end;
 }
 
-void Sys_FileClose (int handle)
-{
-	int		t;
-
-	t = VID_ForceUnlockedAndReturnState ();
-	fclose (sys_handles[handle]);
-	sys_handles[handle] = NULL;
-	VID_ForceLockState (t);
-}
-
 int Sys_FileOpenRead (char *path, int *hndl)
 {
 	FILE	*f;
@@ -151,6 +149,36 @@ int Sys_FileOpenRead (char *path, int *hndl)
 	return retval;
 }
 
+int Sys_FileOpenWrite (char *path)
+{
+	FILE	*f;
+	int		i;
+	int		t;
+
+	t = VID_ForceUnlockedAndReturnState ();
+	
+	i = findhandle ();
+
+	f = fopen(path, "wb");
+	if (!f)
+		Sys_Error ("Error opening %s: %s", path,strerror(errno));
+	sys_handles[i] = f;
+	
+	VID_ForceLockState (t);
+
+	return i;
+}
+
+void Sys_FileClose (int handle)
+{
+	int		t;
+
+	t = VID_ForceUnlockedAndReturnState ();
+	fclose (sys_handles[handle]);
+	sys_handles[handle] = NULL;
+	VID_ForceLockState (t);
+}
+
 void Sys_FileSeek (int handle, int position)
 {
 	int		t;
@@ -158,6 +186,26 @@ void Sys_FileSeek (int handle, int position)
 	t = VID_ForceUnlockedAndReturnState ();
 	fseek (sys_handles[handle], position, SEEK_SET);
 	VID_ForceLockState (t);
+}
+
+int Sys_FileRead (int handle, void *dest, int count)
+{
+	int		t, x;
+
+	t = VID_ForceUnlockedAndReturnState ();
+	x = fread (dest, 1, count, sys_handles[handle]);
+	VID_ForceLockState (t);
+	return x;
+}
+
+int Sys_FileWrite (int handle, void *data, int count)
+{
+	int		t, x;
+
+	t = VID_ForceUnlockedAndReturnState ();
+	x = fwrite (data, 1, count, sys_handles[handle]);
+	VID_ForceLockState (t);
+	return x;
 }
 
 int	Sys_FileTime (char *path)
@@ -211,7 +259,6 @@ void Sys_MakeCodeWriteable (unsigned long startaddr, unsigned long length)
    		Sys_Error("Protection change failed\n");
 }
 
-
 /*
 ================
 Sys_Init
@@ -220,27 +267,6 @@ Sys_Init
 void Sys_Init (void)
 {
 	OSVERSIONINFO	vinfo;
-
-#ifdef ONEINSTANCE
-/*
-	// allocate a named semaphore on the client so the
-	// front end can tell if it is alive
-
-	// mutex will fail if semephore allready exists
-    qwclsemaphore = CreateMutex(
-        NULL,         /* Security attributes */
-        0,            /* owner       */
-        "QWDOS"); /* Semaphore name      */
-	if (!qwclsemaphore)
-		Sys_Error ("QWDOS is already running on this system");
-	CloseHandle (qwclsemaphore);
-
-    qwclsemaphore = CreateSemaphore(
-        NULL,         /* Security attributes */
-        0,            /* Initial count       */
-        1,            /* Maximum count       */
-        "QWDOS"); /* Semaphore name      */
-#endif
 
 	MaskExceptions ();
 	Sys_SetFPCW ();
@@ -258,16 +284,101 @@ void Sys_Init (void)
 	if ((vinfo.dwMajorVersion < 4) ||
 		(vinfo.dwPlatformId == VER_PLATFORM_WIN32s))
 	{
-		Sys_Error ("QWDOS requires at least Win95 or NT 4.0");
+		Sys_Error ("%s requires at least Win95 or NT 4.0", QUAKEGAME);
 	}
-	
+
 	if (vinfo.dwPlatformId == VER_PLATFORM_WIN32_NT)
 		WinNT = true;
 	else
 		WinNT = false;
 }
 
+#ifdef QUAKE1
+void Sys_Error (const char *error, ...)
+{
+	va_list		argptr;
+	static		dstring_t	*errtext1, *errtext2;
+	char		*errtext3 = "Press Enter to exit\n";
+	char		*errtext4 = "***********************************\n";
+	char		*errtext5 = "\n";
+	DWORD		dummy;
+	double		starttime;
+	static int	in_sys_error0 = 0;
+	static int	in_sys_error1 = 0;
+	static int	in_sys_error2 = 0;
+	static int	in_sys_error3 = 0;
 
+	if(!errtext1)
+		errtext1 = dstring_new();
+	if (!errtext2)
+		errtext2 = dstring_new();
+
+	if (!in_sys_error3)
+	{
+		in_sys_error3 = 1;
+		VID_ForceUnlockedAndReturnState ();
+	}
+
+	va_start (argptr, error);
+	dvsprintf (errtext1, error, argptr);
+	va_end (argptr);
+
+	if (isDedicated)
+	{
+		va_start (argptr, error);
+		dvsprintf (errtext1, error, argptr);
+		va_end (argptr);
+
+		dsprintf (errtext2, "ERROR: %s\n", errtext1);
+		WriteFile (houtput, errtext5, strlen (errtext5), &dummy, NULL);
+		WriteFile (houtput, errtext4, strlen (errtext4), &dummy, NULL);
+		WriteFile (houtput, errtext2->str, strlen (errtext2->str), &dummy, NULL);
+		WriteFile (houtput, errtext3, strlen (errtext3), &dummy, NULL);
+		WriteFile (houtput, errtext4, strlen (errtext4), &dummy, NULL);
+
+
+		starttime = Sys_DoubleTime();
+		sc_return_on_enter = true;	// so Enter will get us out of here
+
+		while (!Sys_ConsoleInput () &&
+				((Sys_DoubleTime() - starttime) < CONSOLE_ERROR_TIMEOUT))
+		{
+		}
+	}
+	else
+	{
+	// switch to windowed so the message box is visible, unless we already
+	// tried that and failed
+		if (!in_sys_error0)
+		{
+			in_sys_error0 = 1;
+			VID_SetDefaultMode ();
+			MessageBox(NULL, errtext1->str, "Quake Error",
+					   MB_OK | MB_SETFOREGROUND | MB_ICONSTOP);
+		}
+		else
+		{
+			MessageBox(NULL, errtext1->str, "Double Quake Error",
+					   MB_OK | MB_SETFOREGROUND | MB_ICONSTOP);
+		}
+	}
+
+	if (!in_sys_error1)
+	{
+		in_sys_error1 = 1;
+		Host_Shutdown ();
+	}
+
+// shut down QHOST hooks if necessary
+	if (!in_sys_error2)
+	{
+		in_sys_error2 = 1;
+		DeinitConProc ();
+	}
+
+	exit (1);
+}
+#else
 void Sys_Error (const char *error, ...)
 {
 	va_list		argptr;
@@ -285,13 +396,10 @@ void Sys_Error (const char *error, ...)
 	MessageBox(NULL, string->str, "Error", 0 /* MB_OK */ );
 	fprintf(stderr, "Error: %s\n", string->str);
 
-#ifndef SERVERONLY
-	CloseHandle (qwclsemaphore);
-#endif
 
 	exit (1);
 }
-
+#endif
 void Sys_Printf (const char *fmt, ...)
 {
 	va_list		argptr;
@@ -310,19 +418,26 @@ void Sys_Quit (void)
 	VID_ForceUnlockedAndReturnState ();
 
 	Host_Shutdown();
-#ifndef SERVERONLY
+
 	if (tevent)
 		CloseHandle (tevent);
 
-	if (qwclsemaphore)
-		CloseHandle (qwclsemaphore);
+#ifdef QUAKE1
+	if (isDedicated)
+		FreeConsole ();
+
+// shut down QHOST hooks if necessary
+	DeinitConProc ();
 #endif
 
 	exit (0);
 }
 
-
-
+/*
+================
+Sys_DoubleTime
+================
+*/
 double Sys_DoubleTime (void)
 {
 	static DWORD starttime;
@@ -344,6 +459,86 @@ double Sys_DoubleTime (void)
 		return 0.0;
 
 	return (now - starttime) / 1000.0;
+}
+
+char *Sys_ConsoleInput (void)
+{
+#ifdef QUAKE1
+	static char	text[256];
+	static int		len;
+	INPUT_RECORD	recs[1024];
+	int		dummy;
+	int		ch, numread, numevents;
+
+	if (!isDedicated)
+		return NULL;
+
+
+	for ( ;; )
+	{
+		if (!GetNumberOfConsoleInputEvents (hinput, &numevents))
+			Sys_Error ("Error getting # of console events");
+
+		if (numevents <= 0)
+			break;
+
+		if (!ReadConsoleInput(hinput, recs, 1, &numread))
+			Sys_Error ("Error reading console input");
+
+		if (numread != 1)
+			Sys_Error ("Couldn't read console input");
+
+		if (recs[0].EventType == KEY_EVENT)
+		{
+			if (!recs[0].Event.KeyEvent.bKeyDown)
+			{
+				ch = recs[0].Event.KeyEvent.uChar.AsciiChar;
+
+				switch (ch)
+				{
+					case '\r':
+						WriteFile(houtput, "\r\n", 2, &dummy, NULL);	
+
+						if (len)
+						{
+							text[len] = 0;
+							len = 0;
+							return text;
+						}
+						else if (sc_return_on_enter)
+						{
+						// special case to allow exiting from the error handler on Enter
+							text[0] = '\r';
+							len = 0;
+							return text;
+						}
+
+						break;
+
+					case '\b':
+						WriteFile(houtput, "\b \b", 3, &dummy, NULL);	
+						if (len)
+						{
+							len--;
+						}
+						break;
+
+					default:
+						if (ch >= ' ')
+						{
+							WriteFile(houtput, &ch, 1, &dummy, NULL);	
+							text[len] = ch;
+							len = (len + 1) & 0xff;
+						}
+
+						break;
+
+				}
+			}
+		}
+	}
+#endif
+	return NULL;
 }
 
 /*
@@ -369,11 +564,11 @@ void Sys_SendKeyEvents (void)
 
 		if (!GetMessage (&msg, NULL, 0, 0))
 			Sys_Quit ();
+
       	TranslateMessage (&msg);
       	DispatchMessage (&msg);
 	}
 }
-
 
 
 /*
@@ -394,7 +589,6 @@ void SleepUntilInput (int time)
 
 	MsgWaitForMultipleObjects(1, &tevent, FALSE, time, QS_ALLINPUT);
 }
-
 
 
 /*
@@ -469,24 +663,33 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	parms.argc = com_argc;
 	parms.argv = com_argv;
 
-	hwnd_dialog = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), NULL, NULL);
+#ifdef QUAKE1
+	isDedicated = (COM_CheckParm ("-dedicated") != 0);
+#else
+	isDedicated = false;
+#endif
 
-	if (hwnd_dialog)
+	if (!isDedicated)
 	{
-		if (GetWindowRect (hwnd_dialog, &rect))
-		{
-			if (rect.left > (rect.top * 2))
-			{
-				SetWindowPos (hwnd_dialog, 0,
-					(rect.left / 2) - ((rect.right - rect.left) / 2),
-					rect.top, 0, 0,
-					SWP_NOZORDER | SWP_NOSIZE);
-			}
-		}
+		hwnd_dialog = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), NULL, NULL);
 
-		ShowWindow (hwnd_dialog, SW_SHOWDEFAULT);
-		UpdateWindow (hwnd_dialog);
-		SetForegroundWindow (hwnd_dialog);
+		if (hwnd_dialog)
+		{
+			if (GetWindowRect (hwnd_dialog, &rect))
+			{
+				if (rect.left > (rect.top * 2))
+				{
+					SetWindowPos (hwnd_dialog, 0,
+						(rect.left / 2) - ((rect.right - rect.left) / 2),
+						rect.top, 0, 0,
+						SWP_NOZORDER | SWP_NOSIZE);
+				}
+			}
+
+			ShowWindow (hwnd_dialog, SW_SHOWDEFAULT);
+			UpdateWindow (hwnd_dialog);
+			SetForegroundWindow (hwnd_dialog);
+		}
 	}
 
 // take the greater of all the available memory or half the total memory,
@@ -502,6 +705,11 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	if (parms.memsize > MAXIMUM_WIN_MEMORY)
 		parms.memsize = MAXIMUM_WIN_MEMORY;
+
+#ifdef QUAKE1
+	if (extended_mod) /* FS: For big boy mods */
+		parms.memsize = (int) 64 * 1024 * 1024;
+#endif
 
 	/* FS */
 	t = COM_CheckParm("-mem");
@@ -522,6 +730,40 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	if (!tevent)
 		Sys_Error ("Couldn't create event");
 
+#ifdef QUAKE1
+	if (isDedicated)
+	{
+		if (!AllocConsole ())
+		{
+			Sys_Error ("Couldn't create dedicated server console");
+		}
+
+		hinput = GetStdHandle (STD_INPUT_HANDLE);
+		houtput = GetStdHandle (STD_OUTPUT_HANDLE);
+
+	// give QHOST a chance to hook into the console
+		if ((t = COM_CheckParm ("-HFILE")) > 0)
+		{
+			if (t < com_argc)
+				hFile = (HANDLE)Q_atoi (com_argv[t+1]);
+		}
+			
+		if ((t = COM_CheckParm ("-HPARENT")) > 0)
+		{
+			if (t < com_argc)
+				heventParent = (HANDLE)Q_atoi (com_argv[t+1]);
+		}
+			
+		if ((t = COM_CheckParm ("-HCHILD")) > 0)
+		{
+			if (t < com_argc)
+				heventChild = (HANDLE)Q_atoi (com_argv[t+1]);
+		}
+
+		InitConProc (hFile, heventParent, heventChild);
+	}
+#endif
+
 	Sys_Init ();
 
 // because sound is off until we become active
@@ -530,24 +772,42 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	Sys_Printf ("Host_Init\n");
 	Host_Init (&parms);
 
-	oldtime = Sys_DoubleTime ();
+	oldtime = Sys_DoubleTime();
 
     /* main window message loop */
 	while (1)
 	{
-	// yield the CPU for a little while when paused, minimized, or not the focus
-		if ((cl.paused && (!ActiveApp && !DDActive)) || Minimized || block_drawing)
+#ifdef QUAKE1
+		if (isDedicated)
 		{
-			SleepUntilInput (PAUSE_SLEEP);
-			scr_skipupdate = 1;		// no point in bothering to draw
+			newtime = Sys_DoubleTime();
+			time = newtime - oldtime;
+
+			while (time < sys_ticrate->value )
+			{
+				Sys_Sleep(1);
+				newtime = Sys_DoubleTime();
+				time = newtime - oldtime;
+			}
 		}
-		else if (!ActiveApp && !DDActive)
+		else
+#endif
 		{
-			SleepUntilInput (NOT_FOCUS_SLEEP);
+		// yield the CPU for a little while when paused, minimized, or not the focus
+			if ((cl.paused && (!ActiveApp && !DDActive)) || Minimized || block_drawing)
+			{
+				SleepUntilInput (PAUSE_SLEEP);
+				scr_skipupdate = 1;		// no point in bothering to draw
+			}
+			else if (!ActiveApp && !DDActive)
+			{
+				SleepUntilInput (NOT_FOCUS_SLEEP);
+			}
+
+			newtime = Sys_DoubleTime();
+			time = newtime - oldtime;
 		}
 
-		newtime = Sys_DoubleTime ();
-		time = newtime - oldtime;
 		Host_Frame (time);
 		oldtime = newtime;
 	}

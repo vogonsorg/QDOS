@@ -2193,7 +2193,7 @@ SOURCE=..\common\sys_find.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\sys_win.c
+SOURCE=..\common\sys_win.c
 # End Source File
 # Begin Source File
 
