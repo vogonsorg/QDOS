@@ -1762,7 +1762,7 @@ SOURCE=.\conproc.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\console.c
+SOURCE=..\common\console.c
 # End Source File
 # Begin Source File
 
@@ -1790,7 +1790,7 @@ SOURCE=..\common\in_win.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\keys.c
+SOURCE=..\common\keys.c
 # End Source File
 # Begin Source File
 
@@ -2196,7 +2196,7 @@ SOURCE=.\conproc.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\console.h
+SOURCE=..\common\console.h
 # End Source File
 # Begin Source File
 

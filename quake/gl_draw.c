@@ -493,8 +493,8 @@ void Draw_Init (void)
 	gl->sh = 1;
 	gl->tl = 0;
 	gl->th = 1;
-	conback->width = vid.width;
-	conback->height = vid.height;
+	conback->width = vid.conwidth;
+	conback->height = vid.conheight;
 
 	// free loaded console
 	Hunk_FreeToLowMark (start);
@@ -588,40 +588,6 @@ void Draw_DebugChar (char num)
 
 /*
 =============
-Draw_AlphaPic
-=============
-*/
-void Draw_AlphaPic (int x, int y, qpic_t *pic, float alpha)
-{
-	glpic_t			*gl;
-
-	if (scrap_dirty)
-		Scrap_Upload ();
-	gl = (glpic_t *)pic->data;
-	glDisable_fp(GL_ALPHA_TEST);
-	glEnable_fp (GL_BLEND);
-//	glBlendFunc_fp(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//	glCullFace_fp(GL_FRONT);
-	glColor4f_fp (1,1,1,alpha);
-	GL_Bind (gl->texnum);
-	glBegin_fp (GL_QUADS);
-	glTexCoord2f_fp (gl->sl, gl->tl);
-	glVertex2f_fp (x, y);
-	glTexCoord2f_fp (gl->sh, gl->tl);
-	glVertex2f_fp (x+pic->width, y);
-	glTexCoord2f_fp (gl->sh, gl->th);
-	glVertex2f_fp (x+pic->width, y+pic->height);
-	glTexCoord2f_fp (gl->sl, gl->th);
-	glVertex2f_fp (x, y+pic->height);
-	glEnd_fp ();
-	glColor4f_fp (1,1,1,1);
-	glEnable_fp(GL_ALPHA_TEST);
-	glDisable_fp (GL_BLEND);
-}
-
-
-/*
-=============
 Draw_Pic
 =============
 */
@@ -644,6 +610,39 @@ void Draw_Pic (int x, int y, qpic_t *pic)
 	glTexCoord2f_fp (gl->sl, gl->th);
 	glVertex2f_fp (x, y+pic->height);
 	glEnd_fp ();
+}
+
+/*
+=============
+Draw_AlphaPic
+=============
+*/
+void Draw_AlphaPic (int x, int y, qpic_t *pic, float alpha)
+{
+	glpic_t			*gl;
+
+	if (scrap_dirty)
+		Scrap_Upload ();
+	gl = (glpic_t *)pic->data;
+	glDisable_fp(GL_ALPHA_TEST);
+	glEnable_fp (GL_BLEND);
+//	glBlendFunc_fp(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glCullFace_fp(GL_FRONT);
+	glColor4f_fp (1,1,1,alpha);
+	GL_Bind (gl->texnum);
+	glBegin_fp (GL_QUADS);
+	glTexCoord2f_fp (gl->sl, gl->tl);
+	glVertex2f_fp (x, y);
+	glTexCoord2f_fp (gl->sh, gl->tl);
+	glVertex2f_fp (x+pic->width, y);
+	glTexCoord2f_fp (gl->sh, gl->th);
+	glVertex2f_fp (x+pic->width, y+pic->height);
+	glTexCoord2f_fp (gl->sl, gl->th);
+	glVertex2f_fp (x, y+pic->height);
+	glEnd_fp ();
+	glColor4f_fp (1,1,1,1);
+	glEnable_fp(GL_ALPHA_TEST);
+	glDisable_fp (GL_BLEND);
 }
 
 /*
@@ -993,10 +992,10 @@ void GL_MipMap8Bit (byte *in, int width, int height)
 	{
 		for (j=0 ; j<width ; j+=2, out+=1, in+=2)
 		{
-			at1 = (byte *) (d_8to24table + in[0]);
-			at2 = (byte *) (d_8to24table + in[1]);
-			at3 = (byte *) (d_8to24table + in[width+0]);
-			at4 = (byte *) (d_8to24table + in[width+1]);
+			at1 = (byte *) &d_8to24table[in[0]];
+			at2 = (byte *) &d_8to24table[in[1]];
+			at3 = (byte *) &d_8to24table[in[width+0]];
+			at4 = (byte *) &d_8to24table[in[width+1]];
 
  			r = (at1[0]+at2[0]+at3[0]+at4[0]); r>>=5;
  			g = (at1[1]+at2[1]+at3[1]+at4[1]); g>>=5;

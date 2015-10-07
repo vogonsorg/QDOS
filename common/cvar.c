@@ -160,12 +160,10 @@ char *Cvar_CompleteVariable (char *partial)
 	if (!len)
 		return NULL;
 
-#ifdef QUAKEWORLD
 	// check exact match
 	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
 		if (!strcmp (partial,cvar->name))
 			return cvar->name;
-#endif
 
 	// check partial match
 	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)

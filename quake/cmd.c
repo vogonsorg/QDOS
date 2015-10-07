@@ -824,6 +824,30 @@ int Cmd_CheckParm (char *parm)
 	return 0;
 }
 
+void Cmd_ChatInfo (int val)
+{
+#ifdef QUAKEWORLD
+	if(net_broadcast_chat->value && chat->value != val)
+	{
+		switch (val)
+		{
+			case EZQ_CHAT_TYPING:
+			case EZQ_CHAT_AFK:
+			case EZQ_CHAT_AFK_TYPING:
+				Cbuf_AddText( va("setinfo chat %i\n",val) );
+				chat->value = val;
+				afk = val;
+				break;
+			default:
+				afk = 0;
+				Cbuf_AddText("setinfo chat \"\"\n");
+				chat->value = EZQ_CHAT_OFF;
+				break;
+		}
+	}
+#endif
+}
+
 /* FS: Auto complete cmds */
 #define RETRY_INITIAL	0
 #define RETRY_ONCE		1
@@ -849,6 +873,7 @@ char *Sort_Possible_Cmds (char *partial)
 		if (!Q_strcmp (partial,cmd->name))
 		{
 			foundExactCount++;
+			CompleteCommand();
 			return cmd->name;
 		}
 	}
@@ -857,6 +882,7 @@ char *Sort_Possible_Cmds (char *partial)
 		if (!Q_strcmp (partial, a->name))
 		{
 			foundExactCount++;
+			CompleteCommand();
 			return a->name;
 		}
 	}
@@ -865,6 +891,7 @@ char *Sort_Possible_Cmds (char *partial)
 		if (!Q_strcmp (partial,cvar->name))
 		{
 			foundExactCount++;
+			CompleteCommand();
 			return cvar->name;
 		}
 	}
@@ -907,6 +934,7 @@ retryPartial:
 	if(foundPartialCount == 1)
 	{
 		retryPartialFlag = RETRY_ONCE;
+		CompleteCommand();
 		goto retryPartial;
 	}
 	else if (foundPartialCount == 0)

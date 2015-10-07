@@ -25,8 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  /* FS: Prototypes */
 void CL_PlayBackgroundTrack (int track);
 qboolean	CL_MaliciousStuffText(char *stufftext); /* FS: Check for malicious stufftext */
-extern char *Con_Quakebar (int len);
-extern void Con_LogCenterPrint (char *str);
 
 qboolean warn_about_nehahra_protocol; //johnfitz
 extern vec3_t	v_punchangles[2]; //johnfitz
@@ -1045,7 +1043,6 @@ void CL_ParseServerMessage (void)
 				}
 
 				Con_Printf ("%s", str); /* FS: f_version and q_version reply */
-
 				break;
 			
 			case svc_centerprint:

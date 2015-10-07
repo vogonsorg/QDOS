@@ -25,6 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // console
 //
 
+#define         CON_TEXTSIZE    65536 /* FS: Was 16384 */
+
 /* FS: Developer flags for developer cvar and DPrintf's */
 /* FS: No 0x00000001 because that would be developer->value 1 and we use that to show it all! */
 #define DEVELOPER_MSG_STANDARD		0x00000002 // 2
@@ -34,20 +36,43 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define DEVELOPER_MSG_VIDEO			0x00000020 // 32
 #define DEVELOPER_MSG_CD			0x00000040 // 64
 #define DEVELOPER_MSG_MEM			0x00000080 // 128
+#ifdef QUAKE1
 #define DEVELOPER_MSG_SERVER		0x00000100 // 256
 #define DEVELOPER_MSG_PROGS			0x00000200 // 512
 #define DEVELOPER_MSG_UNUSED1		0x00000400 // 1024
+#endif
 #define DEVELOPER_MSG_PHYSICS		0x00000800 // 2048
 #define DEVELOPER_MSG_UNUSED2		0x00001000 // 4096
 #define DEVELOPER_MSG_UNUSED3		0x00002000 // 8192
 #define DEVELOPER_MSG_ENTITY		0x00004000 // 16384
+#ifdef QUAKE1
 #define DEVELOPER_MSG_SAVE			0x00008000 // 32768
+#endif
 #define DEVELOPER_MSG_VERBOSE		0x00010000 // 65536
 #define DEVELOPER_MSG_GAMESPY		0x00020000 // 131072
 
+typedef struct
+{
+	char	text[CON_TEXTSIZE];
+	int		current;		// line where next message will be printed
+	int		x;				// offset in current line for next print
+	int		display;		// bottom of console displays this line
+} console_t;
+
+extern	console_t	con_main;
+extern	console_t	con_chat;
+extern	console_t	*con;			// point to either con_main or con_chat
+
+extern	int			con_ormask;
+
+/* FS: EZQ Chat */
+#define EZQ_CHAT_OFF 0
+#define EZQ_CHAT_TYPING 1
+#define EZQ_CHAT_AFK 2
+#define EZQ_CHAT_AFK_TYPING 3
+extern  int			afk;
+
 extern int con_totallines;
-extern int con_backscroll;
-extern	qboolean con_forcedup;	// because no entities to refresh
 extern qboolean con_initialized;
 extern byte *con_chars;
 extern	int	con_notifylines;		// scan lines to clear for notify lines
@@ -69,6 +94,9 @@ void Con_DrawNotify (void);
 void Con_ClearNotify (void);
 void Con_ToggleConsole_f (void);
 
-void Con_NotifyBox (char *text);	// during startup for sound / cd warnings
+void Con_NotifyBox (char *text); // during startup for sound / cd warnings
+
+char *Con_Quakebar (int len); /* FS: From fitzquake */
+void Con_LogCenterPrint (char *str);  /* FS: from fitzquake */
 
 #endif // __CONSOLE_H

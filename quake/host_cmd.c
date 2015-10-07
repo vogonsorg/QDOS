@@ -391,7 +391,6 @@ void Modlist_Init (void) //TODO: move win32 specific stuff to sys_win.c
 	WIN32_FIND_DATA	FindFileData, FindChildData;
 	HANDLE			Find, FindProgs, FindPak;
 	char			filestring[MAX_OSPATH], childstring[MAX_OSPATH];
-	int				temp;
 
 	Com_sprintf (filestring, sizeof(filestring), "%s/*", host_parms.basedir);
 	Find = FindFirstFile(filestring, &FindFileData);

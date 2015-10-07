@@ -751,6 +751,7 @@ int Cmd_CheckParm (char *parm)
 
 void Cmd_ChatInfo (int val)
 {
+#ifdef QUAKEWORLD
 	if(net_broadcast_chat->value && chat->value != val)
 	{
 		switch (val)
@@ -769,6 +770,7 @@ void Cmd_ChatInfo (int val)
 				break;
 		}
 	}
+#endif
 }
 
 /* FS: Auto complete cmds */

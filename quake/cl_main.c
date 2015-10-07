@@ -166,6 +166,7 @@ void CL_Disconnect (void)
 
 	cls.demoplayback = cls.timedemo = false;
 	cls.signon = 0;
+	key_dest = 0; /* FS: Fix so main menu still works after disconnect */
 	cl.intermission = 0; /* FS: Baker fix */
 }
 

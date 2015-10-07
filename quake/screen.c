@@ -567,10 +567,8 @@ void SCR_SetUpToDrawConsole (void)
 	if (scr_drawloading)
 		return;		// never a console with loading plaque
 		
-// decide on the height of the console
-	con_forcedup = !cl.worldmodel || cls.signon != SIGNONS;
-
-	if (con_forcedup)
+	// decide on the height of the console
+	if (!cl.worldmodel || cls.signon != SIGNONS || cls.state != ca_active)
 	{
 		scr_conlines = vid.height;		// full screen
 		scr_con_current = scr_conlines;

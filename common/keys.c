@@ -234,7 +234,6 @@ Interactive line editing and console scrollback
 void Key_Console (int key)
 {
 #ifdef _WIN32
-//	char	*cmd, *s;
 	int		i;
 	HANDLE	th;
 	char	*clipText, *textCopied;
@@ -308,8 +307,10 @@ void Key_Console (int key)
 		key_lines[edit_line][0] = ']';
 		key_linepos = 1;
 
+#ifdef QUAKEWORLD
 		if (key_dest == key_console && net_broadcast_chat->value) /* FS: EZQ Chat */
 			Cmd_ChatInfo(EZQ_CHAT_AFK);/* FS: EZQ Chat */
+#endif
 
 		if (cls.state == ca_disconnected)
 			SCR_UpdateScreen ();	// force an update, because the command
@@ -477,13 +478,18 @@ void Key_Console (int key)
 //============================================================================
 
 #define MAX_CHAT 32
+#ifdef QUAKE1
+#define MAXCHATLINE 32
+#else
+#define MAXCHATLINE MAXCMDLINE
+#endif
 
 qboolean	chat_team;
-char		chat_buffer[MAXCMDLINE];
+char		chat_buffer[MAXCHATLINE]; 
 int			chat_bufferlen = 0;
 
-/* FS: Chat history ring array by taniwha */
-char	chat_buffer_array[MAX_CHAT][MAXCMDLINE];
+/* FS: Chat buffer ring array by taniwha*/
+char	chat_buffer_array[MAX_CHAT][MAXCHATLINE];
 int		chat_head = 0, chat_tail = 0;
 int		chat_index = 0;
 

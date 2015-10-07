@@ -120,6 +120,10 @@ void Con_ToggleConsole_f (void)
 		key_dest = key_console;
 	}
 	Con_ClearNotify ();
+
+#ifdef QUAKE1
+	SCR_EndLoadingPlaque ();
+#endif
 }
 
 /*
@@ -352,6 +356,10 @@ void Con_Print (char *txt)
 
 	if (txt[0] == 1 || txt[0] == 2)
 	{
+#ifdef QUAKE1
+		if(txt[0] == 1)
+			S_LocalSound ("misc/talk.wav");
+#endif
 		mask = 128;		// go to colored text
 		txt++;
 	}
@@ -468,6 +476,11 @@ void Con_Printf (const char *fmt, ...)
 
 	if (!con_initialized)
 		return;
+
+#ifdef QUAKE1
+	if (cls.state == ca_dedicated)
+		return;		// no graphics mode
+#endif
 
 	// write it to the scrollable buffer
 	Con_Print (msg->str);
@@ -596,6 +609,11 @@ void Con_LogCenterPrint (char *str)
 {
 	if (!strcmp(str, con_lastcenterstring))
 		return; //ignore duplicates
+
+#ifdef QUAKE1
+	if (cl.gametype == GAME_DEATHMATCH && con_logcenterprint->value != 2)
+		return; //don't log in deathmatch
+#endif
 
 	strcpy(con_lastcenterstring, str);
 
@@ -783,6 +801,7 @@ void Con_DrawConsole (int lines)
 			Draw_Character ( (x+1)<<3, y, text[x]);
 	}
 
+#ifdef QUAKEWORLD
 	// draw the download bar
 	// figure out width
 	if (cls.download)
@@ -851,6 +870,7 @@ void Con_DrawConsole (int lines)
 		for (i = 0; i < strlen(dlbar); i++)
 			Draw_Character ( (i+1)<<3, y, dlbar[i]);
 	}
+#endif
 
 #ifdef GAMESPY /* FS: Gamespy stuff */
 	if (cls.gamespyupdate)

@@ -17,17 +17,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// sys_win.h
-
-#include "quakedef.h"
-#include "winquake.h"
-#include "resource.h"
-#include "errno.h"
-#include "fcntl.h"
+// sys_win.c -- Win32 system interface code
+#include <errno.h>
+#include <fcntl.h>
 #include <limits.h>
 #include <direct.h>
 #include <conio.h>
 #include <io.h>
+
+#include "quakedef.h"
+#include "winquake.h"
+#include "resource.h"
+
 
 #define MINIMUM_WIN_MEMORY	0x2000000 /* FS: Was 0x0c00000 */
 #define MAXIMUM_WIN_MEMORY	0x4000000 /* FS: Was 0x1000000 */
@@ -57,10 +58,10 @@ void Sys_PushFPCW_SetHigh (void);
 
 void Sys_DebugLog(const char *file, const char *fmt, ...)
 {
-    va_list argptr; 
+    va_list argptr;
 	static dstring_t *data;
     int fd;
-    
+
 	if(!data)
 		data = dstring_new();
 

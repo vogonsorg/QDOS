@@ -669,7 +669,7 @@ void SCR_SetUpToDrawConsole (void)
 	if (scr_drawloading)
 		return;		// never a console with loading plaque
 		
-// decide on the height of the console
+	// decide on the height of the console
 	if (cls.state != ca_active)
 	{
 		scr_conlines = vid.height;		// full screen

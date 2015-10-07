@@ -18,10 +18,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 // sys_win.c -- Win32 system interface code
+#include <errno.h>
+#include <fcntl.h>
+#include <limits.h>
+#include <direct.h>
+#include <conio.h>
+#include <io.h>
 
 #include "quakedef.h"
 #include "winquake.h"
-#include "errno.h"
 #include "resource.h"
 #include "conproc.h"
 
@@ -57,6 +62,23 @@ void Sys_InitFloatTime (void);
 void Sys_PushFPCW_SetHigh (void);
 void Sys_PopFPCW (void);
 
+void Sys_DebugLog(const char *file, const char *fmt, ...)
+{
+    va_list argptr;
+	static dstring_t *data;
+    int fd;
+
+	if(!data)
+		data = dstring_new();
+
+    va_start(argptr, fmt);
+    dvsprintf(data, fmt, argptr);
+    va_end(argptr);
+    fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
+    write(fd, data->str, strlen(data->str));
+    close(fd);
+};
+
 volatile int					sys_checksum;
 
 
@@ -68,7 +90,7 @@ Sys_PageIn
 void Sys_PageIn (void *ptr, int size)
 {
 	byte	*x;
-	int		j, m, n;
+	int		m, n;
 
 // touch all the memory to make sure it's there. The 16-page skip is to
 // keep Win 95 from thinking we're trying to page ourselves in (we are
@@ -110,10 +132,10 @@ int		findhandle (void)
 
 /*
 ================
-filelength
+fileLength
 ================
 */
-int filelength (FILE *f)
+int fileLength (FILE *f)
 {
 	int		pos;
 	int		end;
@@ -152,7 +174,7 @@ int Sys_FileOpenRead (char *path, int *hndl)
 	{
 		sys_handles[i] = f;
 		*hndl = i;
-		retval = filelength(f);
+		retval = fileLength(f);
 	}
 
 	VID_ForceLockState (t);
@@ -427,7 +449,6 @@ void Sys_Printf (const char *fmt, ...)
 {
 	va_list		argptr;
 	static		dstring_t *text;
-	DWORD		dummy;
 	
 	if (!text)
 		text = dstring_new ();
@@ -556,8 +577,7 @@ char *Sys_ConsoleInput (void)
 	static char	text[256];
 	static int		len;
 	INPUT_RECORD	recs[1024];
-	int		count;
-	int		i, dummy;
+	int		dummy;
 	int		ch, numread, numevents;
 
 	if (!isDedicated)
@@ -690,7 +710,6 @@ HWND		hwnd_dialog;
 
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    MSG				msg;
 	quakeparms_t	parms;
 	double			time, oldtime, newtime;
 	MEMORYSTATUS	lpBuffer;

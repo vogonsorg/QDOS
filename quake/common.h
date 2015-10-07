@@ -226,6 +226,7 @@ extern	struct cvar_s	*registered;
 extern	qboolean	standard_quake, rogue, hipnotic;
 extern	qboolean	warpspasm, nehahra, extended_mod; /* FS: For Nehara */
 
+void CompleteCommand (void); /* FS: Autocomplete commands */
 void Com_sprintf (char *dest, int size, char *fmt, ...); /* FS: Added */
 void Com_strcpy (char *dest, int destSize, const char *src); /* FS: Added */
 
