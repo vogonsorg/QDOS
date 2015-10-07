@@ -324,6 +324,25 @@ static void GL_Init_Functions (void)
 }
 #endif	/* GL_DLSYM */
 
+void GL_Strings_f (void) /* FS: Print the extensions string */
+{
+	char seperators[] = " \n";
+	char *extString, *p;
+	char *savedExtStrings;
+
+	Con_Printf("GL_EXTENSIONS: ");
+
+	savedExtStrings = strdup((char *)gl_extensions);
+	extString = strtok_r(savedExtStrings, seperators, &p);
+
+	while(extString != NULL)
+	{
+		Con_Printf("%s\n", extString);
+		extString = strtok_r(NULL, seperators, &p);
+	}
+	free((void *)savedExtStrings);
+}
+
 /*
 ===============
 GL_SetupState -- johnfitz
@@ -352,25 +371,6 @@ void GL_SetupState (void)
 	glBlendFunc_fp (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glTexEnvf_fp(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-}
-
-void GL_Strings_f (void) /* FS: Print the extensions string */
-{
-	char seperators[] = " \n";
-	char *extString, *p;
-	char *savedExtStrings;
-
-	Con_Printf("GL_EXTENSIONS: ");
-
-	savedExtStrings = strdup((char *)gl_extensions);
-	extString = strtok_r(savedExtStrings, seperators, &p);
-
-	while(extString != NULL)
-	{
-		Con_Printf("%s\n", extString);
-		extString = strtok_r(NULL, seperators, &p);
-	}
-	free((void *)savedExtStrings);
 }
 
 /*
@@ -411,8 +411,7 @@ void GL_Init (void)
 
 /*
 =================
-GL_BeginRendering
-
+GL_BeginRendering -- sets values of glx, gly, glwidth, glheight
 =================
 */
 void GL_BeginRendering (int *x, int *y, int *width, int *height)
@@ -422,6 +421,11 @@ void GL_BeginRendering (int *x, int *y, int *width, int *height)
 	*height = scr_height;
 }
 
+/*
+=================
+GL_EndRendering
+=================
+*/
 void GL_EndRendering (void)
 {
 	DOSGL_EndFrame();
