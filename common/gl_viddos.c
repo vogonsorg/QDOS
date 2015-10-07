@@ -354,6 +354,25 @@ void GL_SetupState (void)
 	glTexEnvf_fp(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 }
 
+void GL_Strings_f (void) /* FS: Print the extensions string */
+{
+	char seperators[] = " \n";
+	char *extString, *p;
+	char *savedExtStrings;
+
+	Con_Printf("GL_EXTENSIONS: ");
+
+	savedExtStrings = strdup((char *)gl_extensions);
+	extString = strtok_r(savedExtStrings, seperators, &p);
+
+	while(extString != NULL)
+	{
+		Con_Printf("%s\n", extString);
+		extString = strtok_r(NULL, seperators, &p);
+	}
+	free((void *)savedExtStrings);
+}
+
 /*
 ===============
 GL_Init
@@ -373,7 +392,7 @@ void GL_Init (void)
 	gl_version = (const char *)glGetString_fp (GL_VERSION);
 	Con_Printf ("GL_VERSION: %s\n", gl_version);
 	gl_extensions = (const char *)glGetString_fp (GL_EXTENSIONS);
-	Con_Printf ("GL_EXTENSIONS: %s\n", gl_extensions);
+	Con_SafeDPrintf (DEVELOPER_MSG_VIDEO, "GL_EXTENSIONS: %s\n", gl_extensions);
 
 	is_3dfx = false;
 	if (!Q_strncasecmp((char *)gl_renderer, "3dfx", 4)	  ||
@@ -491,6 +510,8 @@ void VID_Init(unsigned char *palette)
 	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
 	r_ignorehwgamma = Cvar_Get("r_ignorehwgamma", "0", CVAR_ARCHIVE);
 	r_ignorehwgamma->description = "Skip testing for 3DFX Hardware Gamma capabilities";
+
+	Cmd_AddCommand ("gl_strings", GL_Strings_f); /* FS: Added */
 
 	/* don't let fxMesa cheat multitexturing */
 	putenv("FX_DONT_FAKE_MULTITEX=1");

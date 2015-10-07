@@ -573,6 +573,25 @@ void CheckMultiTextureExtensions(void)
 				Con_Warning ("multitexture not supported (extension not found)\n");
 }
 
+void GL_Strings_f (void) /* FS: Print the extensions string */
+{
+	char seperators[] = " \n";
+	char *extString, *p;
+	char *savedExtStrings;
+
+	Con_Printf("GL_EXTENSIONS: ");
+
+	savedExtStrings = strdup((char *)gl_extensions);
+	extString = strtok_r(savedExtStrings, seperators, &p);
+
+	while(extString != NULL)
+	{
+		Con_Printf("%s\n", extString);
+		extString = strtok_r(NULL, seperators, &p);
+	}
+	free((void *)savedExtStrings);
+}
+
 /*
 ===============
 GL_Init
@@ -588,7 +607,7 @@ void GL_Init (void)
 	gl_version = glGetString (GL_VERSION);
 	Con_Printf ("GL_VERSION: %s\n", gl_version);
 	gl_extensions = glGetString (GL_EXTENSIONS);
-	Con_Printf ("GL_EXTENSIONS: %s\n", gl_extensions);
+	Con_SafeDPrintf(DEVELOPER_MSG_VIDEO, "GL_EXTENSIONS: %s\n", gl_extensions);
 
 //	Con_Printf ("%s %s\n", gl_renderer, gl_version);
 
@@ -1556,6 +1575,8 @@ void	VID_Init (unsigned char *palette)
 	Cmd_AddCommand ("vid_describecurrentmode", VID_DescribeCurrentMode_f);
 	Cmd_AddCommand ("vid_describemode", VID_DescribeMode_f);
 	Cmd_AddCommand ("vid_describemodes", VID_DescribeModes_f);
+
+	Cmd_AddCommand ("gl_strings", GL_Strings_f); /* FS: Added */
 
 	hIcon = LoadIcon (global_hInstance, MAKEINTRESOURCE (IDI_ICON2));
 
