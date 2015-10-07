@@ -438,7 +438,7 @@ void Sys_Shutdown(void)
 }
 
 // Knightmare- added this to fix CPU usage
-void Sys_Sleep (unsigned msec) /* FS: TODO: Currently unused */
+void Sys_Sleep (unsigned msec)
 {
 	usleep (msec*1000);
 }

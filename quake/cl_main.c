@@ -49,6 +49,7 @@ cvar_t	*console_old_complete;
 cvar_t	*cl_ogg_music;
 cvar_t	*cl_wav_music;
 cvar_t	*cl_autorepeat_allkeys;
+cvar_t	*cl_sleep;
 
 client_static_t	cls;
 client_state_t cl;
@@ -800,7 +801,8 @@ void CL_Init (void)
 	cl_wav_music->description = "Play WAV tracks in the format of id1/music/trackXX.wav if they exist.";
 	cl_autorepeat_allkeys = Cvar_Get("cl_autorepeat_allkeys", "0", CVAR_ARCHIVE);
 	cl_autorepeat_allkeys->description = "Allow to autorepeat any key, not just Backspace, Pause, PgUp, and PgDn keys.";
-
+	cl_sleep = Cvar_Get("cl_sleep", "0", CVAR_ARCHIVE);
+	cl_sleep->description = "Reduce CPU usage by issuing sleep commands between extra frames.";
 
 	Cmd_AddCommand ("entities", CL_PrintEntities_f);
 	Cmd_AddCommand ("disconnect", CL_Disconnect_f);

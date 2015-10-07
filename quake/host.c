@@ -587,7 +587,11 @@ qboolean Host_FilterTime (float time)
 	//johnfitz -- max fps cvar
 	maxfps = CLAMP (10.0, cl_maxfps->value, 1000.0); /* FS: Technically it was host_maxfps, but cl_maxfps is standard in other Quake games */
 	if (!cls.timedemo && realtime - oldrealtime < 1.0/maxfps)
+	{
+		if(cl_sleep->intValue)
+			Sys_Sleep(1);
 		return false; // framerate is too high
+	}
 	//johnfitz
 
 	host_frametime = realtime - oldrealtime;

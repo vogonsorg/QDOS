@@ -157,6 +157,7 @@ cvar_t	*cl_ogg_music;
 cvar_t	*cl_wav_music;
 cvar_t	*cl_autorepeat_allkeys;
 cvar_t	*net_broadcast_chat; /* FS: EZQ Chat */
+cvar_t	*cl_sleep;
 
 int         fps_count;
 
@@ -1355,6 +1356,8 @@ void CL_Init (void)
 	console_old_complete->description = "Use legacy style tab completion.";
 	net_broadcast_chat = Cvar_Get("net_broadcast_chat", "1", CVAR_ARCHIVE);  /* FS: EZQ Chat */
 	net_broadcast_chat->description = "Broadcast EZQ chats.";
+	cl_sleep = Cvar_Get("cl_sleep", "0", CVAR_ARCHIVE);
+	cl_sleep->description = "Reduce CPU usage by issuing sleep commands between extra frames.";
 
 #ifdef GAMESPY
 	/* FS: GameSpy CVARs */
@@ -1608,6 +1611,8 @@ void Host_Frame (float time)
 
 	if (!cls.timedemo && realtime - oldrealtime < 1.0/fps)
 	{
+		if(cl_sleep->intValue)
+			Sys_Sleep(1);
 		return;        // framerate is too high
 	}
 

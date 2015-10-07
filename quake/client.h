@@ -302,6 +302,7 @@ extern cvar_t	*cl_unbindall_protection;
 extern cvar_t	*console_old_complete;
 extern cvar_t	*in_freelook;
 extern cvar_t	*cl_warncmd; /* FS: From QW */
+extern cvar_t	*cl_sleep;
 
 #ifdef GAMESPY /* FS: GameSpy CVARs */
 extern cvar_t	*cl_master_server_ip;
