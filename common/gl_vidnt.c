@@ -1733,7 +1733,7 @@ void	VID_Init (unsigned char *palette)
 	if ((i = COM_CheckParm("-conwidth")) != 0)
 		vid.conwidth = Q_atoi(com_argv[i+1]);
 	else
-		vid.conwidth = 640;
+		vid.conwidth = width; /* FS: Was 640 */
 
 	vid.conwidth &= 0xfff8; // make it a multiple of eight
 

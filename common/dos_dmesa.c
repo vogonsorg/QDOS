@@ -70,7 +70,10 @@ static DMesaBuffer db;
 
 static int DMESA_InitCtx (int *width, int *height, int *bpp)
 {
-	dv = DMesaCreateVisual_fp(*width, *height, *bpp, 0, true, true, 2, 16, 0, 0);
+	if(*bpp <= 16)
+		dv = DMesaCreateVisual_fp(*width, *height, *bpp, 0, true, true, 2, 16, 0, 0);
+	else
+		dv = DMesaCreateVisual_fp(*width, *height, *bpp, 0, true, true, 2, 24, 0, 0);
 	if (!dv) return -1;
 
 	dc = DMesaCreateContext_fp(dv, NULL);
