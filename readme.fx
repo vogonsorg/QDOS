@@ -42,7 +42,7 @@
   - voodoo/h5    -> Banshee and Voodoo 3/4/5
 * Pick a renderer (gl.dxe) from one of the directories listed below
   and put it in the same place as qdosfx.exe, qwdosfx.exe:
-  - opengl/mesa -> Mesa v6.4.3
+  - opengl/mesa -> Mesa v6.0.2
   - opengl/sage -> Sage (be sure to copy sage.ini as well)
 * It is recommended to use RayeR's MTRRLFBE.EXE utility
   (http://rayer.g6.cz/programm/mtrrlfbe.exe) to setup a
@@ -139,8 +139,6 @@
 * MESA_FX_IGNORE_TEXFMT set to any value (including 0) to disable the
   32bpp-like quality on 16bpp modes.  This causes a slightly performance hit.
   This is enabled by default, and only affects Voodoo 4 and 5.
-* MESA_CODEGEN enables code generation for TnL code.  May help performance,
-  but I have personally seen no benefits.
 
 7 - Interesting Sage parameters
 ---------------------------------------------------------
