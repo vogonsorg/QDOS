@@ -78,6 +78,7 @@ float		gldepthmin, gldepthmax;
 
 cvar_t	*gl_ztrick;
 cvar_t	*r_ignorehwgamma;
+cvar_t	*gl_conscale; /* FS: Added */
 
 const char *gl_vendor;
 const char *gl_renderer;
@@ -514,6 +515,8 @@ void VID_Init(unsigned char *palette)
 	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
 	r_ignorehwgamma = Cvar_Get("r_ignorehwgamma", "0", CVAR_ARCHIVE);
 	r_ignorehwgamma->description = "Skip testing for 3DFX Hardware Gamma capabilities";
+	gl_conscale = Cvar_Get("gl_conscale", "1", CVAR_ARCHIVE);
+	gl_conscale->description = "Set to 0 to make the console width and height equal to the current resolution.  Set to 1 to control it with conwidth and conheight cmdline.  Requires game restart.";
 
 	Cmd_AddCommand ("gl_strings", GL_Strings_f); /* FS: Added */
 
@@ -545,11 +548,6 @@ void VID_Init(unsigned char *palette)
 	if ((i = COM_CheckParm("-height")) != 0)
 		height = atoi(com_argv[i+1]);
 
-	if ((i = COM_CheckParm("-conwidth")) != 0)
-		vid.conwidth = Q_atoi(com_argv[i+1]);
-	else
-		vid.conwidth = 640;
-
 	if ((i = COM_CheckParm("-bpp")) != 0) /* FS: Force BPP */
 	{
 		int x = Q_atoi(com_argv[i+1]);
@@ -557,18 +555,34 @@ void VID_Init(unsigned char *palette)
 			bpp = x;
 	}
 
-	vid.conwidth &= 0xfff8; // make it a multiple of eight
+	if(!gl_conscale->intValue) /* FS: Added */
+	{
+		vid.conwidth = width;
+		vid.conwidth &= 0xfff8; // make it a multiple of eight
 
-	if (vid.conwidth < 320)
-		vid.conwidth = 320;
+		vid.conheight = height;
+		vid.conheight = vid.conwidth*3 / 4;
+	}
+	else
+	{
+		if ((i = COM_CheckParm("-conwidth")) != 0)
+			vid.conwidth = Q_atoi(com_argv[i+1]);
+		else
+			vid.conwidth = 640;
 
-	// pick a conheight that matches with correct aspect
-	vid.conheight = vid.conwidth*3 / 4;
+		vid.conwidth &= 0xfff8; // make it a multiple of eight
 
-	if ((i = COM_CheckParm("-conheight")) != 0)
-		vid.conheight = Q_atoi(com_argv[i+1]);
-	if (vid.conheight < 200)
-		vid.conheight = 200;
+		if (vid.conwidth < 320)
+			vid.conwidth = 320;
+
+		// pick a conheight that matches with correct aspect
+		vid.conheight = vid.conwidth*3 / 4;
+
+		if ((i = COM_CheckParm("-conheight")) != 0)
+			vid.conheight = Q_atoi(com_argv[i+1]);
+		if (vid.conheight < 200)
+			vid.conheight = 200;
+	}
 
 	if (DOSGL_InitCtx(&width, &height, &bpp) < 0)
 		Sys_Error("DOSGL: Failed creating context.");
