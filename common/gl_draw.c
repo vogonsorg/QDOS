@@ -107,7 +107,7 @@ void GL_Bind (int texnum)
 =============================================================================
 */
 
-#define	MAX_SCRAPS		1
+#define	MAX_SCRAPS		2
 #define	BLOCK_WIDTH		256
 #define	BLOCK_HEIGHT	256
 
@@ -162,9 +162,14 @@ int	scrap_uploads;
 
 void Scrap_Upload (void)
 {
+	int		texnum;
+
 	scrap_uploads++;
-	GL_Bind(scrap_texnum);
-	GL_Upload8 (scrap_texels[0], BLOCK_WIDTH, BLOCK_HEIGHT, false, true);
+
+	for (texnum=0 ; texnum<MAX_SCRAPS ; texnum++) {
+		GL_Bind(scrap_texnum + texnum);
+		GL_Upload8 (scrap_texels[texnum], BLOCK_WIDTH, BLOCK_HEIGHT, false, true);
+	}
 	scrap_dirty = false;
 }
 
@@ -388,6 +393,9 @@ void Draw_Init (void)
 	qpic_t	*cb;
 	byte	*dest;
 	int		x;
+#ifdef QUAKE1
+	int		y;
+#endif
 	char	ver[40];
 	glpic_t	*gl;
 	int start;
@@ -423,52 +431,38 @@ void Draw_Init (void)
 //	Draw_CrosshairAdjust();
 	cs_texture = GL_LoadTexture ("crosshair", 8, 8, cs_data, false, true);
 
-	start = Hunk_LowMark ();
+	start = Hunk_LowMark();
 
-	cb = (qpic_t *)COM_LoadHunkFile ("gfx/conback.lmp");	
+#ifdef QUAKE1
+	cb = (qpic_t *)COM_LoadTempFile ("gfx/conback.lmp");
+#else
+	cb = (qpic_t *)COM_LoadHunkFile ("gfx/conback.lmp");
+#endif
 	if (!cb)
 		Sys_Error ("Couldn't load gfx/conback.lmp");
 	SwapPic (cb);
 
+#ifdef QUAKE1
+	// hack the version number directly into the pic
+#if defined(__linux__)
+	sprintf (ver, "(Linux %2.2f, gl %4.2f) %4.2f", (float)LINUX_VERSION, (float)GLQUAKE_VERSION, (float)VERSION);
+#else
+	sprintf (ver, "(gl %4.2f) %4.2f", (float)GLQUAKE_VERSION, (float)VERSION);
+#endif // __linux__
+	dest = cb->data + 320*186 + 320 - 11 - 8*strlen(ver);
+	y = strlen(ver);
+	for (x=0 ; x<y ; x++)
+		Draw_CharToConback (ver[x], dest+(x<<3));
+#else
 	sprintf (ver, "%4.2f", VERSION);
 	dest = cb->data + 320 + 320*186 - 11 - 8*strlen(ver);
 	for (x=0 ; x<strlen(ver) ; x++)
 		Draw_CharToConback (ver[x], dest+(x<<3));
+#endif // QUAKE1
 
-#if 0
-	conback->width = vid.conwidth;
-	conback->height = vid.conheight;
-
-	// scale console to vid size
-	dest = ncdata = Hunk_AllocName(vid.conwidth * vid.conheight, "conback");
-
-	for (y=0 ; y<vid.conheight ; y++, dest += vid.conwidth)
-	{
-		src = cb->data + cb->width * (y*cb->height/vid.conheight);
-		if (vid.conwidth == cb->width)
-			memcpy (dest, src, vid.conwidth);
-		else
-		{
-			f = 0;
-			fstep = cb->width*0x10000/vid.conwidth;
-			for (x=0 ; x<vid.conwidth ; x+=4)
-			{
-				dest[x] = src[f>>16];
-				f += fstep;
-				dest[x+1] = src[f>>16];
-				f += fstep;
-				dest[x+2] = src[f>>16];
-				f += fstep;
-				dest[x+3] = src[f>>16];
-				f += fstep;
-			}
-		}
-	}
-#else
 	conback->width = cb->width;
 	conback->height = cb->height;
 	ncdata = cb->data;
-#endif
 
 	glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -787,29 +781,33 @@ Draw_ConsoleBackground
 */
 void Draw_ConsoleBackground (int lines)
 {
+#ifdef QUAKEWORLD
 	char ver[80];
 	int x, i;
+#endif
 	int y;
 
 	y = (vid.height * 3) >> 2;
+
 	if (lines > y)
 		Draw_Pic(0, lines-vid.height, conback);
 	else
 		Draw_AlphaPic (0, lines - vid.height, conback, (float)(1.2 * lines)/y);
 
+#ifdef QUAKEWORLD
 	// hack the version number directly into the pic
-//	y = lines-186;
 	y = lines-14;
 	if (!cls.download) {
 #ifdef __linux__
 		sprintf (ver, "LinuxGL (%4.2f) QuakeWorld", LINUX_VERSION);
 #else
 		sprintf (ver, "GL (%4.2f) QuakeWorld", GLQUAKE_VERSION);
-#endif
+#endif // __linux__
 		x = vid.conwidth - (strlen(ver)*8 + 11) - (vid.conwidth*8/320)*7;
 		for (i=0 ; i<strlen(ver) ; i++)
 			Draw_Character (x + i * 8, y, ver[i] | 0x80);
 	}
+#endif // QUAKEWORLD
 }
 
 
@@ -1331,6 +1329,9 @@ int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolea
 	int   i, s;
 	unsigned short crc;
 	gltexture_t *glt;
+#ifdef QUAKE1
+	extern	qboolean isDedicated;
+#endif
 
 	// LordHavoc: do a checksum to confirm the data really is the same as previous
 	// occurances. well this isn't exactly a checksum, it's better than that but
@@ -1370,8 +1371,13 @@ GL_LoadTexture_setup:
 	glt->height = height;
 	glt->mipmap = mipmap;
 
-	GL_Bind(glt->texnum);
-	GL_Upload8 (data, width, height, mipmap, alpha);
+#ifdef QUAKE1
+	if (!isDedicated)
+#endif
+	{
+		GL_Bind(glt->texnum);
+		GL_Upload8 (data, width, height, mipmap, alpha);
+	}
 
 	return glt->texnum;
 }

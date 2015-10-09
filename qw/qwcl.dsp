@@ -394,7 +394,7 @@ SOURCE=.\vregset.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\gl_draw.c
+SOURCE=..\common\gl_draw.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -1574,7 +1574,7 @@ SOURCE=..\common\d_zpoint.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\draw.c
+SOURCE=..\common\draw.c
 
 !IF  "$(CFG)" == "qwcl - Win32 Release"
 
@@ -2344,7 +2344,7 @@ SOURCE=..\common\d_local.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\draw.h
+SOURCE=..\common\draw.h
 # End Source File
 # Begin Source File
 
@@ -2436,7 +2436,7 @@ SOURCE=.\vid.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\view.h
+SOURCE=..\common\view.h
 # End Source File
 # Begin Source File
 

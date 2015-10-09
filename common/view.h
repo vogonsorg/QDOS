@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // view.h
 
-
 #ifndef __VIEW_H
 #define __VIEW_H
 
@@ -32,8 +31,11 @@ extern	cvar_t  *cl_crossy;
 extern	cvar_t	*v_gamma;
 extern	cvar_t	*lcd_x;
 extern  cvar_t	*v_contentblend; /* FS: Fucking hate palette blends */
+
+#ifdef QUAKEWORLD
 extern  cvar_t	*net_showchat; /* FS: EZQ Chat */
 extern  cvar_t	*net_showchatgfx; /* FS: EZQ Chat */
+#endif
 
 #ifdef GLQUAKE
 extern float v_blend[4];

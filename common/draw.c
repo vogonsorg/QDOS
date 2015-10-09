@@ -647,15 +647,20 @@ void Draw_ConsoleBackground (int lines)
 	int				f, fstep;
 	qpic_t			*conback;
 	char			ver[100];
+#ifdef QUAKEWORLD
 	static			char saveback[320*8];
-
+#endif
 	conback = Draw_CachePic ("gfx/conback.lmp");
 
 // hack the version number directly into the pic
+#ifdef QUAKE1
+	dest = conback->data + 320 - 43 + 320*186;
+	Com_sprintf (ver, sizeof(ver), "%4.2f", VERSION);
+#else
 	if (cls.download
 #ifdef GAMESPY
 			 || cls.gamespyupdate /* FS: Added gamespy progress bar */
-#endif
+#endif // GAMESPY
 		)
 	{
 		Com_sprintf (ver, sizeof(ver), "%4.2f", VERSION);
@@ -669,11 +674,12 @@ void Draw_ConsoleBackground (int lines)
 		Com_sprintf (ver, sizeof(ver), "QuakeWorld DOS %4.2f", VERSION);
 #else
 		Com_sprintf (ver, sizeof(ver), "QuakeWorld %4.2f", VERSION);
-#endif
+#endif // __linux__
 		dest = conback->data + 320 - (strlen(ver)*8 + 11) + 320*186;
 	}
 
 	memcpy(saveback, conback->data + 320*186, 320*8);
+#endif // QUAKE1
 	for (x=0 ; x<strlen(ver) ; x++)
 		Draw_CharToConback (ver[x], dest+(x<<3));
 	
@@ -731,8 +737,10 @@ void Draw_ConsoleBackground (int lines)
 			}
 		}
 	}
+#ifdef QUAKEWORLD
 	// put it back
 	memcpy(conback->data + 320*186, saveback, 320*8);
+#endif
 }
 
 

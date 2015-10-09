@@ -59,10 +59,14 @@ cvar_t	*v_ipitch_level;
 cvar_t	*v_idlescale;
 
 cvar_t	*crosshair;
-cvar_t	*cl_crossx;
-cvar_t	*cl_crossy;
+cvar_t	*crosshaircolor;
 
+cvar_t  *cl_crossx;
+cvar_t  *cl_crossy;
+
+#ifdef GLQUAKE
 cvar_t	*gl_cshiftpercent;
+#endif
 
 cvar_t	*v_contentblend; /* FS: Fucking hate palette blends */
 
@@ -1104,9 +1108,8 @@ void V_RenderView (void)
 	}
 
 #ifndef GLQUAKE
-	if (crosshair->value)
-		Draw_Character (scr_vrect.x + scr_vrect.width/2 + cl_crossx->value, 
-			scr_vrect.y + scr_vrect.height/2 + cl_crossy->value, '+');
+        if (crosshair->value)
+                Draw_Crosshair();
 #endif
 }
 
@@ -1164,10 +1167,13 @@ void V_Init (void)
 	r_skyfog->description = "Unused CVAR for mod compatibility.";
 
 	v_idlescale = Cvar_Get("v_idlescale", "0", 0);
+	crosshaircolor = Cvar_Get("crosshaircolor", "79", CVAR_ARCHIVE);
 	crosshair = Cvar_Get("crosshair", "0", CVAR_ARCHIVE);
-	cl_crossx = Cvar_Get("cl_crossx", "0", 0);
-	cl_crossy = Cvar_Get("cl_crossy", "0", 0);
+	cl_crossx = Cvar_Get("cl_crossx", "0", CVAR_ARCHIVE);
+	cl_crossy = Cvar_Get("cl_crossy", "0", CVAR_ARCHIVE);
+#ifdef GLQUAKE
 	gl_cshiftpercent = Cvar_Get("gl_cshiftpercent", "100", 0);
+#endif
 
 	scr_ofsx = Cvar_Get("scr_ofsx","0", 0);
 	scr_ofsy = Cvar_Get("scr_ofsy","0", 0);
