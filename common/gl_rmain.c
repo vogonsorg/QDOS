@@ -110,6 +110,8 @@ cvar_t	*gl_doubleeyes;
 
 cvar_t	*r_waterwarp; /* FS: TODO FIXME dummy */
 
+cvar_t	*gl_texturemode; /* FS: Now a CVAR so we can do +set gl_texturemode blah blah at cmdline or autoexec.cfg */
+
 /*
 =================
 R_CullBox
@@ -959,6 +961,12 @@ void R_SetupGL (void)
 	}
 	else
 		glCullFace_fp(GL_FRONT);
+
+	if ( gl_texturemode->modified ) /* FS: Added */
+	{
+		GL_TextureMode( gl_texturemode->string );
+		gl_texturemode->modified = false;
+	}
 
 	glMatrixMode_fp(GL_MODELVIEW);
     glLoadIdentity_fp ();

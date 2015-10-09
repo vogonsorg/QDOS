@@ -219,6 +219,8 @@ extern	int		gl_alpha_format;
 extern	cvar_t	*gl_max_size;
 extern	cvar_t	*gl_playermip;
 
+extern	cvar_t	*gl_texturemode; /* FS: Now a CVAR so we can do +set gl_texturemode blah blah at cmdline or autoexec.cfg */
+
 extern	int			mirrortexturenum;	// quake texturenum, not gltexturenum
 extern	qboolean	mirror;
 extern	mplane_t	*mirror_plane;
@@ -266,6 +268,7 @@ void R_DrawSkyChain (msurface_t *s);
 //
 int GL_LoadPicTexture (qpic_t *pic);
 void GL_Set2D (void);
+void GL_TextureMode (char *string);
 
 //
 // gl_rmain.c

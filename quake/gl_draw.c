@@ -317,72 +317,56 @@ static int glmode_idx = NUM_GLMODES - 1; /* trilinear */
 Draw_TextureMode_f
 ===============
 */
-void Draw_TextureMode_f (void)
+void GL_TextureMode (char *string) /* FS: Blah, I hate this i-1 tricky dicky shit, but it's standard for mods that override your settings */
 {
 	gltexture_t	*glt;
-	char *arg;
 	int i;
 
-	switch (Cmd_Argc())
+	if (string[0] == 'G' || string[0] == 'g')
 	{
-	case 1:
-		Con_Printf ("\"gl_texturemode\" is \"%s\"\n", glmodes[glmode_idx].name);
-		break;
-	case 2:
-		arg = Cmd_Argv(1);
-		if (arg[0] == 'G' || arg[0] == 'g')
+		for (i=0; i<NUM_GLMODES; i++)
 		{
-			for (i=0; i<NUM_GLMODES; i++)
+			if (!stricmp (glmodes[i].name, string))
 			{
-				if (!stricmp (glmodes[i].name, arg))
-				{
-					if (glmode_idx != i)
-					{
-						glmode_idx = i;
-						goto stuff;
-					}
-					return;
-				}
+				glmode_idx = i;
+				goto stuff;
 			}
-			Con_Printf ("\"%s\" is not a valid texturemode\n", arg);
+		}
+		Con_Printf ("\"%s\" is not a valid texturemode\n", string);
+		return;
+	}
+	else if (string[0] >= '0' && string[0] <= '9')
+	{
+		i = atoi(string);
+		if (i < 1 || i > NUM_GLMODES)
+		{
+			Con_Printf ("\"%s\" is not a valid texturemode\n", string);
+			Cvar_Set("gl_texturemode", (char *)glmodes[glmode_idx].name); /* FS: Reset the CVAR name to what we selected for identification later and to make the video menu sane */
 			return;
 		}
-		else if (arg[0] >= '0' && arg[0] <= '9')
-		{
-			i = atoi(arg);
-			if (i < 1 || i > NUM_GLMODES)
-			{
-				Con_Printf ("\"%s\" is not a valid texturemode\n", arg);
-				return;
-			}
-			glmode_idx = i-1;
-		}
-		else
-			Con_Printf ("\"%s\" is not a valid texturemode\n", arg);
+		glmode_idx = i-1;
+		Cvar_Set("gl_texturemode", (char *)glmodes[glmode_idx].name); /* FS: Reset the CVAR name to what we selected for identification later and to make the video menu sane */
+	}
+	else
+		Con_Printf ("\"%s\" is not a valid texturemode\n", string);
 
 stuff:
-		gl_filter_min = glmodes[glmode_idx].minfilter;
-		gl_filter_max = glmodes[glmode_idx].magfilter;
+	gl_filter_min = glmodes[glmode_idx].minfilter;
+	gl_filter_max = glmodes[glmode_idx].magfilter;
 	// change all the existing mipmap texture objects
-		for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
+	for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
+	{
+		if (glt->mipmap)
 		{
-			if (glt->mipmap)
-			{
-				GL_Bind (glt->texnum);
-				glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
-				glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
-			}
+			GL_Bind (glt->texnum);
+			glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
+			glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
 		}
-
-		Sbar_Changed (); //sbar graphics need to be redrawn with new filter mode
-
-		//FIXME: warpimages need to be redrawn, too.
-
-		break;
-	default:
-		Con_SafePrintf ("usage: gl_texturemode <mode>\n");
-		break;
 	}
+
+	Sbar_Changed (); //sbar graphics need to be redrawn with new filter mode
+
+	//FIXME: warpimages need to be redrawn, too.
 }
 
 /*
@@ -416,8 +400,6 @@ void Draw_Init (void)
 			Cvar_Set ("gl_max_size", "256");
 		}
 	}
-
-	Cmd_AddCommand ("gl_texturemode", &Draw_TextureMode_f);
 
 	// load the console background and the charset
 	// by hand, because we need to write the version

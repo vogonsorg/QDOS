@@ -212,6 +212,8 @@ void R_Init (void)
 
 	r_waterwarp = Cvar_Get("r_waterwarp", "1", CVAR_ARCHIVE); /* FS: TODO FIXME dummy */
 
+	gl_texturemode = Cvar_Get("gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE); /* FS: Now a CVAR so we can do +set gl_texturemode blah blah at cmdline or autoexec.cfg */
+
 	R_InitBubble();
 
 	R_InitParticles ();
