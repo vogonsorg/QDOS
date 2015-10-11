@@ -30,6 +30,9 @@
 #include <sys/nearptr.h>
 #include <setjmp.h>
 #include <crt0.h>
+#if 0
+#include <ctype.h>
+#endif
 
 #include "quakedef.h"
 #include "sys_dxe.h"
@@ -38,7 +41,11 @@ DXE_EXPORT_TABLE (syms)
 	DXE_EXPORT (__dj_assert)
 	DXE_EXPORT (__dj_huge_val)
 	DXE_EXPORT (__dj_stderr)
-	DXE_EXPORT (_doprnt)
+#if 0
+	DXE_EXPORT (__dj_ctype_tolower)
+	DXE_EXPORT (__dj_ctype_toupper)
+	DXE_EXPORT (__dj_ctype_flags)
+#endif
 	DXE_EXPORT (bsearch)
 	DXE_EXPORT (acos)
 	DXE_EXPORT (asin)
@@ -65,6 +72,7 @@ DXE_EXPORT_TABLE (syms)
 	DXE_EXPORT (fseek)
 	DXE_EXPORT (fwrite)
 	DXE_EXPORT (getc)
+	DXE_EXPORT (ungetc)
 	DXE_EXPORT (malloc)
 	DXE_EXPORT (calloc)
 	DXE_EXPORT (realloc)
@@ -132,8 +140,7 @@ DXE_EXPORT_TABLE (syms)
 	DXE_EXPORT (strtoul)
 	DXE_EXPORT (vfprintf)
 
-	/* FS: Mesa 6.4.x */
-	DXE_EXPORT (ldexp)
+	DXE_EXPORT (ldexp)	/* for Mesa 6.4.x */
 DXE_EXPORT_END
 
 
