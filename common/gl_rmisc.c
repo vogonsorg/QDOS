@@ -229,7 +229,11 @@ void R_Init (void)
 #endif
 
 	playertextures = texture_extension_number;
-	texture_extension_number += MAX_SCOREBOARD;
+#ifdef QUAKE1
+	texture_extension_number += 16;
+#else
+	texture_extension_number += MAX_CLIENTS;
+#endif
 }
 
 /*
