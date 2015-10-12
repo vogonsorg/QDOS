@@ -242,6 +242,7 @@ Skin_NextDownload
 void Skin_NextDownload (void)
 {
 	player_info_t	*sc;
+	int			i;
 
 	if (cls.downloadnumber == 0)
 	{
@@ -260,37 +261,9 @@ void Skin_NextDownload (void)
 		Skin_Find (sc);
 		if (!allow_download_skins->intValue)
 			continue;
-		if (!CL_CheckOrDownloadFile(va("skins/%s.pcx", sc->skin->name), true)) /* FS: Queue a download */
-			cls.download_queue_total++;
-	}
-
-	cls.downloadnumber = 1;
-	Skin_DownloadQueue();
-}
-
-void Skin_DownloadQueue (void)
-{
-	player_info_t	*sc;
-
-	for ( ; cls.downloadnumber != MAX_CLIENTS; cls.downloadnumber++)
-	{
-		sc = &cl.players[cls.downloadnumber];
-		if (!sc->name[0])
-			continue;
-		Skin_Find (sc);
-		if (!allow_download_skins->intValue)
-			continue;
 		if (!CL_CheckOrDownloadFile(va("skins/%s.pcx", sc->skin->name), false))
 			return;		// started a download
 	}
-
-	Skin_Precache();
-}
-
-void Skin_Precache (void)
-{
-	player_info_t	*sc;
-	int i;
 
 	cls.downloadtype = dl_none;
 
