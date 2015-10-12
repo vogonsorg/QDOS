@@ -25,6 +25,14 @@ char		allskins[128];
 skin_t		skins[MAX_CACHED_SKINS];
 int			numskins;
 
+/* FS: For Download skin queue checking */
+typedef struct skinqueue_s
+{
+	char name[MAX_QPATH];
+	qboolean queued;
+} skinqueue_t;
+skinqueue_t *queued_skins;
+
 /*
 ================
 Skin_Find
@@ -130,7 +138,7 @@ byte	*Skin_Cache (skin_t *skin)
 //
 	dsprintf (name, "skins/%s.pcx", skin->name);
 
-	Con_DPrintf (DEVELOPER_MSG_IO, "loading %s\n", name->str); /* FS */
+	Con_DPrintf (DEVELOPER_MSG_IO, "Loading skin: %s\n", name->str); /* FS */
 
 	raw = COM_LoadTempFile (name->str);
 	if (!raw)
@@ -157,8 +165,7 @@ byte	*Skin_Cache (skin_t *skin)
 		|| pcx->encoding != 1
 		|| pcx->bits_per_pixel != 8
 		|| pcx->xmax >= 320
-                //|| pcx->ymax >= 200)
-		|| pcx->ymax >= MAX_LBM_HEIGHT) /* FS */
+		|| pcx->ymax >= MAX_LBM_HEIGHT) /* FS: Was >= 200 */
 	{
 		skin->failedload = true;
 		Con_Printf ("Bad skin %s\n", name->str);
@@ -166,12 +173,12 @@ byte	*Skin_Cache (skin_t *skin)
 		return NULL;
 	}
 	
-	out = Cache_Alloc (&skin->cache, 320*MAX_LBM_HEIGHT, skin->name); /* FS */
+	out = Cache_Alloc (&skin->cache, 320*MAX_LBM_HEIGHT, skin->name); /* FS: Was 320*200 */
 	if (!out)
 		Sys_Error ("Skin_Cache: couldn't allocate");
 
 	pix = out;
-	memset (out, 0, 320*MAX_LBM_HEIGHT); /* FS */
+	memset (out, 0, 320*MAX_LBM_HEIGHT); /* FS: Was 320*200 */
 
 	for (y=0 ; y<pcx->ymax ; y++, pix += 320)
 	{
@@ -217,7 +224,7 @@ byte	*Skin_Cache (skin_t *skin)
 
 	}
 
-	Con_DPrintf(DEVELOPER_MSG_IO, "Skin: %s Size: %d Width: %d\n", name->str, com_filesize, x); /* FS */
+	Con_DPrintf(DEVELOPER_MSG_IO, "Skin: %s, Size: %d, Width: %d\n", name->str, com_filesize, x); /* FS */
 	
 	if ( raw - (byte *)pcx > com_filesize)
 	{
@@ -233,14 +240,7 @@ byte	*Skin_Cache (skin_t *skin)
 	return out;
 }
 
-typedef struct skinqueue_s
-{
-	char name[MAX_QPATH];
-	qboolean queued;
-} skinqueue_t;
-skinqueue_t *queued_skins;
-
-void Skin_CheckQueue (char *name)
+void Skin_CheckQueue (char *name) /* FS: Check if we already queued this for download so huge custom TF servers don't show 20+ skins to grab though we actually need like 8 */
 {
 	int i;
 
@@ -301,14 +301,12 @@ void Skin_NextDownload (qboolean queue)
 		if (queue)
 		{
 			if (!CL_CheckOrDownloadFile(va("skins/%s.pcx", sc->skin->name), true)) /* FS: Queue a download */
-			{
 				Skin_CheckQueue(sc->skin->name);
-			}
 		}
 		else
 		{
 			if (!CL_CheckOrDownloadFile(va("skins/%s.pcx", sc->skin->name), false)) /* FS: Start a download */
-				return;		// started a download
+				return;
 		}
 	}
 
@@ -370,8 +368,8 @@ void	Skin_Skins_f (void)
 	}
 	numskins = 0;
 
-	if (cls.state == ca_disconnected)
-		return; /* FS: QuakeForge fix */
+	if (cls.state == ca_disconnected) /* FS: QuakeForge fix */
+		return;
 
 	cls.downloadnumber = 0;
 	cls.downloadtype = dl_skin;
