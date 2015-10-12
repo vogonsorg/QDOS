@@ -187,7 +187,11 @@ qboolean	CL_CheckOrDownloadFile (char *filename, qboolean queue)
 		return true;
 
 	if(queue) /* FS: Are we just queuing it for later or grab it now? */
+	{
+		if (f)
+			fclose(f);
 		return false;
+	}
 	else
 		cls.download_queue++;
 
@@ -259,7 +263,6 @@ void Model_DownloadQueue (void) /* FS: Moved this here so we can see how much sh
 		}
 	}
 
-	cls.download_queue = cls.download_queue_total = 0;
 	Model_Precache();
 }
 
