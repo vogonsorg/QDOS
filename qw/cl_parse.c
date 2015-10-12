@@ -112,6 +112,8 @@ void		CL_PlayBackgroundTrack (int track);
 qboolean	CL_MaliciousStuffText(char *stufftext); /* FS: Check for malicious stufftext */
 void		Model_DownloadQueue (void);
 void		Model_Precache (void);
+void		Sound_DownloadQueue (void);
+void		Sound_Precache (void);
 
 //=============================================================================
 
@@ -302,7 +304,6 @@ Sound_NextDownload
 void Sound_NextDownload (void)
 {
 	char	*s;
-	int		i;
 
 	if (cls.downloadnumber == 0)
 	{
@@ -320,9 +321,34 @@ void Sound_NextDownload (void)
 
 		if (!allow_download_sounds->intValue) /* FS: Added */
 			continue;
-		if (!CL_CheckOrDownloadFile(va("sound/%s",s), false))
-			return;		// started a download
+		if (!CL_CheckOrDownloadFile(va("sound/%s",s), true)) /* FS: Queue a download */
+			cls.download_queue_total++;
 	}
+
+	cls.downloadnumber = 1;
+	Sound_DownloadQueue();
+}
+
+void Sound_DownloadQueue (void)
+{
+	char *s;
+
+	for ( ; cl.sound_name[cls.downloadnumber][0]; cls.downloadnumber++)
+	{
+		s = cl.sound_name[cls.downloadnumber];
+
+		if (!allow_download_sounds->intValue) /* FS: Added */
+			continue;
+		if (!CL_CheckOrDownloadFile(va("sound/%s",s), false)) /* FS: Queue a download */
+			return;
+	}
+
+	Sound_Precache();
+}
+
+void Sound_Precache (void)
+{
+	int i;
 
 	for (i=1 ; i<MAX_SOUNDS ; i++)
 	{
@@ -670,13 +696,13 @@ void CL_RequestNextDownload (void)
 	case dl_single:
 		break;
 	case dl_skin:
-		Skin_NextDownload ();
+		Skin_DownloadQueue();
 		break;
 	case dl_model:
 		Model_DownloadQueue();
 		break;
 	case dl_sound:
-		Sound_NextDownload ();
+		Sound_DownloadQueue();
 		break;
 	case dl_none:
 	default:
