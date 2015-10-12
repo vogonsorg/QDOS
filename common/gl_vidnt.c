@@ -1583,6 +1583,7 @@ void	VID_Init (unsigned char *palette)
 	vid_stretch_by_2 = Cvar_Get("vid_stretch_by_2","1", CVAR_ARCHIVE);
 	_windowed_mouse = Cvar_Get("_windowed_mouse","1", CVAR_ARCHIVE);
 	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
+	gl_ztrick->description = "Toggles the use of a trick to prevent the clearing of the z-buffer between frames. When this variable is set to 1 the game will not clear the z-buffer between frames. This will result in increased performance but might cause problems for some display hardware.";
 
 	Cmd_AddCommand ("vid_nummodes", VID_NumModes_f);
 	Cmd_AddCommand ("vid_describecurrentmode", VID_DescribeCurrentMode_f);

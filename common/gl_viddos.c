@@ -513,6 +513,7 @@ void VID_Init(unsigned char *palette)
 	_vid_wait_override = Cvar_Get("_vid_wait_override", "0", 0);
 
 	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
+	gl_ztrick->description = "Toggles the use of a trick to prevent the clearing of the z-buffer between frames. When this variable is set to 1 the game will not clear the z-buffer between frames. This will result in increased performance but might cause problems for some display hardware.";
 	r_ignorehwgamma = Cvar_Get("r_ignorehwgamma", "0", CVAR_ARCHIVE);
 	r_ignorehwgamma->description = "Skip testing for 3DFX Hardware Gamma capabilities";
 	gl_conscale = Cvar_Get("gl_conscale", "1", CVAR_ARCHIVE);

@@ -174,36 +174,50 @@ void R_Init (void)
 
 	r_norefresh = Cvar_Get("r_norefresh", "0", 0);
 	r_lightmap = Cvar_Get("r_lightmap", "0", 0);
+	r_lightmap->description = "Changes textures to white to show the lightmap blending.";
 	r_fullbright = Cvar_Get("r_fullbright", "0", 0);
+	r_fullbright->description = "Full-bright lights.  Disabled in Multiplayer.";
 	r_drawentities = Cvar_Get("r_drawentities", "1", 0);
 	r_drawviewmodel = Cvar_Get("r_drawviewmodel", "1", 0);
 	r_shadows = Cvar_Get("r_shadows", "0", 0);
 	r_mirroralpha = Cvar_Get("r_mirroralpha", "1", 0);
+	r_mirroralpha->description = "Level of mirror transparency.  Values lower than 1 (in decimal ranges i.e. 0.5) will adjust the transparency of the stain-glass window in start.bsp; showing a mirror effect.  Disabled in QuakeWorld.";
 	r_wateralpha = Cvar_Get("r_wateralpha", "1", 0);
+	r_wateralpha->description = "Level of water transparency.  Values lower than 1 (in decimal ranges i.e. 0.5) will have transparent water in maps compiled with transparent water.";
 	r_dynamic = Cvar_Get("r_dynamic", "1", 0);
+	r_dynamic->description = "Dynamic Lighting.";
 	r_novis = Cvar_Get("r_novis", "0", 0);
+	r_novis->description = "Skip loading of VIS data.  Useful for seeing transparent water in maps not compiled with it.  Very slow.";
 	r_speeds = Cvar_Get("r_speeds", "0", 0);
 #ifdef QUAKEWORLD
 	r_netgraph = Cvar_Get("r_netgraph", "0", 0);
+	r_netgraph->description = "Draw a network graph showing latency and packet loss.";
 #endif
 
 	gl_clear = Cvar_Get("gl_clear", "0", 0);
+	gl_clear->description = "Use a clear colour to avoid Hall of Mirror (HOM) effects.  Useful for noclipping, spectating, and finding leaks in maps.";
 	gl_texsort = Cvar_Get("gl_texsort", "1", 0);
 
  	if (gl_mtexable)
 		Cvar_SetValue ("gl_texsort", 0.0);
 
 	gl_cull = Cvar_Get("gl_cull", "1", 0);
+	gl_cull->description = "Cull (i.e. skip) rendering of objects not in the viewport.";
 	gl_smoothmodels = Cvar_Get("gl_smoothmodels", "1", 0);
+	gl_smoothmodels->description = "Smooth textures on models.  Recommended to leave enabled as it can cause visual artifacts if disabled.";
 	gl_affinemodels = Cvar_Get("gl_affinemodels", "0", 0);
 	gl_polyblend = Cvar_Get("gl_polyblend","1", CVAR_ARCHIVE);
+	gl_polyblend->description = "Show palette blends i.e. screen turning red from damage.";
 	gl_flashblend = Cvar_Get("gl_flashblend","1", CVAR_ARCHIVE);
+	gl_flashblend->description = "Set to 0 to use fake dynamic lights that have a mushroom cloud effect.  Can improve performance on slower machines.";
 	gl_playermip = Cvar_Get("gl_playermip", "0", 0);
 	gl_nocolors = Cvar_Get("gl_nocolors", "0", 0);
+	gl_nocolors->description = "Don't use top/bottom colours for players.";
 	gl_finish = Cvar_Get("gl_finish", "0", 0);
+	gl_finish->description = "Send a gl_finish at the end of every frame.  Some older cards may require this.";
 
-	gl_keeptjunctions = Cvar_Get("gl_keeptjunctions","1", CVAR_ARCHIVE);
-	gl_reporttjunctions = Cvar_Get("gl_reporttjunctions", "0", 0);
+	gl_keeptjunctions = Cvar_Get("gl_keeptjunctions","1", CVAR_ARCHIVE|CVAR_LATCH);
+	gl_keeptjunctions->description = "Keep co-linear points/t-junctions.  Disabling may show some gaps/lines in architecture, but may improve performance on slow machines.";
 
 #ifdef QUAKE1
 	gl_doubleeyes = Cvar_Get("gl_doubleeys", "1", CVAR_ARCHIVE);
