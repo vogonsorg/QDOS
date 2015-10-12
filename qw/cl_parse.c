@@ -110,9 +110,7 @@ int		cl_spikeindex, cl_playerindex, cl_flagindex;
 void		CL_ShowChat (char *name, int val);
 void		CL_PlayBackgroundTrack (int track);
 qboolean	CL_MaliciousStuffText(char *stufftext); /* FS: Check for malicious stufftext */
-void		Model_DownloadQueue (void);
 void		Model_Precache (void);
-void		Sound_DownloadQueue (void);
 void		Sound_Precache (void);
 
 //=============================================================================
@@ -220,7 +218,7 @@ qboolean	CL_CheckOrDownloadFile (char *filename, qboolean queue)
 Model_NextDownload
 =================
 */
-void Model_NextDownload (void)
+void Model_NextDownload (qboolean queue)
 {
 	char	*s;
 
@@ -239,31 +237,25 @@ void Model_NextDownload (void)
 		s = cl.model_name[cls.downloadnumber];
 		if (s[0] == '*')
 			continue;	// inline brush model
-		if (!CL_CheckOrDownloadFile(s, true)) /* FS: Queue a download */
-			cls.download_queue_total++;
-	}
-
-	cls.downloadnumber = 1;
-	Model_DownloadQueue();
-}
-
-void Model_DownloadQueue (void) /* FS: Moved this here so we can see how much shit we need to download on those huge Coop TF servers */
-{
-	char *s;
-
-	for ( ;cl.model_name[cls.downloadnumber][0]; cls.downloadnumber++)
-	{
-		s = cl.model_name[cls.downloadnumber];
-		if (s[0] == '*')
-			continue;	// inline brush model
-
-		if(!CL_CheckOrDownloadFile(s, false))
+		if (queue)
 		{
-			return;
+			if (!CL_CheckOrDownloadFile(s, true)) /* FS: Queue a download */
+				cls.download_queue_total++;
+		}
+		else
+		{
+			if(!CL_CheckOrDownloadFile(s, false)) /* FS: Start a download */
+				return;
 		}
 	}
 
-	Model_Precache();
+	if (queue) /* FS: OK, we tallied how many assets we need... Start downloading */
+	{
+		cls.downloadnumber = 1;
+		Model_NextDownload(false);
+	}
+	else
+		Model_Precache();
 }
 
 void Model_Precache (void)
@@ -304,7 +296,7 @@ void Model_Precache (void)
 Sound_NextDownload
 =================
 */
-void Sound_NextDownload (void)
+void Sound_NextDownload (qboolean queue)
 {
 	char	*s;
 
@@ -324,29 +316,25 @@ void Sound_NextDownload (void)
 
 		if (!allow_download_sounds->intValue) /* FS: Added */
 			continue;
-		if (!CL_CheckOrDownloadFile(va("sound/%s",s), true)) /* FS: Queue a download */
-			cls.download_queue_total++;
+		if (queue)
+		{
+			if (!CL_CheckOrDownloadFile(va("sound/%s",s), true)) /* FS: Queue a download */
+				cls.download_queue_total++;
+		}
+		else
+		{
+			if (!CL_CheckOrDownloadFile(va("sound/%s",s), false)) /* FS: Start a download */
+				return;
+		}
 	}
 
-	cls.downloadnumber = 1;
-	Sound_DownloadQueue();
-}
-
-void Sound_DownloadQueue (void)
-{
-	char *s;
-
-	for ( ; cl.sound_name[cls.downloadnumber][0]; cls.downloadnumber++)
+	if (queue) /* FS: OK, we tallied how many assets we need... Start downloading */
 	{
-		s = cl.sound_name[cls.downloadnumber];
-
-		if (!allow_download_sounds->intValue) /* FS: Added */
-			continue;
-		if (!CL_CheckOrDownloadFile(va("sound/%s",s), false)) /* FS: Queue a download */
-			return;
+		cls.downloadnumber = 1;
+		Sound_NextDownload(false);
 	}
-
-	Sound_Precache();
+	else
+		Sound_Precache();
 }
 
 void Sound_Precache (void)
@@ -699,13 +687,13 @@ void CL_RequestNextDownload (void)
 	case dl_single:
 		break;
 	case dl_skin:
-		Skin_DownloadQueue();
+		Skin_NextDownload(false);
 		break;
 	case dl_model:
-		Model_DownloadQueue();
+		Model_NextDownload(false);
 		break;
 	case dl_sound:
-		Sound_DownloadQueue();
+		Sound_NextDownload(false);
 		break;
 	case dl_none:
 	default:
@@ -1062,7 +1050,7 @@ void CL_ParseSoundlist (void)
 
 	cls.downloadnumber = 0;
 	cls.downloadtype = dl_sound;
-	Sound_NextDownload ();
+	Sound_NextDownload (true);
 }
 
 /*
@@ -1118,7 +1106,7 @@ void CL_ParseModellist (qboolean extended)
 
 	cls.downloadnumber = 0;
 	cls.downloadtype = dl_model;
-	Model_NextDownload ();
+	Model_NextDownload (true);
 }
 
 /*
