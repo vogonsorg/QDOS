@@ -264,7 +264,7 @@ void Skin_NextDownload (void)
 			cls.download_queue_total++;
 	}
 
-	cls.downloadnumber = 1;
+	cls.downloadnumber = 0;
 	Skin_DownloadQueue();
 }
 
