@@ -257,7 +257,7 @@ void Skin_NextDownload (void)
 		sc = &cl.players[cls.downloadnumber];
 		if (!sc->name[0])
 			continue;
-		Skin_Find (sc);
+
 		if (!allow_download_skins->intValue)
 			continue;
 		if (!CL_CheckOrDownloadFile(va("skins/%s.pcx", sc->skin->name), true)) /* FS: Queue a download */
@@ -277,7 +277,7 @@ void Skin_DownloadQueue (void)
 		sc = &cl.players[cls.downloadnumber];
 		if (!sc->name[0])
 			continue;
-//		Skin_Find (sc);
+		Skin_Find (sc);
 		if (!allow_download_skins->intValue)
 			continue;
 		if (!CL_CheckOrDownloadFile(va("skins/%s.pcx", sc->skin->name), false))

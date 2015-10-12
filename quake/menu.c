@@ -3920,9 +3920,24 @@ void Update_Gamespy_Menu(void)
 void M_Gamespy_Key(int k)
 {
 	int vidscale = Get_Vidscale() + 2;
+	extern qboolean	keydown[256];
 
 	if(breakPoint > 0)
 		vidscale = breakPoint;
+
+	if( k == 'c' ) /* FS: Disconnect */
+	{
+		if ( keydown[K_CTRL] )
+		{
+#ifdef GAMESPY
+			if(cls.gamespyupdate)
+			{
+				Cbuf_AddText("gspystop\n");
+				return;
+			}
+#endif
+		}
+	}
 
 	switch (k)
 	{
