@@ -78,7 +78,7 @@ cvar_t  *localid;
 static	qboolean allowremotecmd = true;
 
 cvar_t	*baseskin;
-cvar_t	*noskins;
+cvar_t	*allow_download_skins; /* FS: Was noskins */
 
 //
 // info mirrors
@@ -158,6 +158,11 @@ cvar_t	*cl_wav_music;
 cvar_t	*cl_autorepeat_allkeys;
 cvar_t	*net_broadcast_chat; /* FS: EZQ Chat */
 cvar_t	*cl_sleep;
+cvar_t	*allow_download_sounds;
+
+#ifdef USE_CURL
+cvar_t	*allow_download_http;
+#endif
 
 int         fps_count;
 
@@ -597,6 +602,11 @@ void CL_Disconnect (void)
 	CL_Download_Reset_KBps_counter();
 
 	cls.quakeforge_http_dl = false; /* FS */
+
+#ifdef USE_CURL
+	if (!allow_download_http->intValue)
+		Info_SetValueForStarKey (cls.userinfo, "*cap", "", MAX_INFO_STRING); /* FS: HTTP downloading from QuakeForge */
+#endif
 }
 
 void CL_Disconnect_f (void)
@@ -1081,10 +1091,13 @@ void CL_ConnectionlessPacket (void)
 		s = MSG_ReadString ();
 		cls.challenge = atoi(s);
 
-		if(strstr(s, "QF")) /* FS */
+#ifdef USE_CURL
+		if(allow_download_http->intValue && strstr(s, "QF")) /* FS */
 		{
 			cls.quakeforge_http_dl = true;
 		}
+#endif
+
 #ifdef PROTOCOL_VERSION_FTE
 		for(;;)
 		{
@@ -1303,7 +1316,8 @@ void CL_Init (void)
 	localid = Cvar_Get("localid", "", 0);
 
 	baseskin = Cvar_Get("baseskin", "base", 0);
-	noskins = Cvar_Get("noskins", "0", 0);
+	allow_download_skins = Cvar_Get("allow_download_skins", "1", CVAR_ARCHIVE); /* FS: Was noskins */
+	allow_download_skins->description = "Allow downloading of custom skins.";
 
 	//
 	// info mirrors
@@ -1358,6 +1372,12 @@ void CL_Init (void)
 	net_broadcast_chat->description = "Broadcast EZQ chats.";
 	cl_sleep = Cvar_Get("cl_sleep", "0", CVAR_ARCHIVE);
 	cl_sleep->description = "Reduce CPU usage by issuing sleep commands between extra frames.";
+#ifdef USE_CURL
+	allow_download_http = Cvar_Get("allow_download_http", "1", CVAR_ARCHIVE);
+	allow_download_http->description = "Allow QuakeForge HTTP downloading.";
+#endif
+	allow_download_sounds = Cvar_Get ("allow_download_sounds", "1", CVAR_ARCHIVE);
+	allow_download_sounds->description = "Allow downloading of custom sounds.";
 
 #ifdef GAMESPY
 	/* FS: GameSpy CVARs */
@@ -1442,7 +1462,8 @@ void CL_Init (void)
 	dstring_delete(version);
 
 #ifdef USE_CURL
-	Info_SetValueForStarKey (cls.userinfo, "*cap", "h", MAX_INFO_STRING); /* FS: HTTP downloading from QuakeForge */
+	if (allow_download_http->intValue)
+		Info_SetValueForStarKey (cls.userinfo, "*cap", "h", MAX_INFO_STRING); /* FS: HTTP downloading from QuakeForge */
 	CL_HTTP_Init();
 #endif
 }

@@ -258,6 +258,9 @@ typedef struct
 
 	double		spamTime; /* FS: From R1Q2 */
 	double		lastSpamTime; /* FS: From R1Q2 */
+
+	int download_queued_models;
+	int download_queued_models_total;
 } client_static_t;
 
 extern client_static_t	cls;
@@ -389,7 +392,7 @@ extern cvar_t	*show_fps;
 extern cvar_t	*rate;
 
 extern cvar_t	*baseskin;
-extern cvar_t	*noskins;
+extern cvar_t	*allow_download_skins; /* FS: Was noskins */
 
 extern cvar_t	*cl_predict_players;
 extern cvar_t	*cl_predict_players2;
@@ -408,6 +411,7 @@ extern cvar_t	*in_freelook;
 extern cvar_t	*cl_downloadrate_hack; /* FS: FIXME Shitty download hack */
 extern cvar_t	*net_broadcast_chat; /* FS: EZQ Chat */
 extern cvar_t	*chat; /* FS: EZQ Chat */
+extern cvar_t	*allow_download_sounds;
 
 #ifdef GAMESPY
 /* FS: GameSpy CVARs */

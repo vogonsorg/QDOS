@@ -110,6 +110,8 @@ int		cl_spikeindex, cl_playerindex, cl_flagindex;
 void		CL_ShowChat (char *name, int val);
 void		CL_PlayBackgroundTrack (int track);
 qboolean	CL_MaliciousStuffText(char *stufftext); /* FS: Check for malicious stufftext */
+void		Model_DownloadQueue (void);
+void		Model_Precache (void);
 
 //=============================================================================
 
@@ -199,6 +201,20 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 	return false;
 }
 
+qboolean CL_CheckOrQueueFile (char *filename)
+{
+	FILE *f;
+
+	COM_FOpenFile (filename, &f);
+	if (f)
+	{	// it exists, no need to download
+		fclose (f);
+		return true;
+	}
+
+	return false;
+}
+
 /*
 =================
 Model_NextDownload
@@ -207,13 +223,13 @@ Model_NextDownload
 void Model_NextDownload (void)
 {
 	char	*s;
-	int		i;
-	extern	char gamedirfile[];
 
 	if (cls.downloadnumber == 0)
 	{
 		Con_Printf ("Checking models...\n");
 		cls.downloadnumber = 1;
+		cls.download_queued_models = 0;
+		cls.download_queued_models_total = 0;
 	}
 
 	cls.downloadtype = dl_model;
@@ -224,9 +240,39 @@ void Model_NextDownload (void)
 		s = cl.model_name[cls.downloadnumber];
 		if (s[0] == '*')
 			continue;	// inline brush model
-		if (!CL_CheckOrDownloadFile(s))
-			return;		// started a download
+		if (!CL_CheckOrQueueFile(s))
+			cls.download_queued_models_total++; /* FS: Queue a download */
 	}
+
+	cls.downloadnumber = 1;
+	Model_DownloadQueue();
+}
+
+void Model_DownloadQueue (void) /* FS: Moved this here so we can see how much shit we need to download on those huge Coop TF servers */
+{
+	char *s;
+
+	for ( ;cl.model_name[cls.downloadnumber][0]; cls.downloadnumber++)
+	{
+		s = cl.model_name[cls.downloadnumber];
+		if (s[0] == '*')
+			continue;	// inline brush model
+
+		if(!CL_CheckOrDownloadFile(s))
+		{
+			cls.download_queued_models++;
+			Con_Printf("Downloading Model %d / %d\n", cls.download_queued_models, cls.download_queued_models_total);
+			return;
+		}
+	}
+
+	Model_Precache();
+}
+
+void Model_Precache (void)
+{
+	int i;
+	extern	char gamedirfile[];
 
 	for (i=1 ; i<MAX_MODELS ; i++)
 	{
@@ -278,6 +324,9 @@ void Sound_NextDownload (void)
 		; cls.downloadnumber++)
 	{
 		s = cl.sound_name[cls.downloadnumber];
+
+		if (!allow_download_sounds->intValue) /* FS: Added */
+			continue;
 		if (!CL_CheckOrDownloadFile(va("sound/%s",s)))
 			return;		// started a download
 	}
@@ -631,7 +680,8 @@ void CL_RequestNextDownload (void)
 		Skin_NextDownload ();
 		break;
 	case dl_model:
-		Model_NextDownload ();
+//		Model_NextDownload ();
+		Model_DownloadQueue();
 		break;
 	case dl_sound:
 		Sound_NextDownload ();

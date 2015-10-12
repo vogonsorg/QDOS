@@ -107,7 +107,8 @@ byte	*Skin_Cache (skin_t *skin)
 		return NULL;		// use base until downloaded
 	}
 
-	if (noskins->value==1) // JACK: So NOSKINS > 1 will show skins, but
+	if (!allow_download_skins->intValue) /* FS: Was noskins */
+	// JACK: So NOSKINS > 1 will show skins, but
 	{
 		dstring_delete(name);
 		return NULL;	  // not download new ones.
@@ -255,7 +256,7 @@ void Skin_NextDownload (void)
 		if (!sc->name[0])
 			continue;
 		Skin_Find (sc);
-		if (noskins->value)
+		if (!allow_download_skins->intValue)
 			continue;
 		if (!CL_CheckOrDownloadFile(va("skins/%s.pcx", sc->skin->name)))
 			return;		// started a download
