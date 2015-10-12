@@ -195,7 +195,7 @@ qboolean	CL_CheckOrDownloadFile (char *filename, qboolean queue)
 
 	dstring_copystr (cls.downloadname, filename);
 	if(cls.download_queue && cls.download_queue_total)
-		Con_Printf("Downloading %s (%d/%d)...\n", cls.downloadname->str, cls.download_queue, cls.download_queue_total);
+		Con_Printf("Downloading %s [%d remaining files]...\n", cls.downloadname->str, cls.download_queue_total-cls.download_queue);
 	else
 		Con_Printf ("Downloading %s...\n", cls.downloadname->str);
 
