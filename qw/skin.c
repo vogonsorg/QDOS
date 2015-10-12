@@ -245,7 +245,10 @@ void Skin_NextDownload (void)
 	int			i;
 
 	if (cls.downloadnumber == 0)
+	{
 		Con_Printf ("Checking skins...\n");
+		cls.download_queue = cls.download_queue_total = 0;
+	}
 	cls.downloadtype = dl_skin;
 
 	for ( 
@@ -258,7 +261,7 @@ void Skin_NextDownload (void)
 		Skin_Find (sc);
 		if (!allow_download_skins->intValue)
 			continue;
-		if (!CL_CheckOrDownloadFile(va("skins/%s.pcx", sc->skin->name)))
+		if (!CL_CheckOrDownloadFile(va("skins/%s.pcx", sc->skin->name), false))
 			return;		// started a download
 	}
 

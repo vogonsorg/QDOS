@@ -158,7 +158,7 @@ Returns true if the file exists, otherwise it attempts
 to start a download from the server.
 ===============
 */
-qboolean	CL_CheckOrDownloadFile (char *filename)
+qboolean	CL_CheckOrDownloadFile (char *filename, qboolean queue)
 {
 	FILE	*f;
 
@@ -184,8 +184,16 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 	if (cls.demoplayback)
 		return true;
 
+	if(queue) /* FS: Are we just queuing it for later or grab it now? */
+		return false;
+	else
+		cls.download_queue++;
+
 	dstring_copystr (cls.downloadname, filename);
-	Con_Printf ("Downloading %s...\n", cls.downloadname->str);
+	if(cls.download_queue && cls.download_queue_total)
+		Con_Printf("Downloading %s (%d/%d)...\n", cls.downloadname->str, cls.download_queue, cls.download_queue_total);
+	else
+		Con_Printf ("Downloading %s...\n", cls.downloadname->str);
 
 	// download to a temp name, and only rename
 	// to the real name when done, so if interrupted
@@ -197,20 +205,6 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 	MSG_WriteString (&cls.netchan.message, va("download %s", cls.downloadname->str));
 
 	cls.downloadnumber++;
-
-	return false;
-}
-
-qboolean CL_CheckOrQueueFile (char *filename)
-{
-	FILE *f;
-
-	COM_FOpenFile (filename, &f);
-	if (f)
-	{	// it exists, no need to download
-		fclose (f);
-		return true;
-	}
 
 	return false;
 }
@@ -228,8 +222,7 @@ void Model_NextDownload (void)
 	{
 		Con_Printf ("Checking models...\n");
 		cls.downloadnumber = 1;
-		cls.download_queued_models = 0;
-		cls.download_queued_models_total = 0;
+		cls.download_queue = cls.download_queue_total = 0;
 	}
 
 	cls.downloadtype = dl_model;
@@ -240,8 +233,8 @@ void Model_NextDownload (void)
 		s = cl.model_name[cls.downloadnumber];
 		if (s[0] == '*')
 			continue;	// inline brush model
-		if (!CL_CheckOrQueueFile(s))
-			cls.download_queued_models_total++; /* FS: Queue a download */
+		if (!CL_CheckOrDownloadFile(s, true)) /* FS: Queue a download */
+			cls.download_queue_total++;
 	}
 
 	cls.downloadnumber = 1;
@@ -258,14 +251,13 @@ void Model_DownloadQueue (void) /* FS: Moved this here so we can see how much sh
 		if (s[0] == '*')
 			continue;	// inline brush model
 
-		if(!CL_CheckOrDownloadFile(s))
+		if(!CL_CheckOrDownloadFile(s, false))
 		{
-			cls.download_queued_models++;
-			Con_Printf("Downloading Model %d / %d\n", cls.download_queued_models, cls.download_queued_models_total);
 			return;
 		}
 	}
 
+	cls.download_queue = cls.download_queue_total = 0;
 	Model_Precache();
 }
 
@@ -316,6 +308,7 @@ void Sound_NextDownload (void)
 	{
 		Con_Printf ("Checking sounds...\n");
 		cls.downloadnumber = 1;
+		cls.download_queue = cls.download_queue_total = 0;
 	}
 
 	cls.downloadtype = dl_sound;
@@ -327,7 +320,7 @@ void Sound_NextDownload (void)
 
 		if (!allow_download_sounds->intValue) /* FS: Added */
 			continue;
-		if (!CL_CheckOrDownloadFile(va("sound/%s",s)))
+		if (!CL_CheckOrDownloadFile(va("sound/%s",s), false))
 			return;		// started a download
 	}
 
@@ -680,7 +673,6 @@ void CL_RequestNextDownload (void)
 		Skin_NextDownload ();
 		break;
 	case dl_model:
-//		Model_NextDownload ();
 		Model_DownloadQueue();
 		break;
 	case dl_sound:

@@ -259,8 +259,8 @@ typedef struct
 	double		spamTime; /* FS: From R1Q2 */
 	double		lastSpamTime; /* FS: From R1Q2 */
 
-	int download_queued_models;
-	int download_queued_models_total;
+	int download_queue;
+	int download_queue_total;
 } client_static_t;
 
 extern client_static_t	cls;
@@ -527,7 +527,7 @@ extern int	packet_latency[NET_TIMINGS];
 int CL_CalcNet (void);
 void CL_ParseServerMessage (void);
 void CL_NewTranslation (int slot);
-qboolean	CL_CheckOrDownloadFile (char *filename);
+qboolean CL_CheckOrDownloadFile (char *filename, qboolean queue);
 qboolean CL_IsUploading(void);
 void CL_NextUpload(void);
 void CL_StartUpload (byte *data, int size);

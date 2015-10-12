@@ -346,7 +346,6 @@ typedef struct model_s
 {
 	char		name[MAX_QPATH];
 	qboolean	needload;		// bmodels and sprites don't cache normally
-	qboolean	queuedDownload; /* FS */
 
 	modtype_t	type;
 	int			numframes;
