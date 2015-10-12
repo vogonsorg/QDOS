@@ -245,8 +245,9 @@ void Skin_NextDownload (qboolean queue)
 
 	if (cls.downloadnumber == 0)
 	{
-		Con_Printf ("Checking skins...\n");
-		cls.download_queue = cls.download_queue_total = 0;
+		if (queue)
+			Con_Printf ("Checking skins...\n");
+		cls.download_queue = cls.download_queue_total = 0; /* FS: FIXME: Reset this on purpose.  Consider this scenario:  Those large custom TF servers.  You don't have /fortress so you have to download the skins too.  Well there's 20+ bots on the server, it steps through all the players so it may think you need 20+ skins but you raelly only need 8. */
 	}
 	cls.downloadtype = dl_skin;
 

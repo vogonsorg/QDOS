@@ -177,7 +177,7 @@ qboolean	CL_CheckOrDownloadFile (char *filename, qboolean queue)
 
 	//ZOID - can't download when recording
 	if (cls.demorecording) {
-                Con_Printf("Unable to download %s in record mode.\n", cls.downloadname->str);
+		Con_Printf("Unable to download %s in record mode.\n", cls.downloadname->str);
 		return true;
 	}
 	//ZOID - can't download when playback
