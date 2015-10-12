@@ -1781,13 +1781,11 @@ void M_Gamespy_Key(int k)
 	{
 		if ( keydown[K_CTRL] )
 		{
-#ifdef GAMESPY
 			if(cls.gamespyupdate)
 			{
 				Cbuf_AddText("gspystop\n");
 				return;
 			}
-#endif
 		}
 	}
 
