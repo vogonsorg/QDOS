@@ -35,7 +35,7 @@ struct mpxplay_audioout_info_s au_infos;
 
 char libau_istr[100];
 
-char* AU_search(unsigned int config)
+const char* AU_search(unsigned int config)
 {
 	struct mpxplay_audioout_info_s *aui=&au_infos;
 	one_sndcard_info **asip;
@@ -70,6 +70,11 @@ char* AU_search(unsigned int config)
 	while(aui->card_handler);
 
 	return NULL;
+}
+
+const struct mpxplay_audioout_info_s *AU_getinfo(void)
+{
+	return &au_infos;
 }
 
 void AU_start(void)
