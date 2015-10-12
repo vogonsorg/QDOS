@@ -233,6 +233,39 @@ byte	*Skin_Cache (skin_t *skin)
 	return out;
 }
 
+typedef struct skinqueue_s
+{
+	char name[MAX_QPATH];
+	qboolean queued;
+} skinqueue_t;
+skinqueue_t *queued_skins;
+
+void Skin_CheckQueue (char *name)
+{
+	int i;
+
+	if(!name)
+		return;
+
+	strcpy(queued_skins[cls.downloadnumber].name, name);
+
+	for(i = 0; i <= cls.downloadnumber; i++)
+	{
+		if(!queued_skins[i].name[0])
+			continue;
+
+		if(!strcmp(name, queued_skins[i].name))
+		{
+			if(!queued_skins[i].queued) /* FS: Okay, this bad boy isn't queued up yet, so let's increase the counter */
+			{
+				queued_skins[i].queued = true;
+				cls.download_queue_total++;
+			}
+			else /* FS: We already got this queued for later, don't go any further */
+				break;
+		}
+	}
+}
 
 /*
 =================
@@ -243,11 +276,14 @@ void Skin_NextDownload (qboolean queue)
 {
 	player_info_t	*sc;
 
-	if (cls.downloadnumber == 0)
+	if (queue && cls.downloadnumber == 0)
 	{
-		if (queue)
-			Con_Printf ("Checking skins...\n");
-		cls.download_queue = cls.download_queue_total = 0; /* FS: FIXME: Reset this on purpose.  Consider this scenario:  Those large custom TF servers.  You don't have /fortress so you have to download the skins too.  Well there's 20+ bots on the server, it steps through all the players so it may think you need 20+ skins but you raelly only need 8. */
+		Con_Printf ("Checking skins...\n");
+		cls.download_queue = cls.download_queue_total = 0;
+
+		queued_skins = (skinqueue_t *)calloc(MAX_CACHED_SKINS, sizeof(skinqueue_t)); /* FS: FIXME: Should this be MAX_CLIENTS? */
+		if(!queued_skins)
+			Sys_Error("Failed to crated skin queue buffer!");
 	}
 	cls.downloadtype = dl_skin;
 
@@ -265,7 +301,9 @@ void Skin_NextDownload (qboolean queue)
 		if (queue)
 		{
 			if (!CL_CheckOrDownloadFile(va("skins/%s.pcx", sc->skin->name), true)) /* FS: Queue a download */
-				cls.download_queue_total++;
+			{
+				Skin_CheckQueue(sc->skin->name);
+			}
 		}
 		else
 		{
@@ -277,6 +315,8 @@ void Skin_NextDownload (qboolean queue)
 	if (queue) /* FS: OK, we tallied how many assets we need... Start downloading */
 	{
 		cls.downloadnumber = 0;
+		if(queued_skins)
+			free(queued_skins);
 		Skin_NextDownload(false);
 	}
 	else
