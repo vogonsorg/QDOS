@@ -647,7 +647,7 @@ void GL_Init (void)
 
 	CheckTextureExtensions ();
 
-	if(strstr(gl_vendor, "Intel") && COM_CheckParm("-overrideintel")) /* FS: Intel integrated graphics come to a complete crawl with any dlights + multitexturing.  Therefore, explicitly request it. */
+	if(strstr(gl_vendor, "Intel") && !COM_CheckParm("-overrideintel")) /* FS: Intel integrated graphics come to a complete crawl with any dlights + multitexturing.  Therefore, explicitly request it. */
 		Con_Warning("Intel Graphics detected.  Skipping Mulitexture initialization.\n");
 	else
 		CheckMultiTextureExtensions ();
