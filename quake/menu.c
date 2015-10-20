@@ -3500,7 +3500,6 @@ extern cvar_t *m_filter;
 int M_Extended_Get_Vsync(void);
 void M_Extended_Set_Vsync(int dir);
 void M_Extended_Set_Sound_KHz (int dir, int khz); /* FS: Extended options unique to QDOS */
-extern void snd_restart_f (void); /* FS: For extended options */
 
 void M_Menu_Extended_f(void)
 {

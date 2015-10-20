@@ -68,8 +68,8 @@ HINSTANCE hInstDS;
 
 qboolean SNDDMA_InitDirect (void);
 qboolean SNDDMA_InitWav (void);
-void snd_restart_f (void); /* FS: Added */
-void snd_shutdown_f (void); /* FS: Added */
+static void snd_restart_f (void); /* FS: Added */
+static void snd_shutdown_f (void); /* FS: Added */
 
 /*
 ==================
@@ -745,14 +745,14 @@ void SNDDMA_Shutdown(void)
 	FreeSound ();
 }
 
-void snd_shutdown_f (void) /* FS: Added */
+static void snd_shutdown_f (void) /* FS: Added */
 {
 	S_Shutdown();
 	Con_Printf("\nSound Disabled.\n");
 	Cache_Flush();
 }
 
-void snd_restart_f (void) /* FS: Added */
+static void snd_restart_f (void) /* FS: Added */
 {
 	S_StopAllSounds(true);
 	S_Shutdown();
