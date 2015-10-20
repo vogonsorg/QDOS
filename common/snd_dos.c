@@ -30,7 +30,7 @@ typedef enum
 	dma_blaster,
 	dma_gus,
 #ifdef USE_SNDPCI
-	dma_pci /* FS: From ruslans patch */
+	dma_pci /* FS: From Ruslan's patch */
 #endif
 } dmacard_t;
 
@@ -67,7 +67,7 @@ static void snd_shutdown_f (void) /* FS: SND_SHUTDOWN */
 	Cache_Flush();
 }
 
-void snd_restart_f (void) /* FS: Added */
+static void snd_restart_f (void) /* FS: Added */
 {
 	SNDDMA_Shutdown();
 	Con_Printf("\nSound Restarting\n");
@@ -76,6 +76,7 @@ void snd_restart_f (void) /* FS: Added */
 	S_StopAllSoundsC(); /* FS: For GUS Clear buffer fix */
 	Con_Printf ("Sound sampling rate: %i\n", shm->speed);
 }
+
 qboolean SNDDMA_Init(void)
 {
 	if (COM_CheckParm("-nosound"))
@@ -86,12 +87,8 @@ qboolean SNDDMA_Init(void)
 		Cmd_AddCommand ("snd_shutdown", snd_shutdown_f); /* FS: Added */
 	}
 #ifdef USE_SNDPCI
-	if (COM_CheckParm("-hda")) /* FS: Ruslans patch */
+	if (PCI_Init ()) /* FS: Ruslans patch */
 	{
-		if(!PCI_Init())
-		{
-			goto nocard;
-		}
 		Con_DPrintf(DEVELOPER_MSG_SOUND, "PCI_Init\n");
 		dmacard = dma_pci;
 		return true;
@@ -152,6 +149,7 @@ void SNDDMA_Shutdown(void)
 		break;
 	}
 
+	shm->buffer = NULL;
 	dmacard = dma_none;
 }
 
