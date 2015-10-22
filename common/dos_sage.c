@@ -78,7 +78,7 @@ static int SAGE_InitCtx (int *width, int *height, int *bpp)
 
 	/* request either 16 or 32 bpp visual */
 	if (*bpp <= 16)
-		ctx = sage_open_fp(true, 5, 5, 5, 1, 16, 0);
+		ctx = sage_open_fp(true, 5, 6, 5, 0, 16, 0);
 	else	ctx = sage_open_fp(true, 8, 8, 8, 8, 24, 8);
 	if (!ctx) {
 		sage_fini_fp ();
