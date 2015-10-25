@@ -11,6 +11,8 @@ USE_OGG=yes
 USE_TREMOR=1
 # pci sound card support:
 USE_SNDPCI=1
+# pci sound card support as dxe3:
+SNDPCI_DXE=0
 # use SSE optimizations for P3 (could be dangerous)
 USE_SSE=0
 # compile Quake with fxMesa for 3DFX Voodoo Cards
@@ -33,11 +35,11 @@ CFLAGS += -mtune=pentium
 endif
 
 ifeq ($(GLQUAKE),1)
+EXE     = qwdosfx.exe
 CFLAGS += -I../3rdparty/include -I../3rdparty/include/glide3 -DGLQUAKE
 CFLAGS += -DUSE_3DFXGAMMA
 CFLAGS += -DGL_DLSYM
 #LIBS   += -L../3rdparty/lib -lgl
-EXE     = qwdosfx.exe
 SYSOBJ_DXE=dxe.o
 else
 SYSOBJ_DXE=no_dxe.o
@@ -46,7 +48,12 @@ endif
 ifeq ($(USE_SNDPCI),1)
 CFLAGS += -DUSE_SNDPCI
 CFLAGS += -I../3rdparty/include
+ifeq ($(SNDPCI_DXE),1)
+SYSOBJ_DXE=dxe.o
+CFLAGS += -DSNDPCI_DXE
+else
 LIBS   += -L../3rdparty/lib -lau
+endif
 endif
 
 ifeq ($(USE_OGG),yes)
@@ -236,3 +243,4 @@ DO_AS=$(CC) -x assembler-with-cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 %.o : $(COMMON)/Goa/Sdk/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
+
