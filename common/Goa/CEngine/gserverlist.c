@@ -76,10 +76,10 @@ static int totalRetry = 20; /* FS: Total retry attempts waiting for the gamespy 
 /* FS: Set a socket to be non-blocking */
 #ifdef _WIN32
 #define TCP_BLOCKING_ERROR WSAEWOULDBLOCK
-static int Set_Non_Blocking_Socket (SOCKET socket) {
+static int Set_Non_Blocking_Socket (SOCKET s) {
 	u_long _true = true;
 
-	return ioctlsocket( socket, FIONBIO, &_true);
+	return ioctlsocket( s, FIONBIO, &_true);
 }
 
 static __inline int Get_Last_Error(void) {
@@ -87,9 +87,9 @@ static __inline int Get_Last_Error(void) {
 }
 #else
 #define TCP_BLOCKING_ERROR EWOULDBLOCK
-static int Set_Non_Blocking_Socket (SOCKET socket) {
+static int Set_Non_Blocking_Socket (SOCKET s) {
 	int _true = true;
-	return ioctlsocket( socket, FIONBIO, IOCTLARG_T &_true);
+	return ioctlsocket( s, FIONBIO, IOCTLARG_T &_true);
 }
 
 static __inline int Get_Last_Error(void) {
@@ -97,10 +97,10 @@ static __inline int Get_Last_Error(void) {
 }
 #endif
 
-static void Close_TCP_Socket(unsigned int socket)
+static void Close_TCP_Socket(SOCKET *s)
 {
-	closesocket(socket);
-	socket = INVALID_SOCKET;
+	closesocket(*s);
+	*s = INVALID_SOCKET;
 }
 
 /* ServerListNew
@@ -214,23 +214,23 @@ static GError CreateServerListSocket(GServerList serverlist)
 
 	if (!hent)
 	{
-		Close_TCP_Socket(serverlist->slsocket);
-		return GE_NODNS; 
+		Close_TCP_Socket(&serverlist->slsocket);
+		return GE_NODNS;
 	}
 
 	saddr.sin_addr.s_addr = *(u_long *)hent->h_addr_list[0];
-	memset ( saddr.sin_zero, 0, 8 ); 
+	memset ( saddr.sin_zero, 0, 8 );
 
 	if (connect ( serverlist->slsocket, (struct sockaddr *) &saddr, sizeof saddr ) != 0 )
 	{
-		Close_TCP_Socket(serverlist->slsocket);
+		Close_TCP_Socket(&serverlist->slsocket);
 		return GE_NOSOCKET;
 	}
 
 	if(Set_Non_Blocking_Socket(serverlist->slsocket) == SOCKET_ERROR)
 	{
 		Con_Printf("ERROR: CreateServerListSocket: ioctl FIOBNIO:%s\n", NET_ErrorString());
-		Close_TCP_Socket(serverlist->slsocket);
+		Close_TCP_Socket(&serverlist->slsocket);
 		return GE_NOSOCKET;
 	}
 
@@ -252,7 +252,7 @@ static GError CreateServerListLANSocket(GServerList serverlist)
 	if (setsockopt(serverlist->slsocket, SOL_SOCKET, SO_BROADCAST, (char *)&optval, sizeof(optval)) != 0)
 	{
 		Con_Printf("ERROR: CreateServerListLANSocket: setsockopt SOL_SOCKET, SO_BROADCAST:%s\n", NET_ErrorString());
-		Close_TCP_Socket(serverlist->slsocket);
+		Close_TCP_Socket(&serverlist->slsocket);
 		return GE_NOSOCKET;
 	}
 
@@ -296,7 +296,7 @@ retryRecv:
 		}
 		else
 		{
-			Close_TCP_Socket(serverlist->slsocket);
+			Close_TCP_Socket(&serverlist->slsocket);
 			return GE_NOCONNECT;
 		}
 	}
@@ -315,7 +315,7 @@ retryRecv:
 	len = send ( serverlist->slsocket, data, strlen(data), 0 );
 	if (len == SOCKET_ERROR || len == 0)
 	{
-		Close_TCP_Socket(serverlist->slsocket);
+		Close_TCP_Socket(&serverlist->slsocket);
 		return GE_NOCONNECT;
 	}
 
@@ -324,7 +324,7 @@ retryRecv:
 	len = send ( serverlist->slsocket, data, strlen(data), 0 );
 	if (len == SOCKET_ERROR || len == 0)
 	{
-		Close_TCP_Socket(serverlist->slsocket);
+		Close_TCP_Socket(&serverlist->slsocket);
 		return GE_NOCONNECT;
 	}
 
@@ -448,7 +448,7 @@ static GError ServerListLANList(GServerList serverlist)
 			break;
 		error = recvfrom(serverlist->slsocket, indata, sizeof(indata) - 1, 0, (struct sockaddr *)&saddr, &saddrlen );
 		if (SOCKET_ERROR == error)
-			continue; 
+			continue;
 		//we got data, add the server to the list to update
 		if (strstr(indata,"\\final\\") != NULL)
 			ServerListAddServer(serverlist, inet_ntoa(saddr.sin_addr), ntohs(saddr.sin_port));
@@ -500,7 +500,7 @@ retryRecv:
 		{
 			Con_DPrintf(DEVELOPER_MSG_GAMESPY,"Error during TCP List RECV: %s\n", NET_ErrorString());
 abort:
-			Close_TCP_Socket(serverlist->slsocket);
+			Close_TCP_Socket(&serverlist->slsocket);
 			data[0] = 0;
 			ServerListModeChange(serverlist, sl_idle);
 			return GE_NOCONNECT;
