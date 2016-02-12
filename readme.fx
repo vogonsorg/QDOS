@@ -37,7 +37,7 @@
   one of the directories listed below and put it in the same place as
   qdosfx.exe, qwdosfx.exe:
   - voodoo/sst1  -> Voodoo Graphics
-  - voodoo/sst96 -> Voodoo Rush (AT3D variants only)
+  - voodoo/sst96 -> Voodoo Rush
   - voodoo/cvg   -> Voodoo2
   - voodoo/h5    -> Banshee and Voodoo 3/4/5
 * Pick a renderer (gl.dxe) from one of the directories listed below
@@ -157,7 +157,6 @@
   start the game with -mtex passed at the command line.  e.g.
   "qdosfx.exe -metx".
 * 2xAA (With or without SLI) locks if LFB WC is set.  4xAA is OK.
-* Macronix variants of Voodoo Rush cards do not work.
 
 9 - Known Mesa Issues
 ---------------------------------------------------------
