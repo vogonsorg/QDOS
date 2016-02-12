@@ -16,7 +16,7 @@ USE_TREMOR=1
 # pci sound card support:
 USE_SNDPCI=1
 # pci sound card support as dxe3:
-SNDPCI_DXE=0
+SNDPCI_DXE=1
 # use SSE optimizations for P3 (could be dangerous)
 USE_SSE=0
 # compile Quake with fxMesa for 3DFX Voodoo Cards
