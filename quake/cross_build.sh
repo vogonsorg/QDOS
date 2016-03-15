@@ -4,7 +4,7 @@
 
 if test "$1" = "strip"; then
 	echo $TARGET-strip qdos.exe
-	$TARGET-strip qdos.exe
+	$TARGET-strip qdos.exe qdosfx.exe
 	exit 0
 fi
 
