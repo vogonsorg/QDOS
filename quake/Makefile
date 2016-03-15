@@ -84,7 +84,8 @@ LIBS   += -L../3rdparty/lib -lvorbisidec -logg
 endif
 endif
 
-LIBS   += -lc -lgcc -lm
+LIBS   += -lc -lgcc
+#LIBS   += -lm
 
 # objects:
 DOSTCP :=
@@ -278,4 +279,3 @@ DO_AS=$(CC) -x assembler-with-cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 %.o : $(COMMON)/Goa/Sdk/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
-

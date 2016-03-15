@@ -84,7 +84,8 @@ LIBS   += -L../3rdparty/libcurl/lib -lcurl
 endif
 LIBS   += -L../3rdparty/watt32/lib -lwatt
 
-LIBS   += -lc -lgcc -lm
+LIBS   += -lc -lgcc
+#LIBS   += -lm
 
 # not too sophisticated dependency
 CLIENT = $(SYSOBJ_DXE)       \
@@ -243,4 +244,3 @@ DO_AS=$(CC) -x assembler-with-cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 %.o : $(COMMON)/Goa/Sdk/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
-
