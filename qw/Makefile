@@ -41,6 +41,10 @@ CFLAGS += -DUSE_3DFXGAMMA
 CFLAGS += -DGL_DLSYM
 #LIBS   += -L../3rdparty/lib -lgl
 SYSOBJ_DXE=dxe.o
+# choose which dosgl api(s) to support. (at least one.)
+CFLAGS += -DREFGL_FXMESA
+CFLAGS += -DREFGL_MESA
+CFLAGS += -DREFGL_SAGE
 else
 SYSOBJ_DXE=no_dxe.o
 endif
