@@ -639,6 +639,11 @@ int CL_ReadFromServer (void)
 	if (cl_shownet->value)
 		Con_Printf ("\n");
 
+	if (cls.signon == 0) /* FS: FIXME: DOS hack.  In NetQuake the game stays in connection accepted limbo until we push something back to the server.  Windows and QWDOS is unaffacted by this problem. */
+	{
+		Cmd_ForwardToServer();
+	}
+
 	CL_RelinkEntities ();
 	CL_UpdateBeams ();
 
