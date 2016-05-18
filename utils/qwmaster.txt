@@ -1,0 +1,2 @@
+QWMaster has been renamed to GSMaster and has moved to:
+https://bitbucket.org/maraakate/gsmaster
