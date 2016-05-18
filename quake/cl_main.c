@@ -90,9 +90,6 @@ static void CL_Gspystop_f (void);
 static void CL_PrintBrowserList_f (void);
 #endif
 
-/* FS: FIXME: DOS hack.  In NetQuake the game stays in connection accepted limbo until we push something back to the server.  Windows and QWDOS is unaffacted by this problem. */
-qboolean bFirstConnect;
-
 /*
 =====================
 CL_ClearState
@@ -172,7 +169,6 @@ void CL_Disconnect (void)
 	cls.signon = 0;
 	key_dest = 0; /* FS: Fix so main menu still works after disconnect */
 	cl.intermission = 0; /* FS: Baker fix */
-	bFirstConnect = true; /* FS: FIXME: DOS hack.  In NetQuake the game stays in connection accepted limbo until we push something back to the server.  Windows and QWDOS is unaffacted by this problem. */
 }
 
 void CL_Disconnect_f (void)
@@ -212,6 +208,8 @@ void CL_EstablishConnection (char *host)
 	cls.demonum = -1;		 // not in the demo loop now
 	cls.state = ca_connected;
 	cls.signon = 0;				// need all the signon messages before playing
+
+	MSG_WriteByte (&cls.message, clc_nop); /* sezero: fixes connection getting stuck after displaying the "Connection accepted" msg.. */
 }
 
 /*
@@ -642,12 +640,6 @@ int CL_ReadFromServer (void)
 	
 	if (cl_shownet->value)
 		Con_Printf ("\n");
-
-	if (cls.signon == 0 && bFirstConnect) /* FS: FIXME: DOS hack.  In NetQuake the game stays in connection accepted limbo until we push something back to the server.  Windows and QWDOS is unaffacted by this problem. */
-	{
-		Cmd_ForwardToServer();
-		bFirstConnect = false; /* FS: Don't do this once we're already connected (i.e. a map transition) or we'll get sz_getspace overflows */
-	}
 
 	CL_RelinkEntities ();
 	CL_UpdateBeams ();
