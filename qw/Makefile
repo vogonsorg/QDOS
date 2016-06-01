@@ -22,7 +22,7 @@ GLQUAKE=0
 COMMON=../common
 
 CFLAGS  = -g -Wall -Werror -O2 -DNDEBUG -DQUAKEWORLD -fno-strict-aliasing
-CFLAGS += -I../qw -I../common
+CFLAGS += -I. -I../common
 CFLAGS += -fomit-frame-pointer -DWATT32_NO_OLDIES -I../3rdparty/watt32/inc
 LDFLAGS =
 LIBS    =
