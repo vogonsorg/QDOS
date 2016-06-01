@@ -26,7 +26,7 @@ GLQUAKE=0
 COMMON=../common
 
 CFLAGS  = -g -Wall -Werror -O2 -DNDEBUG -DQUAKE1 -fno-strict-aliasing
-CFLAGS += -I./ -I../common
+CFLAGS += -I../quake -I../common
 CFLAGS += -fomit-frame-pointer
 LIBS    =
 EXE     = qdos.exe

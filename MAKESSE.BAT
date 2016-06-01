@@ -1,23 +1,23 @@
 @echo off
 
-CALL C:\djgpp\setenv.bat
+CALL E:\djgpp\setenv.bat
 
-C:
+E:
 cd\proj\qdos\quake
 make -f makefile clean
 make -f makefile USE_SSE=1
-UPX -9 C:\PROJ\QDOS\QUAKE\QDOS.EXE
+UPX -9 E:\PROJ\QDOS\QUAKE\QDOS.EXE
 make -f makefile clean
 make -f makefile USE_SSE=1 GLQUAKE=1
-UPX -9 C:\PROJ\QDOS\QUAKE\QDOSFX.EXE
+UPX -9 E:\PROJ\QDOS\QUAKE\QDOSFX.EXE
 
 cd..
 
-C:
+E:
 cd\proj\qdos\qw
 make -f makefile clean
 make -f makefile USE_SSE=1
-UPX -9 C:\PROJ\QDOS\QW\QW.EXE
+UPX -9 E:\PROJ\QDOS\QW\QW.EXE
 make -f makefile clean
 make -f makefile USE_SSE=1 GLQUAKE=1
-UPX -9 C:\PROJ\QDOS\QW\QWDOSFX.EXE
+UPX -9 E:\PROJ\QDOS\QW\QWDOSFX.EXE
