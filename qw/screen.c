@@ -550,17 +550,11 @@ void SCR_DrawTime (void) /* FS: show_time */
 	utc = time (NULL);
 	local = localtime (&utc);
 
-#ifdef _MSC_VER
 	if (show_time->value == 1)
 		timefmt = "%H:%M:%S %p";
 	else if (show_time->value > 1)
 		timefmt = "%I:%M:%S %p";
-#else
-	if (show_time->value == 1)
-		timefmt = "%k:%M:%S %p";
-	else if (show_time->value > 1)
-		timefmt = "%l:%M:%S %p";
-#endif
+
 	strftime (st, sizeof (st), timefmt, local);
 
 	x = vid.width - strlen(st) * 8 - 44; /* FS: Has to be out of the way of the HUD... */
