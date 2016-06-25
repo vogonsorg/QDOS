@@ -1286,6 +1286,9 @@ void Host_Version_f (void)
 {
 	Con_Printf ("Version %4.2f\n", VERSION);
 	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
+#ifdef SSE_AWARE
+	Con_Printf ("SSE-aware compile.\n");
+#endif /* SSE_AWARE */
 }
 
 void Host_Say(qboolean teamonly)

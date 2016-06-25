@@ -29,7 +29,7 @@ LIBS    =
 EXE     = qw.exe
 
 ifeq ($(USE_SSE),1)
-CFLAGS += -march=pentium3
+CFLAGS += -march=pentium3 -DSSE_AWARE
 else
 CFLAGS += -mtune=pentium
 endif

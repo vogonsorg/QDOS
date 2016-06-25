@@ -246,6 +246,9 @@ void CL_Version_f (void)
 {
 	Con_Printf ("Version %4.2f\n", VERSION);
 	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
+#ifdef SSE_AWARE
+	Con_Printf ("SSE-aware compile.\n");
+#endif /* SSE_AWARE */
 }
 
 #ifdef PROTOCOL_VERSION_FTE
@@ -1676,10 +1679,18 @@ void Host_Frame (float time)
 		char versionStr[256];
 
 #ifdef GLQUAKE
+	#ifdef SSE_AWARE
 			Com_sprintf(versionStr, sizeof(versionStr), "say QuakeWorld DOS 3DFX Voodoo with WATTCP v%4.2f.  Built %s at %s.\n", VERSION, __DATE__, __TIME__);
+	#else
+			Com_sprintf(versionStr, sizeof(versionStr), "say QuakeWorld DOS 3DFX Voodoo with WATTCP v%4.2f.  SSE-aware compile.  Built %s at %s.\n", VERSION, __DATE__, __TIME__);
+	#endif /* SSE_AWARE */
 #else
+	#ifdef SSE_AWARE
+			Com_sprintf(versionStr, sizeof(versionStr), "say QuakeWorld DOS with WATTCP v%4.2f.  SSE-aware compile.  Built %s at %s.\n", VERSION, __DATE__, __TIME__);
+	#else
 			Com_sprintf(versionStr, sizeof(versionStr), "say QuakeWorld DOS with WATTCP v%4.2f.  Built %s at %s.\n", VERSION, __DATE__, __TIME__);
-#endif
+	#endif /* SSE_AWARE */
+#endif /* GLQUAKE */
 		Cbuf_AddText(versionStr);
 		cls.lastSpamTime = realtime;
 		cls.spamTime = 0.0f;
