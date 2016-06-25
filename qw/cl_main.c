@@ -1680,9 +1680,9 @@ void Host_Frame (float time)
 
 #ifdef GLQUAKE
 	#ifdef SSE_AWARE
-			Com_sprintf(versionStr, sizeof(versionStr), "say QuakeWorld DOS 3DFX Voodoo with WATTCP v%4.2f.  Built %s at %s.\n", VERSION, __DATE__, __TIME__);
-	#else
 			Com_sprintf(versionStr, sizeof(versionStr), "say QuakeWorld DOS 3DFX Voodoo with WATTCP v%4.2f.  SSE-aware compile.  Built %s at %s.\n", VERSION, __DATE__, __TIME__);
+	#else
+			Com_sprintf(versionStr, sizeof(versionStr), "say QuakeWorld DOS 3DFX Voodoo with WATTCP v%4.2f.  Built %s at %s.\n", VERSION, __DATE__, __TIME__);
 	#endif /* SSE_AWARE */
 #else
 	#ifdef SSE_AWARE
