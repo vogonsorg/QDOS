@@ -309,6 +309,7 @@ extern cvar_t	*cl_master_server_ip;
 extern cvar_t	*cl_master_server_port;
 extern cvar_t	*cl_master_server_timeout;
 extern cvar_t	*cl_master_server_retries;
+extern cvar_t	*cl_master_server_optout;
 extern cvar_t	*snd_gamespy_sounds;
 #endif
 

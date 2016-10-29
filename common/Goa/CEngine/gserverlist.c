@@ -273,6 +273,7 @@ static void ServerListModeChange(GServerList serverlist, GServerListState newsta
 static GError SendListRequest(GServerList serverlist)
 {
 	char data[256], *ptr, result[64];
+	char *clientName = "OPT-OUT"; /* FS: Allow people to opt-out of me getting their username in list requests */
 	int len;
 	int error = 0;
 	int retry = 0;
@@ -307,9 +308,19 @@ retryRecv:
 	gs_encrypt   ( (uchar *) serverlist->seckey, 6, (uchar *)ptr, 6 );
 	gs_encode ( (uchar *)ptr, 6, (uchar *)result );
 
+	/* FS: Allow people to opt-out of me getting their username in list requests */
+	if(!cl_master_server_optout->intValue)
+	{
+#ifdef QUAKE1
+		clientName = cl_name->string;
+#else
+		clientName = name->string;
+#endif
+	}
+
 	//validate to the master
-	sprintf(data, "\\gamename\\%s\\gamever\\%s\\location\\0\\validate\\%s\\final\\\\queryid\\1.1\\",
-			serverlist->enginename, ENGINE_VERSION, result); //validate us		
+	sprintf(data, "\\gamename\\%s\\gamever\\%s\\location\\0\\clientname\\%s\\validate\\%s\\final\\\\queryid\\1.1\\",
+			serverlist->enginename, ENGINE_VERSION, clientName, result); //validate us		
 	Con_DPrintf(DEVELOPER_MSG_GAMESPY, "Gamespy validate to the master: %s\n", data);
 
 	len = send ( serverlist->slsocket, data, strlen(data), 0 );
