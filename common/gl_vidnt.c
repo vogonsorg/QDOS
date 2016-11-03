@@ -145,6 +145,7 @@ cvar_t		*vid_config_x;
 cvar_t		*vid_config_y;
 cvar_t		*vid_stretch_by_2;
 cvar_t		*_windowed_mouse;
+cvar_t		*gl_displayrefresh; /* FS: From KMQ2 */
 
 int			window_center_x, window_center_y, window_x, window_y, window_width, window_height;
 RECT		window_rect;
@@ -289,6 +290,12 @@ qboolean VID_SetFullDIBMode (int modenum)
 		gdevmode.dmPelsHeight = modelist[modenum].height;
 		gdevmode.dmSize = sizeof (gdevmode);
 
+		if(gl_displayrefresh->intValue) /* FS: From KMQ2 */
+		{
+			gdevmode.dmDisplayFrequency = gl_displayrefresh->intValue;
+			gdevmode.dmFields |= DM_DISPLAYFREQUENCY;
+			Con_SafePrintf ("...using gl_displayrefresh of %d\n", gl_displayrefresh->intValue );
+		}
 		if (ChangeDisplaySettings (&gdevmode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
 			Sys_Error ("Couldn't set fullscreen DIB mode");
 	}
@@ -1584,6 +1591,8 @@ void	VID_Init (unsigned char *palette)
 	_windowed_mouse = Cvar_Get("_windowed_mouse","1", CVAR_ARCHIVE);
 	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
 	gl_ztrick->description = "Toggles the use of a trick to prevent the clearing of the z-buffer between frames. When this variable is set to 1 the game will not clear the z-buffer between frames. This will result in increased performance but might cause problems for some display hardware.";
+	gl_displayrefresh = Cvar_Get("gl_displayrefresh", "0", CVAR_ARCHIVE);
+	gl_displayrefresh->description = "Refresh rate for fullscreen modes.  Set to 0 to disable.";
 
 	Cmd_AddCommand ("vid_nummodes", VID_NumModes_f);
 	Cmd_AddCommand ("vid_describecurrentmode", VID_DescribeCurrentMode_f);
