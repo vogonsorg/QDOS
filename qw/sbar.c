@@ -1004,12 +1004,15 @@ void Sbar_DeathmatchOverlay (int start)
 	if (largegame)
 		skip = 8;
 
-// request new ping times every two second
-	if (realtime - cl.last_ping_request > 2)
+	if(!show_ping->intValue) /* FS: show_ping CVAR already does this, so don't spam the server with it. */
 	{
-		cl.last_ping_request = realtime;
-		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
-		SZ_Print (&cls.netchan.message, "pings");
+	// request new ping times every two second
+		if (realtime - cl.last_ping_request > 2)
+		{
+			cl.last_ping_request = realtime;
+			MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
+			SZ_Print (&cls.netchan.message, "pings");
+		}
 	}
 
 	teamplay = atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
