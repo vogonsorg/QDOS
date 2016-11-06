@@ -568,7 +568,7 @@ void SCR_DrawTime (void) /* FS: show_time */
 void SCR_DrawPing (void)
 {
 	player_info_t	*player;
-	int i, x, y, ping = 999;
+	int x, y, ping = 999;
 	char st[6];
 
 	if (!show_ping->value || cls.state != ca_active)
@@ -581,20 +581,11 @@ void SCR_DrawPing (void)
 		SZ_Print (&cls.netchan.message, "pings");
 	}
 
-	for (i = 0; i < MAX_CLIENTS; i++)
-	{
-		char *cname = Info_ValueForKey(cls.userinfo, "name");
-		char *pip;
-		char *cip = Info_ValueForKey(cls.userinfo, "ip");
-
-		player = &cl.players[i];
-		pip = Info_ValueForKey(player->userinfo, "ip");
-		if (!stricmp(player->name, cname) && !stricmp(pip, cip))
-		{
-			ping = player->ping;
-			continue;
-		}
-	}
+	player = &cl.players[cl.playernum];
+	if(!player)
+		ping = 999;
+	else
+		ping = player->ping;
 
 	if (ping < 0 || ping > 999)
 		ping = 999;
