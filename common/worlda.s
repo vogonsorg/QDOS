@@ -83,10 +83,8 @@ Lhloop:
 //		plane = hull->planes + node->planenum;
 // !!! if the size of dclipnode_t changes, the scaling of %eax needs to be
 //     changed !!!
-	movl	nd_planenum(%edi,%eax,8),%ecx
-	movl	nd_children(%edi,%eax,8),%eax
-	movl	%eax,%esi
-	rorl	$16,%eax
+	leal	(%eax,%eax,2),%eax
+	movl	nd_planenum(%edi,%eax,4),%ecx
 	leal	(%ecx,%ecx,4),%ecx
 
 //		if (plane->type < 3)
@@ -114,20 +112,22 @@ Lnodot:
 	fsubrs	(%edx,%ebx,4)
 
 Lsub:
-	sarl	$16,%eax
-	sarl	$16,%esi
-
 //		if (d < 0)
 //			num = node->children[1];
 //		else
 //			num = node->children[0];
+// if dist is negative(float's sign bit is set), copy child[1] into eax
 	fstps	Ltemp
-	movl	Ltemp,%ecx
-	sarl	$31,%ecx
-	andl	%ecx,%esi
-	xorl	$0xFFFFFFFF,%ecx
-	andl	%ecx,%eax
-	orl		%esi,%eax
+	testl	$0x80000000,Ltemp
+	jns	Lpos
+	mov	8(%edi,%eax,4),%eax
+	testl	%eax,%eax
+	jns		Lhloop
+	jmp		Lhdone
+Lpos:
+// otherwise copy child[0] into eax
+	movl	4(%edi,%eax,4),%eax
+	testl	%eax,%eax
 	jns		Lhloop
 
 //	return num;
