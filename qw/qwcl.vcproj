@@ -73,7 +73,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\common\win32\scitech\lib\win32\vc\mgllt.lib ..\common\win32\dxsdk\sdk\lib\dxguid.lib opengl32.lib wsock32.lib odbc32.lib odbccp32.lib winmm.lib"
+				AdditionalDependencies="..\common\win32\scitech\lib\win32\vc\mgllt.lib ..\common\win32\dxsdk\sdk\lib\dxguid.lib opengl32.lib ws2_32.lib odbc32.lib odbccp32.lib winmm.lib"
 				OutputFile=".\Debug/DWQWDOS.EXE"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -172,7 +172,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\common\win32\scitech\lib\win32\vc\mgllt.lib ..\common\win32\dxsdk\sdk\lib\dxguid.lib opengl32.lib wsock32.lib odbc32.lib odbccp32.lib winmm.lib"
+				AdditionalDependencies="..\common\win32\scitech\lib\win32\vc\mgllt.lib ..\common\win32\dxsdk\sdk\lib\dxguid.lib opengl32.lib ws2_32.lib odbc32.lib odbccp32.lib winmm.lib"
 				OutputFile=".\Release/WQWDOS.EXE"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -266,7 +266,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\common\win32\dxsdk\sdk\lib\dxguid.lib comctl32.lib winmm.lib wsock32.lib opengl32.lib glu32.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="..\common\win32\dxsdk\sdk\lib\dxguid.lib comctl32.lib winmm.lib ws2_32.lib opengl32.lib glu32.lib odbc32.lib odbccp32.lib"
 				OutputFile=".\release_gl/GLQW2.EXE"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -361,7 +361,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\common\win32\dxsdk\sdk\lib\dxguid.lib comctl32.lib winmm.lib wsock32.lib opengl32.lib glu32.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="..\common\win32\dxsdk\sdk\lib\dxguid.lib comctl32.lib winmm.lib ws2_32.lib opengl32.lib glu32.lib odbc32.lib odbccp32.lib"
 				OutputFile=".\debug_gl/GLQW2.EXE"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

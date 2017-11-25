@@ -11,8 +11,8 @@ Costa Mesa, CA 92626
 Fax(714)549-0757
 
 ******/
-#include "quakedef.h"
 #include "../nonport.h"
+#include "quakedef.h"
 #include "goaceng.h"
 #include "gserver.h"
 #include <stdlib.h>

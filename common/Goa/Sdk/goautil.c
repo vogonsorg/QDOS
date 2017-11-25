@@ -25,11 +25,11 @@ Fax(714)549-0757
 /********
 INCLUDES
 ********/
+#include "../nonport.h"
 #include "quakedef.h"
 #include "goautil.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "../nonport.h"
 #include <string.h>
 
 extern cvar_t	*public_server; /* should heartbeats be sent */
