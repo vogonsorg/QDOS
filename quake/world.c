@@ -471,7 +471,7 @@ POINT TESTING IN HULLS
 ===============================================================================
 */
 
-//#if	!id386 //johnfitz -- must use C version of SV_HullPointContents becuase data type changed
+#if	!id386
 
 /*
 ==================
@@ -506,7 +506,7 @@ int SV_HullPointContents (hull_t *hull, int num, vec3_t p)
 	return num;
 }
 
-//#endif	// !id386 //johnfitz -- must use C version of SV_HullPointContents becuase data type changed
+#endif	// !id386
 
 
 /*

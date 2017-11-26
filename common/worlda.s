@@ -44,7 +44,6 @@ Ltemp:	.long	0
 #define p		12+12			// because only partially pushed
 
 	.align 4
-/*
 .globl C(SV_HullPointContents)
 C(SV_HullPointContents):
 	pushl	%edi				// preserve register variables
@@ -76,7 +75,6 @@ C(SV_HullPointContents):
 
 //	while (num >= 0)
 //	{
-*/
 Lhloop:
 
 //		node = hull->clipnodes + num;
