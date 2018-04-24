@@ -175,6 +175,7 @@ OBJS=	$(SYSOBJ_DXE)        \
 	view.o     \
 	wad.o      \
 	world.o    \
+	worlda.o   \
 	zone.o
 
 ifeq ($(GLQUAKE),0)
@@ -224,8 +225,7 @@ REFSOFT = d_copy.o \
 	vid_dos.o  \
 	vid_ext.o  \
 	vid_vga.o  \
-	vregset.o  \
-	worlda.o
+	vregset.o
 endif
 
 ifeq ($(GLQUAKE),1)
