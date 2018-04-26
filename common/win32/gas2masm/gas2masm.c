@@ -733,6 +733,7 @@ parsefield	parsedata[] = {
 	{"js",     " js", 2, emitonedata},
 	{"jz",     " jz", 2, emitonedata},
 	{"leal",   " lea", 3, emittwooperandsl},
+	{"mov",    " mov", 3, emittwooperandsl},
 	{"movb",   " mov", 3, emittwooperandsb},
 	{"movl",   " mov", 3, emittwooperandsl},
 	{"movw",   " mov", 3, emittwooperandsw},

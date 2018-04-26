@@ -18,7 +18,6 @@
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			>
@@ -46,16 +45,12 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
-				Optimization="4"
+				Optimization="2"
+				OmitFramePointers="true"
 				AdditionalIncludeDirectories="..\common\win32,..\common\win32\scitech\include,..\common\win32\dxsdk\sdk\inc,.\winquake,..\common,.\"
 				PreprocessorDefinitions="QUAKE1;WIN32;NDEBUG;_WINDOWS;OGG_SUPPORT;BSP2_SUPPORT;GAMESPY"
 				RuntimeLibrary="0"
-				PrecompiledHeaderFile=".\Release/WinQuake.pch"
-				AssemblerListingLocation=".\Release/"
-				ObjectFile=".\Release/"
-				ProgramDataBaseFileName=".\Release/"
-				BrowseInformation="0"
-				SuppressStartupBanner="true"
+				FloatingPointModel="2"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -71,11 +66,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="..\common\win32\dxsdk\sdk\lib\dxguid.lib ..\common\win32\scitech\lib\win32\vc\mgllt.lib winmm.lib ws2_32.lib opengl32.lib glu32.lib odbc32.lib odbccp32.lib"
-				OutputFile=".\Release/WQDOS.exe"
-				LinkIncremental="1"
-				SuppressStartupBanner="true"
+				OutputFile="$(OutDir)\WQWDOS.exe"
 				IgnoreDefaultLibraryNames="libc.lib,libcmtd.lib"
 				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				OptimizeForWindows98="2"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -89,8 +85,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
-				OutputFile=".\Release/WinQuake.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -110,7 +104,6 @@
 			OutputDirectory=".\release_gl"
 			IntermediateDirectory=".\release_gl"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			>
@@ -138,17 +131,12 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
-				Optimization="4"
-				FavorSizeOrSpeed="1"
+				Optimization="2"
+				OmitFramePointers="true"
 				AdditionalIncludeDirectories="..\common\win32,..\common\win32\dxsdk\sdk\inc,..\common,.\"
 				PreprocessorDefinitions="QUAKE1;WIN32;NDEBUG;_WINDOWS;GLQUAKE;BSP2_SUPPORT;GAMESPY"
 				RuntimeLibrary="0"
-				PrecompiledHeaderFile=".\release_gl/WinQuake.pch"
-				AssemblerListingLocation=".\release_gl/"
-				ObjectFile=".\release_gl/"
-				ProgramDataBaseFileName=".\release_gl/"
-				BrowseInformation="0"
-				SuppressStartupBanner="true"
+				FloatingPointModel="2"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -164,10 +152,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="..\common\win32\dxsdk\sdk\lib\dxguid.lib comctl32.lib winmm.lib ws2_32.lib opengl32.lib glu32.lib odbc32.lib odbccp32.lib"
-				OutputFile=".\release_gl\glquake2.exe"
-				LinkIncremental="1"
-				SuppressStartupBanner="true"
+				OutputFile="$(OutDir)\glquake2.exe"
 				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				OptimizeForWindows98="2"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -181,8 +170,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
-				OutputFile=".\release_gl/WinQuake.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -202,7 +189,6 @@
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			>
@@ -234,13 +220,10 @@
 				AdditionalIncludeDirectories="..\common\win32,..\common\win32\scitech\include,..\common\win32\dxsdk\sdk\inc,.\winquake,..\common,.\"
 				PreprocessorDefinitions="QUAKE1;WIN32;_DEBUG;_WINDOWS;BSP2_SUPPORT;OGG_SUPPORT;GAMESPY"
 				RuntimeLibrary="1"
-				PrecompiledHeaderFile=".\Debug/WinQuake.pch"
-				AssemblerListingLocation=".\Debug/"
-				ObjectFile=".\Debug/"
-				ProgramDataBaseFileName=".\Debug/"
+				FloatingPointModel="2"
 				BrowseInformation="1"
-				SuppressStartupBanner="true"
-				DebugInformationFormat="4"
+				WarningLevel="3"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -256,13 +239,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="..\common\win32\dxsdk\sdk\lib\dxguid.lib ..\common\win32\scitech\lib\win32\vc\mgllt.lib winmm.lib ws2_32.lib opengl32.lib glu32.lib odbc32.lib odbccp32.lib"
-				OutputFile=".\Debug/DWQDOS.exe"
+				OutputFile="$(OutDir)\WQWDOS.exe"
 				LinkIncremental="2"
-				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="libc.lib"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/DWQDOS.pdb"
 				SubSystem="2"
+				OptimizeForWindows98="2"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -276,8 +258,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
-				OutputFile=".\Debug/WinQuake.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -297,7 +277,6 @@
 			OutputDirectory=".\debug_gl"
 			IntermediateDirectory=".\debug_gl"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			>
@@ -329,14 +308,10 @@
 				AdditionalIncludeDirectories="..\common\win32,..\common\win32\dxsdk\sdk\inc,..\common,.\"
 				PreprocessorDefinitions="QUAKE1;WIN32;_DEBUG;_WINDOWS;GLQUAKE;BSP2_SUPPORT;GAMESPY"
 				RuntimeLibrary="1"
-				PrecompiledHeaderFile=".\debug_gl/WinQuake.pch"
-				AssemblerListingLocation=".\debug_gl/"
-				ObjectFile=".\debug_gl/"
-				ProgramDataBaseFileName=".\debug_gl/"
+				FloatingPointModel="2"
 				BrowseInformation="1"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
-				DebugInformationFormat="4"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -352,12 +327,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="..\common\win32\dxsdk\sdk\lib\dxguid.lib comctl32.lib winmm.lib ws2_32.lib opengl32.lib glu32.lib odbc32.lib odbccp32.lib"
-				OutputFile=".\debug_gl\glquake2.exe"
+				OutputFile="$(OutDir)\glquake2.exe"
 				LinkIncremental="2"
-				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\debug_gl/glquake2.pdb"
 				SubSystem="2"
+				OptimizeForWindows98="2"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -371,8 +345,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
-				OutputFile=".\debug_gl/WinQuake.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -2445,7 +2417,16 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="mycoolbuild"
+						Description="Performing Custom Build Step"
+						CommandLine="cl /EP &gt; $(OUTDIR)\$(InputName).spp $(InputPath)&#x0D;&#x0A;gas2masm &lt; $(OUTDIR)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(OUTDIR)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(OUTDIR)\$(InputName).spp&#x0D;&#x0A;"
+						Outputs="$(OUTDIR)\$(InputName).obj"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="GL Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
 						CommandLine="cl /EP &gt; $(OUTDIR)\$(InputName).spp $(InputPath)&#x0D;&#x0A;gas2masm &lt; $(OUTDIR)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(OUTDIR)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(OUTDIR)\$(InputName).spp&#x0D;&#x0A;"
 						Outputs="$(OUTDIR)\$(InputName).obj"
 					/>
@@ -2455,8 +2436,17 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="mycoolbuild"
+						Description="Performing Custom Build Step"
 						CommandLine="cl /EP &gt; $(OUTDIR)\$(InputName).spp $(InputPath)&#x0D;&#x0A;gas2masm &lt; $(OUTDIR)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(OUTDIR)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(OUTDIR)\$(InputName).spp&#x0D;&#x0A;"
+						Outputs="$(OUTDIR)\$(InputName).obj"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="GL Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						CommandLine="cl /EP &gt; $(OUTDIR)\$(InputName).spp $(InputPath)&#x0D;&#x0A;gas2masm &lt; $(OUTDIR)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(OUTDIR)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(OUTDIR)\$(InputName).spp"
 						Outputs="$(OUTDIR)\$(InputName).obj"
 					/>
 				</FileConfiguration>
