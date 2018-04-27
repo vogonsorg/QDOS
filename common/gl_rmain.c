@@ -88,6 +88,7 @@ cvar_t	*r_novis;
 #ifdef QUAKEWORLD
 cvar_t	*r_netgraph;
 #endif
+cvar_t	*r_gunfov; /* FS */
 
 cvar_t	*gl_finish;
 cvar_t	*gl_clear;
@@ -110,6 +111,8 @@ cvar_t	*gl_doubleeyes;
 cvar_t	*r_waterwarp; /* FS: TODO FIXME dummy */
 
 cvar_t	*gl_texturemode; /* FS: Now a CVAR so we can do +set gl_texturemode blah blah at cmdline or autoexec.cfg */
+
+void MYgluPerspective (GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
 
 /*
 =================
@@ -689,6 +692,7 @@ void R_DrawViewModel (void)
 	float		add;
 	dlight_t	*dl;
 	int			ambientlight, shadelight;
+	qboolean	bDoGunFov = false;
 
 	if (!r_drawviewmodel->value
 #ifdef QUAKEWORLD
@@ -749,10 +753,27 @@ void R_DrawViewModel (void)
 	ambient[0] = ambient[1] = ambient[2] = ambient[3] = (float)ambientlight / 128;
 	diffuse[0] = diffuse[1] = diffuse[2] = diffuse[3] = (float)shadelight / 128;
 
+	if (r_gunfov->intValue && r_gunfov->intValue <= 179)
+	{
+		bDoGunFov = true;
+		glMatrixMode_fp(GL_PROJECTION);
+		glPushMatrix_fp();
+		glLoadIdentity_fp();
+		MYgluPerspective(r_gunfov->value, (float)r_refdef.vrect.width/r_refdef.vrect.height, 4, 4096);
+		glMatrixMode_fp(GL_MODELVIEW);
+	}
+
 	// hack the depth range to prevent view model from poking into walls
 	glDepthRange_fp (gldepthmin, gldepthmin + 0.3*(gldepthmax-gldepthmin));
 	R_DrawAliasModel (currententity);
 	glDepthRange_fp (gldepthmin, gldepthmax);
+
+	if (bDoGunFov)
+	{
+		glMatrixMode_fp(GL_PROJECTION);
+		glPopMatrix_fp();
+		glMatrixMode_fp(GL_MODELVIEW);
+	}
 }
 
 

@@ -66,7 +66,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="..\common\win32\dxsdk\sdk\lib\dxguid.lib ..\common\win32\scitech\lib\win32\vc\mgllt.lib winmm.lib ws2_32.lib opengl32.lib glu32.lib odbc32.lib odbccp32.lib"
-				OutputFile="$(OutDir)\WQWDOS.exe"
+				OutputFile="$(OutDir)\WQDOS.exe"
 				IgnoreDefaultLibraryNames="libc.lib,libcmtd.lib"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -239,7 +239,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="..\common\win32\dxsdk\sdk\lib\dxguid.lib ..\common\win32\scitech\lib\win32\vc\mgllt.lib winmm.lib ws2_32.lib opengl32.lib glu32.lib odbc32.lib odbccp32.lib"
-				OutputFile="$(OutDir)\WQWDOS.exe"
+				OutputFile="$(OutDir)\WQDOS.exe"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="libc.lib"
 				GenerateDebugInformation="true"
@@ -2446,7 +2446,7 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="cl /EP &gt; $(OUTDIR)\$(InputName).spp $(InputPath)&#x0D;&#x0A;gas2masm &lt; $(OUTDIR)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(OUTDIR)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(OUTDIR)\$(InputName).spp"
+						CommandLine="cl /EP &gt; $(OUTDIR)\$(InputName).spp $(InputPath)&#x0D;&#x0A;gas2masm &lt; $(OUTDIR)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(OUTDIR)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(OUTDIR)\$(InputName).spp&#x0D;&#x0A;"
 						Outputs="$(OUTDIR)\$(InputName).obj"
 					/>
 				</FileConfiguration>

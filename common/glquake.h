@@ -193,6 +193,8 @@ extern	cvar_t	*r_novis;
 extern	cvar_t	*r_netgraph;
 #endif
 
+extern	cvar_t	*r_gunfov; /* FS */
+
 extern	cvar_t	*gl_clear;
 extern	cvar_t	*gl_cull;
 extern	cvar_t	*gl_poly;

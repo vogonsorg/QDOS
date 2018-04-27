@@ -53,8 +53,6 @@ byte		*r_warpbuffer;
 
 byte		*r_stack_start;
 
-qboolean	r_fov_greater_than_90;
-
 //
 // view origin
 //
@@ -138,6 +136,7 @@ cvar_t	*r_numedges;
 cvar_t	*r_aliastransbase;
 cvar_t	*r_aliastransadj;
 cvar_t	*r_maxbmodeledges; /* FS: For big boy mods */
+cvar_t	*r_gunfov; /* FS */
 
 void CreatePassages (void);
 void SetVisibilityByPassages (void);
@@ -232,6 +231,7 @@ void R_Init (void)
 	r_aliastransadj = Cvar_Get("r_aliastransadj", "100", 0);
 	r_maxbmodeledges = Cvar_Get("r_maxbmodeledges", "0", 0); /* FS: For big boy mods */
 	r_maxbmodeledges->description = "Maximum number of bmodel edges to draw.";
+	r_gunfov = Cvar_Get("r_gunfov", "75", CVAR_ARCHIVE); /* FS */
 
 	Cvar_SetValue ("r_maxedges", (float)NUMSTACKEDGES);
 	Cvar_SetValue ("r_maxsurfs", (float)NUMSTACKSURFACES);
@@ -478,8 +478,6 @@ void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect)
 	r_aliastransition = r_aliastransbase->value * res_scale;
 	r_resfudge = r_aliastransadj->value * res_scale;
 
-	r_fov_greater_than_90 = false;
-
 // TODO: collect 386-specific code in one place
 #if id386
 	if (r_pixbytes == 1)
@@ -631,8 +629,11 @@ void R_DrawViewModel (void)
 	vec3_t		dist;
 	float		add;
 	dlight_t	*dl;
-	
-	if (!r_drawviewmodel->value || r_fov_greater_than_90)
+	float fov;
+	float oldAliasxscale = aliasxscale;
+	float oldAliasyscale = aliasyscale;
+
+	if (!r_drawviewmodel->value)
 		return;
 
 	if (cl.items & IT_INVISIBILITY)
@@ -683,7 +684,17 @@ void R_DrawViewModel (void)
 
 	r_viewlighting.plightvec = lightvec;
 
+	if (r_gunfov->intValue && r_gunfov->intValue <= 179)
+	{
+		fov = 2.0*tan((r_gunfov->value+10.0f*(4.0/3.0))/360.0*M_PI);
+		aliasxscale = ((float)r_refdef.vrect.width / fov) * r_aliasuvscale;
+		aliasyscale = aliasxscale;
+	}
+
 	R_AliasDrawModel (&r_viewlighting);
+
+	aliasxscale = oldAliasxscale;
+	aliasyscale = oldAliasyscale;
 }
 
 

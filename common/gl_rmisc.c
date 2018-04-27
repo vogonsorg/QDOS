@@ -193,6 +193,7 @@ void R_Init (void)
 	r_netgraph = Cvar_Get("r_netgraph", "0", 0);
 	r_netgraph->description = "Draw a network graph showing latency and packet loss.";
 #endif
+	r_gunfov = Cvar_Get("r_gunfov", "75", CVAR_ARCHIVE); /* FS */
 
 	gl_clear = Cvar_Get("gl_clear", "0", 0);
 	gl_clear->description = "Use a clear colour to avoid Hall of Mirror (HOM) effects.  Useful for noclipping, spectating, and finding leaks in maps.";

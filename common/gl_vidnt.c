@@ -106,6 +106,7 @@ HDC		maindc;
 glvert_t glv;
 
 cvar_t		*gl_ztrick;
+cvar_t		*gl_conscale; /* FS */
 
 HWND WINAPI InitializeWindow (HINSTANCE hInstance, int nCmdShow);
 LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -1593,6 +1594,8 @@ void	VID_Init (unsigned char *palette)
 	gl_ztrick->description = "Toggles the use of a trick to prevent the clearing of the z-buffer between frames. When this variable is set to 1 the game will not clear the z-buffer between frames. This will result in increased performance but might cause problems for some display hardware.";
 	gl_displayrefresh = Cvar_Get("gl_displayrefresh", "0", CVAR_ARCHIVE);
 	gl_displayrefresh->description = "Refresh rate for fullscreen modes.  Set to 0 to disable.";
+	gl_conscale = Cvar_Get("gl_conscale", "1", CVAR_ARCHIVE);
+	gl_conscale->description = "Set to 0 to make the console width and height equal to the current resolution.  Set to 1 to control it with conwidth and conheight cmdline.  Requires game restart.";
 
 	Cmd_AddCommand ("vid_nummodes", VID_NumModes_f);
 	Cmd_AddCommand ("vid_describecurrentmode", VID_DescribeCurrentMode_f);
@@ -1640,9 +1643,9 @@ void	VID_Init (unsigned char *palette)
 		{
 			if (COM_CheckParm("-current"))
 			{
-				modelist[MODE_FULLSCREEN_DEFAULT].width =
+				width = modelist[MODE_FULLSCREEN_DEFAULT].width =
 						GetSystemMetrics (SM_CXSCREEN);
-				modelist[MODE_FULLSCREEN_DEFAULT].height =
+				height = modelist[MODE_FULLSCREEN_DEFAULT].height =
 						GetSystemMetrics (SM_CYSCREEN);
 				vid_default = MODE_FULLSCREEN_DEFAULT;
 				leavecurrentmode = 1;
@@ -1774,23 +1777,34 @@ void	VID_Init (unsigned char *palette)
 
 	vid_initialized = true;
 
-	if ((i = COM_CheckParm("-conwidth")) != 0)
-		vid.conwidth = Q_atoi(com_argv[i+1]);
+	if (!gl_conscale->intValue) /* FS */
+	{
+		vid.conwidth = width;
+		vid.conwidth &= 0xfff8; // make it a multiple of eight
+
+		vid.conheight = height;
+		vid.conheight = vid.conwidth*3 / 4;
+	}
 	else
-		vid.conwidth = width; /* FS: Was 640 */
+	{
+		if ((i = COM_CheckParm("-conwidth")) != 0)
+			vid.conwidth = Q_atoi(com_argv[i+1]);
+		else
+			vid.conwidth = width; /* FS: Was 640 */
 
-	vid.conwidth &= 0xfff8; // make it a multiple of eight
+		vid.conwidth &= 0xfff8; // make it a multiple of eight
 
-	if (vid.conwidth < 320)
-		vid.conwidth = 320;
+		if (vid.conwidth < 320)
+			vid.conwidth = 320;
 
-	// pick a conheight that matches with correct aspect
-	vid.conheight = vid.conwidth*3 / 4;
+		// pick a conheight that matches with correct aspect
+		vid.conheight = vid.conwidth*3 / 4;
 
-	if ((i = COM_CheckParm("-conheight")) != 0)
-		vid.conheight = Q_atoi(com_argv[i+1]);
-	if (vid.conheight < 200)
-		vid.conheight = 200;
+		if ((i = COM_CheckParm("-conheight")) != 0)
+			vid.conheight = Q_atoi(com_argv[i+1]);
+		if (vid.conheight < 200)
+			vid.conheight = 200;
+	}
 
 	vid.maxwarpwidth = WARP_WIDTH;
 	vid.maxwarpheight = WARP_HEIGHT;

@@ -18,7 +18,6 @@
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			>
@@ -51,14 +50,11 @@
 				PreprocessorDefinitions="QUAKEWORLD;WIN32;_DEBUG;_WINDOWS;OGG_SUPPORT;GAMESPY;USE_CURL"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
-				PrecompiledHeaderFile=".\Debug/qwcl.pch"
-				AssemblerListingLocation=".\Debug/"
-				ObjectFile=".\Debug/"
-				ProgramDataBaseFileName=".\Debug/"
+				FloatingPointModel="2"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
-				DebugInformationFormat="4"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -83,6 +79,7 @@
 				GenerateMapFile="true"
 				MapFileName=".\Debug/DWQWDOS.map"
 				SubSystem="2"
+				OptimizeForWindows98="2"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -96,8 +93,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
-				OutputFile=".\Debug/qwcl.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -117,7 +112,6 @@
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			>
@@ -147,17 +141,11 @@
 				AdditionalOptions="/MP"
 				Optimization="2"
 				InlineFunctionExpansion="1"
+				OmitFramePointers="true"
 				AdditionalIncludeDirectories="..\common\win32,..\common\win32\dxsdk\sdk\inc,..\common\win32\scitech\include,winquake,..\common,.\"
 				PreprocessorDefinitions="QUAKEWORLD;WIN32;NDEBUG;_WINDOWS;OGG_SUPPORT;GAMESPY;USE_CURL"
-				StringPooling="true"
 				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\Release/qwcl.pch"
-				AssemblerListingLocation=".\Release/"
-				ObjectFile=".\Release/"
-				ProgramDataBaseFileName=".\Release/"
-				BrowseInformation="0"
-				SuppressStartupBanner="true"
+				FloatingPointModel="2"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -174,9 +162,11 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="..\common\win32\scitech\lib\win32\vc\mgllt.lib ..\common\win32\dxsdk\sdk\lib\dxguid.lib opengl32.lib ws2_32.lib odbc32.lib odbccp32.lib winmm.lib"
 				OutputFile=".\Release/WQWDOS.EXE"
-				LinkIncremental="1"
-				SuppressStartupBanner="true"
+				IgnoreDefaultLibraryNames="libc.lib;libcmtd.lib"
 				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				OptimizeForWindows98="2"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -190,8 +180,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
-				OutputFile=".\Release/qwcl.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -211,7 +199,6 @@
 			OutputDirectory=".\release_gl"
 			IntermediateDirectory=".\release_gl"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			>
@@ -246,11 +233,6 @@
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\release_gl/qwcl.pch"
-				AssemblerListingLocation=".\release_gl/"
-				ObjectFile=".\release_gl/"
-				ProgramDataBaseFileName=".\release_gl/"
-				BrowseInformation="0"
 				SuppressStartupBanner="true"
 			/>
 			<Tool
@@ -267,11 +249,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="..\common\win32\dxsdk\sdk\lib\dxguid.lib comctl32.lib winmm.lib ws2_32.lib opengl32.lib glu32.lib odbc32.lib odbccp32.lib"
-				OutputFile=".\release_gl/GLQW2.EXE"
-				LinkIncremental="1"
-				SuppressStartupBanner="true"
+				OutputFile="$(OutDir)\glqw2.exe"
 				IgnoreDefaultLibraryNames="libcmtd.lib"
 				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				OptimizeForWindows98="2"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -285,8 +268,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
-				OutputFile=".\release_gl/qwcl.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -306,7 +287,6 @@
 			OutputDirectory=".\debug_gl"
 			IntermediateDirectory=".\debug_gl"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			>
@@ -339,14 +319,11 @@
 				PreprocessorDefinitions="QUAKEWORLD;WIN32;_DEBUG;_WINDOWS;OGG_SUPPORT;GAMESPY;USE_CURL;GLQUAKE"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
-				PrecompiledHeaderFile=".\debug_gl/qwcl.pch"
-				AssemblerListingLocation=".\debug_gl/"
-				ObjectFile=".\debug_gl/"
-				ProgramDataBaseFileName=".\debug_gl/"
+				FloatingPointModel="2"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
-				DebugInformationFormat="4"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -362,14 +339,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="..\common\win32\dxsdk\sdk\lib\dxguid.lib comctl32.lib winmm.lib ws2_32.lib opengl32.lib glu32.lib odbc32.lib odbccp32.lib"
-				OutputFile=".\debug_gl/GLQW2.EXE"
-				LinkIncremental="1"
-				SuppressStartupBanner="true"
+				OutputFile="$(OutDir)\glqw2.exe"
 				IgnoreDefaultLibraryNames="libcmtd.lib"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
 				MapFileName=".\debug_gl/GLQW2.map"
 				SubSystem="2"
+				OptimizeForWindows98="2"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -383,8 +359,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
-				OutputFile=".\debug_gl/qwcl.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
