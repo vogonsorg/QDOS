@@ -58,20 +58,6 @@ int UDP_Init (void)
 	if (COM_CheckParm ("-noudp"))
 		return -1;
 #if defined(__DJGPP__)
-#if defined(USE_MPATH)
-	if (COM_CheckParm ("-mpath"))
-	{
-		Con_Printf("Skipping WATTCP due to -mpath\n");
-		return -1;
-	}
-#endif
-#if defined(USE_BWTCP)
-	if (tcpipAvailable)
-	{
-		Con_Printf("Skipping WATTCP (BWTCP present)\n");
-		return -1;
-	}
-#endif
 	if (ipxAvailable) /* IPX + PktDrvr don't get along */
 	{
 		Con_Printf("Skipping WATTCP (IPX present)\n");

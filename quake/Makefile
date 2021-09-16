@@ -3,10 +3,6 @@ STRIP= strip
 
 # whether to use WatTCP for DOS UDP networking
 USE_WATT32=yes
-# whether to use Beame & Whiteside for DOS networking
-USE_BWTCP=yes
-# whether to use MPATH for DOS UDP networking under Win9x
-USE_MPATH=no
 # gamespy server browser
 USE_GAMESPY=1
 # whether to use OGG VORBIS
@@ -63,18 +59,12 @@ LIBS   += -L../3rdparty/lib -lau
 endif
 endif
 
-ifeq ($(USE_BWTCP),yes)
-CFLAGS += -DUSE_BWTCP
-endif
-
-ifeq ($(USE_MPATH),yes)
-CFLAGS += -DUSE_MPATH
-endif
-
 ifeq ($(USE_WATT32),yes)
 CFLAGS += -DUSE_WATT32 -DWATT32_NO_OLDIES
 CFLAGS += -I../3rdparty/watt32/inc
 LIBS   += -L../3rdparty/watt32/lib -lwatt
+else
+override USE_GAMESPY = 0
 endif
 
 ifeq ($(USE_OGG),yes)
@@ -93,18 +83,8 @@ LIBS   += -lc -lgcc
 
 # objects:
 DOSTCP :=
-ifeq ($(USE_BWTCP),yes)
-DOSTCP += net_bw.o
-endif
-ifeq ($(USE_MPATH),yes)
-DOSTCP += net_mp.o mplpc.o
-endif
 ifeq ($(USE_WATT32),yes)
 DOSTCP += net_udp.o
-else
-# get inet_addr() and inet_ntoa() either from Watt-32
-# or from our local implementation 
-DOSTCP += dos_inet.o inetaddr.o
 endif
 SYSOBJ_NET := $(DOSTCP)
 

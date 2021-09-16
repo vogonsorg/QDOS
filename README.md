@@ -116,12 +116,11 @@ To play at extreme SVGA resolutions with acceptable (i.e. >= 40FPS) framerates a
 P3 ~800MHZ processor or higher is recommended.
 
 Online play over TCP/IP will require a NIC with a Packet Driver and a
-properly configured WATTCP.CFG in your root /QUAKE directory.  IPX, 
-Serial/Modem, and the rare BWTCP driver (for PPP) is still supported.
-MPATH has not be enabled, you will need to edit the MAKEFILE to compile
-MPATH because Windows9x does not play nice with the new changes.  Do not
-send bug reports on any bugs that only occur on Windows 9x.  They will be
-ignored!
+properly configured WATTCP.CFG in your root /QUAKE directory.  IPX and
+Serial/Modem drivers are still supported.
+
+Do not send bug reports on any bugs that only occur on Windows 9x.  They
+will be ignored!
 
 NOTE: QDOS tries to allocate 32MB by default so you may need to use -MEM 16 if
 you're on an older machine and trying to play stock Quake.

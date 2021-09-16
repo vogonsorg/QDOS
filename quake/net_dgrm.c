@@ -30,8 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #  include <netinet/in.h>
 #  include <arpa/inet.h>
 # else
-#  include "dos_inet.h"
-#  include "dos_sock.h"
+#  undef BAN_TEST
 # endif
 #elif defined (NeXT)
 #include <sys/socket.h>
